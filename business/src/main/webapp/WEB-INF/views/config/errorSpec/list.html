@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>故障清单维护</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+<body>
+<div id="layoutDiv" class="easyui-layout" style="height:100%">
+    <div id="tb">
+        <input type="hidden" id="doAction"/><!--动作隐藏按钮-->
+        <label for="errorCodeQry">故障编码：</label>
+        <input class="easyui-textbox" id="errorCodeQry" name="errorCodeQry"/>
+        <label for="errorTitleQry">故障名称：</label>
+        <input class="easyui-textbox" id="errorTitleQry" name="errorTitleQry"/>
+        <span style="margin-left: 0;">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" onclick="qryErrorSpec()">查询</a>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit" onclick="modifyErrorSpec();">修改</a>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="deleteErrorSpec();">删除</a>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="addErrorSpec('-1');">新增</a>
+        </span>
+    </div>
+
+    <div data-options="region:'center',title:'故障定义清单',noheader:false;">
+        <table id="errorSpecDg"></table>
+    </div>
+</div>
+
+<!--预报查看编辑窗口-->
+<div id="errorSpecEditWin"></div>
+</body>
+</html>
+<script type="text/javascript">
+    $errorSpecDg = $("#errorSpecDg");
+    $(function () {
+        $errorSpecDg.datagrid({
+            url: '${base}/business/config/errorSpec/listShow',
+            fitColumns: true,
+            animate: true,
+            border: true,
+            height: $(this).height(),
+            idField: 'errorCode',
+            singleSelect: true,
+            rownumbers: true,
+            pagination: true,
+            pagenumber: true,
+            pageSize: 15,
+            pageList: [15, 30, 45],
+            columns: [
+                [
+                    {field: 'errorSpecId', title: '序列号', align: 'center', width: 30},
+                    {field: 'errorCode', title: '故障代码', align: 'center', width: 30},
+                    {field: 'errorTitle', title: '故障名称', align: 'center', width: 30},
+                    {field: 'errorSpec', title: '故障定义', align: 'center', width: 35},
+                    {field: 'dealMethod', title: '处理步骤', align: 'center', width: 30},
+                    {field: 'machinCode', title: '设备编号', align: 'center', width: 30},
+                    {field: 'stateName', title: '生效标志', align: 'center', width: 30},
+                    {field: 'createDate', title: '创建时间', align: 'center', width: 35},
+                    {field: 'flowId', title: '流程ID', align: 'center', width: 35}
+                ]
+            ],
+            toolbar: '#tb'
+        })
+    });
+    function qryErrorSpec() {
+        var paramO = new Object();
+        var errorCodeQry = $("#errorCodeQry").val();
+        var errorTitleQry = $("#errorTitleQry").val();
+
+        if (errorCodeQry != null && errorCodeQry != "" && errorCodeQry.length > 0) {
+            paramO.search_errorCode = errorCodeQry;
+        }
+        if (errorTitleQry != null && errorTitleQry != "" && errorTitleQry.length > 0) {
+            paramO.search_errorTitle = errorTitleQry;
+        }
+        $errorSpecDg.datagrid("load", paramO);
+    }
+
+    function modifyErrorSpec() {
+        document.getElementById("doAction").value = "MOD";
+        var selectedRow = $errorSpecDg.datagrid('getSelected');
+        if (selectedRow) {
+            $('#errorSpecEditWin').window({
+                modal: true,
+                title: '故障信息维护',
+                width: 600,
+                height: 300,
+                collapsible: false,
+                minimizable: false,
+                maximizable: true,
+                href: '${base}/business/config/errorSpec/errorSpecDetail/' + selectedRow.errorSpecId,
+                onClose: function () {
+                    $errorSpecDg.datagrid('reload');
+                }
+            });
+        } else {
+            showMsg("提示", "请先选择需要修改的信息!");
+            return false;
+        }
+    }
+
+    function deleteErrorSpec() {
+        var selectedRow = $errorSpecDg.datagrid('getSelected');
+        if (selectedRow) {
+            $.messager.confirm('提示', '数据将删除，确定继续操作?', function (r) {
+                if (r) {
+                    //提交数据
+                    var errorSpecId = selectedRow.errorSpecId;
+                    $.post("${base}/business/config/delErrorSpec/" + errorSpecId, function (rsp) {
+                        if (rsp.successful) {
+                            showMsg("提示", rsp.msg);
+                            $errorSpecDg.datagrid("reload");
+                        } else {
+                            showMsg("提示", rsp.msg);
+                        }
+                    }, "JSON").error(function () {
+                        showMsg("提示", "删除数据失败！");
+                    });
+                }
+            });
+        } else {
+            showMsg("提示", "请先选择要删除的信息！");
+            return false;
+        }
+
+    }
+
+    function addErrorSpec(errorSpecId) {
+        $('#doAction').val("ADD");
+        $('#errorSpecEditWin').window({
+            modal: true,
+            title: '故障信息维护',
+            width: 600,
+            height: 300,
+            collapsible: false,
+            minimizable: false,
+            maximizable: true,
+            href: '${base}/business/config/errorSpec/errorSpecDetail/' + errorSpecId,
+            onClose: function () {
+                $errorSpecDg.datagrid('load');
+            }
+        });
+    }
+
+</script>

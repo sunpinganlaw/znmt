@@ -1,0 +1,74 @@
+<div class="form-div">
+    <form id="ff" method="post" commandName="machinWorkMode">
+        <input type="hidden" name="modeRecId"  id="modeRecId" />
+        <table >
+            <tr>
+                <td >工作模式:</td>
+                <td><select id="workMode" name="workMode" class="easyui-combobox" data-options="required:true,panelHeight:'auto'" style="width:100%;" >
+                    <option value="1">自动</option>
+                    <option value="2">手动</option>
+                </select>
+                </td>
+            </tr>
+            <tr>
+                <td >采样机卸料时间:</td>
+                <td><input class="easyui-datetimebox" name="param1" id="param1" data-options="required:true"/></td>
+            </tr>
+            <tr>
+                <td >备注:</td>
+                <td><textarea  name="remark" id="remark" cols="55" rows="5"></textarea></td>
+            </tr>
+        </table>
+    </form>
+    <div class="submit-div">
+        <a href="javascript:void(0)" id="add" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm()">提交</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="formReset();">重置</a>
+    </div>
+</div>
+<script type="text/javascript">
+    //重置表单
+    var modeRecIdTemp ;
+    function formReset(){
+        $.messager.confirm('提示', '确定需要重置输入表单?', function (r) {
+            if (r) {
+                modeRecIdTemp = $("#modeRecId").val();
+                $('#ff').form('clear');
+                $("#modeRecId").val(modeRecIdTemp);
+            }
+        });
+    }
+
+    //提交表单
+    function submitForm(){
+        if (! $("#ff").form('validate')) {
+            showMsg("提示", "有必填项未输入值!");
+            return false;
+        }
+        $.messager.confirm('提示', '确定保存?', function (r) {
+            if (r) {
+                save();
+            }
+        });
+    }
+    //保存
+    function save(){
+        var params = $("#ff").serialize();
+        var postUrl = "";
+            postUrl = "${base}/business/config/machinWorkMode/mod";
+        $.post(postUrl, params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示",rsp.msg);
+                $('#workModeWin').window('close');
+            } else {
+                showMsg("提示", rsp.msg);
+            }
+        }).error(function () {
+            showMsg("提示", "保存失败!");
+        });
+    }
+    //加载读取的详情信息
+    var machinWorkModeEntity = JSON.parse(JSON.stringify(${machinWorkModeEntity}));
+    if(machinWorkModeEntity != undefined && machinWorkModeEntity != null && machinWorkModeEntity != "") {
+        $('#ff').form('load', machinWorkModeEntity);
+    }
+</script>

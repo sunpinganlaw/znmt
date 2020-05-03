@@ -1,0 +1,129 @@
+<div class="form-div">
+    <form id="ff" method="post" commandName="coalMine">
+        <div class="easyui-accordion" data-options="multiple:true">
+            <div title="基础信息"style="overflow:auto;padding:0px;">
+        <table >
+            <tr>
+                <td >煤矿名称:</td>
+                <td><input class="easyui-textbox" type="text" name="mineName" id="mineName" data-options="required:true,validType: 'length[1,50]'"/>
+                    <input type="hidden" id="mineNo">
+                </td>
+                <td >简称:</td>
+                <td><input class="easyui-textbox" type="text" name="forShort" id="forShort" data-options="validType: 'length[1,20]'"/></td>
+            </tr>
+            <tr>
+                <td >供应商:</td>
+                <td colspan="3"><input type="text" id="venNo" name="venNo"/>
+                </td>
+            </tr>
+
+            <tr>
+                <td >备注信息:</td>
+                <td colspan="3"><textarea  name="remark" id="remark" cols="55" rows="5"></textarea></td>
+            </tr>
+        </table>
+        </div>
+            <div title="扩展信息" style="padding:0px;">
+            <table>
+                <tr>
+                    <td >所属地区:</td>
+                    <td><input class="easyui-textbox" type="text" name="area" id="area"/></td>
+                    <td >运距:</td>
+                    <td><input class="easyui-textbox" type="text" name="transDist" id="transDist"/></td>
+                </tr>
+                <tr>
+                    <td >最短运输时间:</td>
+                    <td><input class="easyui-textbox" type="text" name="transTime" id="transTime"/></td>
+                    <td >年产量:</td>
+                    <td><input class="easyui-textbox" type="text" name="yearOutp" id="yearOutp"/></td>
+                </tr>
+                <tr>
+                    <!--<td >煤种:</td>-->
+                    <!--<td><input class="easyui-textbox" type="text" name="coalNo" id="coalNo"/></td>-->
+                    <td>法人代表:</td>
+                    <td colspan="3"><input class="easyui-textbox" type="text" name="lealPerson" id="lealPerson"/></td>
+                </tr>
+                <!--<tr>-->
+                    <!--<td >运输方式:</td>-->
+                    <!--<td><input class="easyui-textbox" type="text" name="transMode" id="transMode"/></td>-->
+                    <!--<td >煤矿属性:</td>-->
+                    <!--<td><input class="easyui-textbox" type="text" name="mineProp" id="mineProp"/></td>-->
+                <!--</tr>-->
+            </table>
+                <input id="coalNo" name="coalNo" type="hidden">
+                <input id="transMode" name="transMode"  type="hidden">
+                <input id="mineProp" name="mineProp"  type="hidden">
+            </div>
+        </div>
+    </form>
+    <div class="submit-div">
+        <a href="javascript:void(0)" id="add" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm()">提交</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="clearFrom();">重置</a>
+    </div>
+</div>
+<script type="text/javascript">
+    var dowhat = "${doWhat}";
+    $(function () {
+        $('#venNo').combobox({
+            url:'${base}/business/tool/getComboboxOpt/VENDOR_INFO_LIST',
+            required:true,
+            valueField:'id',
+            textField:'name',
+            panelHeight:'200'
+        });
+    });
+    function clearFrom() {
+        $('#ff').form('clear');
+    }
+    function save(){
+        var params = $("#ff").serialize();
+        var mineNo = document.getElementById("mineNo").value;
+        var postUrl = "";
+        if (dowhat == "add") {
+            postUrl = "${base}/business/config/coalMine/add";
+        } else {
+            postUrl = "${base}/business/config/coalMine/edit/"+mineNo;
+        }
+        $.post(postUrl,params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示",rsp.msg);
+                closeWin();
+            } else {
+                showMsg("提示", rsp.msg);
+                $('#add').linkbutton({disabled:false});
+            }
+        }).error(function () {
+            showMsg("提示", "更新失败,请重新登陆!");
+            $('#add').linkbutton({disabled:false});
+        });
+    }
+
+    $('#ff').find('input').on('keyup',function(event){
+        if(event.keyCode == '13'){
+            submitForm();
+        }
+    });
+
+    function submitForm(){
+        if (! $("#ff").form('validate'))  return false;
+        if ($("#mineName").val() == "") {
+            showMsg("提示", "请填写煤矿名称！");
+            return false;
+        }
+        $('#add').linkbutton({disabled:true});
+        save();
+    }
+    function showMsg(title,msg)
+    {
+        $.messager.show({
+            title:title,
+            msg:msg
+        });
+    }
+    var coalMine = JSON.parse(JSON.stringify(${.globals.coalMine}));
+    if (coalMine.mineNo != null && coalMine.mineName != '') {
+        $('#ff').form('load', coalMine);
+        document.getElementById("mineNo").value = coalMine.mineNo;
+    }
+
+</script>

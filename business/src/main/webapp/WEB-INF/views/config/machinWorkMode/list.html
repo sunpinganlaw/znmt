@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>工作模式清单</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+
+<body>
+<input type="hidden" name="h_eventId"  id="h_eventId" />
+<div id="tb" >
+    <form id="rptFF" method="post">
+        <div class="well">
+            <table style="width:98%;">
+                <tr>
+                    <td style="text-align: right">
+                        <a href="javascript:void(0)" id="qryBtn" class="easyui-linkbutton" iconCls="icon-search"  onclick="qryWeightRpt()">查询</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </form>
+</div>
+
+<div id="tx" style="margin: 0px;width: 100%">
+    <table id="dg" title="工作模式查询" ></table>
+</div>
+
+<div id="workModeWin" ></div>
+
+</body>
+<script type="text/javascript">
+    $dg = $("#dg");
+
+    function qryWeightRpt(){
+        var paramO = new Object();
+        $dg.datagrid('load',paramO);
+    }
+
+    //初始化查询报表，全量查询
+    $(function () {
+        $dg.datagrid({
+            url: "${base}/business/config/machinWorkMode/listShow",
+            pagination: true,
+            pagenumber:true,
+            pageSize:70,
+            pageList: [70, 100, 200],
+            fitColumns: true,
+            height: $(this).height(),
+            width: $(this).width(),
+            idField:'modeRecId',
+            singleSelect:true,
+            toolbar: '#tb',
+            columns: [
+                [
+                    {field: 'modeRecId', title: '序列', width: 25, align:'center'},
+                    {field: 'workMode', title: '工作模式', width: 20, align:'center',formatter:workModeFormatter},
+                    {field: 'param1', title: '采样机卸料时间', width: 40, align:'center'},
+                    {field: 'insertTime', title: '记录入库时间', width: 40, align:'center'},
+                    {field: 'updateTime', title: '记录更新时间', width: 40, align:'center'},
+                    {field: 'opCode', title: '记录操作人', width: 25, align:'center'},
+                    {field: 'updateCode', title: '记录更新人', width: 25, align:'center'},
+                    {field: 'xxx', title: '操作', width: 30, align:'center',formatter:operLink},
+                    {field: 'remark', title: '备注', width: 100, align:'left'}
+                ]
+            ]
+        });
+    });
+    function workModeFormatter(val,row,index) {
+        return (row.workMode=="1"?'自动':'手动');
+    }
+    function operLink(val,row,index){
+        var v = row.modeRecId;
+        return ('&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:void(0)" onclick="kdHandle('+v+')">修改模式</a>');
+    }
+
+    function kdHandle(v){
+        document.getElementById("h_eventId").value = v;
+        $('#workModeWin').window({
+            modal : true,
+            title : "模式修改",
+            width : 500,
+            height : 250,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/config/machinWorkMode/mod/'+v,
+            onClose: function () {
+                $dg.datagrid('reload');
+            }
+        });
+    }
+
+</script>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>煤种信息配置</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+<body>
+<@shiro.hasPermission name="coalType:save">
+<div class="well" >
+    <span class="badge">提示</span>
+    在此你可以对<span class="label-info"><strong>煤种信息</strong></span>进行编辑!
+</div>
+</@shiro.hasPermission>
+<div id="tb" >
+    <table>
+        <tr>
+            <td >
+                <@shiro.hasPermission name="coalType:save">
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add"
+                   onclick="addCoalType();">添加</a>
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit"
+                   onclick="editCoalType();">修改</a>
+            </@shiro.hasPermission>
+            <@shiro.hasPermission name="coalType:delete:coalType拥有的资源">
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove"
+               onclick="delRow();">删除</a>
+        </@shiro.hasPermission>
+        </td>
+        <td>
+            <input id="searchbox" type="text"/>
+        </td>
+        </tr>
+    </table>
+</div>
+<div id="mm">
+    <div name="search_coalName">煤种名称</div>
+    <div name="search_coalNo">煤种编号</div>
+    <div name="search_forShort">简称</div>
+</div>
+<div id="tx" style="margin: 5px;">
+    <table id="dg" title="煤种清单" ></table>
+</div>
+<div id="win" ></div>
+</body>
+<script type="text/javascript">
+    var $dg;
+    $(function () {
+        $dg = $("#dg");
+        $('#dg').datagrid({
+            iconCls: 'icon-edit',
+            fitColumns: true,
+            height: $(this).height() - 46,
+            width: $(this).width() - 10,
+            singleSelect: true,
+            idField: 'id',
+            url: '${base}/business/config/coalType/listShow',
+            pagination: true,
+            rownumbers: true,
+            columns: [
+                [
+                    {field: 'coalNo', title: '煤种编号', width: 50},
+                    {field: 'coalName', title: '煤种名称', width: 100},
+                    {field: 'forShort', title: '简称', width: 50},
+                    {field: 'remark', title: '备注', width: 200}
+                ]
+            ],
+            toolbar: '#tb'
+        });
+        //搜索框
+        $("#searchbox").searchbox({
+            menu:"#mm",
+            prompt :'模糊查询',
+            searcher:function(value,name){
+                var str="{\"" + name + "\":\"" + value + "\"}";
+                var obj = eval('('+str+')');
+                $('#dg').datagrid('reload',obj);
+            }
+        });
+    });
+    function delRow() {
+        var selectedRow = $dg.datagrid('getSelected');
+        if (selectedRow) {
+            $.messager.confirm('提示', '确定进行操作?', function (r) {
+                if (r) {
+                    var id = $dg.datagrid('getSelected').coalNo;
+//                    var id = selectedRow.coalNo;
+                    $.post("${base}/business/config/coalType/delete/" + id,function (rsp) {
+                        if (rsp.successful) {
+                            $('#dg').datagrid("reload");
+                            showMsg("提示", rsp.msg);
+                        } else {
+                            showMsg("提示", rsp.msg);
+                        }
+                    }).error(function () {
+                        showMsg("提示", "查询数据失败,请重新登陆!");
+                    });
+                    $dg.datagrid('clearSelections');
+                }
+            });
+        }
+        else {
+            showMsg("提示", "请选择一行");
+            return;
+        }
+        selectedRow = null;
+    }
+    function closeWin()
+    {
+        $('#win').window('close',true);
+    }
+    function addCoalType()
+    {
+        var win = $('#win').window({
+            modal : true,
+            title : '添加煤种',
+            width : 550,
+            height : 230,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/config/coalTypeEdit',
+            onClose : function() {
+                $dg.datagrid('reload');
+            }
+        });
+    }
+
+    function editCoalType()
+    {
+        var row =  $dg.datagrid('getSelected');
+        if (row) {
+            var code  = row.coalNo;
+            $('#win').window({
+                modal: true,
+                title: '编辑煤种',
+                width: 550,
+                height: 230,
+                collapsible: false,
+                minimizable: false,
+                maximizable: true,
+                href: '${base}/business/config/coalTypeEdit/'+code,
+                onClose: function () {
+                    $dg.datagrid('reload');
+                }
+            });
+        }
+        else
+        {
+            showMsg("提示", "请选择一行");
+            return;
+        }
+    }
+</script>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+    <style>
+        .myTable {
+            border: 1px;
+            border-color: #a0c6e5;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .myTable td {
+            border: solid 1px #a0c6e5;
+            height: 20px;
+            width: 25%;
+        }
+    </style>
+</head>
+<body>
+<div id="workModeTypeDiv" >
+    <@buildNode child=workModeType.workModeTypeResult parent=workModeType/>
+    <#macro buildNode child parent>
+        <#list parent.workModeTypeList as parentList>
+            <#assign accordionId="accordion_"+parentList.typeId/>
+            <#if (parentList.showType == "0" && parent.parentTypeId == 0)>
+                <div class="easyui-accordion" id="${accordionId}" data-options="multiple:true" style="margin: 5px">
+                </div>
+            </#if>
+        </#list>
+        <#if child?? && child?size gt 0>
+            <#list child as childList>
+                <#list childList.workModeTypeList as childListList>
+                    <#assign accordionId="accordion_"+childListList.parentTypeId/>
+                    <#if childListList.workModeValue??>
+                        <#assign value=childListList.workModeValue/>
+                    <#else>
+                        <#assign value=""/>
+                    </#if>
+                    <#if childListList.unit??>
+                        <#assign unit=childListList.unit/>
+                    <#else>
+                            <#assign unit=""/>
+                    </#if>
+                    <#if (childListList.showType == "0")>
+                        <#assign groupId="group_"+childListList.typeId/>
+                        <#escape x as x?html>
+                            <script language="javascript">
+                                $("#" + "${accordionId}").append('<div id="${groupId}" title=${childListList.typeName} style="overflow:auto;padding:0px;"><table class="myTable">' +
+                                '<div class="easyui-accordion" id="accordion_${childListList.typeId}" data-options="multiple:true" style="margin: 0px"></div>'+
+                                '<tr><td>模式/参数名</td><td>当前参数</td><td>修改参数</td><td style="text-align: center">确认编辑</td></tr>'+
+                                '</table></div>');
+                            </script>
+                        </#escape>
+                        <#elseif (childListList.showType == "1")>
+                            <#escape x as x?html>
+                                <script language="javascript">
+                                    $("#group_${childListList.parentTypeId} table").append('<tr>'+
+                                                                                                  '<td>${childListList.typeName}</td>'+
+                                                                                                  '<td><input class="easyui-datebox" name="original_${childListList.typeId}" id="original_${childListList.typeId}" disabled="true" value="${value}" style="width:145px;"/>&nbsp;&nbsp;${unit}</td>' +
+                                                                                                  '<td><input class="easyui-datebox" name="input_${childListList.typeId}" id="input_${childListList.typeId}"  style="width:145px;"/>&nbsp;&nbsp;${unit}</td>' +
+                                                                                                  '<td><div class="submit-div"><a href="javascript:void(0)" id="add" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm(\'input_${childListList.typeId}\',\'${childListList.showType}\')">提交</a></div></td>' +
+                                                                                                  '</tr>');
+                                </script>
+                            </#escape>
+                            <#elseif (childListList.showType == "2")>
+                                <#escape x as x?html>
+                                    <script language="javascript">
+                                        $("#group_${childListList.parentTypeId} table").append('<tr>' +
+                                                                                                        '<td>${childListList.typeName}</td>' +
+                                                                                                        '<td><input class="easyui-textbox" name="original_${childListList.typeId}" id="original_${childListList.typeId}" disabled="true" value="${value}"   style="width:145px;"/>&nbsp;&nbsp;${unit}</td>' +
+                                                                                                        '<td><input class="easyui-textbox" name="input_${childListList.typeId}" id="input_${childListList.typeId}"  style="width:145px;"/>&nbsp;&nbsp;${unit}</td>' +
+                                                                                                        '<td><div class="submit-div"><a href="javascript:void(0)" id="add" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm(\'input_${childListList.typeId}\',\'${childListList.showType}\')">提交</a></div></td>' +
+                                                                                                        '</tr>');
+                                    </script>
+                                </#escape>
+                                <#elseif (childListList.showType == "3" && childListList.dataLoadType == "1" && childListList.dataUrl??)>
+                                    <#escape x as x?html>
+                                        <script language="javascript">
+                                            var dataList = eval("${childListList.dataUrl}");
+                                            $("#group_${childListList.parentTypeId} table").append('<tr>' +
+                                                                                                            '<td>${childListList.typeName}</td>' +
+                                                                                                            '<td><input id="original_${childListList.typeId}" name="original_${childListList.typeId}" class="easyui-combobox" disabled="true" value="${value}" data-options="panelHeight:\'auto\'" style="width:145px;">&nbsp;&nbsp;${unit}</td>' +
+                                                                                                            '<td><input id="input_${childListList.typeId}" name="input_${childListList.typeId}" class="easyui-combobox" data-options="panelHeight:\'auto\'" style="width:145px;">&nbsp;&nbsp;${unit}</td>' +
+                                                                                                            '<td><div class="submit-div"><a href="javascript:void(0)" id="add" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm(\'input_${childListList.typeId}\',\'${childListList.showType}\')">提交</a></div></td>' +
+                                                                                                            '</tr>');
+                                            $('#input_${childListList.typeId},#original_${childListList.typeId}').combobox({
+                                                data: dataList,
+                                                valueField: 'id',
+                                                textField: 'name'
+                                            });
+                                        </script>
+                                    </#escape>
+                                    <#elseif (childListList.showType == "3" && childListList.dataLoadType == "2"  && childListList.dataUrl??)>
+                                        <#escape x as x?html>
+                                            <script language="javascript">
+                                                var url = "${childListList.dataUrl}";
+                                                $("#group_${childListList.parentTypeId} table").append('<tr>' +
+                                                                                                                '<td>${childListList.typeName}</td>' +
+                                                                                                                '<td><input id="original_${childListList.typeId}" id="original_${childListList.typeId}" class="easyui-combobox" disabled="true" value="${value}"  data-options="panelHeight:\'auto\'" style="width:145px;">&nbsp;&nbsp;${unit}</td>' +
+                                                                                                                '<td><input id="input_${childListList.typeId}" id="input_${childListList.typeId}" class="easyui-combobox" data-options="panelHeight:\'auto\'" style="width:145px;">&nbsp;&nbsp;${unit}</td>' +
+                                                                                                                '<td><div class="submit-div"><a href="javascript:void(0)" id="add" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm(\'input_${childListList.typeId}\',\'${childListList.showType}\')">提交</a></div></td>' +
+                                                                                                                '</tr>');
+                                                $('#input_${childListList.typeId},#original_${childListList.typeId}').combobox({
+                                                    url: "${base}" + url,
+                                                    valueField: 'id',
+                                                    textField: 'name'
+                                                });
+                                            </script>
+                                        </#escape>
+                                        <#elseif (childListList.showType == "4")>
+                                            <#escape x as x?html>
+                                                <script language="javascript">
+                                                    $("#group_${childListList.parentTypeId} table").append('<tr>' +
+                                                                                                                    '<td>${childListList.typeName}</td>' +
+                                                                                                                    '<td><input class="easyui-numberbox" name="original_${childListList.typeId}" id="original_${childListList.typeId}" value="${value}" disabled="true"  style="width:145px;"/>&nbsp;&nbsp;${unit}</td>' +
+                                                                                                                    '<td><input class="easyui-numberbox" name="input_${childListList.typeId}" id="input_${childListList.typeId}"  style="width:145px;"/>&nbsp;&nbsp;${unit}</td>' +
+                                                                                                                    '<td><div class="submit-div"><a href="javascript:void(0)" id="add" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm(\'input_${childListList.typeId}\',\'${childListList.showType}\')">提交</a></div></td>' +
+                                                                                                                    '</tr>');
+                                                </script>
+                                            </#escape>
+                    </#if>
+                </#list>
+                <@buildNode child=childList.workModeTypeResult parent=childList/>
+            </#list>
+        </#if>
+    </#macro>
+</div>
+</body>
+<#escape x as x?html>
+    <script language="javascript">
+        function submitForm(id, typeShow) {
+            var resultValue = "";
+            var resultId = id.split("_")[1];
+            var params;
+            if (typeShow == 1) {
+                resultValue = $('#' + id).datebox('getValue');
+            } else if (typeShow == 2) {
+                resultValue = $('#' + id).textbox('getValue');
+            } else if (typeShow == 4) {
+                resultValue = $('#' + id).numberbox('getValue');
+            } else if (typeShow == 3) {
+                resultValue = $('#' + id).combobox('getValue');
+            }
+            if (resultValue == "") {
+                $.messager.alert('提示信息','设置值不能为空，请填写或者选择值','warning');
+                return false;
+            }
+            params = {"typeId":resultId,"modifyValue":resultValue};
+            $.post("${base}/business/config/workModeType/edit", params, function (rsp) {
+                if (rsp.successful) {
+                    if (typeShow == 1) {
+                         $('#original_' + resultId).datebox('setValue',resultValue);
+                    } else if (typeShow == 2) {
+                        $('#original_' + resultId).textbox('setValue',resultValue);
+                    } else if (typeShow == 4) {
+                        $('#original_' + resultId).numberbox('setValue',resultValue);
+                    } else if (typeShow == 3) {
+                        $('#original_' + resultId).combobox('setValue',resultValue);
+                    }
+                    showMsg("提示", rsp.msg);
+                } else {
+                    showMsg("提示", rsp.msg);
+                }
+            }).error(function () {
+                showMsg("提示", "更新失败,请重新登陆!");
+            });
+        }
+    </script>
+</#escape>
+</html>

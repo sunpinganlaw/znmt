@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>运输单位信息配置</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+<body>
+<@shiro.hasPermission name="carrierInfo:save">
+<div class="well" >
+    <span class="badge">提示</span>
+    在此你可以对<span class="label-info"><strong>运输单位信息</strong></span>进行编辑!
+</div>
+</@shiro.hasPermission>
+<div id="tb" >
+    <table>
+        <tr>
+            <td >
+                <@shiro.hasPermission name="carrierInfo:save">
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add"
+                   onclick="addCarrierInfo();">添加</a>
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit"
+                   onclick="editCarrierInfo();">修改</a>
+            </@shiro.hasPermission>
+            <@shiro.hasPermission name="carrierInfo:delete:carrierInfo拥有的资源">
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove"
+               onclick="delRow();">删除</a>
+        </@shiro.hasPermission>
+        </td>
+        <td>
+            <input id="searchbox" type="text" style="width: 180px"/>
+        </td>
+        </tr>
+    </table>
+</div>
+<div id="mm">
+    <div name="search_carrierName">运输单位名称</div>
+    <div name="search_carrierNo">运输单位编号</div>
+    <div name="search_forShort">简称</div>
+</div>
+<div id="tx" style="margin: 5px;">
+    <table id="dg" title="运输单位清单" ></table>
+</div>
+<div id="win" ></div>
+</body>
+<script type="text/javascript">
+    var $dg;
+    $(function () {
+        $dg = $("#dg");
+        $('#dg').datagrid({
+            iconCls: 'icon-edit',
+            fitColumns: true,
+            height: $(this).height() - 46,
+            width: $(this).width() - 10,
+            singleSelect: true,
+            idField: 'id',
+            url: '${base}/business/config/carrierInfo/listShow',
+            pagination: true,
+            rownumbers: true,
+            columns: [
+                [
+                    {field: 'carrierNo', title: '运输单位编号', width: 50},
+                    {field: 'carrierName', title: '运输单位名称', width: 100},
+                    {field: 'forShort', title: '简称', width: 50},
+//                    {field: 'carrierAddr', title: '地址', width: 200},
+//                    {field: 'contNum', title: '电话', width: 100},
+//                    {field: 'contPerson', title: '联系人', width: 100},
+//                    {field: 'zycNum', title: '自卸车数量', width: 100},
+//                    {field: 'pbcNum', title: '平板车数量', width: 100},
+//                    {field: 'wfcNum', title: '无费车数量', width: 100},
+//                    {field: 'tscNum', title: '特殊车数量', width: 100},
+                    {field: 'remark', title: '备注', width: 200}
+                ]
+            ],
+            toolbar: '#tb'
+        });
+        //搜索框
+        $("#searchbox").searchbox({
+            menu:"#mm",
+            prompt :'模糊查询',
+            searcher:function(value,name){
+                var str="{\"" + name + "\":\"" + value + "\"}";
+                var obj = eval('('+str+')');
+                $('#dg').datagrid('reload',obj);
+            }
+        });
+    });
+
+    function delRow() {
+        var selectedRow = $dg.datagrid('getSelected');
+        if (selectedRow) {
+            $.messager.confirm('提示', '确定进行操作?', function (r) {
+                if (r) {
+                    var id = $dg.datagrid('getSelected').carrierNo;
+            //            var id = selectedRow.carrierNo;
+                        $.post("${base}/business/config/carrierInfo/delete/" + id,function (rsp) {
+                            if (rsp.successful) {
+                                $('#dg').datagrid("reload");
+                                showMsg("提示", rsp.msg);
+                            } else {
+                                showMsg("提示", rsp.msg);
+                            }
+                        }).error(function () {
+                            showMsg("提示", "查询数据失败,请重新登陆!");
+                        });
+                    $dg.datagrid('clearSelections');
+                }
+            });
+        }
+        else {
+            showMsg("提示", "请选择一行");
+            return;
+        }
+        selectedRow = null;
+    }
+    function closeWin()
+    {
+        $('#win').window('close',true);
+    }
+    function addCarrierInfo()
+    {
+        var win = $('#win').window({
+            modal : true,
+            title : '添加运输单位',
+            width : 550,
+            height : 400,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/config/carrierInfoEdit',
+            onClose : function() {
+                $dg.datagrid('reload');
+            }
+        });
+    }
+
+    function editCarrierInfo()
+    {
+        var row =  $dg.datagrid('getSelected');
+        if (row) {
+            var code  = row.carrierNo;
+            $('#win').window({
+                modal: true,
+                title: '编辑运输单位',
+                width: 550,
+                height: 400,
+                collapsible: false,
+                minimizable: false,
+                maximizable: true,
+                href: '${base}/business/config/carrierInfoEdit/'+code,
+                onClose: function () {
+                    $dg.datagrid('reload');
+                }
+            });
+        }
+        else
+        {
+            showMsg("提示", "请选择一行");
+            return;
+        }
+    }
+</script>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>车厢类型重量配置</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+<body>
+<@shiro.hasPermission name="railroadCarWeight:save">
+<div class="well" >
+    <span class="badge">提示</span>
+    在此你可以对<span class="label-info"><strong>车厢类型重量配置</strong></span>进行编辑!
+</div>
+</@shiro.hasPermission>
+<div id="tb" >
+    <table>
+        <tr>
+            <td >
+                <@shiro.hasPermission name="railroadCarWeight:save">
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add"
+                   onclick="addRailroadCarWeight();">添加</a>
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit"
+                   onclick="editRailroadCarWeight();">修改</a>
+            </@shiro.hasPermission>
+            <@shiro.hasPermission name="railroadCarWeight:delete:railroadCarWeight拥有的资源">
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove"
+               onclick="delRow();">删除</a>
+            </@shiro.hasPermission>
+        </td>
+        <td>
+            <input id="searchbox" type="text" style="width: 180px"/>
+        </td>
+        </tr>
+    </table>
+</div>
+<div id="mm">
+    <div name="search_railroadCarType">车辆类型</div>
+</div>
+<div id="tx" style="margin: 5px;">
+    <table id="dg" title="车厢类型对应重量清单" ></table>
+</div>
+<div id="win" ></div>
+</body>
+<script type="text/javascript">
+    var $dg;
+    $(function () {
+        $dg = $("#dg");
+        $('#dg').datagrid({
+            iconCls: 'icon-edit',
+            fitColumns: true,
+            height: $(this).height() - 46,
+            width: $(this).width() - 10,
+            singleSelect: true,
+            idField: 'railroadCarId',
+            url: '${base}/business/config/railroadCarWeight/listShow',
+            pagination: true,
+            rownumbers: true,
+            columns: [
+                [
+                    {field: 'railroadCarType', title: '车厢类型', width: 50},
+                    {field: 'railroadCarWeight', title: '车厢皮重', width: 100}
+//                    {field: 'opCode', title: '操作员工', width: 100},
+//                    {field: 'updateCode', title: '更新员工', width: 100},
+//                    {field: 'updateDate', title: '更新时间', width: 150},
+//                    {field: 'createDate', title: '创建时间', width: 150}
+                ]
+            ],
+            toolbar: '#tb'
+        });
+        //搜索框
+        $("#searchbox").searchbox({
+            menu:"#mm",
+            prompt :'模糊查询',
+            searcher:function(value,name){
+                var str="{\"" + name + "\":\"" + value + "\"}";
+                var obj = eval('('+str+')');
+                $('#dg').datagrid('reload',obj);
+            }
+        });
+    });
+
+    function delRow() {
+        var selectedRow = $dg.datagrid('getSelected');
+        if (selectedRow) {
+            var id = selectedRow.railroadCarId;
+            $.post("${base}/business/config/railroadCarWeight/delete/" + id,function (rsp) {
+                if (rsp.successful) {
+                    $('#dg').datagrid("reload");
+                    showMsg("提示", rsp.msg);
+                } else {
+                    showMsg("提示", "查询数据失败!");
+                }
+            }).error(function () {
+                showMsg("提示", "查询数据失败,请重新登陆!");
+            });
+        }
+        else {
+            showMsg("提示", "请选择一行");
+            return;
+        }
+        selectedRow = null;
+    }
+
+    function closeWin()
+    {
+        $('#win').window('close',true);
+    }
+    function addRailroadCarWeight()
+    {
+        var win = $('#win').window({
+            modal : true,
+            title : '添加车厢类型重量',
+            width : 500,
+            height : 120,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/config/railroadCarWeightEdit',
+            onClose : function() {
+                $dg.datagrid('reload');
+            }
+        });
+    }
+
+    function editRailroadCarWeight()
+    {
+        var row =  $dg.datagrid('getSelected');
+        if (row) {
+            var id  = row.railroadCarId;
+            $('#win').window({
+                modal: true,
+                title: '编辑车厢类型重量',
+                width: 500,
+                height: 120,
+                collapsible: false,
+                minimizable: false,
+                maximizable: true,
+                href: '${base}/business/config/railroadCarWeightEdit/'+id,
+                onClose: function () {
+                    $dg.datagrid('reload');
+                }
+            });
+        }
+        else
+        {
+            showMsg("提示", "请选择一行");
+            return;
+        }
+    }
+</script>
+</html>

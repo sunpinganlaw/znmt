@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>汽车入厂注册</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <#include "/include/common.html"/>
+
+</head>
+
+<body>
+
+<div id="layoutDiv" class="easyui-layout" style="height:100%">
+    <div id="tb">
+        <input type="hidden" id="doAction" /><!--动作隐藏按钮-->
+        <label for="venNoQry">供应商：</label>
+        <input id="venNoQry" name="venNoQry" class="easyui-combobox" style="width:130px;"
+               data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/VENDOR_INFO'" />
+        <label for="carrierNoQry">运输单位：</label>
+        <input id="carrierNoQry" name="carrierNoQry" class="easyui-combobox" style="width:130px;"
+               data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/CARRIER_INFO'" /
+        <label for="mineNoQry">煤矿：</label>
+        <input id="mineNoQry" name="mineNoQry" class="easyui-combobox" style="width:130px;"
+               data-options="valueField:'id',textField:'name',panelHeight:'300',url:'${base}/business/tool/getComboboxOpt/COAL_MINE'" />
+        <span style="margin-left: 0%;">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="viewDetail()">详情</a>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit" onclick="modify();">修改</a>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="deleteCarForecast();">删除</a>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="add('-1');">新增预报</a>
+        </span>
+        <br>
+        <label for="coalNoQry">煤种：</label>
+        &nbsp;&nbsp;&nbsp;
+        <input id="coalNoQry" name="coalNoQry" class="easyui-combobox" style="width:130px;"
+               data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/COAL_TYPE'" />
+        <label for="isWasteQry">是否废弃：</label>
+        <select id="isWasteQry" name="isWasteQry" class="easyui-combobox" data-options="panelHeight:'auto'" style="width:130px;" >
+            <option value="">请选择</option>
+            <option value="0">正常</option>
+            <option value="1">废弃</option>
+        </select>
+
+
+    </div>
+
+    <div data-options="region:'center',title:'来煤预报管理',noheader:false;">
+        <table id="carForecastDg"></table>
+    </div>
+</div>
+
+<!--预报查看编辑窗口-->
+<div id="carForecastEditWin" ></div>
+</body>
+</html>
+<script type="text/javascript">
+    $carForecastDg = $("#carForecastDg");
+    $(function () {
+        $carForecastDg.datagrid({
+            url:  '${base}/business/config/carForecastInfo/listShow',
+            fitColumns: true,
+//            animate: true,
+//            border:true,
+            height: $(this).height() - 5,
+            width: $(this).width() - 5,
+            idField:'recId',
+            singleSelect:true,
+//            rownumbers:true,
+            pagination: true,
+            pagenumber:true,
+            pageSize:15,
+            pageList: [15, 30, 45],
+            columns: [
+                [
+                    {field: 'forecastId', title: '预报ID',align:'center', width:30},
+                    {field: 'venNoName', title: '供应商',align:'center', width:35},
+                    {field: 'carrierNoName', title: '运输单位',align:'center', width: 30},
+                    {field: 'mineNoName', title: '煤矿',align:'center', width:30},
+                    {field: 'coalNoName', title: '煤种',align:'center', width:30},
+                    {field: 'totalWeight', title: '预计总重量',align:'center', width:35},
+                    {field: 'totalNum', title: '预计总车数',align:'center', width: 35},
+                    {field: 'samplePoints', title: '采样点数',align:'center', width: 35},
+                    {field: 'transTypeName', title: '运输方式',align:'center', width:30},
+                    {field: 'sampleTypeName', title: '采样方式',align:'center', width:30},
+                    {field: 'samplingTypeName', title: '制样方式',align:'center', width:30},
+                    {field: 'fcCycleName', title: '周期',align:'center', width:15},
+                    {field: 'startDate', title: '预报开始时间',align:'center', width:40},
+                    {field: 'endDate', title: '预报结束时间',align:'center', width:40},
+                    {field: 'isValidName', title: '是否生效',align:'center', width:25},
+                    {field: 'isWasteName', title: '是否废弃',align:'center', width:25}
+                ]
+            ],
+            toolbar: '#tb',
+            showFooter: true
+        })
+    });
+    function qry(){
+        var paramO = new Object();
+        var venNoQry = $("#venNoQry").combobox("getValue");
+        var carrierNoQry = $("#carrierNoQry").combobox("getValue");
+        var mineNoQry = $("#mineNoQry").combobox("getValue");
+        var isWasteQry = $("#isWasteQry").combobox("getValue");
+
+        if (venNoQry != null && venNoQry != "" && venNoQry.length > 0) {
+            paramO.search_venNo = venNoQry;
+        }
+        if (carrierNoQry != null && carrierNoQry != "" && carrierNoQry.length > 0) {
+            paramO.search_carrierNo = carrierNoQry;
+        }
+        if (mineNoQry != null && mineNoQry != "" && mineNoQry.length > 0) {
+            paramO.search_mineNo = mineNoQry;
+        }
+        if (isWasteQry != null && isWasteQry != "" && isWasteQry.length > 0) {
+            paramO.search_isWaste = isWasteQry;
+        }
+        $carForecastDg.datagrid("load",paramO);
+    }
+    function add(forecastId) {
+        $('#doAction').val("ADD");
+        $('#carForecastEditWin').window({
+            modal : true,
+            title : '预报详情',
+            width : 550,
+            height : 390,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/config/carForecastInfo/carForecastDetail/'+forecastId,
+            onClose : function() {
+                $carForecastDg.datagrid('load');
+            }
+        });
+    }
+    //查看
+    function viewDetail(){
+        document.getElementById("doAction").value = "VIEW";
+        var selectedRow = $carForecastDg.datagrid('getSelected');
+        if (selectedRow) {
+            $('#carForecastEditWin').window({
+                modal : true,
+                title : '预报详情',
+                width : 550,
+                height : 390,
+                collapsible : false,
+                minimizable : false,
+                maximizable : true,
+                href : '${base}/business/config/carForecastInfo/carForecastDetail/'+selectedRow.forecastId,
+                onClose : function() {
+                    $("input").attr("readonly", false);
+                    $("select").attr("readonly", false);
+                }
+
+            });
+        }else{
+            showMsg("提示", "请先选择需要查看的信息!");
+            return false;
+        }
+    }
+
+    //修改
+    function modify() {
+        document.getElementById("doAction").value = "MOD";
+        var selectedRow = $carForecastDg.datagrid('getSelected');
+        if (selectedRow) {
+            $('#carForecastEditWin').window({
+                modal : true,
+                title : '预报详情',
+                width : 550,
+                height : 390,
+                collapsible : false,
+                minimizable : false,
+                maximizable : true,
+                href : '${base}/business/config/carForecastInfo/carForecastDetail/'+selectedRow.forecastId,
+                onClose : function() {
+                    $carForecastDg.datagrid('reload');
+                }
+            });
+        }else{
+            showMsg("提示", "请先选择需要修改的信息!");
+            return false;
+        }
+    }
+
+    //删除一行
+    function deleteCarForecast() {
+        var selectedRow = $carForecastDg.datagrid('getSelected');
+        if (selectedRow) {
+            $.messager.confirm('提示', '数据将删除，确定继续操作?', function (r) {
+                if (r) {
+                    //提交数据
+                    var forecastId = selectedRow.forecastId;
+                    $.post("${base}/business/config/delCarForecastInfo/"+forecastId, function(rsp) {
+                        if(rsp.successful){
+                            showMsg("提示", rsp.msg);
+                            $carForecastDg.datagrid("reload");
+                        } else {
+                            showMsg("提示", rsp.msg);
+                        }
+                    }, "JSON").error(function() {
+                        showMsg("提示", "删除数据失败！");
+                    });
+                }
+            });
+        } else {
+            showMsg("提示", "请先选择要删除的信息！");
+            return false;
+        }
+    }
+
+</script>

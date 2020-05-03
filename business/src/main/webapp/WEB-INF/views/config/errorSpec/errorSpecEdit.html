@@ -1,0 +1,90 @@
+<div class="form-div">
+    <form id="ff" method="post" commandName="errorSpec">
+        <input type="hidden" id="errorSpecId" name="errorSpecId">
+        <table >
+            <tr>
+                <td >故障代码:</td>
+                <td><input class="easyui-textbox" type="text" name="errorCode" id="errorCode" data-options="required:true,validType: 'alphabetNum'"/>
+                </td>
+                <td >故障名称:</td>
+                <td><input class="easyui-textbox" type="text" name="errorTitle" id="errorTitle" data-options="required:true,validType: 'length[1,20]'"/></td>
+            </tr>
+            <tr>
+                <td >故障定义:</td>
+                <td><input class="easyui-textbox" type="text" name="errorSpec" id="errorSpec" data-options="required:true,validType: 'length[1,20]'"/>
+                </td>
+                <td >生效标志:</td>
+                <td><select id="state" name="state" class="easyui-combobox" data-options="required:true,panelHeight:'auto'" style="width:100%;" >
+                    <option value="0">无效</option>
+                    <option value="1">有效</option>
+                </select></td>
+            </tr>
+            <tr>
+                <td >设备编号:</td>
+                <td><input class="easyui-textbox" type="text" name="machinCode" id="machinCode" data-options="required:true,validType: 'alphabetNum'"/></td>
+                <td >流程点:</td>
+                <td><input class="easyui-textbox" type="text" name="flowId" id="flowId" data-options="required:true,validType: 'alphabetNum'"/></td>
+            </tr>
+            <tr>
+                <td >处理步骤:</td>
+                <td colspan="3"><textarea  name="dealMethod" id="dealMethod" cols="55" rows="5"></textarea></td>
+            </tr>
+        </table>
+    </form>
+    <div class="submit-div">
+        <a href="javascript:void(0)" id="add" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm()">提交</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="formReset();">重置</a>
+    </div>
+</div>
+<script type="text/javascript">
+    //重置表单
+    var errorSpecId;
+    function formReset(){
+        $.messager.confirm('提示', '确定需要重置输入表单?', function (r) {
+            if (r) {
+                errorSpecId = $("#errorSpecId").val();
+                $('#ff').form('clear');
+                $("#errorSpecId").val(errorSpecId);
+            }
+        });
+    }
+
+    //提交表单
+    function submitForm(){
+        if (! $("#ff").form('validate')) {
+            showMsg("提示", "有必填项未输入值!");
+            return false;
+        }
+        $.messager.confirm('提示', '确定保存?', function (r) {
+            if (r) {
+                save();
+            }
+        });
+    }
+    //保存
+    function save(){
+        var params = $("#ff").serialize();
+        var postUrl = "";
+        if ($('#doAction').val() == "ADD") {
+            postUrl = "${base}/business/config/editErrorSpec/add";
+        } else if($('#doAction').val()  == "MOD") {
+            postUrl = "${base}/business/config/editErrorSpec/mod";
+        } else {
+        }
+        $.post(postUrl, params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示",rsp.msg);
+                $('#errorSpecEditWin').window('close');
+            } else {
+                showMsg("提示", rsp.msg);
+            }
+        }).error(function () {
+            showMsg("提示", "保存失败!");
+        });
+    }
+    //加载读取的详情信息
+    var errorSpecEntity = JSON.parse(JSON.stringify(${errorSpecEntity}));
+    if(errorSpecEntity != undefined && errorSpecEntity != null && errorSpecEntity != "") {
+        $('#ff').form('load', errorSpecEntity);
+    }
+</script>

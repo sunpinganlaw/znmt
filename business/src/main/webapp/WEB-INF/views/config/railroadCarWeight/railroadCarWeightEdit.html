@@ -1,0 +1,81 @@
+<div class="form-div">
+    <form id="ff" method="post" commandName="vendorInfo">
+            <div title="车厢类型重量编辑"style="overflow:auto;padding:0px;">
+                <input type="hidden" id="railroadCarId" name="railroadCarId">
+                <table >
+                    <tr>
+                        <td >车厢类型:</td>
+                        <td>
+                            <input class="easyui-textbox" type="text" name="railroadCarType" id="railroadCarType" data-options="required:true,validType: 'length[1,20]'"/>
+                        </td>
+                        <td >车厢皮重:</td>
+                        <td><input class="easyui-numberbox" type="text" name="railroadCarWeight" id="railroadCarWeight" data-options="required:true,validType: 'length[1,20]'"/></td>
+                    </tr>
+                </table>
+            </div>
+    </form>
+    <div class="submit-div">
+        <a href="javascript:void(0)" id="add" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm()">提交</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="clearFrom();">重置</a>
+    </div>
+</div>
+<script type="text/javascript">
+    var dowhat = "${doWhat}";
+    function clearFrom() {
+        if (dowhat == "add") {
+            $('#ff').form('clear');
+        } else {
+            var temp = $('#railroadCarId').val();
+            $('#ff').form('clear');
+            $('#railroadCarId').val(temp);
+        }
+    }
+    function save()
+    {
+        var params = $("#ff").serialize();
+        var postUrl = "";
+        if (dowhat == "add") {
+            postUrl = "${base}/business/config/railroadCarWeight/add";
+        } else {
+            postUrl = "${base}/business/config/railroadCarWeight/edit"
+        }
+        $.post(postUrl,params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示",rsp.msg);
+                closeWin();
+            } else {
+                showMsg("提示", rsp.msg);
+            }
+        }).error(function () {
+            showMsg("提示", "更新失败,请重新登陆!");
+        });
+    }
+
+    $('#ff').find('input').on('keyup',function(event){
+        if(event.keyCode == '13'){
+            submitForm();
+        }
+    });
+    function submitForm(){
+        if (! $("#ff").form('validate'))  return false;
+        if ($("#venNo").val() == "" || $("#venName").val() == "") {
+            showMsg("提示", "必填信息请补充完整，谢谢！");
+            return false;
+        }
+        $('#add').linkbutton({disabled:true});
+        save();
+    }
+    function showMsg(title,msg)
+    {
+        $.messager.show({
+            title:title,
+            msg:msg
+        });
+    }
+    var railroadCarWeight = JSON.parse(JSON.stringify(${.globals.railroadCarWeight}));
+    if (railroadCarWeight.railroadCarId != null && railroadCarWeight.railroadCarId != '') {
+        $("#venNo").css({ background: "gainsboro" });
+        $('#ff').form('load', railroadCarWeight);
+    }
+
+</script>

@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN" xml:lang="zh-CN">
+<head>
+    <title>flashCallJs</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <style type="text/css" media="screen">
+        html, body { height:100%; background-color: #000000;}
+        body { margin:0; padding:0; overflow:hidden;text-align:center}
+        #flashContent { width:100%; height:90%; overflow:auto; border:1px solid rgba(0, 0, 0, 0.98);}
+    </style>
+    <#include "/include/common.html"/>
+</head>
+<script type="text/javascript">
+    //webSokt begin
+    //        var wsUri = 'ws://192.168.30.12:8080/intf/ws';
+    var wsUri = 'ws://localhost:8081/intf/ws';
+    function listen(webSocket, pageFlag) {
+        webSocket.onmessage = function(evt) {
+            businessProcess(evt);
+        }
+
+        webSocket.onopen = function(evt) {
+            onOpen(evt)
+        }
+
+        webSocket.onclose = function(evt) {
+            onClose(evt)
+        }
+
+        webSocket.onerror = function(evt) {
+            onError(evt)
+        }
+    }
+
+
+    function onOpen(evt) {
+
+    }
+
+    function onClose(evt) {
+        alert("xxxxxxxxxxxxx");
+        return false;
+    }
+
+    function onError(evt) {
+        alert("yyyyyyyyyyyyyyy");
+        return false;
+    }
+
+    function doSend(message) {
+        // writeToScreen("SENT: " + message);  websocket.send(message);
+    }
+    //webSokt end
+
+    /////////////////此代码每个页面固定写法 xieyt-begin//////////////
+    function init(){
+        listen(new WebSocket(wsUri));
+    }
+    //window.addEventListener("load", init, false);
+    /////////////////此代码每个页面固定写法 xieyt-end////////////////
+
+
+    function businessProcess(event) {
+            var o = JSON.parse(event.data);
+//            var deviceTag = o.DEVICE;
+//            var deviceValue = o.VALUE;
+//            var ch = o.CH;
+//            var cc = o.CC;
+//      var b =thisMovie("flashCallJs").setValueBySocket(deviceTag,deviceValue,ch,cc);
+        var b =thisMovie("nept").setFlashBySoketJson(o);
+    }
+    //callFromFlash();
+    function loadJsonConfig() {
+        //var a=thisMovie("flashCallJs").helloas(WEB_GLOBAL_CTX);
+        var loadJsonConfig=thisMovie("nept").loadJsonConfig(WEB_GLOBAL_CTX);
+        alert("loadJsonConfig:"+loadJsonConfig);
+    }
+    function loadJsonConfigFinish(v)
+    {
+        //alert("flash调用js函数成功"+v) ;
+        init();
+//        window.addEventListener("load", init, false);
+//        $.messager.alert('My Title','Here is a error message!','error');
+    }
+    //thisMoivie 参数：是swf文件 的id
+    function thisMovie(movieName) {
+        if (navigator.appName.indexOf("Microsoft") != -1) {
+            return window[movieName]
+        }
+        else {
+            return document[movieName];
+        }
+    }
+</script>
+<body onload="loadJsonConfig();">
+<div id="flashContent">
+    <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="1000" height="650" id="nept" name="nept" align="middle">
+        <param name="movie" value="${base}/htmlresource/nept.swf" />
+        <param name="quality" value="high" />
+        <param name="bgcolor" value="#000000" />
+        <param name="play" value="true" />
+        <param name="loop" value="true" />
+        <param name="wmode" value="window" />
+        <param name="scale" value="showall" />
+        <param name="menu" value="true" />
+        <param name="devicefont" value="false" />
+        <param name="salign" value="" />
+        <param name="allowScriptAccess" value="sameDomain" />
+        <!--[if !IE]>-->
+        <object type="application/x-shockwave-flash" data="${base}/htmlresource/nept.swf" width="1000" height="650" id="nept" name="nept">
+            <param name="movie" value="${base}/htmlresource/nept.swf" />
+            <param name="quality" value="high" />
+            <param name="bgcolor" value="#000000" />
+            <param name="play" value="true" />
+            <param name="loop" value="true" />
+            <param name="wmode" value="window" />
+            <param name="scale" value="showall" />
+            <param name="menu" value="true" />
+            <param name="devicefont" value="false" />
+            <param name="salign" value="" />
+            <param name="allowScriptAccess" value="sameDomain" />
+            <!--<![endif]-->
+            <a href="http://www.adobe.com/go/getflash">
+                <img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="获得 Adobe Flash Player" />
+            </a>
+            <!--[if !IE]>-->
+        </object>
+        <!--<![endif]-->
+    </object>
+</div>
+<input type="button" value="点我" onclick="callFromFlash();">
+</body>
+</html>

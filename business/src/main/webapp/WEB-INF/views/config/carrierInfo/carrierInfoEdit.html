@@ -1,0 +1,112 @@
+<div class="form-div">
+    <form id="ff" method="post" commandName="carrierInfo">
+        <div class="easyui-accordion" data-options="multiple:true">
+            <div title="基础信息"style="overflow:auto;padding:0px;">
+        <table >
+            <tr>
+                <td >运输单位名称:</td>
+                <td><input class="easyui-textbox" type="text" name="carrierName" id="carrierName" data-options="required:true,validType: 'length[1,50]'"/>
+                    <input type="hidden" id="carrierNo" />
+                </td>
+                <td >简称:</td>
+                <td><input class="easyui-textbox" type="text" name="forShort" id="forShort" data-options="validType: 'length[1,20]'"/></td>
+            </tr>
+
+            <tr>
+                <td >备注信息:</td>
+                <td colspan="3"><textarea  name="remark" id="remark" cols="55" rows="5"></textarea></td>
+            </tr>
+        </table>
+         </div>
+            <div title="扩展信息" style="padding:0px;">
+                <table>
+                    <tr>
+                        <td >地址:</td>
+                        <td><input class="easyui-textbox" type="text" name="carrierAddr" id="carrierAddr"/></td>
+                        <td >电话:</td>
+                        <td><input class="easyui-textbox" type="text" name="contNum" id="contNum"/></td>
+                    </tr>
+                    <tr>
+                        <td >联系人:</td>
+                        <td><input class="easyui-textbox" type="text" name="contPerson" id="contPerson"/></td>
+                        <td >自卸车数量:</td>
+                        <td><input class="easyui-numberbox" type="text" name="zycNum" id="zycNum"/></td>
+                    </tr>
+                    <tr>
+                        <td >平板车数量:</td>
+                        <td><input class="easyui-numberbox" type="text" name="pbcNum" id="pbcNum"/></td>
+                        <td >无费车数量:</td>
+                        <td><input class="easyui-numberbox" type="text" name="wfcNum" id="wfcNum"/></td>
+                    </tr>
+                    <tr>
+                        <td >特殊车数量:</td>
+                        <td><input class="easyui-textbox" type="text" name="tscNum" id="tscNum"/></td>
+                    </tr>
+                </table>
+            </div>
+         </div>
+    </form>
+    <div class="submit-div">
+        <a href="javascript:void(0)" id="add" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm()">提交</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="clearFrom();">重置</a>
+    </div>
+</div>
+<script type="text/javascript">
+    var dowhat = "${doWhat}";
+    function clearFrom() {
+        $('#ff').form('clear');
+    }
+
+    function save(){
+        var params = $("#ff").serialize();
+        var carrierNo = document.getElementById("carrierNo").value;
+        var postUrl = "";
+        if (dowhat == "add") {
+            postUrl = "${base}/business/config/carrierInfo/add";
+        } else {
+            postUrl = "${base}/business/config/carrierInfo/edit/"+carrierNo;
+        }
+        $.post(postUrl,params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示",rsp.msg);
+                closeWin();
+            } else {
+                showMsg("提示", rsp.msg);
+                $('#add').linkbutton({disabled:false});
+            }
+        }).error(function () {
+            showMsg("提示", "更新失败,请重新登陆!");
+            $('#add').linkbutton({disabled:false});
+        });
+    }
+
+    $('#ff').find('input').on('keyup',function(event){
+        if(event.keyCode == '13'){
+            submitForm();
+        }
+    });
+    //$('#state').combobox('getValue') == ""
+    function submitForm(){
+        if (! $("#ff").form('validate'))  return false;
+        if ($("#carrierName").val() == "") {
+            showMsg("提示", "请填写运输单位名称！");
+            return false;
+        }
+        $('#add').linkbutton({disabled:true});
+        save();
+    }
+
+    function showMsg(title,msg){
+        $.messager.show({
+            title:title,
+            msg:msg
+        });
+    }
+
+    var carrierInfo = JSON.parse(JSON.stringify(${.globals.carrierInfo}));
+    if (carrierInfo.carrierNo != null && carrierInfo.carrierName != '') {
+        $('#ff').form('load', carrierInfo);
+        document.getElementById("carrierNo").value = carrierInfo.carrierNo;
+    }
+
+</script>

@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>审批人配置</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <#include "/include/common.html"/>
+
+</head>
+
+<body>
+
+    <div title="" style="padding:10px">
+        <div id="tb">
+            <div>
+            <label for="qryApprEventTypeCd">审批事项：</label>
+            <input id="qryApprEventTypeCd" class="easyui-combobox" style="width:150px;"
+                   data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/APPR_EVENT_TYPE'" />
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qryApprNodes();">查询</a>
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit" onclick="modifyApprNode();">修改</a>
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-cancel" onclick="deleteApprNode();">删除</a>
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="addApprNode();">新增</a>
+            </div>
+
+        </div>
+
+        <table id="apprNodeDg" ></table>
+    </div>
+
+    <div>
+        <span style="color: #ff081e">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>注意事项：</strong></span>
+    </div>
+    <div>
+        <span style="color: #0099FF">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. 节点类型：假设一个审批需要经历A、B、C三人审批，则A审批的节点称为“起始节点”，B称为“中途节点”，C称为“末尾节点”；假设一个审批只需要A一个审批即可，则该节点为“独立节点”。</span>
+    </div>
+    <div>
+        <span style="color: #0099FF">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. 节点顺序：即审批人的顺序，顺序数值小的先审批，大的后审批；从小到大无须一定按1递增（如：不一定非是1、2、3, 可以是1、5、12，区分大小即可），范围为1-99。</span>
+    </div>
+    <div>
+        <span style="color: #0099FF">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3. 节点状态：若状态为“停用”，则该节点的审批人将不再参与审批流程，删除的节点状态将直接变为“作废”，无法直接恢复。</span>
+    </div>
+    <div>
+        <span style="color: #0099FF">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4. 规则限制1：若为多级审批，则“起始节点”、“末尾节点”有且只仅有一个，“中途节点”可以多个；若为一级审批，则节点类型只需一个“独立节点”。</span>
+    </div>
+    <div>
+        <span style="color: #0099FF">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5. 规则限制2：如果一组审批节点流程存在未完成的审批单，则不允许修改审批节点配置信息；审批完成未完成的审批单则可以进行修改。</span>
+    </div>
+
+    <div id="apprNodeModifyWin" ></div>
+    <div id="apprNodeAddWin" ></div>
+</body>
+</html>
+
+<script type="text/javascript">
+    $apprNodeDg = $("#apprNodeDg");
+    var selectedRowObj;
+
+    $(function () {
+        $apprNodeDg.datagrid({
+            url: "${base}/business/config/qryApproveNode",
+            fitColumns: true,
+            height: 330,
+            width: $(this).width() - 25,
+            idField:'approveNodeCd',
+            singleSelect:true,
+            rownumbers:true,
+            queryParams: {
+                search_apprEventTypeCd:"-1"//开始默认查不到数据，初始化dg
+            },
+            columns: [
+                [
+                    {field: 'apprEventTypeName', title: '审批事项',align:'center', width: 100},
+                    {field: 'ndeName', title: '节点名称',align:'center', width: 120},
+                    {field: 'staffName', title: '审批人',align:'center', width: 100},
+                    {field: 'nodeTypeName', title: '节点类型',align:'center', width: 100},
+                    {field: 'nodeStatusName', title: '节点状态',align:'center', width: 100},
+                    {field: 'nodeOrder', title: '节点顺序',align:'center', width: 100},
+                ]
+            ],
+            toolbar: '#tb'
+        })
+    });
+
+    function qryApprNodes() {
+        var qryApprEventTypeCd = $("#qryApprEventTypeCd").combobox("getValue");
+        var paramObj = new Object();
+
+        if (qryApprEventTypeCd != undefined && qryApprEventTypeCd != null && qryApprEventTypeCd != "") {
+            paramObj.search_apprEventTypeCd = qryApprEventTypeCd;
+        } else {
+            showMsg("提示", "请选择审批事项后再查询");
+            return false;
+        }
+        $apprNodeDg.datagrid("load",paramObj);
+    }
+
+
+    //删除
+    function deleteApprNode() {
+        var selrow = $apprNodeDg.datagrid('getSelected');
+        var param = {};
+        if (selrow) {
+            $.messager.confirm('提示', '删除后数据将无法恢复，确定删除吗?', function (r) {
+                if (r) {
+                    $.post("${base}/business/config/deleteApprNode/"+selrow.approveNodeCd,param, function (rsp) {
+                        if (rsp.successful) {
+                            showMsg("提示",rsp.msg);
+                            $apprNodeDg.datagrid('reload');
+                        } else {
+                            showMsg("提示", rsp.msg);
+                        }
+                    }).error(function () {
+                                showMsg("提示", "删除操作失败!");
+                            });
+                }
+            });
+        }else{
+            showMsg("提示", "请先选择需要删除的信息!");
+            return false;
+        }
+    }
+
+    //修改
+    function modifyApprNode() {
+        selectedRowObj = $apprNodeDg.datagrid('getSelected');
+        if (selectedRowObj) {
+            $('#apprNodeModifyWin').window({
+                modal : true,
+                title : '修改审批节点',
+                width : 340,
+                height : 300,
+                collapsible : false,
+                minimizable : false,
+                maximizable : true,
+                href : '${base}/business/config/apprStaff/modify',
+                onClose : function() {
+                    $apprNodeDg.datagrid('reload');
+                }
+            });
+        }else{
+            showMsg("提示", "请先选择需要修改的信息!");
+            return false;
+        }
+    }
+
+
+    //新增
+    function addApprNode() {
+        $('#apprNodeAddWin').window({
+            modal : true,
+            title : '新增审批节点',
+            width : 340,
+            height : 300,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/config/apprStaff/add',
+            onClose : function() {
+                $apprNodeDg.datagrid('reload');
+            }
+        });
+    }
+
+</script>

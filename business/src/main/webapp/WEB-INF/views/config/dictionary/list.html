@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>通用字典表数据维护</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+<body>
+
+<div id="tb" >
+    <table>
+        <tr>
+            <td >
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="addDictionaryInfo('ADD');">添加</a>
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit" onclick="modifyDictionaryInfo('MOD');">修改</a>
+        </td>
+        </tr>
+    </table>
+</div>
+
+<div id="tx" style="margin: 5px;">
+    <table id="tt" title="通用字典表数据维护"></table>
+</div>
+
+<div id="dicInfoEditWin" ></div>
+<input type="hidden" id="actionTag">
+
+</body>
+<script type="text/javascript">
+    function loadDictionaryTree(){
+        $.post("${base}/business/config/qryEditableDictionaryInfo", function (rsp) {
+            if (rsp) {
+                $('#tt').treegrid({
+                    fitColumns: true,
+                    idField:'dicId',
+                    treeField:'name',
+                    data: JSON.parse(rsp),
+                    toolbar: '#tb',
+                    columns:[
+                        [
+                            {field:'name', title:'名称',width:100, align:'left'},
+                            {field:'id', title:'编码',width:50, align:'center'},
+                            {field:'statusName', title:'状态',width:50, align:'center'},
+                            {field:'type',title:'标识',width:100, align:'center'},
+                            {field:'remark', title:'备注',width:200, align:'left'}
+                        ]
+                    ]
+                });
+            } else {
+                showMsg("提示", "查询可编辑字典数据配置失败!");
+            }
+        });
+    }
+
+
+    $(function () {
+        loadDictionaryTree();
+    });
+
+
+    var obj;
+    function addDictionaryInfo(actionTag) {
+        document.getElementById("actionTag").value = actionTag;
+        obj = {};
+        var selectedNode = $('#tt').treegrid('getSelected');
+        if (selectedNode) {
+            if (selectedNode.parentId == '0') {
+                //父节点ID
+                obj.parentId = selectedNode.dicId;
+
+                var selectedChildNode = $('#tt').treegrid('getChildren', selectedNode.dicId);
+
+                if (selectedChildNode != null && selectedChildNode != undefined && selectedChildNode.length > 0) {
+                    //如果已有子节点，则子节点的标识要保持一致
+                    obj.type = selectedChildNode[0].type;
+                } else {
+                    obj.type = "";
+                }
+
+                $('#dicInfoEditWin').window({
+                    modal : true,
+                    title : '字典信息新增',
+                    width : 418,
+                    height : 172,
+                    collapsible : false,
+                    minimizable : false,
+                    maximizable : true,
+                    href : '${base}/business/config/dictionary/edit'
+                });
+            } else {
+                showMsg("提示", "只能在已有的二级目录上添加配置!");
+                return false;
+            }
+        } else {
+            showMsg("提示", "请先选择要添加配置所属目录!");
+            return false;
+        }
+    }
+
+
+    function modifyDictionaryInfo(actionTag) {
+        document.getElementById("actionTag").value = actionTag;
+        obj = {};
+        var selectedNode = $('#tt').treegrid('getSelected');
+        if (selectedNode) {
+            if (selectedNode.parentId != '0' && selectedNode.parentId != '-1') {
+                obj = selectedNode;
+
+                $('#dicInfoEditWin').window({
+                    modal : true,
+                    title : '字典信息修改',
+                    width : 418,
+                    height : 172,
+                    collapsible : false,
+                    minimizable : false,
+                    maximizable : true,
+                    href : '${base}/business/config/dictionary/edit'
+                });
+            } else {
+                showMsg("提示", "请选择具体的字典配置修改!");
+                return false;
+            }
+        } else {
+            showMsg("提示", "请先选择要修改的配置!");
+            return false;
+        }
+    }
+</script>
+</html>

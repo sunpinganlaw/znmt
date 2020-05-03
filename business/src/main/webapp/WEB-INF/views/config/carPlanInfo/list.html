@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>汽车入厂注册</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+<body>
+<div id="layoutDiv" class="easyui-layout" style="height:100%">
+    <div id="tb">
+        <input type="hidden" id="doAction" /><!--动作隐藏按钮-->
+        <label for="venNoQry">供应商：</label>
+        <input id="venNoQry" name="venNoQry" class="easyui-combobox" style="width:130px;"
+               data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/VENDOR_INFO'" />
+        <label for="carrierNoQry">运输单位：</label>
+        <input id="carrierNoQry" name="carrierNoQry" class="easyui-combobox" style="width:130px;"
+               data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/CARRIER_INFO'" /
+        <label for="mineNoQry">煤矿：</label>
+        <input id="mineNoQry" name="mineNoQry" class="easyui-combobox" style="width:130px;"
+               data-options="valueField:'id',textField:'name',panelHeight:'300',url:'${base}/business/tool/getComboboxOpt/COAL_MINE'" />
+        <label for="coalNoQry">煤种：</label>
+        <input id="coalNoQry" name="coalNoQry" class="easyui-combobox" style="width:130px;"
+               data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/COAL_TYPE'" />
+        <!--<br>-->
+        <span style="margin-left:0%;">
+        <!--<span style="position: absolute;right: 30px;">-->
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="deleteCarPlan();">删除</a>
+        <!--</span>-->
+    </div>
+
+    <div data-options="region:'center',title:'来煤预计划清单',noheader:false;">
+        <table id="carPlanDg"></table>
+    </div>
+</div>
+
+<!--预报查看编辑窗口-->
+<div id="carPlanEditWin" ></div>
+</body>
+</html>
+<script type="text/javascript">
+    $carPlanDg = $("#carPlanDg");
+    $(function () {
+        $carPlanDg.datagrid({
+            url:  '${base}/business/config/carPlanInfo/listShow',
+            fitColumns: true,
+//            animate: true,
+//            border:true,
+            height: $(this).height() - 5,
+            width: $(this).width() - 5,
+            idField:'recId',
+            singleSelect:true,
+//            rownumbers:true,
+            pagination: true,
+            pagenumber:true,
+            pageSize:15,
+            pageList: [15, 30, 45],
+            columns: [
+                [
+                    {field: 'carPlanId', title: '计划ID',align:'center', width:30},
+                    {field: 'forecastId', title: '预报ID',align:'center', width:30},
+                    {field: 'venNoName', title: '供应商',align:'center', width:35},
+                    {field: 'carrierNoName', title: '运输单位',align:'center', width: 30},
+                    {field: 'mineNoName', title: '煤矿',align:'center', width:30},
+                    {field: 'coalNoName', title: '煤种',align:'center', width:30},
+                    {field: 'totalWeight', title: '预计总重量',align:'center', width:35},
+                    {field: 'totalNum', title: '预计总车数',align:'center', width: 35},
+                    {field: 'transTypeName', title: '运输方式',align:'center', width:30},
+                    {field: 'sampleTypeName', title: '采样方式',align:'center', width:30},
+                    {field: 'samplingTypeName', title: '制样方式',align:'center', width:30},
+                    {field: 'batchNum', title: '批次数',align:'center', width:15},
+                    {field: 'effectDate', title: '预报开始时间',align:'center', width:40}
+                ]
+            ],
+            toolbar: '#tb'
+        })
+    });
+    function qry(){
+        var paramO = new Object();
+        var venNoQry = $("#venNoQry").combobox("getValue");
+        var carrierNoQry = $("#carrierNoQry").combobox("getValue");
+        var mineNoQry = $("#mineNoQry").combobox("getValue");
+
+        if (venNoQry != null && venNoQry != "" && venNoQry.length > 0) {
+            paramO.search_venNo = venNoQry;
+        }
+        if (carrierNoQry != null && carrierNoQry != "" && carrierNoQry.length > 0) {
+            paramO.search_carrierNo = carrierNoQry;
+        }
+        if (mineNoQry != null && mineNoQry != "" && mineNoQry.length > 0) {
+            paramO.search_mineNo = mineNoQry;
+        }
+        $carPlanDg.datagrid("load",paramO);
+    }
+
+    //删除一行
+    function deleteCarPlan() {
+        var selectedRow = $carPlanDg.datagrid('getSelected');
+        if (selectedRow) {
+            $.messager.confirm('提示', '数据将删除，确定继续操作?', function (r) {
+                if (r) {
+                    //提交数据
+                    var carPlanId = selectedRow.carPlanId;
+                    $.post("${base}/business/config/delCarPlanInfo/"+carPlanId, function(rsp) {
+                        if(rsp.successful){
+                            showMsg("提示", rsp.msg);
+                            $carPlanDg.datagrid("reload");
+                        } else {
+                            showMsg("提示", rsp.msg);
+                        }
+                    }, "JSON").error(function() {
+                        showMsg("提示", "删除数据失败！");
+                    });
+                }
+            });
+        } else {
+            showMsg("提示", "请先选择要删除的信息！");
+            return false;
+        }
+    }
+</script>

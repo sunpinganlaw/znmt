@@ -1,0 +1,89 @@
+    <div class="form-div">
+        <form id="apprNodeForm" method="post">
+                <table>
+                    <tr>
+                        <td style="width:30%;height:30px;text-align:center;">审批事项</td>
+                        <td style="width:50%;height:30px;text-align:left;"><input id="apprEventTypeCd" name="apprEventTypeCd" class="easyui-combobox" style="width:145px;"
+                                           data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/APPR_EVENT_TYPE'" /></td>
+                    </tr>
+                    <tr>
+                        <td style="width:30%;height:30px;text-align:center;">节点名称</td>
+                        <td style="width:50%;height:30px;text-align:left;"><input class="easyui-textbox" id="ndeName" name="ndeName" style="width:145px;" data-options="required:true"/></td>
+                    </tr>
+                    <tr>
+                        <td style="width:30%;height:30px;text-align:center;">审批人</td>
+                        <td style="width:50%;height:30px;text-align:left;"><input id="staffId" name="staffId" class="easyui-combobox" style="width:145px;"
+                                   data-options="required:true,valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/SYS_USER'" /></td>
+                    </tr>
+                    <tr>
+                        <td style="width:30%;height:30px;text-align:center;">节点类型</td>
+                        <td style="width:50%;height:30px;text-align:left;"><select id="ndeType" name="ndeType" class="easyui-combobox" style="width:145px;" data-options="required:true,panelHeight:'auto'">
+                            <option value="1">起始节点</option>
+                            <option value="2">中途节点</option>
+                            <option value="3">末尾节点</option>
+                            <option value="4">独立节点</option>
+                        </select></td>
+                    </tr>
+                    <tr>
+                        <td style="width:30%;height:30px;text-align:center;">节点状态</td>
+                        <td style="width:50%;height:30px;text-align:left;"><select id="nodeStatus" name="nodeStatus" class="easyui-combobox" style="width:145px;" data-options="required:true,panelHeight:'auto'">
+                            <option value="1">在用</option>
+                            <option value="2">停用</option>
+                            <option value="3">作废</option>
+                        </select></td>
+                    </tr>
+                    <tr>
+                        <td style="width:30%;height:30px;text-align:center;">节点顺序</td>
+                        <td style="width:50%;height:30px;text-align:left;"><input class="easyui-numberbox"  name="nodeOrder" id="nodeOrder" style="width:145px;" data-options="required:true,min:1,max:99"/></td>
+                    </tr>
+                    <tr>
+                        <td style="width:30%;height:30px;text-align:center;"></td>
+                        <td style="width:50%;height:30px;text-align:left;">
+                            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-save" onclick="formReset();">重置</a>
+                            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-save" onclick="submitForm();">提交</a>
+                        </td>
+                    </tr>
+                </table>
+        </form>
+    </div>
+
+<script type="text/javascript">
+    //重置表单
+    function formReset(){
+        $.messager.confirm('提示', '确定需要重置输入表单?', function (r) {
+            if (r) {
+                $('#apprNodeForm').form('clear');
+            }
+        });
+    }
+
+    //提交表单
+    function submitForm(){
+        if (! $("#apprNodeForm").form('validate')) {
+            showMsg("提示", "有必填项未输入值!");
+            return false;
+        }
+
+        $.messager.confirm('提示', '确定保存?', function (r) {
+            if (r) {
+                save();
+            }
+        });
+    }
+
+    //保存
+    function save(){
+        var params = $("#apprNodeForm").serialize();
+        $.post("${base}/business/config/editApprNode/ADD", params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示",rsp.msg);
+                $('#apprNodeAddWin').window('close');
+            } else {
+                showMsg("提示", rsp.msg);
+            }
+        }).error(function () {
+            showMsg("提示", "新增失败!");
+        });
+    }
+
+</script>

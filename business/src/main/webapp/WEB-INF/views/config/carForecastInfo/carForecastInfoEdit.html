@@ -1,0 +1,440 @@
+<div class="form-div">
+    <form id="ff" method="post" commandName="carForecastInfo">
+        <input type="hidden" id="forecastId"  name="forecastId"/>
+        <input type="hidden" id="commitTag"  name="commitTag" value="1"/>
+        <input type="hidden" id="immediatelyTag"  name="immediatelyTag" value="0"/>
+        <table >
+            <tr>
+                <td >供应商:</td>
+                <td><input id="venNo" name="venNo" class="easyui-combobox" style="width:90%;"
+                           data-options="required:true,valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/VENDOR_INFO'" />
+                </td>
+                <td >运输单位:</td>
+                <td><input id="carrierNo" name="carrierNo" class="easyui-combobox" style="width:90%;"
+                           data-options="required:true,valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/CARRIER_INFO'" /></td>
+            </tr>
+            <tr>
+                <td >煤矿:</td>
+                <td><input id="mineNo" name="mineNo" class="easyui-combobox" style="width:90%;"
+                           data-options="required:true,valueField:'id',textField:'name',panelHeight:'300',url:'${base}/business/tool/getComboboxOpt/COAL_MINE'" />
+                </td>
+                <td >煤种:</td>
+                <td><input id="coalNo" name="coalNo" class="easyui-combobox" style="width:90%;"
+                           data-options="required:true,valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/COAL_TYPE'" />
+                </td>
+            </tr>
+            <tr>
+                <td >预计总重量:</td>
+                <td><input class="easyui-numberbox" type="text" name="totalWeight" id="totalWeight" style="width:90%;" data-options="required:true,min:0,precision:3"/></td>
+                <td >预计总车数:</td>
+                <td><input class="easyui-numberbox" type="text" name="totalNum" id="totalNum" style="width:90%;" data-options="required:true,min:0,precision:3"/></td>
+            </tr>
+            <tr>
+                <td >运输方式:</td>
+                <td><select id="transType" name="transType" class="easyui-combobox" data-options="required:true,panelHeight:'auto'" style="width:90%;" >
+                    <option value="1">汽车</option>
+                    <option value="2">火车</option>
+                    <option value="3">轮船</option>
+                    <option value="4">坑口</option>
+                </select></td>
+                <td >采样方式:</td>
+                <td><select id="sampleType" name="sampleType" class="easyui-combobox" data-options="required:true,panelHeight:'auto'" style="width:90%;" >
+                        <option value="0">在线采样</option>
+                        <option value="1">离线采样</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td >制样方式:</td>
+                <td><select id="samplingType" name="samplingType" class="easyui-combobox" data-options="required:true,panelHeight:'auto'" style="width:90%;" >
+                    <option value="0">在线制样</option>
+                    <option value="1">离线制样</option>
+                </select></td>
+                <td >周期:</td>
+                <td><input id="fcCycle" name="fcCycle" class="easyui-combobox" style="width:90%;" />
+                </td>
+            </tr>
+            <tr>
+                <td >预报开始时间:</td>
+                <td><input class="easyui-datebox" name="startDate" id="startDate"  style="width:100%;" data-options="required:true"/></td>
+                <td >预报结束时间:</td>
+                <td><input class="easyui-datebox" name="endDate" id="endDate"  style="width:100%;" data-options="required:true"/></td>
+            </tr>
+            <tr>
+                <td >是否生效:</td>
+                <td><select id="isValid" name="isValid" class="easyui-combobox" data-options="required:true,panelHeight:'auto'" style="width:90%;" >
+                        <option value="0">未生效</option>
+                        <option value="1">已生效</option>
+                        <option value="2">已过时</option>
+                    </select>
+                </td>
+                <td >是否废弃:</td>
+                <td>
+                    <select id="isWaste" name="isWaste" class="easyui-combobox" data-options="required:true,panelHeight:'auto'" style="width:90%;" >
+                        <option value="0">正常</option>
+                        <option value="1">废弃</option>
+                    </select></td>
+            </tr>
+            <tr>
+                <td >时间区段:</td>
+                <td>
+                    <input id="timeZoneId" name="timeZoneId" class="easyui-combobox" style="width:90%;"
+                           data-options="valueField:'id',textField:'name',multiple:true,panelHeight:'auto',formatter: formatItem,editable:false" />
+                </td>
+                <td >采样点数:</td>
+                <td><input id="samplePoints" name="samplePoints" class="easyui-textbox" data-options="required:true"></td>
+            </tr>
+            <tr>
+                <td >备注信息:</td>
+                <td colspan="3"><textarea  name="remark" id="remark" cols="55" rows="5"></textarea></td>
+            </tr>
+        </table>
+    </form>
+    <div class="submit-div">
+        <a href="javascript:void(0)" id="add" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm()">提交</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="formReset();">重置</a>
+        <span id="qxDiv"><input type="checkbox" id="qx" />立即生效</span>
+    </div>
+</div>
+<script type="text/javascript">
+    /*
+    $(function () {
+        var startDate;
+        var endDate;
+        $('#startDate').datebox({
+            onSelect: function(date){
+                  startDate = date;
+                  if (!checkDataValid(startDate,endDate,$('#fcCycle').combobox('getValue'),"end")) {
+                      $("#commitTag").val("0");
+                  }else {
+                      $("#commitTag").val("1");
+                  }
+            }
+        });
+        $('#endDate').datebox({
+            onSelect: function(date){
+                endDate = date;
+                if (!checkDataValid(startDate,endDate,$('#fcCycle').combobox('getValue'),"start")) {
+                      $("#commitTag").val("0");
+                } else {
+                      $("#commitTag").val("1");
+                }
+            }
+        });
+        var fcCycleList= [ {id:'1',name:'日'},{id:'2',name:'月'},{id:'3',name:'年'}];
+        $('#fcCycle').combobox({
+            data:fcCycleList,
+            valueField:'id',
+            required:true,
+            textField:'name',
+            panelHeight:'auto',
+            onSelect: function(data) {
+                    if (!checkDataValid(startDate,endDate,data.id,"end")){
+                        $("#commitTag").val("0");
+                    } else {
+                        $("#commitTag").val("1");
+                    }
+                    if ($("#commitTag").val()=="1") {
+                        if (!checkDataValid(startDate, endDate, data.id, "start")) {
+                            $("#commitTag").val("0");
+                        } else {
+                            $("#commitTag").val("1");
+                        }
+                    }
+            }
+        });
+    });*/
+    function checkDataValid(startDate,endDate,fcCycle,checkTag) {
+        var startDateYear;
+        var startDateMonth;
+        var startDateDate;
+        var endDateYear;
+        var endDateMonth;
+        var endDateDate;
+        var newDate = new Date();
+        var nowDate = Number(newDate.getFullYear() + "" +(newDate.getMonth()+1) +""+newDate.getDate());
+        if (fcCycle != "" && startDate != undefined && endDate!= undefined) {
+        startDateYear = startDate.getFullYear();
+        startDateMonth = startDate.getMonth()+1;
+        startDateDate = startDate.getDate();
+        endDateYear = endDate.getFullYear();
+        endDateMonth = endDate.getMonth()+1;
+        endDateDate = endDate.getDate();
+        if (Number(startDateYear+""+startDateMonth+""+startDateDate) < nowDate) {
+            $.messager.alert('提示','开始时间不能小于操作当天！','warning');
+            return false;
+        }
+        if (Number(startDateYear+""+startDateMonth+""+startDateDate) > Number(endDateYear+""+endDateMonth+""+endDateDate))  {
+             $.messager.alert('提示','开始时间不能大于结束时间！','warning');
+             return false;
+        }
+        if ((checkTag == "end" && startDateYear != undefined)||(checkTag == "start" && endDateYear != undefined)) {
+            if (fcCycle == "1") {
+                if (!(startDateYear == endDateYear && startDateMonth==endDateMonth && startDateDate == endDateDate)) {
+                    $.messager.alert('提示','您选择的周期为‘日’，开始、结束时间需要在同一天内！','warning');
+                    return false;
+                }
+            } else if (fcCycle == "2") {
+                if (!(startDateYear == endDateYear && startDateMonth==endDateMonth)) {
+                    $.messager.alert('提示','您选择的周期为‘月’，开始、结束时间需要在同一月内！','warning');
+                    return false;
+                }
+            } else if (fcCycle == "3") {
+                if (!(startDateYear == endDateYear)) {
+                    $.messager.alert('提示','您选择的周期为‘年’，开始、结束时间需要在同一年内！','warning');
+                    return false;
+                }
+            }
+        }
+        } else {
+            return false;
+        }
+        return true;
+    }
+    function formatItem(row){
+        var s = '<span style="font-weight:bold">' + row.name + '</span><br/>' +
+                '<span style="color:#888">' + row.description + '</span>';
+        return s;
+    }
+
+    //重置表单
+    function formReset(){
+        $.messager.confirm('提示', '确定需要重置输入表单?', function (r) {
+            if (r) {
+                $('#ff').form('clear');
+            }
+        });
+    }
+    function inarray(obj, arr) {
+        if(typeof obj == 'string') {
+            for(var i in arr) {
+                if(arr[i] == obj) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    /*
+    * 多选判断
+    * 将数据用"-"分割，
+     该数组第二位：到其他数据组中第一位查找，如果仅找到一个，则将该数组入最终数组--超过一个报错
+     未找到，该数组第一位在其他数组第二位中直接查找，如果仅找到一个，则将该数组入最终数组--超过一个报错
+    * */
+    function timeZoneCheck() {
+        var timeZoneId = $('#timeZoneId').combobox('getText');
+        var convertToString = "";
+        var arrDemo = new Array();
+        var timeZoneArr0;
+        var timeZoneArr1;
+        var count = 0;
+        var finallyStr = "";
+        for (var i = 0; i < timeZoneId.length; i++) {
+            convertToString += timeZoneId[i];
+        }
+        timeZoneArr0 = convertToString.split(",");
+        timeZoneArr1 = convertToString.split(",");
+        if (timeZoneArr0.length > 1) {
+            for (var i = 0; i < timeZoneArr0.length; i++) {
+                count = 0;
+//            alert("外循环：i:"+i+":"+timeZoneArr0[i]);
+                for (var j = 0; j < timeZoneArr1.length; j++) {
+//                alert("内循环0：j:"+j+":"+timeZoneArr1[j]);
+                    if (i != j) {
+                        if (timeZoneArr0[i].split("-")[1] == timeZoneArr0[j].split("-")[0]) {
+                            count++;
+                        }
+                    }
+                    if (count > 1) {
+                        finallyStr = "";
+                        break;
+                    }
+                }
+                if (count == 1) {
+                    if (finallyStr != "") {
+                        finallyStr += "," + timeZoneArr0[i].split("-")[0] + "," + timeZoneArr0[i].split("-")[1];
+                    } else {
+                        finallyStr += timeZoneArr0[i].split("-")[0] + "," + timeZoneArr0[i].split("-")[1];
+                    }
+                } else if (count > 1) {
+                    finallyStr = "";
+                    break;
+                } else {
+                    for (var j = 0; j < timeZoneArr1.length; j++) {
+//                    alert("内循环1：j:"+j+":"+timeZoneArr1[j]);
+                        if (i != j) {
+                            if (timeZoneArr0[i].split("-")[0] == timeZoneArr0[j].split("-")[1]) {
+                                count++;
+                            }
+                        }
+                        if (count > 1) {
+                            finallyStr = "";
+                            break;
+                        }
+                    }
+                    if (count == 1) {
+                        if (finallyStr != "") {
+                            finallyStr += "," + timeZoneArr0[i].split("-")[0] + "," + timeZoneArr0[i].split("-")[1];
+                        } else {
+                            finallyStr += timeZoneArr0[i].split("-")[0] + "," + timeZoneArr0[i].split("-")[1];
+                        }
+                    } else {
+                        finallyStr = "";
+                        break;
+                    }
+                }
+            }
+        } else {
+            finallyStr = "1";
+        }
+        return (finallyStr);
+        /*
+        for (var i = 0; i < timeZoneId.length; i++) {
+            if (timeZoneId[i] == "-") {
+                convertToString += ",";
+            } else {
+                convertToString += timeZoneId[i];
+            }
+        }
+        timeZoneArr = convertToString.split(",");
+        for (var i = 0,j=0; i < timeZoneArr.length; i++) {
+            if (!inarray(timeZoneArr[i], arrDemo)) {
+                arrDemo[j] = timeZoneArr[i];
+                j++;
+            }
+        }
+        alert("长度:"+arrDemo.length);
+        alert("排序0:"+arrDemo);
+        arrDemo.sort(); //调用sort方法后，数组本身会被改变，即影响原数组
+        alert("排序1:"+arrDemo);//10,100,50,51 默认情况下sort方法是按ascii字母顺序排序的，而非我们认为是按数字大小排序
+        arrDemo.sort(function(a,b){return a>b?1:-1});//从小到大排序
+        alert("排序2:"+arrDemo);//10,50,51,100
+        arrDemo.sort(function(a,b){return a<b?1:-1});//从大到小排序
+        alert("排序3:"+arrDemo);//100,51,50,10
+        */
+    }
+    //提交表单
+    function submitForm(){
+        if (timeZoneCheck() == ""){
+            showMsg("提示", "请选择连续时间段");
+            return false;
+        }
+        if (! $("#ff").form('validate')) {
+            showMsg("提示", "有必填项未输入值!");
+            return false;
+        }
+
+        /*
+        if ($("#commitTag").val() == "0") {
+            showMsg("提示", "录入数据存在问题，请重新核对选择!");
+            return false;
+        }*/
+        $.messager.confirm('提示', '确定保存?', function (r) {
+            if (r) {
+                save();
+            }
+        });
+    }
+    //保存
+    function save(){
+        var params = $("#ff").serialize();
+        var postUrl = "";
+        if ($('#doAction').val() == "ADD") {
+            postUrl = "${base}/business/config/editCarForecastInfo/add";
+        } else if($('#doAction').val()  == "MOD") {
+            postUrl = "${base}/business/config/editCarForecastInfo/mod";
+        } else {
+        }
+
+        $.post(postUrl, params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示",rsp.msg);
+                $('#carForecastEditWin').window('close');
+            } else {
+                showMsg("提示", rsp.msg);
+            }
+        }).error(function () {
+            showMsg("提示", "保存失败!");
+        });
+    }
+    //加载读取的详情信息
+    var carForecastInfoEntity = JSON.parse(JSON.stringify(${carForecastInfoEntity}));
+    var fcCycleList= [ {id:'1',name:'日'},{id:'2',name:'月'},{id:'3',name:'年'}];
+
+    //查看需要禁用编辑
+    if ($('#doAction').val() == "ADD") {
+        $('#timeZoneId').combobox({
+            url: '${base}/business/tool/getComboboxOpt/TIME_ZONE'
+        });
+    }
+    if(carForecastInfoEntity != undefined && carForecastInfoEntity != null && carForecastInfoEntity != "") {
+        if ($('#doAction').val() == "VIEW") {
+            $(".submit-div").html("");
+            $("input").attr("readonly", "readonly");
+            $("select").attr("readonly", "readonly");
+            $('#timeZoneId').combobox({
+                url: '${base}/business/config/findAllTimeZoneSelect/1/' + carForecastInfoEntity.timeZoneId
+            });
+            delete carForecastInfoEntity["timeZoneId"];
+        } else if($('#doAction').val() == "MOD") {
+            $('#timeZoneId').combobox({
+                url: '${base}/business/config/findAllTimeZoneSelect/1/' + carForecastInfoEntity.timeZoneId
+            });
+            $("#qxDiv").hide();
+            delete carForecastInfoEntity["timeZoneId"];
+        }
+        $('#ff').form('load', carForecastInfoEntity);
+    }
+    var startDate;
+    var endDate;
+    $('#startDate').datebox({
+        onSelect: function(date){
+            startDate = date;
+            if (!checkDataValid(startDate,endDate,$('#fcCycle').combobox('getValue'),"end")) {
+                $("#commitTag").val("0");
+            }else {
+                $("#commitTag").val("1");
+            }
+        }
+    });
+    $('#endDate').datebox({
+        onSelect: function(date){
+            endDate = date;
+            if (!checkDataValid(startDate,endDate,$('#fcCycle').combobox('getValue'),"start")) {
+                $("#commitTag").val("0");
+            } else {
+                $("#commitTag").val("1");
+            }
+        }
+    });
+    $('#fcCycle').combobox({
+        data:fcCycleList,
+        valueField:'id',
+        required:true,
+        textField:'name',
+        panelHeight:'auto',
+        onSelect: function(data) {
+            if (!checkDataValid(startDate,endDate,data.id,"end")){
+                $("#commitTag").val("0");
+            } else {
+                $("#commitTag").val("1");
+            }
+            if ($("#commitTag").val()=="1") {
+                if (!checkDataValid(startDate, endDate, data.id, "start")) {
+                    $("#commitTag").val("0");
+                } else {
+                    $("#commitTag").val("1");
+                }
+            }
+        }
+    });
+    $("#qx").click(function(){
+        if ($("#qx").attr("checked")) {
+            $("#immediatelyTag").attr("value","0");
+            $("#qx").attr("checked",false);
+        } else {
+            $("#immediatelyTag").attr("value","1");
+            $("#qx").attr("checked",true);
+        }
+    })
+</script>

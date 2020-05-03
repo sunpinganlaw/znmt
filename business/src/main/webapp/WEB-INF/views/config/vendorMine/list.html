@@ -1,0 +1,214 @@
+<title>供应商矿点维护</title>
+<base href="${base}/">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+<meta http-equiv="description" content="this is my page">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="${base}/styles/dubleList/css/hdw.css">
+<script src="${base}/styles/dubleList/js/hdw.js"></script>
+
+<div class="form-div">
+<form id="ff" method="post" commandName="scalesEntity">
+    <input type="hidden" id="multObjectId" name="multObjectId">
+    <input type="hidden" id="multNoExistObjectId" name="multNoExistObjectId">
+    <input type="hidden" id="multObjectIdOld" name="multObjectIdOld">
+    <input type="hidden" id="multNoExistObjectIdOld" name="multNoExistObjectIdOld">
+    <input type="hidden" id="doWhat" name="doWhat">
+    <div title="供应商矿点维护"style="overflow:auto;padding:5px;">
+        <table >
+            <tr>
+                <td >基准类型:</td>
+                <td>
+                    <input id="basicType" name="basicType"/>
+                </td>
+                <td id="basicTypeTd"></td>
+                <td id="basicTypeTdContent"></td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center">
+                    <span id = "unSelectPrj">未选择项目</span>
+                </td>
+                <td colspan="2" style="text-align: center">
+                    <span id="selectPrj">已选择项目</span>
+                </td>
+            <tr>
+                <td colspan="2">
+                    <select multiple="multiple" id="unExistSelect"></select>
+                    <span class="rightMoveBtn" id="add_all" onmousemove="this.style.color='blue';" onmouseout="this.style.color='black'">全部右移>></span>
+                    <span id="add" class="rightMoveBtn" onmousemove="this.style.color='blue';" onmouseout="this.style.color='black'">选中右移></span>
+                </td>
+                <td colspan="2">
+                    <select multiple="multiple" id="existSelect"></select>
+                    <span class="leftMoveBtn" id="remove" onmousemove="this.style.color='blue';" onmouseout="this.style.color='black'"><选中左移</span>
+                    <span class="leftMoveBtn" id="remove_all" onmousemove="this.style.color='blue';" onmouseout="this.style.color='black'"><<全部左移</span>
+                </td>
+
+            </tr>
+            <tr>
+                <td colspan="4" style="text-align: center">
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-save" id="addBtn" onclick="submitForm();">保存</a>
+                </td>
+            <tr>
+        </table>
+    </div>
+</form>
+</div>
+<script type="text/javascript">
+    $(function () {
+        if (basicType == 0) {
+            $("#unSelectPrj").html("未选择的矿点");
+            $("#selectPrj").html("已选择的矿点");
+        } else {
+            $("#unSelectPrj").html("未选择的供应商");
+            $("#selectPrj").html("已选择的供应商");
+        }
+        var dataObject = [{"id":"1","name":"供应商"},{"id":"2","name":"矿点"}];
+        $('#basicType').combobox({
+            valueField:'id',
+            textField:'name',
+            panelHeight:'auto',
+            required:true,
+            data:dataObject,
+            width:185,
+            readonly:true,
+            onLoadSuccess: function () { //加载完成后,设置选中第一项
+                var val = $(this).combobox("getData");
+                for (var item in val[basicType]) {
+                    if (item == "id") {
+                        $(this).combobox("select", val[basicType][item]);
+                    }
+                }
+            },
+            onSelect:function () {
+                if ($(this).combobox("getValue") == "1") {
+                    $("#doWhat").val("1");
+                    $("#basicTypeTd").text("供应商选择:");
+                    $("#basicTypeTdContent").html("").append('<input style="display: none" type="text" id="venNo1" name="venNo1"/>');
+                    $('#venNo1').combobox({
+                        url:'${base}/business/tool/getComboboxOpt/VENDOR_INFO_LIST',
+                        valueField:'id',
+                        textField:'name',
+                        required:true,
+                        width:175,
+                        panelHeight:'auto',
+                        onSelect:function() {
+                            var multObjectIdOld = "";
+                            var multNoExistObjectIdOld = "";
+                            if ($(this).combobox("getValue") != "") {
+                            $.post("${base}/business/config/qryVendorMineList/venNo/" + $(this).combobox("getValue"), function (rsp) {
+                                $("#existSelect").empty();
+                                for (var i= 0;i<rsp.length;i++) {
+                                    var option = $("<option>").val(rsp[i].mineNo).text(rsp[i].mineName);
+                                    $("#existSelect").append(option);
+                                    multObjectIdOld +=multObjectIdOld == ""?rsp[i].mineNo:"," + rsp[i].mineNo;
+                                }
+                                $("#multObjectIdOld").val(multObjectIdOld);
+                            }).error(function () {
+                                showMsg("提示", "查询所有数据失败！");
+                            });
+                            $.post("${base}/business/config/qryNoExistVendorMineList/venNo/" + $(this).combobox("getValue"), function (rsp) {
+                                $("#unExistSelect").empty();
+                                for (var i= 0;i<rsp.length;i++) {
+                                    var option = $("<option>").val(rsp[i].mineNo).text(rsp[i].mineName);
+                                    $("#unExistSelect").append(option);
+                                    multNoExistObjectIdOld +=multNoExistObjectIdOld == ""?rsp[i].mineNo:"," + rsp[i].mineNo;
+                                }
+                                $("#multNoExistObjectIdOld").val(multNoExistObjectIdOld);
+                            }).error(function () {
+                                showMsg("提示", "查询不存在数据失败！");
+                            });
+                        }else {
+                                showMsg("提示","请选择具体供应商");
+                                $("#existSelect").empty();
+                                $("#unExistSelect").empty();
+                        }
+                      }
+                    });
+                } else if ($(this).combobox("getValue") == "2") {
+                    $("#doWhat").val("2");
+                    $("#basicTypeTd").text("矿点选择:");
+                    $("#basicTypeTdContent").html("").append('<input style="display: none" type="text" id="coalMine" name="coalMine"/>');
+                    $('#coalMine').combobox({
+                        url:'${base}/business/tool/getComboboxOpt/COAL_MINE_LIST',
+                        valueField:'id',
+                        textField:'name',
+                        required:true,
+                        width:185,
+                        panelHeight:300,
+                        onSelect:function() {
+                            var multObjectIdOld = "";
+                            var multNoExistObjectIdOld = "";
+                            if ($(this).combobox("getValue") != "") {
+                            $.post("${base}/business/config/qryVendorMineList/mineNo/" + $(this).combobox("getValue"), function (rsp) {
+                                $("#existSelect").empty();
+                                for (var i= 0;i<rsp.length;i++) {
+                                    var option = $("<option>").val(rsp[i].venNo).text(rsp[i].venName);
+                                    $("#existSelect").append(option);
+                                    multObjectIdOld +=multObjectIdOld == ""?rsp[i].venNo:"," + rsp[i].venNo;
+                                }
+                                $("#multObjectIdOld").val(multObjectIdOld);
+                            }).error(function () {
+                                showMsg("提示", "查询所有数据失败！");
+                            });
+                            $.post("${base}/business/config/qryNoExistVendorMineList/mineNo/" + $(this).combobox("getValue"), function (rsp) {
+                                $("#unExistSelect").empty();
+                                for (var i= 0;i<rsp.length;i++) {
+                                    var option = $("<option>").val(rsp[i].venNo).text(rsp[i].venName);
+                                    $("#unExistSelect").append(option);
+                                    multNoExistObjectIdOld +=multNoExistObjectIdOld == ""?rsp[i].venNo:"," + rsp[i].venNo;
+                                }
+                                $("#multNoExistObjectIdOld").val(multNoExistObjectIdOld);
+                            }).error(function () {
+                                showMsg("提示", "查询不存在数据失败！");
+                            });
+                            }else {
+                                showMsg("提示","请选择具体矿点");
+                                $("#existSelect").empty();
+                                $("#unExistSelect").empty();
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    });
+
+    function submitForm(){
+        if (! $("#ff").form('validate'))  return false;
+        $('#addBtn').linkbutton({disabled:true});
+        saveRows();
+    }
+
+    function saveRows() {
+        var multObjectId = "";
+        var multNoExistObjectId = "";
+        $("#existSelect").each(function(){
+           $(this).children("option").each(function(){
+               multObjectId +=multObjectId == ""?$(this).val():"," + $(this).val();
+           })
+        });
+        $("#multObjectId").val(multObjectId);
+        $("#unExistSelect").each(function(){
+            $(this).children("option").each(function(){
+                multNoExistObjectId +=multNoExistObjectId == ""?$(this).val():"," + $(this).val();
+            })
+        });
+        $("#multNoExistObjectId").val(multNoExistObjectId);
+
+        var params = $("#ff").serialize();
+        var postUrl  = "${base}/business/config/vendorMine/save";
+        $.post(postUrl,params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示",rsp.msg);
+                $('#vendorMineWin').window('close',true);
+                $('#addBtn').linkbutton({disabled:false});
+            } else {
+                showMsg("提示", rsp.msg);
+                $('#addBtn').linkbutton({disabled:false});
+            }
+        }).error(function () {
+            showMsg("提示", "更新失败,请重新登陆!");
+            $('#addBtn').linkbutton({disabled:false});
+        });
+    }
+</script>

@@ -1,0 +1,86 @@
+<div class="form-div">
+    <form id="dicInfoEditForm" method="post">
+        <table>
+            <tr>
+                <td>编码</td>
+                <td><input class="easyui-textbox"  id="id" name="id" data-options="required:true" style="width:145px;"/></td>
+                <td>名称</td>
+                <td><input class="easyui-textbox"  id="name" name="name" data-options="required:true" style="width:145px;"/></td>
+            </tr>
+            <tr>
+                <td>标识</td>
+                <td><input class="easyui-textbox"  id="type" name="type" data-options="required:true" style="width:145px;"/></td>
+                <td>状态</td>
+                <td>
+                    <select id="status" name="status" class="easyui-combobox" data-options="required:true, panelHeight:'auto'"  style="width:145px;" >
+                        <option selected value="0">正常</option>
+                        <option value="1">失效</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>备注</td>
+                <td colspan="3"><input class="easyui-textbox"  id="remark" name="remark" style="width:341px;"/></td>
+            </tr>
+
+            <tr id="opTR1">
+                <td style="text-align: center" colspan="4">
+                    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm()">保存</a>
+                </td>
+            </tr>
+        </table>
+
+    </form>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        var actionTag = document.getElementById("actionTag").value;
+        //修改时加载数据到控件
+        $('#dicInfoEditForm').form('load', obj);
+
+        if (actionTag == "MOD") {
+            $("#id").attr("readonly", "readonly");
+            $("#type").attr("readonly", "readonly");
+        }
+    });
+
+
+    //提交表单
+    function submitForm(){
+        if (! $("#dicInfoEditForm").form('validate')) {
+            showMsg("提示", "有必填项未输入值!");
+            return false;
+        }
+
+        $.messager.confirm('提示', '确定保存?', function (r) {
+            if (r) {
+                //提交保存
+                save();
+            }
+        });
+    }
+
+    //保存
+    function save(){
+        var params = $("#dicInfoEditForm").serialize();
+        var actionTag = document.getElementById("actionTag").value;
+
+        params = params + "&actionTag=" + actionTag;
+        params = params + "&parentId=" + obj.parentId;
+        if (actionTag == "MOD") {
+            params = params + "&dicId=" + obj.dicId;
+        }
+
+        $.post("${base}/business/config/editDicInfo", params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示",rsp.msg);
+                $('#dicInfoEditWin').window('close');
+                loadDictionaryTree();
+            } else {
+                showMsg("提示", rsp.msg);
+            }
+        });
+    }
+
+</script>

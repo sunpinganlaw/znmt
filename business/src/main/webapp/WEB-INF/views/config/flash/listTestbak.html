@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+    <title>测试</title>
+    <script type="text/javascript">
+        //webSokt begin
+//        var wsUri = 'ws://192.168.30.12:8080/intf/ws';
+        var wsUri = 'ws://localhost:8081/intf/ws';
+        function listen(webSocket, pageFlag) {
+            webSocket.onmessage = function(evt) {
+                businessProcess(evt);
+            }
+
+            webSocket.onopen = function(evt) {
+                onOpen(evt)
+            }
+
+            webSocket.onclose = function(evt) {
+                onClose(evt)
+            }
+
+            webSocket.onerror = function(evt) {
+                onError(evt)
+            }
+        }
+
+
+        function onOpen(evt) {
+
+        }
+
+        function onClose(evt) {
+            alert("xxxxxxxxxxxxx");
+            return false;
+        }
+
+        function onError(evt) {
+            alert("yyyyyyyyyyyyyyy");
+            return false;
+        }
+
+        function doSend(message) {
+            // writeToScreen("SENT: " + message);  websocket.send(message);
+        }
+        //webSokt end
+
+        /////////////////此代码每个页面固定写法 xieyt-begin//////////////
+        function init(){
+            listen(new WebSocket(wsUri));
+        }
+        window.addEventListener("load", init, false);
+        /////////////////此代码每个页面固定写法 xieyt-end////////////////
+
+
+        function businessProcess(event) {
+//            var o = JSON.parse(event.data);
+//            var deviceTag = o.DEVICE;
+//            var deviceValue = o.VALUE;
+//            var ch = o.CH;
+//            var cc = o.CC;
+//            //alert("deviceTag;"+deviceTag+"deviceValue;"+deviceValue+"ch;"+ch+"cc;"+cc);
+//            var b =thisMovie("flashCallJs").setTextValue("deviceTag;"+deviceTag+",deviceValue;"+deviceValue+",ch;"+ch+",cc;"+cc);
+            //alert(b);
+        }
+
+        function callFromFlash() {
+            alert("11");
+            var a=thisMovie("flashCallJs").helloas("虚伪二贝");
+            alert(a);
+        }
+        function hello(v)
+        {
+            alert("flash调用js函数成功"+v) ;
+        }
+        //thisMoivie 参数：是swf文件 的id
+        function thisMovie(movieName) {
+            if (navigator.appName.indexOf("Microsoft") != -1) {
+                return window[movieName]
+            }
+            else {
+                return document[movieName];
+            }
+        }
+    </script>
+</head>
+<body>
+<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,19,0" width="1200" height="800" id="flashCallJs" name="flashCallJs">
+    <param name="movie" value="/htmlresource/flashCallJs.swf" />
+    <param name="allowScriptAccess" value="always" />
+    <param name="allowFullScreen" value="false" />
+    <param name="quality" value="high" />
+    <param name="wmode" value="transparent" />
+    <embed src="/htmlresource/flashCallJs.swf" quality="high" name="flashCallJs" id="flashCallJs"
+           pluginspage="http://www.macromedia.com/go/getflashplayer"
+           type="application/x-shockwave-flash" width="1200" height="800" allowScriptAccess="always" wmode="transparent" ></embed>
+</object>
+<input type="button" value="点我" onclick="callFromFlash();">
+</body>
+</html>
