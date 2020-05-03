@@ -1,0 +1,74 @@
+﻿[
+ {"measurePoint":"LC1CY001","flashId":"caiyangtouA","tagType":"COLOR"},
+ {"measurePoint":"LC2CY001","flashId":"caiyangtouB","tagType":"COLOR"},
+
+ {"measurePoint":"LC1CY002","flashId":"geiliaopidaiA","tagType":"COLOR"},
+ {"measurePoint":"LC2CY002","flashId":"geiliaopidaiB","tagType":"COLOR"},
+
+ {"measurePoint":"LC1CY003","flashId":"posuidianjiA","tagType":"COLOR"},
+ {"measurePoint":"LC2CY003","flashId":"posuidianjiB","tagType":"COLOR"},
+
+ {"measurePoint":"LC1CY004","flashId":"suofenpidaiA","tagType":"COLOR"},
+ {"measurePoint":"LC2CY004","flashId":"suofenpidaiB","tagType":"COLOR"},
+
+ {"measurePoint":"LC1CY005","flashId":"suofendianjiA","tagType":"COLOR"},
+ {"measurePoint":"LC2CY005","flashId":"suofendianjiB","tagType":"COLOR"},
+
+ {"measurePoint":"LC1CY006","flashId":"doutijiA","tagType":"COLOR"},
+ {"measurePoint":"LC2CY006","flashId":"doutijiB","tagType":"COLOR"},
+
+ {"measurePoint":"LC1CY001","flashId":"caiyangtouA1","tagType":"COLOR"},
+ {"measurePoint":"LC2CY001","flashId":"caiyangtouB1","tagType":"COLOR"},
+
+ {"measurePoint":"LC1CY002","flashId":"geiliaopidaiA1","tagType":"COLOR"},
+ {"measurePoint":"LC2CY002","flashId":"geiliaopidaiB1","tagType":"COLOR"},
+
+ {"measurePoint":"LC1CY003","flashId":"posuidianjiA1","tagType":"COLOR"},
+ {"measurePoint":"LC2CY003","flashId":"posuidianjiB1","tagType":"COLOR"},
+
+ {"measurePoint":"LC1CY004","flashId":"suofenpidaiA1","tagType":"COLOR"},
+ {"measurePoint":"LC2CY004","flashId":"suofenpidaiB1","tagType":"COLOR"},
+
+ {"measurePoint":"LC1CY005","flashId":"suofendianjiA1","tagType":"COLOR"},
+ {"measurePoint":"LC2CY005","flashId":"suofendianjiB1","tagType":"COLOR"},
+
+ {"measurePoint":"LC1CY006","flashId":"doutijiA1","tagType":"COLOR"},
+ {"measurePoint":"LC2CY006","flashId":"doutijiB1","tagType":"COLOR"},
+
+
+
+ {"measurePoint":"LC1CY016","flashId":"pidai1","tagType":"COLOR"},
+ {"measurePoint":"LC2CY016","flashId":"pidai5","tagType":"COLOR"},
+ {"measurePoint":"LC1CY011","flashId":"pidai2","tagType":"COLOR"},
+ {"measurePoint":"LC2CY011","flashId":"pidai4","tagType":"COLOR"},    
+ {"measurePoint":"LC1CY012","flashId":"pidai3","tagType":"COLOR"},
+ 
+ {"measurePoint":"DC1RL101","flashId":"liuliangA","tagType":"VALUE"},    
+ {"measurePoint":"DC2RL101","flashId":"liuliangB","tagType":"VALUE"}, 
+   
+ {"measurePoint":"LC1CS001","flashId":"caiyangzhouqiA","tagType":"VALUE"},    
+ {"measurePoint":"LC2CS001","flashId":"caiyangzhouqiB","tagType":"VALUE"}, 
+
+ {"measurePoint":"LC1CY017","flashId":"caiyangDJSA","tagType":"VALUE"},    
+ {"measurePoint":"LC2CY017","flashId":"caiyangDJSB","tagType":"VALUE"}, 
+
+ {"measurePoint":"LC1CS003","flashId":"caiyangcishuA","tagType":"VALUE"},    
+ {"measurePoint":"LC2CS003","flashId":"caiyangcishuB","tagType":"VALUE"}, 
+
+ {"measurePoint":"LC1CY019","flashId":"suofenzhouqiA","tagType":"VALUE"},    
+ {"measurePoint":"LC2CY019","flashId":"suofenzhouqiB","tagType":"VALUE"}, 
+
+ {"measurePoint":"LC1CY018","flashId":"suofenDJSA","tagType":"VALUE"},    
+ {"measurePoint":"LC2CY018","flashId":"suofenDJSB","tagType":"VALUE"}, 
+
+ {"measurePoint":"LC1CS002","flashId":"suofenshijianA","tagType":"VALUE"},    
+ {"measurePoint":"LC2CS002","flashId":"suofenshijianB","tagType":"VALUE"}, 
+
+ {"measurePoint":"LC1YG101","flashId":"weightA","tagType":"VALUE"},    
+ {"measurePoint":"LC2YG101","flashId":"weightB","tagType":"VALUE"}, 
+
+ {"measurePoint":"LC1YG102","flashId":"sampleCode","tagType":"VALUE"},    
+ {"measurePoint":"LC1CS007","flashId":"count","tagType":"VALUE"},
+ {"measurePoint":"LC1CS008","flashId":"weight_total","tagType":"VALUE"}
+
+  ]

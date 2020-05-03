@@ -1,0 +1,276 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <#include "/include/common.html"/>
+    <title>化验报告</title>
+
+    <style type="text/css">
+
+        body{ background-color:#fff; color:#000; font-size:0.9em; width:1000px; margin:0 auto;}
+        h1{ font-size:2em; text-align:center; line-height:2em;}
+        table.table01{border-left:1px solid #000;border-top:1px solid #000;}
+        table.table01 td{ border-right:1px solid #000;border-bottom:1px solid #000; padding:5px; text-align:center;}
+        .style01{ height:3.5em; line-height:3.5em;}
+
+    </style>
+
+</head>
+
+<body>
+<div id="printButton1" style="text-align: right">&nbsp;</div>
+<!--startprint-->
+<div>&nbsp;</div>
+<h2 style="text-align: center">国电蚌埠发电有限公司</h2>
+<h1 id="titleName">入 厂 煤 分 析 报 告 单</h1>
+<div id="reportHint" style="text-align: center">&nbsp;</div>
+<table width="95%" border="0" cellspacing="0" cellpadding="0" class="table01">
+    <tr>
+        <td>化验编码</td>
+        <td colspan="4" id="laborCode" style="text-align: left">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>化验分析时间</td>
+        <td style="text-align: left" id="hyDate">&nbsp;</td>
+        <td>报告时间</td>
+        <td colspan="2" id="reportDt" style="text-align: left">&nbsp;</td>
+    </tr>
+    <tr>
+        <td>煤种</td>
+        <td id="coalType" colspan="4" style="text-align: left">&nbsp;</td>
+    </tr>
+    <tr>
+        <td width="20%">检验项目</td>
+        <td width="20%">符号</td>
+        <td width="20%">分析结果</td>
+        <td width="20%">单位</td>
+        <td width="20%">标准</td>
+    </tr>
+    <tr>
+        <td>全水分</td>
+        <td>Mt</td>
+        <td id="mt">&nbsp;</td>
+        <td>%</td>
+        <td>GB/T211-2017</td>
+    </tr>
+    <tr>
+        <td>水分</td>
+        <td >Mad</td>
+        <td id="mad">&nbsp;</td>
+        <td>%</td>
+        <td>GB/T212-2008</td>
+    </tr>
+    <tr>
+        <td rowspan="3">灰分</td>
+        <td>Aad</td>
+        <td id="aad">&nbsp;</td>
+        <td>%</td>
+        <td>GB/T212-2008</td>
+    </tr>
+    <tr>
+        <td>Ad</td>
+        <td id="ad">&nbsp;</td>
+        <td>%</td>
+        <td>GB/T483-2007</td>
+    </tr>
+    <tr>
+        <td>Aar</td>
+        <td id="aar">&nbsp;</td>
+        <td>%</td>
+        <td>GB/T483-2007</td>
+    </tr>
+
+    <tr>
+        <td rowspan="3">挥发分</td>
+        <td>Vad</td>
+        <td id="vad">&nbsp;</td>
+        <td>%</td>
+        <td>GB/T212-2008</td>
+    </tr>
+    <tr>
+        <td>Vdaf</td>
+        <td id="vdaf">&nbsp;</td>
+        <td>%</td>
+        <td>GB/T483-2007</td>
+    </tr>
+    <tr>
+        <td>Var</td>
+        <td id="var">&nbsp;</td>
+        <td>%</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td rowspan="3">全硫</td>
+        <td>St,ad</td>
+        <td id="stad">&nbsp;</td>
+        <td>%</td>
+        <td>GB/T214-2007</td>
+    </tr>
+    <tr>
+        <td>St,d</td>
+        <td id="std">&nbsp;</td>
+        <td>%</td>
+        <td>GB/T483-2007</td>
+    </tr>
+    <tr>
+        <td>St,ar</td>
+        <td id="star">&nbsp;</td>
+        <td>%</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>氢值</td>
+        <td>Had</td>
+        <td id="had">&nbsp;</td>
+        <td>%</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>弹桶发热量</td>
+        <td>Qb,ad</td>
+        <td id="qbad">&nbsp;</td>
+        <td>MJ/kg</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td rowspan="2">高位发热量</td>
+        <td>Qgr,ad</td>
+        <td id="qgrad">&nbsp;</td>
+        <td>MJ/kg</td>
+        <td>GB/T213-2008</td>
+    </tr>
+    <tr>
+        <td>Qgr,d</td>
+        <td id="qgrd">&nbsp;</td>
+        <td>MJ/kg</td>
+        <td>GB/T213-2008</td>
+    </tr>
+    <tr>
+        <td rowspan="2">低位发热量</td>
+        <td>Qnet,ar</td>
+        <td id="qnetar">&nbsp;</td>
+        <td>MJ/kg</td>
+        <td>GB/T213-2008</td>
+    </tr>
+    <tr>
+        <td>Qnet,ar</td>
+        <td id="qnetarm">&nbsp;</td>
+        <td>kcal/kg</td>
+        <td>GB/T213-2008</td>
+    </tr>
+    <tr>
+        <td>灰熔融性</td>
+        <td>ST</td>
+        <td id="st">&nbsp;</td>
+        <td>℃</td>
+        <td>GB/T219-2008</td>
+    </tr>
+
+    <tr>
+        <td>化验人</td>
+        <td id="opName"></td>
+        <td>确认签字</td>
+        <td colspan="2"></td>
+    </tr>
+    <tr>
+        <td>班长</td>
+        <td id="updateName"></td>
+        <td>确认签字</td>
+        <td colspan="2"></td>
+    </tr>
+    <tr>
+        <td>主管</td>
+        <td id="jhName"></td>
+        <td>确认签字</td>
+        <td colspan="2"></td>
+    </tr>
+
+</table>
+
+<!--endprint-->
+<div id="reportHint1">&nbsp;</div>
+</body>
+</html>
+
+<script type="text/javascript">
+    $(function(){
+        var labReportData = ${LabReportData};
+
+        if (labReportData.report_status == "OK") {
+            document.getElementById("printButton1").innerHTML = '<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-print" onclick="printLabRpt();">打印</a>';
+        } else {
+            document.getElementById("reportHint").innerHTML = '该化验报告还未审批通过，不能打印，暂不生效，仅作审查用';
+            document.getElementById("reportHint1").innerHTML = '该化验报告还未审批通过，不能打印，暂不生效，仅作审查用';
+        }
+
+        if (labReportData.batch_no_type == "9") {
+            document.getElementById("titleName").innerHTML = "入 炉 煤 分 析 报 告 单";
+        } else {
+            document.getElementById("titleName").innerHTML = "入 厂 煤 分 析 报 告 单";
+        }
+
+        document.getElementById("mt").innerHTML = toDecimal(labReportData.mt, 1);
+        document.getElementById("mad").innerHTML = toDecimal(labReportData.mad, 2);
+        document.getElementById("aar").innerHTML = toDecimal(labReportData.aar, 2);
+        document.getElementById("aad").innerHTML = toDecimal(labReportData.aad, 2);
+        document.getElementById("ad").innerHTML = toDecimal(labReportData.ad, 2);
+        document.getElementById("var").innerHTML = toDecimal(labReportData.var, 2);
+        document.getElementById("vad").innerHTML = toDecimal(labReportData.vad, 2);
+        document.getElementById("vdaf").innerHTML = toDecimal(labReportData.vdaf, 2);
+        document.getElementById("had").innerHTML = toDecimal(labReportData.had, 2);
+        document.getElementById("star").innerHTML = toDecimal(labReportData.st_ar, 2);
+        document.getElementById("stad").innerHTML = toDecimal(labReportData.st_ad, 2);
+        document.getElementById("std").innerHTML = toDecimal(labReportData.st_d, 2);
+        document.getElementById("qbad").innerHTML = toDecimal(labReportData.qb_ad, 2);
+        document.getElementById("qgrad").innerHTML = toDecimal(labReportData.qgr_ad, 2);
+        document.getElementById("qgrd").innerHTML = toDecimal(labReportData.qgr_d, 2);
+        document.getElementById("qnetar").innerHTML = toDecimal(labReportData.qnet_arj, 2);
+        document.getElementById("qnetarm").innerHTML = labReportData.qnet_arm;
+        document.getElementById("st").innerHTML = labReportData.st;
+
+
+        document.getElementById("opName").innerHTML = labReportData.opName;
+        document.getElementById("updateName").innerHTML = labReportData.updateName;
+        document.getElementById("jhName").innerHTML = labReportData.jhName;
+
+        document.getElementById("laborCode").innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;"+labReportData.labor_code;
+        document.getElementById("coalType").innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;"+labReportData.coal_type;
+        document.getElementById("hyDate").innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;"+labReportData.hy_date;
+        document.getElementById("reportDt").innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;"+labReportData.report_date;
+
+    });
+
+    function printLabRpt() {
+        var bdhtml = window.document.body.innerHTML;
+        var sprnstr = "<!--startprint-->";
+        var eprnstr = "<!--endprint-->";
+        var prnhtml = bdhtml.substr(bdhtml.indexOf(sprnstr)+17);
+        prnhtml = prnhtml.substring(0,prnhtml.indexOf(eprnstr));
+        window.document.body.innerHTML=prnhtml;
+        window.print();
+    }
+
+    function toDecimal(x, bit) {
+        var f = parseFloat(x);
+        if (isNaN(f)) {
+            return false;
+        }
+        var f = Math.round(x*Math.pow(10,bit))/Math.pow(10,bit);
+        var s = f.toString();
+        var rs = s.indexOf('.');
+        if (rs < 0) {
+            rs = s.length;
+            s += '.';
+        }
+        while (s.length <= rs + parseInt(bit)) {
+            s += '0';
+        }
+        return s;
+    }
+</script>

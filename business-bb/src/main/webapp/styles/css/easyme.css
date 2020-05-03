@@ -1,0 +1,42 @@
+@charset "utf-8";
+/* CSS Document */
+
+html, body { height: 100%;}
+.easyme-loginbox{ height: 100%; background:url(../images/login/login_bg.jpg) no-repeat top center; background-size: 100% 100%;}
+.easyme-topbox{position: absolute; top:0px; width: 100%; height: 70px; background: url(../images/login/login_topbox_bg.jpg) top center repeat-x;}
+.easyme-logo{ background: url(../images/login/systom_logo.png) center left no-repeat; padding-left: 40px; margin-left: 40px; margin-top: 15px; height: 40px; line-height: 40px;}
+.easyme-logo span{ color: #FFFFFF; font-weight: bold; font-size: 24px; vertical-align: bottom;}
+.easyme-logo .easyme-sysname{font-size: 17px;}
+.easyme-contectbox{ width: 500px; height: 480px; position: absolute;left:50%;top:50%;margin-left: -250px; margin-top: -240px;}
+.easyme-contectbg{ width: 500px; height: 480px; background: #FFFFFF; opacity:0.4 ; filter:alpha(Opacity=40); z-index: 9; border-radius: 4px;}
+.easyme-contectlist{ width: 500px; height: 480px; position: fixed; top: 50%; margin-top: -240px; border: 1px solid #fff; border-radius: 4px;}
+.easyme-contectlist ul{ width: 430px; margin: 8% auto;}
+.easyme-contectlist li{ padding: 12px 0px;}
+.easyme_sysnamebox{ text-align: center;}
+.easyme_sysname{ color: #FFFFFF; font-size: 18px; font-weight: normal;}
+.easyme_login_name{ width: 330px; height: 58px; border: 1px solid #d4d4d4; background: #fff url(../images/login/login_user.png) center left no-repeat;  border-radius: 4px; padding-left: 100px;}
+.easyme_login_password{width: 330px; height: 58px; border: 1px solid #d4d4d4; background: #fff url(../images/login/login_password.png) center left no-repeat;  border-radius: 4px; padding-left: 100px;}
+.easyme_login_passnum{width: 150px; height: 58px; border: 1px solid #d4d4d4; background: #fff url(../images/login/login_passnum.png) center left no-repeat;  border-radius: 4px; padding-left: 100px;}
+.easyme_passnum_img{ display: block; float: right;}
+.easyme_login_lastbox{ height: 58px; line-height: 58px; }
+.easyme_login_btnbox{display: block; float: right;}
+.easyme_remenum{ background: url(../images/login/remember.png) center left no-repeat; padding-left: 36px; display: block; cursor: pointer;}
+.easyme_unremenum{ background: url(../images/login/unremember.png) center left no-repeat; padding-left: 36px; display: block; cursor: pointer;}
+.easyme_login_btn{ background: url(../images/login/loginbtn.png) center center no-repeat; border: 0px; width: 137px; height: 60px; vertical-align: middle; color: #FFFFFF; font-size: 14px; font-weight: bold; cursor: pointer;}
+
+
+.easyme-copyright{ position: absolute; bottom:0px; width: 100%; background: #eee; height: 70px; line-height: 70px; text-align: center;}
+.easyme-copyright span{ color: #333; font-size: 14px;}
+
+.easy-topbox{ background: url(../images/top/index_top_bg.png) top left repeat-x; height: 70px; width: 100%;}
+.easy-topbox-left{ background: url(../images/top/index_top_left.png) top left no-repeat; height: 70px; width: 100%;}
+.easy-topbox-right{ background: url(../images/top/index_top_right.png) top right no-repeat; height: 70px; width: 100%;}
+.easy-topbox-logo{ background: url(../../../../../../admin/src/main/webapp/styles/images/top/index_top_logo_bb_bak.png) center center no-repeat; width:450px; height: 40px; padding-top: 25px;  margin-left: 20px;}
+.easy_topbox_bar{ background: url(../images/top/index_top_bar.png) top center no-repeat; width: 250px; height: 35px; line-height: 35px; position: absolute; top: 0px; right: 50px; font-size: 12px; text-align: center;}
+.easy_topbox_bar span{ color: #FFFFFF;}
+.easy_topbox_bar a{ color: #FFFFFF;}
+.easy_topbox_bar a:hover{ color: #FF6600;}
+.easyme_newlogo{ margin-left:30px; padding-top:10px; display:block;}
+/*.easyme_newlogo .logo{background: url(../images/login/login_bg.jpg) center center no-repeat; width:160px; height:45px;}*/
+.easyme_newlogo .title{ font-size:17px; color:#fbfece; padding-left:56px;}
+.easyme_newlogo .title span{ font-size:16px; padding-left:15px;}

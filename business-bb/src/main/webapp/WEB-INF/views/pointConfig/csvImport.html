@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>组态测点配置</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+<body  class="easyui-layout">
+
+<div data-options="region:'north',title:'批量修改opc测点：请选择csv文件！请将文件名命名为channelName.deviceName.csv！例如：cyj.cyj1.csv',split:false,collapsible:false" style="height:80px;">
+    <div style="float:left">
+        <form id="importCsv" style="position: relative">
+            <input type="file" name="file" id="file"/>
+            <input type="hidden" id="prefix" name="prefix"/>
+            <input type="hidden" id="actionType" name="actionType"/>
+        </form>
+    </div>
+</div>
+<div data-options="region:'center',title:'单独修改opc测点：请选择已有的channelName.deviceName配置！'" style="padding:5px; overflow: hidden">
+    <div id="tb">
+        <label for="prefix_com">channelName.deviceName：</label>
+        <input id="prefix_com" name="prefix_com" class="easyui-combobox" style="width:120px;"/>
+        <label for="pointTag_inp">pointTag:</label>
+        <input id="pointTag_inp" name="pointTag_inp" class="easyui-textbox" style="width:120px;"/>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry(1)">查询</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove"  onclick="removePoint()">删除</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add"  onclick="addPoint()">新增</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save"  onclick="save()">保存</a>
+    </div>
+    <table id="dg"></table>
+</div>
+<div id="dd"></div>
+</body>
+<script type="text/javascript">
+    $pointCfgDg = $("#dg");
+    var gridFlag=false;
+    var delPointTag='';
+    $(function () {
+        $('#prefix_com').combobox({
+            url: '${base}/business/pointConfig/getChannelList',
+            valueField: 'id',
+            textField: 'name',
+            panelHeight: 'auto',
+            onSelect:function (idx,row) {
+                qry(0);
+            }
+        });
+    });
+
+    function qry(i) {
+        if($("#prefix_com").combobox("getValue")){
+            var paramO = new Object();
+            var prefix = $("#prefix_com").combobox("getValue");
+            if (prefix != null && prefix != "" && prefix.length > 0) {
+                paramO.search_prefix = prefix;
+            }
+            if(gridFlag){
+                if(i==0){
+                    $pointCfgDg.datagrid("load", paramO);
+                }else{
+                    var flag=true;
+                    if($('#pointTag_inp').val()){
+                        $.each($pointCfgDg.datagrid('getRows'),function(idx,item){
+                            if(item.pointTag.indexOf($('#pointTag_inp').val())>-1){
+                                $pointCfgDg.datagrid('selectRow',idx);
+                                /*if(flag){
+                                    $pointCfgDg.datagrid('scrollTo',idx);
+                                    flag=false;
+                                }*/
+                                flag=false;
+                                return false;
+                            }
+                        });
+                        if(flag){
+                            $.messager.alert('提示',"没有找到名字包含"+$('#pointTag_inp').val()+"的测点！", 'info');
+                        }
+                    }else{
+                        $.messager.alert('提示',"请先输入pointTag！", 'error');
+                    }
+                }
+            }else{
+                $pointCfgDg.datagrid({
+                    url: '${base}/business/pointConfig/qryPointCfgInfo',
+                    fitColumns: true,
+                    animate: true,
+                    border: true,
+                    height: $(this).height() - 5,
+                    width: $(this).width() - 5,
+                    singleSelect: false,
+                    rownumbers: true,
+                    pagination: false,
+                    pagenumber: false,
+                    pageSize: 15,
+                    pageList: [15, 30, 45],
+                    onClickCell: onClickCell,
+                    queryParams:paramO,
+                    columns: [
+                        [
+                            {field: 'ck',  align: 'center',width:30 ,checkbox:true},
+                            {field: 'pointTag', title: '测点物理tag', align: 'center',width:30,editor: {type:'validatebox',options: {required: true,validType:'myvalid'}}},
+                            {field: 'pointName', title: '测点描述名称', align: 'center',width:30,editor: {type:'validatebox',options: {required: true}}},
+                            {field: 'toDb', title: '是否入库', align: 'center',width:30 ,editor: {
+                                    type: 'combobox',
+                                    options: {
+                                        valueField: 'id',
+                                        textField: 'name',
+                                        data:[{'id':'Y','name':'是'},{'id':'N','name':'否'}],
+                                        required: true
+                                    }},
+                                formatter: function (value, row, index){
+                                    return row.toDb == 'Y' ? '是' : '否';
+                                }},
+                            {field: 'status', title: '状态', align: 'center',width:30 ,editor: {type: 'combobox',
+                                    options: {
+                                        valueField: 'id',
+                                        textField: 'name',
+                                        data:[{'id':'0','name':'有效'},{'id':'1','name':'无效'}],
+                                        required: true
+                                    }},
+                                formatter: function (value, row, index){
+                                    return row.status == '0' ? '有效' : '无效';
+                                }},
+                            {field: 'remark', title: '备注', align: 'center',width:30,editor: {type:'text'}}
+                    ]
+                    ],
+                    toolbar: '#tb'
+                });
+                gridFlag=true;
+            }
+        }else{
+            $.messager.alert('提示',"请先选择channelName.deviceName！", 'error');
+        }
+    }
+
+    //自定义验证
+    $.extend($.fn.validatebox.defaults.rules, {
+        myvalid: {
+            validator: function (value, param) {
+                return /\w+\.\w+\.\w+/.test(value);
+            },
+            message: '请输入channelName.deviceName.tagname的格式'
+        }
+    });
+    // datagrid单元格编辑
+    $.extend($.fn.datagrid.methods, {
+        editCell: function (jq, param) {
+            return jq.each(function () {
+                var opts = $(this).datagrid('options');
+                var fields = $(this).datagrid('getColumnFields', true).concat($(this).datagrid('getColumnFields'));
+                for (var i = 0; i < fields.length; i++) {
+                    var col = $(this).datagrid('getColumnOption', fields[i]);
+                    col.editor1 = col.editor;
+                    if (fields[i] != param.field) {
+                        col.editor = null;
+                    }
+                }
+                $(this).datagrid('beginEdit', param.index);
+                for (var i = 0; i < fields.length; i++) {
+                    var col = $(this).datagrid('getColumnOption', fields[i]);
+                    col.editor = col.editor1;
+                }
+            });
+        }
+    });
+
+    var editIndex=undefined;
+
+    //结束编辑
+    function endEditing() {
+        if (editIndex == undefined) {
+            return true
+        }
+        if ($pointCfgDg.datagrid('validateRow', editIndex)) {
+            $pointCfgDg.datagrid('endEdit', editIndex);
+            //刷新行
+            $pointCfgDg.datagrid('refreshRow', editIndex);
+            editIndex = undefined;
+            return true;
+        } else {
+            return false;
+        }
+    }
+     //单击编辑
+    function onClickCell(index, field) {
+        if (endEditing()) {
+            $pointCfgDg.datagrid('selectRow', index)
+                .datagrid('editCell', {index: index, field: field});
+            editIndex = index;
+        }
+    }
+
+    //首行新增
+    function addPoint(){
+        if (endEditing()) {
+            $pointCfgDg.datagrid('insertRow',{
+            index: 0,
+            row: {toDb:'N',status: '0',pointTag:$("#prefix_com").combobox("getValue")+'.',isAdd:'Y'}
+            }).datagrid('beginEdit', 0);
+            editIndex = 0;
+            $pointCfgDg.datagrid('scrollTo',0);
+            //$pointCfgDg.datagrid('selectRow', editIndex).datagrid('beginEdit', editIndex);
+        }
+    }
+
+    // 删除datagrid行
+    function removePoint() {
+        if($pointCfgDg.datagrid('getSelections').length==0){
+            $.messager.alert('提示',"请至少选择一条要删除的数据！", 'error');
+        }else{
+            $.each($pointCfgDg.datagrid('getSelections'),function(idx,item){
+                delPointTag+=item.pointTag+',';
+                var index=$pointCfgDg.datagrid('getRowIndex',item);
+                if (editIndex == index) {
+                    $pointCfgDg.datagrid('cancelEdit', index).datagrid('deleteRow', index);
+                    editIndex = undefined;
+                }else{
+                    $pointCfgDg.datagrid('deleteRow', index);
+                }
+            });
+        }
+    }
+
+    function save(){
+        //校验
+        if($pointCfgDg.datagrid('getEditor', {index:editIndex,field:'pointName'})){
+            var pointName = $pointCfgDg.datagrid('getEditor', {index:editIndex,field:'pointName'}).target.val();
+            if(pointName==''){$.messager.alert('提示','第'+(editIndex+1)+"行pointName不能为空！", 'error');return;}
+        }
+        if($pointCfgDg.datagrid('getEditor', {index:editIndex,field:'pointTag'})){
+            var pointTag = $pointCfgDg.datagrid('getEditor', {index:editIndex,field:'pointTag'}).target.val();
+            if(!(/\w+\.\w+\.\w+/.test(pointTag))){$.messager.alert('提示','第'+(editIndex+1)+"行pointTag格式不对！", 'error');return;}
+        }
+        delPointTag = delPointTag.substr(0,delPointTag.length-1);
+        //结束编辑
+        endEditing();
+        var pointList = $pointCfgDg.datagrid('getRows');
+        console.log(JSON.stringify(pointList));
+        $.post('${base}/business/pointConfig/savePointConfig', {'pointList': JSON.stringify(pointList),'prefix':$("#prefix_com").combobox("getValue")},function (data) {
+            if (data.successful) {
+                $.messager.alert('系统提示', '测点保存成功！', 'success');
+                qry(0);
+            } else {
+                $.messager.alert('错误！', data.msg, 'error');
+            }
+        }).error(function () {
+            $.messager.alert('错误！',"服务器处理异常！", 'error');
+        });
+    }
+
+
+    function importCsv4zt(){
+        if ($("#file").val() == '') {
+            //已经选择文件后，继续选择却点了取消
+            top.Toast('showErrorToast', "请选择要导入的文件!");
+            return;
+        }
+        //文件名校验
+        var csvName=document.getElementById("file").files[0].name;
+        var prefix=csvName.substring(0,csvName.lastIndexOf('.'));
+        if(prefix.indexOf(".")<0){
+            $.messager.alert('错误！', '文件名不正确!请参照提示修改。', 'error');
+            return;
+        }
+        $('#prefix').val(prefix);
+        //后台找channelName.deviceName配置
+        var param={};
+        param.search_prefix=prefix;
+        $.post('${base}/business/pointConfig/qryPointCfgInfo',param,function (rsp) {
+          if(rsp){
+              if(rsp.rows.length==0){
+                  $.messager.confirm('操作提示', '是否确认上传？', function(r){
+                      if (r){
+                          $('#actionType').val('add');
+                          uploadCsv(prefix);
+                          $("#dd").dialog('close');
+                      }
+                  });
+              }else{
+                  $('#dd').dialog({
+                      title: '操作提示',
+                      width: 300,
+                      height: 150,
+                      closed: false,
+                      cache: false,
+                      buttons:'#bb',
+                      modal: true,
+                      iconCls:'icon-help',
+                      content:"<div class=\"messager-icon messager-question\"></div>"+"<div>数据库中已有"+prefix+"的测点"+rsp.rows.length+"条，是否确认上传？</div>"+"<br/>"+"<div style=\"clear:both;\"/>",
+                      buttons:[{
+                          text:'覆盖保存',
+                          handler:function(){
+                              $('#actionType').val('add');
+                              uploadCsv(prefix);
+                              $("#dd").dialog('close');
+                          }
+                      },{
+                          text:'增量保存',
+                          handler:function(){
+                              $('#actionType').val('mod');
+                              uploadCsv(prefix);
+                              $("#dd").dialog('close');
+                          }
+                      },{
+                          text:'取消保存',
+                          handler:function(){
+                              $("#dd").dialog('close');
+                          }
+                      }]
+                  });
+              }
+              //后台读取保存，actionType：add为覆盖保存（删除数据库原有数据），mod为增量保存（这里不做删除，只添加），del为删除
+          }
+        });
+    }
+    //上传
+    function uploadCsv(prefix){
+        var formData = new FormData($("#importCsv")[0]);
+        $.ajax({
+            url: '${base}/business/pointConfig/importCsv4zt',
+            type: 'POST',
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                if (data.successful) {
+                    $.messager.alert('系统提示', data.msg, 'success');
+                    reload(prefix);
+                } else {
+                    $.messager.alert('错误！', data.msg, 'error');
+                }
+            },
+            error: function (XmlHttpRequest) {
+                $.messager.alert('错误！',"处理异常，服务器状态 ："+XmlHttpRequest.status+",信息："+XmlHttpRequest.statusText, 'error');
+            }
+        });
+        //表单重置
+        $("#importCsv")[0].reset();
+    }
+
+    function  reload(prefix){
+        $('#prefix_com').combobox('reload');
+        $('#prefix_com').combobox('setValue', prefix);
+        qry(0);
+    }
+</script>
+</html>

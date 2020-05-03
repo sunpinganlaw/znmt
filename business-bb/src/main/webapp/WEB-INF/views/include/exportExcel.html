@@ -1,0 +1,84 @@
+<form id="uploadform" name="uploadform"  enctype="multipart/form-data" method=post>
+</form>
+<script type="text/javascript">
+    function exportExcel(obj,sqlPackage,sqlMap,sqlSelCnt,sqlSelLst,inputObj,entityName,exlHeader,exlColumn) {
+        //org.gxz.znrl.entity.SampleRptEntity
+        //var excelObj = [{ name: "John", time: "2pm" }];
+        if (document.uploadform == undefined) {
+            showMsg("提示","导出页面未配置下载表单（uploadform），请联系管理员配置！！！");
+            return false;
+        }
+        if (obj == null || obj == "") {
+            showMsg("提示","需要查询的dataGrid未配置，请联系管理员配置！！！");
+            return false;
+        }
+        if (sqlPackage == null || sqlPackage == "") {
+            showMsg("提示","导出EXCEL的包未配置，请联系管理员配置！！！");
+            return false;
+        }
+        if (sqlMap == null || sqlMap == "") {
+            showMsg("提示","导出EXCEL的映射未配置，请联系管理员配置！！！");
+            return false;
+        }
+        if (sqlSelCnt == null || sqlSelCnt == "") {
+            showMsg("提示","导出EXCEL的总量未配置，请联系管理员配置！！！");
+            return false;
+        }
+        if (sqlSelLst == null || sqlSelLst == "") {
+            showMsg("提示","导出EXCEL的清单未配置，请联系管理员配置！！！");
+            return false;
+        }
+        var excelObj;
+        var col;
+        var i=0;
+        var opts = obj.datagrid('getColumnFields'); //这是获取到所有的FIELD
+        var optsFrozen = obj.datagrid('getColumnFields', true);
+        var excelHeader="";
+        var excelColumn = "";
+        var countSql = sqlPackage+"."+sqlMap+"."+sqlSelCnt;
+        var listSql= sqlPackage+"."+sqlMap+"."+sqlSelLst;
+        if (exlHeader == "" && exlColumn == "") {
+            for( i=0;i<optsFrozen.length;i++)
+            {
+                col = obj.datagrid( "getColumnOption" , optsFrozen[i] );
+                excelHeader += excelHeader == ""?col.title:","+col.title;
+                excelColumn += excelColumn == ""?optsFrozen[i]:","+optsFrozen[i];
+            }
+            for( i=0;i<opts.length;i++)
+            {
+                col = obj.datagrid( "getColumnOption" , opts[i] );
+                excelHeader += excelHeader == ""?col.title:","+col.title;
+                excelColumn += excelColumn == ""?opts[i]:","+opts[i];
+            }
+        } else {
+            excelHeader = exlHeader;
+            excelColumn = exlColumn;
+        }
+
+        excelObj = [{excelHeader: excelHeader,
+            excelColumn: excelColumn,
+            countSql:countSql,
+            listSql:listSql,
+            entityName : entityName,
+            inputParameter:inputObj
+        }];
+        debugger;
+        $.ajax({
+            type : "POST",
+            cache: false,
+            url : "${base}/business/tool/generateExcel",
+            dataType : "json",
+            contentType : 'application/json',
+            data : JSON.stringify(excelObj),
+            success: function(data){
+                data = eval("(" + data + ")");
+                document.uploadform.action='${base}/business/tool/downloadExcel?filePath='+data.filePath+'&fileName='+data.fileName;
+                document.uploadform.submit();
+            },
+            error:function(e) {
+                showMsg("提示","导出EXCEL异常："+e);
+                return false;
+            }
+        });
+    }
+</script>

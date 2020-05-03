@@ -1,0 +1,170 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>管控系统总图</title>
+    <#include "/include/common.html"/>
+    <script type="text/javascript" src="${base}/styles/js/commonFlash.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="${base}/styles/css/commonFlash.css" media="screen">
+</head>
+<script type="text/javascript">
+    wsUri = "${wsUri}";
+    //重写commonFlash.js中的方法 begin
+    function onClose(evt) {
+        socketOnClose();
+        return false;
+    }
+    function onError(evt) {
+        socketOnError();
+        return false;
+    }
+    function startLoadFlash(jsonPath){
+        parent.startLoadFlashJSON();
+        var intervalID = setInterval(function () {
+            if (checkLoaded(flash)) {
+                clearInterval(intervalID);
+                intervalID = null;
+                loadJsonConfig(jsonPath);
+            }
+        }, 600);
+    }
+    function loadJsonConfigFinish(v) {
+        if (loadJsonConfigTag == "SUCCESS" && v == "SUCCESS") {
+            parent.successLoadFlashJSON();
+            init();
+        } else {
+            parent.failedLoadFlashJSON();
+        }
+        parent.finishLoadFlashJSON();
+    }
+    //重写commonFlash.js中的方法 end
+    //flash调用js业务函数  begin
+
+    function submitCommand(commandCode, machineCode, machineType){
+        document.getElementById("hideMachineType").value = machineType;
+        document.getElementById("hideMachineCode").value = machineCode;
+        document.getElementById("hideCommandCode").value = commandCode;
+
+        if (machineType == "1" || machineType == "7"){//1采样机
+            if (commandCode == "1" || commandCode == "4" || commandCode == "5"){//启动、卸样、打包需要输入采样编码
+                submitCommandWithSampleCode();
+            } else {
+                submitCommandWithoutSampleCode();
+            }
+        } else if (machineType == "2") {//制样机
+            if (commandCode == "1" || commandCode == "2" || commandCode == "3") {//制样全部都要输入采样编码
+                submitCommandWithSampleCode();
+            }
+        }
+    }
+    //发送采样机操作的命令
+    function submitCommandWithoutSampleCode(){//ctrCYDevice
+        var paramObj = new Object();
+        paramObj.search_commandCode = document.getElementById("hideCommandCode").value;//命令代码
+        paramObj.search_machineCode = document.getElementById("hideMachineCode").value;//设备编码
+        paramObj.search_machineType = document.getElementById("hideMachineType").value;//设备类型 1采样机 2制样机 3翻车机
+
+        $.messager.confirm('提示', '确定要执行该操作?', function (r) {
+            if (r) {
+                $.post("${base}/business/monitor/commitCtrlCmd", paramObj, function (rsp) {
+                    if (rsp) {
+                        alert(rsp.msg);
+                    } else {
+                        alert("操作指令发送失败!");
+                    }
+                }).error(function () {
+                    alert("操作指令发送异常!");
+                });
+            }
+        });
+    }
+    function submitCommandWithSampleCode(){
+        $('#submitDeviceCommandWin').window({
+            modal : true,
+            title : '提交操作指令',
+            width : 390,
+            height : 310,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/monitor/gotoSubmitCommandPage'
+        });
+    }
+    //点击图片跳转新窗口
+    function viewCYDevice109(){
+        parent.parent.addTab("水运煤采样机||icon-sys||${base}/business/trainMonitor/sampleFcSy/list");
+    }
+
+    function viewCYDevice301(){
+        parent.parent.addTab("火车煤采样机||icon-sys||${base}/business/trainMonitor/sampleFc/list");
+    }
+
+    function viewZYDevice109(){
+        parent.parent.addTab("火车煤制样机||icon-sys||${base}/business/trainMonitor/makesampleFc/list");
+    }
+
+    function viewZYDevice301(){
+        parent.parent.addTab("水运煤制样机||icon-sys||${base}/business/trainMonitor/makesampleFc/list4car");
+    }
+
+    function viewCYGDevice(){
+        parent.parent.addTab("智能存样柜||icon-sys||${base}/business/monitor/autostoresample/list");
+    }
+
+    function viewJXCYDevice(){
+        parent.parent.addTab("汽车车厢采样机||icon-sys||${base}/business/monitor/sample/list");
+    }
+
+    function viewLCDevice701(){
+        parent.parent.addTab("入炉皮带采样机||icon-sys||${base}/business/trainMonitor/inBoilerCY/list");
+    }
+
+    //flash调用js业务函数  end
+</script>
+<body onload="startLoadFlash('BB_INDEX');">
+<div id="submitDeviceCommandWin"></div>
+<input type="hidden" id="hideMachineType"/>
+<input type="hidden" id="hideMachineCode"/>
+<input type="hidden" id="hideCommandCode"/>
+<div id="flashContent">
+    <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="1200" height="800" id="index" name="index"
+            align="middle">
+        <param name="movie" value="${base}/htmlresource/BB_INDEX/index.swf"/>
+        <param name="quality" value="high"/>
+        <param name="bgcolor" value="#000000"/>
+        <param name="play" value="true"/>
+        <param name="loop" value="true"/>
+        <param name="wmode" value="window"/>
+        <param name="scale" value="showall"/>
+        <param name="menu" value="true"/>
+        <param name="devicefont" value="false"/>
+        <param name="salign" value=""/>
+        <param name="allowScriptAccess" value="sameDomain"/>
+        <!--[if !IE]>-->
+        <object type="application/x-shockwave-flash" data="${base}/htmlresource/BB_INDEX/index.swf" width="1200" height="800"
+                id="index" name="index">
+            <param name="movie" value="${base}/htmlresource/BB_INDEX/index.swf"/>
+            <param name="quality" value="high"/>
+            <param name="bgcolor" value="#000000"/>
+            <param name="play" value="true"/>
+            <param name="loop" value="true"/>
+            <param name="wmode" value="window"/>
+            <param name="scale" value="showall"/>
+            <param name="menu" value="true"/>
+            <param name="devicefont" value="false"/>
+            <param name="salign" value=""/>
+            <param name="allowScriptAccess" value="sameDomain"/>
+            <!--<![endif]-->
+            <a href="http://www.adobe.com/go/getflash">
+                <img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif"
+                     alt="获得 Adobe Flash Player"/>
+            </a>
+            <!--[if !IE]>-->
+        </object>
+        <!--<![endif]-->
+    </object>
+</div>
+</body>
+</html>
+

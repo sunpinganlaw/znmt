@@ -1,0 +1,515 @@
+<!Doctype>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>火车煤制样机</title>
+	<link rel="stylesheet" href="${base}/htmlresource/BB_ZY/style.css">
+	<link rel="stylesheet" href="${base}/htmlresource/BB_ZY/zy.css">
+	<script type="text/javascript" src="${base}/htmlresource/commonImgJS.js"></script>
+	<style>
+		body {
+			background: #000;
+			position: relative;
+			font-family: 微软雅黑, 黑体;
+			overflow: hidden;
+		}
+		html, body {
+			height: 100%;
+			margin: 0;
+		}
+		#Canvas {
+			height: 100%;
+			min-height: 730px;
+			position: relative;
+			padding-bottom: 0;
+		/background-image:url(%E6%B5%81%E7%A8%8B%E5%9B%BE-%E6%81%A2%E5%A4%8D%E7%9A%84.png);
+			background-repeat: no-repeat;
+			background-position: center;
+		}
+		.Content {
+			height: 100%;
+			display: block;
+		}
+		li {
+			list-style-type: none;
+		}
+		i {
+			display: block;
+		}
+		span, font {
+			float: left;
+			color: #FFF;
+			font-size: 18px;
+			font-family: 微软雅黑, 黑体;
+			font-weight: bold;
+			text-align: center;
+		}
+		.Content span {
+			position: absolute;
+			display: block;
+		}
+	</style>
+</head>
+
+<body>
+<div id="Canvas" style="display:block;position: relative;top:-10px">
+	<div style="width:1520px;margin:0 auto;">
+		<div style="margin:30px 0;padding:0 0 50px;border-bottom:1px solid #ccc;">
+			<span>来样重量(g):</span><span id="llzl" style="color:#f00;margin-left:10px;">&nbsp;</span>
+			<span style="margin-left:40px;">设备状态:</span><span id="sbzt" style="color:#f00;margin-left:10px;">&nbsp;</span>
+            <span style="margin-left:40px;">批次号:</span><span id="batchNo" style="color:#f00;margin-left:10px;">&nbsp;</span>
+			<span style="margin-left:40px;">制样编码:</span><span id="zybm" style="color:#f00;margin-left:10px;">&nbsp;</span>
+		</div>
+	</div>
+	<div class="Content">
+		<div style="position: relative;top:-10px;width: 1520px;  margin: 0 auto;">
+			<!--来料称重 start-->
+			<div id="llzlPic" class="bg1 on">
+				<div class="text">
+					<p>来料</p>
+					<p>称重</p>
+				</div>
+			</div>
+			<!--来料称重 end-->
+			<!--破碎 start-->
+			<div id="sixmmps" class="bdbox" style="left: 130;">
+				<p class="unit">6mm</p>
+				<div class="bg2"></div>
+				<p class="name">破碎</p>
+			</div>
+			<!--破碎 end-->
+			<!--皮带转运start-->
+			<div id="pdyz" class="bgbox1 ">
+				<p class="text">皮带转运</p>
+			</div>
+			<!--皮带转运start-->
+			<div id="rgzy" class="bgbox2" >
+				<p class="text">人工制样</p>
+			</div>
+			<!--缩分 start-->
+			<div id="sixmmsf1" class="bdbox" style="left: 260px;">
+				<p class="unit">6mm</p>
+				<div class="bg2"></div>
+				<p class="name">缩分1</p>
+			</div>
+			<div id="sixmmsf2" class="bdbox" style="left: 390px;">
+				<p class="unit">6mm</p>
+				<div class="bg2"></div>
+				<p class="name">缩分2</p>
+			</div>
+			<!--缩分 end-->
+			<!--破碎3mm start-->
+			<div id="threemmps" class="bdbox " style="left: 520px;">
+				<p class="unit">3mm</p>
+				<div class="bg2"></div>
+				<p class="name">破碎</p>
+			</div>
+			<!--破碎3mm end-->
+			<!--缩分3mm start-->
+			<div id="threemmsf" class="bdbox " style="left: 650px;">
+				<p class="unit">3mm</p>
+				<div class="bg2"></div>
+				<p class="name">缩分1</p>
+			</div>
+			<!--缩分 end-->
+			<!--缩分3mm start-->
+			<div id="threemmsf1" class="bdbox " style="left: 780px;">
+				<p class="unit">3mm</p>
+				<div class="bg2"></div>
+				<p class="name">缩分2</p>
+			</div>
+			<!--缩分 end-->
+			<!--干燥 start-->
+			<div id="zyganzao" class="bdbox" style="left: 910px;">
+				<!--<p id="dryTempr" class="unit">℃</p>-->
+				<div class="bg2 circle"></div>
+				<p class="name">干燥</p>
+			</div>
+			<!--干燥 end-->
+			<!--缩分3mm start-->
+			<div id="threemmsf2" class="bdbox " style="left: 1040px;">
+				<p class="unit">3mm</p>
+				<div class="bg2 fs"></div>
+				<p class="name">缩分</p>
+			</div>
+			<!--缩分 end-->
+			<!--粉碎0.2mm start-->
+			<div id="twommps" class="bdbox " style="left: 1180px;">
+				<p class="unit">0.2mm</p>
+				<div class="bg2"></div>
+				<p class="name">破碎</p>
+			</div>
+			<!--粉碎 end-->
+			<!--缩分0.2mm start-->
+			<div id="twommsf" class="bdbox " style="left: 1323px;">
+				<p class="unit">0.2mm</p>
+				<div class="bg2 fs"></div>
+				<p class="name">缩分</p>
+			</div>
+			<!--缩分 end-->
+			<!--管道start-->
+			<div class="channelbg" style="width:1050px; left:0px;">
+				<div id="channel1" class="channel"></div>
+			</div>
+			<div class="channelbg" style="width:70px; left:1110px; top:20px;">
+				<div id="channel2" class="channel"></div>
+			</div>
+			<div class="channelbg02" style="width:70px; left:1110px; top:70px;">
+				<div id="channel3" class="channel_green"></div>
+			</div>
+			<div class="channelbg" style="width:70px; left:1250px; top:45px;">
+				<div id="channel4" class="channel"></div>
+			</div>
+			<!--管道end-->
+			<!--管道start-->
+			<div class="channelbg_v" style="left:290px;height:243px;">
+				<div  id="channel5" class="channel_v" style="height:243px;"></div>
+			</div>
+			<!--管道end -->
+			<!--管道start转运皮带-->
+			<div class="channelbg_v" style="left:25px;height:200px; top:80px; z-index:-1;">
+				<div id="channel6" class="channel_v" style="height:243px;"></div>
+			</div>
+			<!--管道end -->
+			<!--管道start-->
+			<div class="channelbg_v_green" style="left:420px;height:150px;">
+				<div id="channel7" class="channel_v_green" style="height:150px;"></div>
+			</div>
+			<!--管道end -->
+			<!--管道start-->
+			<div class="channelbg_v_green" style="height:180px;left:680px;">
+				<div id="channel8" class="channel_v_green" style="height:180px;"></div>
+			</div>
+			<!--管道end -->
+			<!--管道start-->
+			<div class="channelbg_v_green" style="left:1210px; height:180px;">
+				<div id="channel9" class="channel_v_green" style="height:180px;"></div>
+			</div>
+			<!--管道end -->
+			<!--弃料 start-->
+			<div id="zyql1" class="bdbox" style="left: 390px;top: 232px;">
+				<p>弃料</p>
+				<div class="bg2 huishou"></div>
+				<p class="name">弃料</p>
+			</div>
+			<!--弃料 end-->
+			<!--弃料 start-->
+			<div id="zyzql2" class="bdbox" style="left: 912px;top: 232px;">
+				<p>弃料</p>
+				<div class="bg2 huishou"></div>
+				<p class="name">清洗样</p>
+			</div>
+			<!--弃料 end-->
+
+			<div id="zdccf" class="pfbox">
+				<p id="worktxt" class="txt"></p>
+				<p class="pfboxtext" style="left:60px;">人工除尘阀</p>
+				<p class="pfboxtext" style="left:125px;">加料斗阀</p>
+				<p class="pfboxtext" style="left:172px;">锤破机阀</p>
+				<p class="pfboxtext" style="left:220px;">缩分器阀</p>
+				<p class="pfboxtext" style="left:268px;">对辊机阀</p>
+				<p class="pfboxtext" style="left:312px;">研磨机阀</p>
+				<p class="pfboxtext02" style="left:70px; top:317px;">自动除尘阀</p>
+			</div>
+
+			<!--管道start-->
+			<div class="channelbg" style="left:290px;top: 340px;width:166px;">
+				<div id="channel10" class="channel"></div>
+			</div>
+			<div class="channelbg02" style="left: 440px;top: 279px;width:784px;">
+				<div id="channel11" class="channel_green"></div>
+			</div>
+			<!--管道end-->
+			<!--管道start-->
+			<div class="channelbg_v" style="top: 357px;left: 446px;height:330px;">
+				<div id="channel12" class="channel_v" style="height:330px;"></div>
+			</div>
+			<!--管道end -->
+			<div class="pot1"><img src="${base}/htmlresource/BB_ZY/img/pot1.png" alt="罐子1">
+				<p>全水分样</p>
+			</div>
+
+			<!--管道start-->
+			<div class="channelbg_v" style="top: 97px;left: 810px;height: 590px;">
+				<div id="channel13" class="channel_v" style="height: 590px;"></div>
+			</div>
+			<!--管道end -->
+			<div class="pot2"><img src="${base}/htmlresource/BB_ZY/img/pot2.png" alt="罐子">
+				<p>存查样</p>
+			</div>
+			<!--pot3 start-->
+			<!--管道start-->
+			<div class="channelbg_v" style="top: 97px;left: 1352px;height: 378px;">
+				<div id="channel14" class="channel_v" style="height: 378px;"></div>
+			</div>
+			<!--管道end -->
+			<!--管道start-->
+			<div class="channelbg" style="left:930px;top: 479px;width: 432px;">
+				<div id="channel15" class="channel"></div>
+			</div>
+			<!--管道end-->
+			<!--管道start-->
+			<div class="channelbg_v" style="top: 495px;left: 1040px;height: 193px;">
+				<div id="channel16" class="channel_v" style="height:193px;"></div>
+			</div>
+			<div class="channelbg_v" style="top: 495px;left: 930px;height:193px;">
+				<div id="channel17" class="channel_v" style="height:193px;"></div>
+			</div>
+			<!--管道end -->
+			<div class="pot3"><img src="${base}/htmlresource/BB_ZY/img/pot3.png" alt="罐子">
+				<p>一般分析<br>
+					实验样</p>
+			</div>
+			<div class="pot4"><img src="${base}/htmlresource/BB_ZY/img/pot3.png" alt="罐子">
+				<p>存查样</p>
+			</div>
+			<!--pot3 end-->
+			<!--管道start-->
+			<div class="channelbg" style="left: 385px;top: 690px;width:920px;">
+				<div id="channel18" class="channel"></div>
+			</div>
+			<!--管道end-->
+			<!--管道1 end-->
+
+			<div id="baozhuangji" class="bdbox" style="top: 627px;left: 1120px;height:84px;">
+				<p class="unit">&nbsp;</p>
+				<div class="bg3"></div>
+				<p class="name">包装</p>
+			</div>
+			<div id="endcz" class="bdbox" style="top: 627px;left: 1250px;height:84px;">
+				<p id="endczsz" class="unit">123</p>
+				<div class="bg5"></div>
+				<p class="name">称重</p>
+			</div>
+			<!--<div class="infotgb" style="left:1000px;top: 115px;width:200px;">-->
+				<!--<table class="tgb">-->
+					<!--<tbody>-->
+					<!--<tr>-->
+						<!--<td>6mm全水分一到位</td>-->
+						<!--<td><div id="sixmmData" class="lamp_black"></div></td>-->
+					<!--</tr>-->
+					<!--<tr>-->
+						<!--<td>3mm存查样一到位</td>-->
+						<!--<td><div id="threemmData" class="lamp_black"></div></td>-->
+					<!--</tr>-->
+					<!--<tr>-->
+						<!--<td>0.2mm分析样一到位</td>-->
+						<!--<td><div id="zero2mmData1" class="lamp_black"></div></td>-->
+					<!--</tr>-->
+					<!--<tr>-->
+						<!--<td>0.2mm存查样一到位</td>-->
+						<!--<td><div id="zero2mmData2" class="lamp_black"></div></td>-->
+					<!--</tr>-->
+					<!--</tbody>-->
+				<!--</table>-->
+				<!--&lt;!&ndash;<a class="btn1" href="">操作按钮</a>&ndash;&gt;-->
+			<!--</div>-->
+		</div>
+	</div>
+</div>
+</body>
+</html>
+<script language="JavaScript">
+	/////////////////此代码每个页面固定写法 xieyt-begin//////////////
+	function init(){
+		listen(new WebSocket(wsUri));
+	}
+	window.addEventListener("load", init, false);
+	/////////////////此代码每个页面固定写法 xieyt-end////////////////
+
+
+	//每个页面实现该方法来进行图片切换的半动画效果
+	function businessProcess(event) {
+		var o = JSON.parse(event.data);
+
+		var deviceTag = o.DEVICE;
+		var deviceValue = o.VALUE;
+		//判断是哪个设备做了什么变动，实施具体动作
+		switch (deviceTag.toUpperCase()){
+			case "ZY01_DEVICE":
+				var o = deviceValue[0];
+
+				//制样机工作状态
+				if (o.SUBDEVICE01 == "0") {
+					writeText("sbzt", "停止");
+				} else if (o.SUBDEVICE01 == "1") {
+					writeText("sbzt", "运行");
+				} else if (o.SUBDEVICE01 == "2") {
+					writeText("sbzt", "故障");
+				} else if (o.SUBDEVICE01 == "3") {
+					writeText("sbzt", "就绪");
+				}
+				//6mm破碎
+				if (o.SUBDEVICE02 == "0" || o.SUBDEVICE02 == "2") {
+					changeImg("sixmmps", "bdbox");//停止
+					changeImg("channel1", "channel");//停止
+				} else if (o.SUBDEVICE02 == "1") {
+					changeImg("sixmmps", "bdbox on");//启动
+					changeImg("channel1", "channel on");//启动
+				}
+				//6mm缩分，暂时认为 一级缩分为 6mm缩分
+				if (o.SUBDEVICE03 == "0" || o.SUBDEVICE03 == "2") {
+					changeImg("sixmmsf1", "bdbox");//停止
+					changeImg("sixmmsf2", "bdbox");//停止
+					changeImg("channel1", "channel");//停止
+					changeImg("channel5", "channel_v");//停止
+					changeImg("channel7", "channel_v_green");//停止
+					changeImg("channel11", "channel_green");//停止
+					changeImg("channel12", "channel_v");
+					changeImg("channel10", "channel");
+					changeImg("channel18", "channel");
+				} else if (o.SUBDEVICE03 == "1") {
+					changeImg("sixmmsf1", "bdbox on");//启动
+					changeImg("sixmmsf2", "bdbox on");//启动
+					changeImg("channel1", "channel on");//启动
+					changeImg("channel5", "channel_v on");//启动
+					changeImg("channel7", "channel_v_green on");//启动
+					changeImg("channel11", "channel_green on");//启动
+					changeImg("channel12", "channel_v on");
+					changeImg("channel10", "channel on");
+					changeImg("channel18", "channel on");
+				}
+				//3mm破碎
+				if (o.SUBDEVICE04 == "0" || o.SUBDEVICE04 == "2") {
+					changeImg("threemmps", "bdbox");//停止
+					changeImg("channel1", "channel");//停止
+				} else if (o.SUBDEVICE04 == "1"){
+					changeImg("threemmps", "bdbox on");//启动
+					changeImg("channel1", "channel on");//启动
+				}
+				//3mm缩分
+				if (o.SUBDEVICE05 == "0" || o.SUBDEVICE05 == "2") {
+					changeImg("threemmsf", "bdbox");//停止
+					changeImg("threemmsf1", "bdbox");//停止
+					changeImg("threemmsf2", "bdbox");//停止
+					changeImg("channel1", "channel");//停止
+					changeImg("channel2", "channel");//停止
+					changeImg("channel3", "channel_green");//停止
+					changeImg("channel8", "channel_v_green");//停止
+					changeImg("channel11", "channel_green");//停止
+					changeImg("channel13", "channel_v");//停止
+					changeImg("channel18", "channel");
+				} else if (o.SUBDEVICE05 == "1"){
+					changeImg("threemmsf", "bdbox on");//启动
+					changeImg("threemmsf1", "bdbox on");//启动
+					changeImg("threemmsf2", "bdbox on");//启动
+					changeImg("channel1", "channel on");//启动
+					changeImg("channel2", "channel on");//启动
+					changeImg("channel3", "channel_green on");//启动
+					changeImg("channel8", "channel_v_green on");//启动
+					changeImg("channel11", "channel_green on");//启动
+					changeImg("channel13", "channel_v on");//启动
+					changeImg("channel18", "channel on");
+				}
+				//0.2mm破碎
+				if (o.SUBDEVICE06 == "0" || o.SUBDEVICE06 == "2") {
+					changeImg("twommps", "bdbox");//停止
+					changeImg("channel11", "channel_green");//停止
+					changeImg("channel4", "channel");//停止
+					changeImg("channel9", "channel_v_green");//停止
+				} else if (o.SUBDEVICE06 == "1"){
+					changeImg("twommps", "bdbox on");//启动
+					changeImg("channel4", "channel on");//启动
+					changeImg("channel11", "channel_green on");//启动
+					changeImg("channel9", "channel_v_green on");//停启动
+				}
+				//0.2mm缩分
+				if (o.SUBDEVICE07 == "0" || o.SUBDEVICE07 == "2") {
+					changeImg("twommsf", "bdbox");//停止
+					changeImg("channel14", "channel_v");//停止
+					changeImg("channel15", "channel");//停止
+					changeImg("channel16", "channel_v");//停止
+					changeImg("channel17", "channel_v");//停止
+					changeImg("channel18", "channel");
+				} else if (o.SUBDEVICE07 == "1"){
+					changeImg("twommsf", "bdbox on");//启动
+					changeImg("channel14", "channel_v on");//启动
+					changeImg("channel15", "channel on");//启动
+					changeImg("channel16", "channel_v on");//启动
+					changeImg("channel17", "channel_v on");//启动
+					changeImg("channel18", "channel on");
+				}
+
+				//转运皮带（输送机联合方向）
+				if (o.SUBDEVICE21 == "0" || o.SUBDEVICE21 == "2") {
+					changeImg("channel6", "channel_v");//停止
+				} else if (o.SUBDEVICE07 == "1"){
+					changeImg("channel6", "channel_v on");//启动
+				}
+				//转运皮带（输送机人工方向）
+				if (o.SUBDEVICE22 == "0" || o.SUBDEVICE22 == "2") {
+					changeImg("channel6", "channel_v");//停止
+				} else if (o.SUBDEVICE07 == "1"){
+					changeImg("channel6", "channel_v on");//启动
+				}
+
+				if (o.SUBDEVICE08 == "0" || o.SUBDEVICE08 == "2") {
+					changeImg("zyganzao", "bdbox");//停止
+				} else if (o.SUBDEVICE08 == "1"){
+					changeImg("zyganzao", "bdbox on");//启动
+				}
+				if (o.SUBDEVICE09 == "0" || o.SUBDEVICE09 == "2") {
+					writeText("worktxt", "非工作状态");
+					changeImg("zdccf", "pfbox");//停止
+				} else if (o.SUBDEVICE09 == "1"){
+					writeText("worktxt", "工作状态");//启动
+					changeImg("zdccf", "pfbox on");//启动
+				}
+				if (o.SUBDEVICE10 == "0" || o.SUBDEVICE10 == "2") {
+					changeImg("baozhuangji", "bdbox");//停止
+				} else if (o.SUBDEVICE10 == "1"){
+					changeImg("baozhuangji", "bdbox on");//启动
+				}
+				if (o.SUBDEVICE12) {
+					writeText("endczsz", o.SUBDEVICE12);
+				}
+				if (o.SUBDEVICE13 == "0" || o.SUBDEVICE13 == "2") {
+					changeImg("zyql1", "bdbox");
+					changeImg("zyzql2", "bdbox");
+					changeImg("channel11", "channel_green");//停止
+				} else if (o.SUBDEVICE13 == "1"){
+					changeImg("zyql1", "bdbox on");
+					changeImg("zyzql2", "bdbox on");
+					changeImg("channel11", "channel_green on");//启动
+				}
+
+//				if (o.SUBDEVICE17 == "0" || o.SUBDEVICE17 == "2") {
+//					changeImg("sixmmData", "lamp_black");//停止
+//				} else if (o.SUBDEVICE17 == "1"){
+//					changeImg("sixmmData", "lamp_red");//启动
+//				}
+//				if (o.SUBDEVICE18 == "0" || o.SUBDEVICE18 == "2") {
+//					changeImg("threemmData", "lamp_black");//停止
+//				} else if (o.SUBDEVICE18 == "1"){
+//					changeImg("threemmData", "lamp_red");//启动
+//				}
+//				if (o.SUBDEVICE19 == "0" || o.SUBDEVICE19 == "2") {
+//					changeImg("zero2mmData1", "lamp_black");//停止
+//				} else if (o.SUBDEVICE19 == "1"){
+//					changeImg("zero2mmData1", "lamp_red");//启动
+//				}
+//				if (o.SUBDEVICE20 == "0" || o.SUBDEVICE20 == "2") {
+//					changeImg("zero2mmData2", "lamp_black");//停止
+//				} else if (o.SUBDEVICE20 == "1"){
+//					changeImg("zero2mmData2", "lamp_red");//启动
+//				}
+
+				//来料重量
+				writeText("llzl", o.SUBDEVICE11);
+				//出料重量
+				writeText("endczsz", o.SUBDEVICE12);
+				//干燥温度
+//				writeText("dryTempr", o.SUBDEVICE21+" ℃");
+				//制样编码
+				writeText("zybm", o.SUBDEVICE44);
+                //批次号
+                writeText("batchNo", o.SUBDEVICE45);
+
+				break;
+
+
+			default:
+		}
+	}
+
+</script>

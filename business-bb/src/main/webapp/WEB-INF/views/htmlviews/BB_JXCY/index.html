@@ -1,0 +1,639 @@
+<!doctype html>
+<html>
+	    <head>
+	    <meta charset="utf-8">
+	    <title>采样机</title>
+	    <link rel="stylesheet" href="${base}/htmlresource/BB_JXCY/style.css">
+	    <script type="text/javascript" src="${base}/htmlresource/jquery.js"></script>
+      <script type="text/javascript" src="${base}/htmlresource/commonImgJS.js"></script>
+	    <script type="text/javascript">
+	    var minW = 1500;
+	    $(function () {
+	    	CheckSizeZoom()
+	    	$('#a').css('visibility', 'visible');
+	    });
+	    $(window).resize(CheckSizeZoom)
+
+	    function CheckSizeZoom() {
+	    if ($(window).width() < minW) {
+	        var zoomLev = $(window).width() / minW;
+
+	        if (typeof (document.body.style.zoom) != "undefined") {
+	            $(document.body).css('zoom', zoomLev);
+	            $(document.body).width($(window).width() / zoomLev);
+	            $(document.body).css('position', 'relative');
+	        }
+	        else {
+	            // Mozilla doesn't support zoom, use -moz-transform to scale and compensate for lost width
+	            $('#a').css('-moz-transform', "scale(" + zoomLev + ")");
+	            $('#a').width($(window).width() / zoomLev + 10);
+	            $('#a').css('position', 'relative');
+	            $('#a').css('left', (($(window).width() - minW - 16) / 2) + "px");
+	            $('#a').css('top', "-19px");
+	            $('#a').css('position', 'relative');
+	        }
+	    }
+	    else {
+	        $(document.body).css('zoom', '');
+	        $('#a').css('position', '');
+	        $('#a').css('left', "");
+	        $('#a').css('top', "");
+	        $('#a').css('-moz-transform', "");
+	        $('#a').width("");
+	    }
+	    }
+	    </script>
+	    </head>
+
+<body>
+<div id="Canvas"/>
+<!-- 1#采样机-->
+<div class="main">
+          <div class="baseimg">
+    <div id="zuantou1" class="zuantou_green"></div>
+    <div class="sijiaoimg"></div>
+    <div id="posuijiimg1" class="posuiji_green"></div>
+    <div id="suofenjiimg1" class="suofenji_green"></div>
+    <div class="qiliaodou_red"></div>
+    <div class="jiyangtong_green"></div>
+    <div class="ledtext">车&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号：<span id="cychepaihao1">&nbsp;</span></div>
+    <!--<div class="state_red state01"></div>-->
+    <div id="dachezhuangt1" class="state_green state02"></div>
+    <!--<div class="state_red state03"></div>-->
+    <div id="xiaochezhuangtai1" class="state_green state04"></div>
+    <div id="posuijizhuangt1" class="state_green state05"></div>
+    <div id="suofenjizhuangtai1" class="state_green state06"></div>
+    <div id="jiyangtong1" class="state_green state07"></div>
+    <div id="qiliaodou1" class="state_red state08"></div>
+    <div class="text01 font13gray">破碎机</div>
+    <div class="text02 font13gray">缩分机</div>
+    <div class="text03 font13gray">集样筒</div>
+    <div class="text04 font13gray">弃料斗</div>
+  </div>
+          <div class="infotable infotable01">
+    <div class="info01">采样机1</div>
+    <div class="info02">
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" class="infotable">
+        <tr>
+                  <td width="33%">运行方式</td>
+                  <td width="33%">远程</td>
+                  <td width="33%">采样车数</td>
+                </tr>
+        <tr>
+                  <td>运行状态</td>
+                  <td id="cyj1runstate" class="dot_green">&nbsp;</td>
+                  <td id="tablecycheshu1">&nbsp;</td>
+                </tr>
+      </table>
+            </div>
+  </div>
+        </div>
+<!-- 2#采样机-->
+<!--<div class="main02">
+          <div class="baseimg">
+    <div id="zuantou2" class="zuantou_green"></div>
+    <div class="sijiaoimg"></div>
+    <div id="posuijiimg2" class="posuiji_green"></div>
+    <div id="suofenjiimg2" class="suofenji_green"></div>
+    <div class="qiliaodou_red"></div>
+    <div class="jiyangtong_green"></div>
+    <div class="ledtext">车&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号：<span id="cychepaihao2">&nbsp;</span></div>
+    &lt;!&ndash;<div class="state_red state01"></div>&ndash;&gt;
+    <div id="dachezhuangt2" class="state_green state02"></div>
+    &lt;!&ndash;<div class="state_red state03"></div>&ndash;&gt;
+    <div id="xiaochezhuangtai2" class="state_green state04"></div>
+    <div id="posuijizhuangt2" class="state_green state05"></div>
+    <div id="suofenjizhuangtai2" class="state_green state06"></div>
+    <div id="jiyangtong2" class="state_green state07"></div>
+    <div id="qiliaodou2" class="state_red state08"></div>
+    <div class="text01 font13gray">破碎机</div>
+    <div class="text02 font13gray">缩分机</div>
+    <div class="text03 font13gray">集样筒</div>
+    <div class="text04 font13gray">弃料斗</div>
+  </div>
+          <div class="infotable infotable01">
+    <div class="info01">采样机2</div>
+    <div class="info02">
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" class="infotable">
+        <tr>
+                  <td width="33%">运行方式</td>
+                  <td width="33%">远程</td>
+                  <td width="33%">采样车数</td>
+                </tr>
+        <tr>
+                  <td>运行状态</td>
+                  <td id="cyj2runstate" class="dot_green">&nbsp;</td>
+                  <td id="tablecycheshu2">&nbsp;</td>
+                </tr>
+      </table>
+    </div>
+  </div>
+</div>-->
+
+<div class="infotablecyg infotable04">
+          <div class="info05">采样罐监控：</div>
+          <div class="info06">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+        <td valign="top">1#采样机</td>
+        <td id="bottle11" class="bottle_empty"><p class="num">#1</p>
+                  <p><span id="cybatchno11">&nbsp;</span></p>
+                  <p>采样点数：<span id="cycheshu11">&nbsp;</span></p></td>
+        <td id="bottle12" class="bottle_empty"><p class="num">#2</p>
+                  <p><span id="cybatchno12">&nbsp;</span></p>
+                  <p>采样点数：<span id="cycheshu12">&nbsp;</span></p></td>
+        <td id="bottle13" class="bottle_empty"><p class="num">#3</p>
+                  <p><span id="cybatchno13">&nbsp;</span></p>
+                  <p>采样点数：<span id="cycheshu13">&nbsp;</span></p></td>
+        <td id="bottle14" class="bottle_empty"><p class="num">#4</p>
+                  <p><span id="cybatchno14">&nbsp;</span></p>
+                  <p>采样点数：<span id="cycheshu14">&nbsp;</span></p></td>
+        <td id="bottle15" class="bottle_empty"><p class="num">#5</p>
+                  <p><span id="cybatchno15">&nbsp;</span></p>
+                  <p>采样点数：<span id="cycheshu15">&nbsp;</span></p></td>
+        <td id="bottle16" class="bottle_empty"><p class="num">#6</p>
+                  <p><span id="cybatchno16">&nbsp;</span></p>
+                  <p>采样点数：<span id="cycheshu16">&nbsp;</span></p></td>
+        <td id="bottle17" class="bottle_empty"><p class="num">#7</p>
+                  <p><span id="cybatchno17">&nbsp;</span></p>
+                  <p>采样点数：<span id="cycheshu17">&nbsp;</span></p></td>
+        <td id="bottle18" class="bottle_empty"><p class="num">#8</p>
+                  <p><span id="cybatchno18">&nbsp;</span></p>
+                  <p>采样点数：<span id="cycheshu18">&nbsp;</span></p></td>
+      </tr>
+
+     <!-- <tr>
+        <td>2#采样机</td>
+        <td id="bottle21" class="bottle_empty"><p class="num">#1</p>
+                  <p><span id="cybatchno21">&nbsp;</span></p>
+                  <p>采样点数：<span id="cycheshu21">&nbsp;</span></p></td>
+        <td id="bottle22" class="bottle_empty"><p class="num">#2</p>
+                  <p><span id="cybatchno22">&nbsp;</span></p>
+                  <p>采样点数：<span id="cycheshu22">&nbsp;</span></p></td>
+        <td id="bottle23" class="bottle_empty"><p class="num">#3</p>
+                  <p><span id="cybatchno23">&nbsp;</span></p>
+                  <p>采样点数：<span id="cycheshu23">&nbsp;</span></p></td>
+        <td id="bottle24" class="bottle_empty"><p class="num">#4</p>
+                  <p><span id="cybatchno24">&nbsp;</span></p>
+                  <p>采样点数：<span id="cycheshu24">&nbsp;</span></p></td>
+        <td id="bottle25" class="bottle_empty"><p class="num">#5</p>
+                  <p><span id="cybatchno25">&nbsp;</span></p>
+                  <p>采样点数：<span id="cycheshu25">&nbsp;</span></p></td>
+        <td id="bottle26" class="bottle_empty"><p class="num">#6</p>
+                  <p><span id="cybatchno26">&nbsp;</span></p>
+                  <p>采样点数：<span id="cycheshu26">&nbsp;</span></p></td>
+        <td id="bottle27" class="bottle_empty"><p class="num">#7</p>
+                  <p><span id="cybatchno27">&nbsp;</span></p>
+                  <p>采样点数：<span id="cycheshu27">&nbsp;</span></p></td>
+        <td id="bottle28" class="bottle_empty"><p class="num">#8</p>
+                  <p><span id="cybatchno28">&nbsp;</span></p>
+                  <p>采样点数：<span id="cycheshu28">&nbsp;</span></p></td>
+      </tr>-->
+    </table>
+  </div>
+</div>
+
+</body>
+</html>
+<script language="JavaScript">
+    /////////////////此代码每个页面固定写法 xieyt-begin//////////////
+    function init(){
+        listen(new WebSocket(wsUri));
+    }
+    window.addEventListener("load", init, false);
+    /////////////////此代码每个页面固定写法 xieyt-end////////////////
+
+    function businessProcess(event) {
+        var o = JSON.parse(event.data);
+        var deviceTag = o.DEVICE;
+        var deviceValue = o.VALUE;
+
+        //判断是哪个设备做了什么变动，实施具体动作
+        switch (deviceTag.toUpperCase()){
+            //采样机工作状态
+            case "CY1ZT001":
+                if (deviceValue == "1"){
+                    changeImg("cyj1runstate", "dot_red");
+                } else if (deviceValue == "2") {
+                    changeImg("cyj1runstate", "dot_yellow");
+                } else if (deviceValue == "3") {
+                    changeImg("cyj1runstate", "dot_green");
+                } else if (deviceValue == "9") {
+                    changeImg("cyj1runstate", "dot_gray");
+                }
+                break;
+            case "CY2ZT001":
+                if (deviceValue == "1"){
+                    changeImg("cyj2runstate", "dot_red");
+                } else if (deviceValue == "2") {
+                    changeImg("cyj2runstate", "dot_yellow");
+                } else if (deviceValue == "3") {
+                    changeImg("cyj2runstate", "dot_green");
+                } else if (deviceValue == "9") {
+                    changeImg("cyj2runstate", "dot_gray");
+                }
+                break;
+            //采样机红绿灯-红灯写车牌。绿灯消车牌
+            case "CY1HL002":
+                if (deviceValue == "0"){
+                    writeText("cychepaihao1", o.CP);//写车牌
+                } else if (deviceValue == "1") {
+                    writeText("cychepaihao1", "&nbsp;");//写车牌
+                }
+                break;
+            case "CY2HL002":  // CY2HL001进  CY2HL002出
+                if (deviceValue == "0"){
+                    writeText("cychepaihao2", o.CP);//写车牌
+                } else if (deviceValue == "1") {
+                    writeText("cychepaihao2", "&nbsp;");//写车牌
+                }
+                break;
+            //大车状态
+            case "CY1CY007":
+                if (deviceValue == "0"||deviceValue == "3"){
+                    changeImg("dachezhuangt1", "state_green state02");
+                } else if (deviceValue == "1") {
+                    changeImg("dachezhuangt1", "state_red state02");
+                } else if (deviceValue == "2") {
+                    changeImg("dachezhuangt1", "state_yellow state02");
+                }
+                break;
+            case "CY2CY007":
+                if (deviceValue == "0"||deviceValue == "3"){
+                    changeImg("dachezhuangt2", "state_green state02");
+                } else if (deviceValue == "1") {
+                    changeImg("dachezhuangt2", "state_red state02");
+                } else if (deviceValue == "2") {
+                    changeImg("dachezhuangt2", "state_yellow state02");
+                }
+                break;
+            //小车状态
+            case "CY1CY008":
+                if (deviceValue == "0"||deviceValue == "3"){
+                    changeImg("xiaochezhuangtai1", "state_green state04");
+                } else if (deviceValue == "1") {
+                    changeImg("xiaochezhuangtai1", "state_red state04");
+                } else if (deviceValue == "2") {
+                    changeImg("xiaochezhuangtai1", "state_yellow state04");
+                }
+                break;
+            case "CY2CY008":
+                if (deviceValue == "0"||deviceValue == "3"){
+                    changeImg("xiaochezhuangtai2", "state_green state04");
+                } else if (deviceValue == "1") {
+                    changeImg("xiaochezhuangtai2", "state_red state04");
+                } else if (deviceValue == "2") {
+                    changeImg("xiaochezhuangtai2", "state_yellow state04");
+                }
+                break;
+            //缩分机
+            case "CY1CY005":
+                if (deviceValue == "0"||deviceValue == "3"){
+                    changeImg("suofenjizhuangtai1", "state_green state06");
+                    changeImg("suofenjiimg1", "suofenji_green");
+                } else if (deviceValue == "1") {
+                    changeImg("suofenjizhuangtai1", "state_red state06");
+                    changeImg("suofenjiimg1", "suofenji_red");
+                } else if (deviceValue == "2") {
+                    changeImg("suofenjizhuangtai1", "state_yellow state06");
+                    changeImg("suofenjiimg1", "suofenji_yellow");
+                }
+                break;
+            case "CY2CY005":
+                if (deviceValue == "0"||deviceValue == "3"){
+                    changeImg("suofenjizhuangtai2", "state_green state06");
+                    changeImg("suofenjiimg2", "suofenji_green");
+                } else if (deviceValue == "1") {
+                    changeImg("suofenjizhuangtai2", "state_red state06");
+                    changeImg("suofenjiimg2", "suofenji_red");
+                } else if (deviceValue == "2") {
+                    changeImg("suofenjizhuangtai2", "state_yellow state06");
+                    changeImg("suofenjiimg2", "suofenji_yellow");
+                }
+                break;
+            //破碎机
+            case "CY1CY003":
+                if (deviceValue == "0"||deviceValue == "3"){
+                    changeImg("posuijizhuangt1", "state_green state05");
+                    changeImg("posuijiimg1", "posuiji_green");
+                } else if (deviceValue == "1") {
+                    changeImg("posuijizhuangt1", "state_red state05");
+                    changeImg("posuijiimg1", "posuiji_red");
+                } else if (deviceValue == "2") {
+                    changeImg("posuijizhuangt1", "state_yellow state05");
+                    changeImg("posuijiimg1", "posuiji_yellow");
+                }
+                break;
+            case "CY2CY003":
+                if (deviceValue == "0"||deviceValue == "3"){
+                    changeImg("posuijizhuangt2", "state_green state05");
+                    changeImg("posuijiimg2", "posuiji_green");
+                } else if (deviceValue == "1") {
+                    changeImg("posuijizhuangt2", "state_red state05");
+                    changeImg("posuijiimg2", "posuiji_red");
+                } else if (deviceValue == "2") {
+                    changeImg("posuijizhuangt2", "state_yellow state05");
+                    changeImg("posuijiimg2", "posuiji_yellow");
+                }
+                break;
+            //集样筒
+            case "CY1CY023":
+                if (deviceValue == "0"||deviceValue == "3"){
+                    changeImg("jiyangtong1", "state_green state07");
+                } else if (deviceValue == "1") {
+                    changeImg("jiyangtong1", "state_red state07");
+                } else if (deviceValue == "2") {
+                    changeImg("jiyangtong1", "state_yellow state07");
+                }
+                break;
+            case "CY2CY023":
+                if (deviceValue == "0"||deviceValue == "3"){
+                    changeImg("jiyangtong2", "state_green state07");
+                } else if (deviceValue == "1") {
+                    changeImg("jiyangtong2", "state_red state07");
+                } else if (deviceValue == "2") {
+                    changeImg("jiyangtong2", "state_yellow state07");
+                }
+                break;
+            //钻头
+            case "CY1CY010":
+                if (deviceValue == "0"||deviceValue == "3"){
+                    changeImg("zuantou1", "zuantou_green");
+                } else if (deviceValue == "1") {
+                    changeImg("zuantou1", "zuantou_red");
+                } else if (deviceValue == "2") {
+                    changeImg("zuantou1", "zuantou_yellow");
+                }
+                break;
+            case "CY2CY010":
+                if (deviceValue == "0"||deviceValue == "3"){
+                    changeImg("zuantou2", "zuantou_green");
+                } else if (deviceValue == "1") {
+                    changeImg("zuantou2", "zuantou_red");
+                } else if (deviceValue == "2") {
+                    changeImg("zuantou2", "zuantou_yellow");
+                }
+                break;
+
+            ////////////////////采样机1  采样罐///////////////////////////////////////
+            case "QC_JYT_INFO":
+                var ii = deviceValue.length;
+                for (var j = 0; j<ii; j++) {
+                    var o = deviceValue[j];
+                    if (o.MACHINE_CODE == "CY01") {
+                        writeText("cycheshu1"+o.BARREL_CODE, o.SAM_NUMBER);
+                        writeText("cybatchno1"+o.BARREL_CODE, o.SAMPLE_CODE);
+                        if (o.BARREL_STATUS == "0") {//未满
+                            changeImg("bottle1"+o.BARREL_CODE, "bottle_31");
+                        } else if (o.BARREL_STATUS == "1") {//已满
+                            changeImg("bottle1"+o.BARREL_CODE, "bottle_full");
+                        }
+                    } else if (o.MACHINE_CODE == "CY02") {
+                        writeText("cycheshu2"+o.BARREL_CODE, o.SAM_NUMBER);
+                        writeText("cybatchno2"+o.BARREL_CODE, o.SAMPLE_CODE);
+                        if (o.BARREL_STATUS == "0") {//未满
+                            changeImg("bottle2"+o.BARREL_CODE, "bottle_31");
+                        } else if (o.BARREL_STATUS == "1") {//已满
+                            changeImg("bottle2"+o.BARREL_CODE, "bottle_full");
+                        }
+                    }
+                }
+                break;
+
+            case "SUMMARY_INFO":
+                writeText("tablecycheshu1", deviceValue.CY1_CARS_CNT);
+                writeText("tablecycheshu2", deviceValue.CY2_CARS_CNT);
+                break;
+
+
+            /////小贾不肯取测点，只能注释掉。  采样机1  采样罐///////////////////////////////////////
+//            case "CY1YG101"://子样数
+//                writeText("cycheshu11", deviceValue);
+//                break;
+//            case "CY1YG102"://批次号
+//                writeText("cybatchno11", deviceValue);
+//                break;
+//            case "CY1YG103"://罐子满状态
+//                if (deviceValue == "0") {//未满
+//                    changeImg("bottle11", "bottle_32");
+//                } else if (deviceValue == "1") {//已满
+//                    changeImg("bottle11", "bottle_full");
+//                }
+//                break;
+//            /////
+//            case "CY1YG201"://子样数
+//                writeText("cycheshu12", deviceValue);
+//                break;
+//            case "CY1YG202"://批次号
+//                writeText("cybatchno12", deviceValue);
+//                break;
+//            case "CY1YG203"://罐子满状态
+//                if (deviceValue == "0") {//未满
+//                    changeImg("bottle12", "bottle_32");
+//                } else if (deviceValue == "1") {//已满
+//                    changeImg("bottle12", "bottle_full");
+//                }
+//                break;
+//
+//            case "CY1YG301"://子样数
+//                writeText("cycheshu13", deviceValue);
+//                break;
+//            case "CY1YG302"://批次号
+//                writeText("cybatchno13", deviceValue);
+//                break;
+//            case "CY1YG303"://罐子满状态
+//                if (deviceValue == "0") {//未满
+//                    changeImg("bottle13", "bottle_32");
+//                } else if (deviceValue == "1") {//已满
+//                    changeImg("bottle13", "bottle_full");
+//                }
+//                break;
+//
+//            case "CY1YG401"://子样数
+//                writeText("cycheshu14", deviceValue);
+//                break;
+//            case "CY1YG402"://批次号
+//                writeText("cybatchno14", deviceValue);
+//                break;
+//            case "CY1YG403"://罐子满状态
+//                if (deviceValue == "0") {//未满
+//                    changeImg("bottle14", "bottle_32");
+//                } else if (deviceValue == "1") {//已满
+//                    changeImg("bottle14", "bottle_full");
+//                }
+//                break;
+//
+//            case "CY1YG501"://子样数
+//                writeText("cycheshu15", deviceValue);
+//                break;
+//            case "CY1YG502"://批次号
+//                writeText("cybatchno15", deviceValue);
+//                break;
+//            case "CY1YG503"://罐子满状态
+//                if (deviceValue == "0") {//未满
+//                    changeImg("bottle15", "bottle_32");
+//                } else if (deviceValue == "1") {//已满
+//                    changeImg("bottle15", "bottle_full");
+//                }
+//                break;
+//
+//            case "CY1YG601"://子样数
+//                writeText("cycheshu16", deviceValue);
+//                break;
+//            case "CY1YG602"://批次号
+//                writeText("cybatchno16", deviceValue);
+//                break;
+//            case "CY1YG603"://罐子满状态
+//                if (deviceValue == "0") {//未满
+//                    changeImg("bottle16", "bottle_32");
+//                } else if (deviceValue == "1") {//已满
+//                    changeImg("bottle16", "bottle_full");
+//                }
+//                break;
+//
+//            case "CY1YG701"://子样数
+//                writeText("cycheshu17", deviceValue);
+//                break;
+//            case "CY1YG702"://批次号
+//                writeText("cybatchno17", deviceValue);
+//                break;
+//            case "CY1YG703"://罐子满状态
+//                if (deviceValue == "0") {//未满
+//                    changeImg("bottle17", "bottle_32");
+//                } else if (deviceValue == "1") {//已满
+//                    changeImg("bottle17", "bottle_full");
+//                }
+//                break;
+//
+//            case "CY1YG801"://子样数
+//                writeText("cycheshu18", deviceValue);
+//                break;
+//            case "CY1YG802"://批次号
+//                writeText("cybatchno18", deviceValue);
+//                break;
+//            case "CY1YG803"://罐子满状态
+//                if (deviceValue == "0") {//未满
+//                    changeImg("bottle18", "bottle_32");
+//                } else if (deviceValue == "1") {//已满
+//                    changeImg("bottle18", "bottle_full");
+//                }
+//                break;
+//
+//            /////////////采样机2///////////////////////////////
+//            case "CY2YG101"://子样数
+//                writeText("cycheshu21", deviceValue);
+//                break;
+//            case "CY2YG102"://批次号
+//                writeText("cybatchno21", deviceValue);
+//                break;
+//            case "CY2YG103"://罐子满状态
+//                if (deviceValue == "0") {//未满
+//                    changeImg("bottle21", "bottle_32");
+//                } else if (deviceValue == "1") {//已满
+//                    changeImg("bottle21", "bottle_full");
+//                }
+//                break;
+//
+//            case "CY2YG201"://子样数
+//                writeText("cycheshu22", deviceValue);
+//                break;
+//            case "CY2YG202"://批次号
+//                writeText("cybatchno22", deviceValue);
+//                break;
+//            case "CY2YG203"://罐子满状态
+//                if (deviceValue == "0") {//未满
+//                    changeImg("bottle22", "bottle_32");
+//                } else if (deviceValue == "1") {//已满
+//                    changeImg("bottle22", "bottle_full");
+//                }
+//                break;
+//
+//            case "CY2YG301"://子样数
+//                writeText("cycheshu23", deviceValue);
+//                break;
+//            case "CY2YG302"://批次号
+//                writeText("cybatchno23", deviceValue);
+//                break;
+//            case "CY2YG303"://罐子满状态
+//                if (deviceValue == "0") {//未满
+//                    changeImg("bottle23", "bottle_32");
+//                } else if (deviceValue == "1") {//已满
+//                    changeImg("bottle23", "bottle_full");
+//                }
+//                break;
+//
+//            case "CY2YG401"://子样数
+//                writeText("cycheshu24", deviceValue);
+//                break;
+//            case "CY2YG402"://批次号
+//                writeText("cybatchno24", deviceValue);
+//                break;
+//            case "CY2YG403"://罐子满状态
+//                if (deviceValue == "0") {//未满
+//                    changeImg("bottle24", "bottle_32");
+//                } else if (deviceValue == "1") {//已满
+//                    changeImg("bottle24", "bottle_full");
+//                }
+//                break;
+//
+//            case "CY2YG501"://子样数
+//                writeText("cycheshu25", deviceValue);
+//                break;
+//            case "CY2YG502"://批次号
+//                writeText("cybatchno25", deviceValue);
+//                break;
+//            case "CY2YG503"://罐子满状态
+//                if (deviceValue == "0") {//未满
+//                    changeImg("bottle25", "bottle_32");
+//                } else if (deviceValue == "1") {//已满
+//                    changeImg("bottle25", "bottle_full");
+//                }
+//                break;
+//
+//            case "CY2YG601"://子样数
+//                writeText("cycheshu26", deviceValue);
+//                break;
+//            case "CY2YG602"://批次号
+//                writeText("cybatchno26", deviceValue);
+//                break;
+//            case "CY2YG603"://罐子满状态
+//                if (deviceValue == "0") {//未满
+//                    changeImg("bottle26", "bottle_32");
+//                } else if (deviceValue == "1") {//已满
+//                    changeImg("bottle26", "bottle_full");
+//                }
+//                break;
+//
+//            case "CY2YG701"://子样数
+//                writeText("cycheshu27", deviceValue);
+//                break;
+//            case "CY2YG702"://批次号
+//                writeText("cybatchno27", deviceValue);
+//                break;
+//            case "CY2YG703"://罐子满状态
+//                if (deviceValue == "0") {//未满
+//                    changeImg("bottle27", "bottle_32");
+//                } else if (deviceValue == "1") {//已满
+//                    changeImg("bottle27", "bottle_full");
+//                }
+//                break;
+//
+//            case "CY2YG801"://子样数
+//                writeText("cycheshu28", deviceValue);
+//                break;
+//            case "CY2YG802"://批次号
+//                writeText("cybatchno28", deviceValue);
+//                break;
+//            case "CY2YG803"://罐子满状态
+//                if (deviceValue == "0") {//未满
+//                    changeImg("bottle28", "bottle_32");
+//                } else if (deviceValue == "1") {//已满
+//                    changeImg("bottle28", "bottle_full");
+//                }
+//                break;
+
+            default:
+        }
+    }
+
+</script>

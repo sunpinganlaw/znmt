@@ -1,0 +1,817 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>入厂采样机</title>
+    <link rel="stylesheet" href="${base}/htmlresource/BB_SYCY/style.css">
+    <script type="text/javascript" src="${base}/htmlresource/commonImgJS.js"></script>
+    <style>
+        body {
+            background: #000;
+            position: relative;
+            font-family: 微软雅黑, 黑体;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        #Canvas {
+            height: 100%;
+            min-height: 730px;
+            position: relative;
+            padding-bottom: 0;
+        / background-image: url(%E6%B5%81%E7%A8%8B%E5%9B%BE-%E6%81%A2%E5%A4%8D%E7%9A%84.png);
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .Content {
+            height: 100%;
+            display: block;
+        }
+
+        li {
+            list-style-type: none;
+        }
+
+        i {
+            display: block;
+        }
+
+        span, font {
+            float: left;
+            color: #FFF;
+            font-size: 14px;
+            font-family: 微软雅黑, 黑体;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .Content span {
+            position: absolute;
+            display: block;
+        }
+
+        .tdCenter {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+<div id="Canvas" style="display:block;">
+    <div class="Content">
+        <div style="position: relative;top: 33%;width: 1100px;  margin: 0 auto;">
+            <div style=" position:absolute; width: 1100px;  top:310px; display:block">
+        <span class="state" title="状态点" style=" left:360px; top: -650px; z-index:10">
+        <!--1PA-->
+        <i title="水运采样机" id="psj2_zt1" class="lamp_black" style="left:169px; top:199px;"></i>
+        <i title="1PA-煤流信号" id="mlxh_zt1" class="lamp_black" style="left:10px; top:88px;"></i>
+        <i title="1PA-采样机" id="cyt_zt1" class="lamp_black" style="left:80px; top:88px;"></i>
+        <i title="1PA-振动电机1" id="zddj1_zt1" class="lamp_black" style="left:288px; top:100px;"></i>
+        <i title="1PA-初给料清扫" id="cglqs_zt1" class="lamp_black" style="left:265px; top:175px;"></i>
+        <i title="1PA-初级给料" id="cjglj_zt1" class="lamp_black" style="left:40px; top:145px;"></i>
+        <i title="1PA-破碎机" id="psj_zt1" class="lamp_black" style="left:-5px; top:240px;"></i>
+            <!--<i title="1PA-破碎机2？" id="psj2_zt1" class="lamp_black" style="left:160px; top:190px;"></i> -->
+        <i title="1PA-破碎机清扫" id="psjqc_zt1" class="lamp_black" style="left:260px; top:265px;"></i>
+        <i title="1PA-次级给料" id="cjgl_zt1" class="lamp_black" style="left:180px; top:295px;"></i>
+        <i title="1PA-次级给料清扫" id="cjglqs_zt1" class="lamp_black" style="left:270px; top:305px;"></i>
+        <i title="1PA-缩分器" id="sfq_zt1" class="lamp_black" style="left:30px; top:360px;"></i>
+        <i title="1PA-斗提机" id="dtj_zt1" class="lamp_black" style="left:385px; top:370px;"></i><!--<i title="1PB-破碎机2？" id="psj2_zt2" class="lamp_black" style="left:626px; top:190px;"></i> -->
+		<i title="输送电机" id="ssdj1" class="lamp_black" style="left:0px; top:418px;"></i>
+        </span>
+        <span title="监控图" style=" left:50%; margin-left:-180px;  top:-600px; z-index:1">
+                <img src="${base}/htmlresource/BB_SYCY/img/map_index.jpg">
+        </span>
+        <span class="equipment" title="区域一" style=" right:0px;  top: -650px; z-index:10">
+            <font style="font-weight:bold; display:block; margin-bottom:5px;font-size:18px;">设备运行状态：</font>
+        <div class="clear"></div>
+        <table width="260" border="0" style="border:1px solid #454545" cellspacing="0" cellpadding="0">
+            <tr>
+                <td>设备</td>
+                <td>A采样机</td>
+            </tr>
+            <tr>
+                <td>采样头</td>
+                <td title="1#"><i id="cyt1" class="lamp_black "></i></td>
+            </tr>
+            <tr>
+                <td>初级给料机</td>
+                <td title="1#"><i id="cjglj1" class="lamp_black "></i></td>
+            </tr>
+            <tr>
+                <td>初级清扫</td>
+                <td title="1#"><i id="cjqs1" class="lamp_black "></i></td>
+            </tr>
+            <tr>
+                <td>破碎机</td>
+                <td title="1#"><i id="psj1" class="lamp_black "></i></td>
+            </tr>
+            <tr>
+                <td>破碎机清扫</td>
+                <td title="1#"><i id="psjqs1" class="lamp_black "></i></td>
+            </tr>
+            <tr>
+                <td>次级给料机</td>
+                <td title="1#"><i id="cijglj1" class="lamp_black "></i></td>
+            </tr>
+            <tr>
+                <td>次级清扫</td>
+                <td title="1#"><i id="cijqs1" class="lamp_black "></i></td>
+            </tr>
+            <tr>
+                <td>缩分器</td>
+                <td title="1#"><i id="sfq1" class="lamp_black "></i></td>
+            </tr>
+            <tr>
+                <td>斗提机</td>
+                <td title="1#"><i id="dtj1" class="lamp_black "></i></td>
+            </tr>
+            <tr>
+                <td>输送电机</td>
+                <td title="1#"><i id="ssdj1tab" class="lamp_black "></i></td>
+            </tr>
+            <tr>
+                <td>放料阀关</td>
+                <td title="1#"><i id="flfg1" class="lamp_black "></i></td>
+            </tr>
+            <tr>
+                <td>放料阀开</td>
+                <td title="1#"><i id="flfk1" class="lamp_black "></i></td>
+            </tr>
+        </table>
+        </span> <span title="区域二" style=" left:0px;   top: -650px; z-index:10"> <font
+                    style="font-weight:bold; display:block; margin-bottom:5px;font-size:18px;">运行方式：</font>
+        <div
+                class="clear"></div>
+        <table width="260" border="0" style="border:1px solid #454545" cellspacing="0" cellpadding="0">
+            <tr>
+                <td></td>
+                <td style= "text-align: center">水运采样机</td>
+            </tr>
+            <tr>
+                <td>运行方式</td>
+                <td id="cyj1runtype" title="1#" class="tdCenter">远程</td>
+            </tr>
+            <tr>
+                <td>控制模式</td>
+                <td id="kzms1" title="1#" class="tdCenter">&nbsp;</td>
+            </tr>
+            <tr>
+                <td>系统状态</td>
+                <td id="xtzt1" title="1#" class="tdCenter">&nbsp;</td>
+            </tr>
+            <tr>
+                <td>设备状态</td>
+                <td id="sbzt1" title="1#" class="tdCenter">&nbsp;</td>
+            </tr>
+        </table>
+        </span> <span title="区域三" style=" left:0px;   top: -430px; z-index:10"> <font
+                    style="font-weight:bold; display:block; margin-bottom:5px;font-size:18px;">采样方案：</font>
+        <div
+                class="clear"></div>
+        <table width="260" border="0" style="border:1px solid #454545" cellspacing="0" cellpadding="0">
+            <tr>
+                <td></td>
+                <td style="text-align: center">水运采样机</td>
+            </tr>
+            <!--
+            <tr>
+                <td>采样批次号</td>
+                <td id="ccys1TD" title="1#" class="tdCenter">&nbsp;</td>
+            </tr>
+            -->
+            <tr>
+                <td>采样间隔时间</td>
+                <td id="cyjgsj1TD" title="1#" class="tdCenter">&nbsp;</td>
+            </tr>
+            <tr>
+                <td>下次采样时间</td>
+                <td id="xccysj1" title="1#" class="tdCenter">&nbsp;</td>
+            </tr>
+            <tr>
+                <td>开始缩分时间</td>
+                <td id="kssfsj1" title="1#" class="tdCenter">&nbsp;</td>
+            </tr>
+            <tr>
+                <td>缩分次数</td>
+                <td id="sfpl1" title="1#" class="tdCenter">&nbsp;</td>
+            </tr>
+            <tr>
+                <td>采样次数</td>
+                <td id="zycs1" title="1#" class="tdCenter">&nbsp;</td>
+            </tr>
+            <tr>
+                <td>当前接料桶</td>
+                <td id="dqjlt1" title="1#" class="tdCenter">&nbsp;</td>
+            </tr>
+            <tr>
+                <td>当前放料桶</td>
+                <td id="dqflt1" title="1#" class="tdCenter">&nbsp;</td>
+            </tr>
+            <tr>
+                <td>重量(公斤)</td>
+                <td id="zl1TD" title="1#" class="tdCenter">&nbsp;</td>
+            </tr>
+        </table>
+        </span> <span class="sampling_tank" title="区域四" style=" left:300px; top:-175px; z-index:10"> <p
+                    style="font-weight:bold; display:block; margin-bottom:5px;font-size:18px; text-align:left;">采样罐监控：</p>
+
+        <table width="500px" border="0" style="border:1px solid #454545" cellspacing="0" cellpadding="0">
+            <tr>
+
+                <td>
+                    <dl>
+                        <dt>#1</dt>
+                        <dd id="cygzt11" class="kong"></dd>
+                        <dd id="cypc11">采样编码：</dd>
+                        <dd id="cys11">采样次数：</dd>
+                        <dd id="cyzl11">采样重量：</dd>
+                    </dl>
+                </td>
+                <td>
+                    <dl>
+                        <dt>#2</dt>
+                        <dd id="cygzt12" class="kong"></dd>
+                        <dd id="cypc12">采样编码：</dd>
+                        <dd id="cys12">采样次数：</dd>
+                        <dd id="cyzl12">采样重量：</dd>
+                    </dl>
+                </td>
+                <td>
+                    <dl>
+                        <dt>#3</dt>
+                        <dd id="cygzt13" class="kong"></dd>
+                        <dd id="cypc13">采样编码：</dd>
+                        <dd id="cys13">采样次数：</dd>
+                        <dd id="cyzl13">采样重量：</dd>
+                    </dl>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <dl>
+                        <dt>#4</dt>
+                        <dd id="cygzt14" class="kong"></dd>
+                        <dd id="cypc14">采样编码：</dd>
+                        <dd id="cys14">采样次数：</dd>
+                        <dd id="cyzl14">采样重量：</dd>
+                    </dl>
+                </td>
+                <td>
+                    <dl>
+                        <dt>#5</dt>
+                        <dd id="cygzt15" class="kong"></dd>
+                        <dd id="cypc15">采样编码：</dd>
+                        <dd id="cys15">采样次数：</dd>
+                        <dd id="cyzl15">采样重量：</dd>
+                    </dl>
+                </td>
+                <td>
+                    <dl>
+                        <dt>#6</dt>
+                        <dd id="cygzt16" class="kong"></dd>
+                        <dd id="cypc16">采样编码：</dd>
+                        <dd id="cys16">采样次数：</dd>
+                        <dd id="cyzl16">采样重量：</dd>
+                    </dl>
+                </td>
+            </tr>
+        </table>
+        </span>
+                <!--一号采样机新增展示 begin-->
+        <span title="区域五" style=" left:350px; top: -620px; z-index:10"> <font
+                style="font-weight:bold; display:block; margin-bottom:5px;font-size:10px;">初采定时：</font>
+        <div class="clear"></div>
+        <table width="70" border="0" style="border:1px solid #454545" cellspacing="0" cellpadding="0">
+            <tr>
+                <td id="ccds1" style="height: 20px" title="1#">0</td>
+                <td style="height: 20px">S</td>
+            </tr>
+        </table>
+        </span>
+
+        <span title="区域瞬时流量" style=" left:720px; top: -620px; z-index:10"> <font
+                style="font-weight:bold; display:block; margin-bottom:5px;font-size:10px;">C3C瞬时值：</font>
+        <div class="clear"></div>
+        <table width="70" border="0" style="border:1px solid #454545" cellspacing="0" cellpadding="0">
+            <tr>
+                <td id="pdssll1" style="height: 20px" title="1#">0</td>
+            </tr>
+        </table>
+        </span>
+
+        <span title="区域六" style=" left:600px; top: -525px; z-index:10"> <font
+                style="font-weight:bold; display:block; margin-bottom:5px;font-size:10px;">初采次数：</font>
+        <div
+                class="clear"></div>
+        <table width="70" border="0" style="border:1px solid #454545" cellspacing="0" cellpadding="0">
+            <tr>
+                <td id="cccs1" style="height: 20px" class="tdCenter" title="1#"></td>
+            </tr>
+        </table>
+        </span>
+        <span title="区域七" style=" left:355px;   top: -540px; z-index:10"> <font
+                style="font-weight:bold; display:block; margin-bottom:5px;font-size:10px;">煤流信号</font>
+        </span>
+                <!--二号采样机新增展示 begin--></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script language="JavaScript">
+    function init() {
+        listen(new WebSocket(wsUri));
+    }
+    window.addEventListener("load", init, false);
+    //每个页面实现该方法来进行图片切换的半动画效果
+    function businessProcess(event) {
+        var o = JSON.parse(event.data);
+        var deviceTag = o.DEVICE;
+        var deviceValue = o.VALUE;
+
+        switch (deviceTag.toUpperCase()) {
+            //1号采样机1号罐子
+            case "PC3YG101":
+                writeText("cys11", "采样次数：" + deviceValue);
+                break;
+            case "PC3YG102":
+                writeText("cypc11", "采样编码：" + deviceValue);
+                break;
+            case "PC3YG103":
+                if (deviceValue == "0") {
+                    changeImg("cygzt11", "kong");
+                } else if (deviceValue == "1") {
+                    changeImg("cygzt11", "man");
+                }
+                break;
+            case "PC3YG104":
+                writeText("cyzl11", "采样重量：" + parseInt(deviceValue) > 100 ? "0" : deviceValue);
+                break;
+            //1号采样机2号罐子
+            case "PC3YG201":
+                writeText("cys12", "采样次数：" + deviceValue);
+                break;
+            case "PC3YG202":
+                writeText("cypc12", "采样编码：" + deviceValue);
+                break;
+            case "PC3YG203":
+                if (deviceValue == "0") {
+                    changeImg("cygzt12", "kong");
+                } else if (deviceValue == "1") {
+                    changeImg("cygzt12", "man");
+                }
+                break;
+            case "PC3YG204":
+                writeText("cyzl12", "采样重量：" + parseInt(deviceValue) > 100 ? "0" : deviceValue);
+                break;
+            //1号采样机3号罐子
+            case "PC3YG301":
+                writeText("cys13", "采样次数：" + deviceValue);
+                break;
+            case "PC3YG302":
+                writeText("cypc13", "采样编码：" + deviceValue);
+                break;
+            case "PC3YG303":
+                if (deviceValue == "0") {
+                    changeImg("cygzt13", "kong");
+                } else if (deviceValue == "1") {
+                    changeImg("cygzt13", "man");
+                }
+                break;
+            case "PC3YG304":
+                writeText("cyzl13", "采样重量：" + parseInt(deviceValue) > 100 ? "0" : deviceValue);
+                break;
+            //1号采样机4号罐子
+            case "PC3YG401":
+                writeText("cys14", "采样次数：" + deviceValue);
+                break;
+            case "PC3YG402":
+                writeText("cypc14", "采样编码：" + deviceValue);
+                break;
+            case "PC3YG403":
+                if (deviceValue == "0") {
+                    changeImg("cygzt14", "kong");
+                } else if (deviceValue == "1") {
+                    changeImg("cygzt14", "man");
+                }
+                break;
+            case "PC3YG404":
+                writeText("cyzl14", "采样重量：" + parseInt(deviceValue) > 100 ? "0" : deviceValue);
+                break;
+            //1号采样机5号罐子
+            case "PC3YG501":
+                writeText("cys15", "采样次数：" + deviceValue);
+                break;
+            case "PC3YG502":
+                writeText("cypc15", "采样编码：" + deviceValue);
+                break;
+            case "PC3YG503":
+                if (deviceValue == "0") {
+                    changeImg("cygzt15", "kong");
+                } else if (deviceValue == "1") {
+                    changeImg("cygzt15", "man");
+                }
+                break;
+            case "PC3YG504":
+                writeText("cyzl15", "采样重量：" + parseInt(deviceValue) > 100 ? "0" : deviceValue);
+                break;
+            //1号采样机6号罐子
+            case "PC3YG601":
+                writeText("cys16", "采样次数：" + deviceValue);
+                break;
+            case "PC3YG602":
+                writeText("cypc16", "采样编码：" + deviceValue);
+                break;
+            case "PC3YG603":
+                if (deviceValue == "0") {
+                    changeImg("cygzt16", "kong");
+                } else if (deviceValue == "1") {
+                    changeImg("cygzt16", "man");
+                }
+                break;
+            case "PC3YG604":
+                writeText("cyzl16", "采样重量：" + parseInt(deviceValue) > 100 ? "0" : deviceValue);
+                break;
+
+            //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+            //设备运行状态
+            //采样头-
+            case "PC3CY001":
+                if (deviceValue == "0") {//停止、故障
+                    changeImg("cyt1", "lamp_black");
+                    changeImg("cyt_zt1", "lamp_black");
+                } else if (deviceValue == "2") {
+                    changeImg("cyt1", "lamp_yellow");
+                    changeImg("cyt_zt1", "lamp_yellow");
+                } else if (deviceValue == "1") {//启动
+                    changeImg("cyt1", "lamp_red");
+                    changeImg("cyt_zt1", "lamp_red");
+                }
+                break;
+            //煤流信号
+            case "PC3CY029":
+                if (deviceValue == "0") {//停止、故障
+                    changeImg("mlxh_zt1", "lamp_black");
+                } else if (deviceValue == "2") {
+                    changeImg("mlxh_zt1", "lamp_yellow");
+                } else if (deviceValue == "1") {//启动
+                    changeImg("mlxh_zt1", "lamp_red");
+                }
+                break;
+            //初级给料机
+            case "PC3CY002":
+                if (deviceValue == "0") {//停止、故障
+                    changeImg("cjglj1", "lamp_black");
+                    changeImg("cjglj_zt1", "lamp_black");
+                } else if (deviceValue == "2") {//启动
+                    changeImg("cjglj1", "lamp_yellow");
+                    changeImg("cjglj_zt1", "lamp_yellow");
+                } else if (deviceValue == "1") {//启动
+                    changeImg("cjglj1", "lamp_red");
+                    changeImg("cjglj_zt1", "lamp_red");
+                }
+                break;
+            //初级给料清扫机
+            case "PC3CY025":
+                if (deviceValue == "0") {//停止、故障
+                    changeImg("cjqs1", "lamp_black");
+                    changeImg("cglqs_zt1", "lamp_black");
+                } else if (deviceValue == "2") {//启动
+                    changeImg("cjqs1", "lamp_yellow");
+                    changeImg("cglqs_zt1", "lamp_yellow");
+                } else if (deviceValue == "1") {//启动
+                    changeImg("cjqs1", "lamp_red");
+                    changeImg("cglqs_zt1", "lamp_red");
+                }
+                break;
+            //破碎机
+            case "PC3CY003":
+                if (deviceValue == "0") {//停止、故障
+                    changeImg("psj1", "lamp_black");
+                    changeImg("psj_zt1", "lamp_black");
+                } else if (deviceValue == "2") {//启动
+                    changeImg("psj1", "lamp_yellow");
+                    changeImg("psj_zt1", "lamp_yellow");
+                } else if (deviceValue == "1") {//启动
+                    changeImg("psj1", "lamp_red");
+                    changeImg("psj_zt1", "lamp_red");
+                }
+                break;
+            //破碎机清扫
+            case "PC3CY013":
+                if (deviceValue == "0") {//停止、故障
+                    changeImg("psjqs1", "lamp_black");
+                    changeImg("psjqc_zt1", "lamp_black");
+                } else if (deviceValue == "2") {//启动
+                    changeImg("psjqs1", "lamp_yellow");
+                    changeImg("psjqc_zt1", "lamp_yellow");
+                } else if (deviceValue == "1") {//启动
+                    changeImg("psjqs1", "lamp_red");
+                    changeImg("psjqc_zt1", "lamp_red");
+                }
+                break;
+            //次级给料机-
+            case "PC3CY004":
+                if (deviceValue == "0") {//停止、故障
+                    changeImg("cijglj1", "lamp_black");
+                    changeImg("cjgl_zt1", "lamp_black");
+                } else if (deviceValue == "2") {//启动
+                    changeImg("cijglj1", "lamp_yellow");
+                    changeImg("cjgl_zt1", "lamp_yellow");
+                } else if (deviceValue == "1") {//启动
+                    changeImg("cijglj1", "lamp_red");
+                    changeImg("cjgl_zt1", "lamp_red");
+                }
+                break;
+            //次级清扫
+            case "PC3CY026":
+                if (deviceValue == "0") {//停止、故障
+                    changeImg("cijqs1", "lamp_black");
+                    changeImg("cjglqs_zt1", "lamp_black");
+                } else if (deviceValue == "2") {//启动
+                    changeImg("cijqs1", "lamp_yellow");
+                    changeImg("cjglqs_zt1", "lamp_yellow");
+                } else if (deviceValue == "1") {//启动
+                    changeImg("cijqs1", "lamp_red");
+                    changeImg("cjglqs_zt1", "lamp_red");
+                }
+                break;
+            //缩分器
+            case "PC3CY005":
+                if (deviceValue == "0") {//停止、故障
+                    changeImg("sfq1", "lamp_black");
+                    changeImg("sfq_zt1", "lamp_black");
+                } else if (deviceValue == "2") {//启动
+                    changeImg("sfq1", "lamp_yellow");
+                    changeImg("sfq_zt1", "lamp_yellow");
+                } else if (deviceValue == "1") {//启动
+                    changeImg("sfq1", "lamp_red");
+                    changeImg("sfq_zt1", "lamp_red");
+                }
+                break;
+            //料斗（斗提机）
+            case "PC3CY006":
+                if (deviceValue == "0") {//停止、故障
+                    changeImg("dtj1", "lamp_black");
+                    changeImg("dtj_zt1", "lamp_black");
+                } else if (deviceValue == "2") {//启动
+                    changeImg("dtj1", "lamp_yellow");
+                    changeImg("dtj_zt1", "lamp_yellow");
+                } else if (deviceValue == "1") {//启动
+                    changeImg("dtj1", "lamp_red");
+                    changeImg("dtj_zt1", "lamp_red");
+                }
+                break;
+            //收集器1 集样筒
+            case "PC3CY023":
+                if (deviceValue == "0") {//0：停止；1：启动；2：故障
+                    changeImg("sjq1", "lamp_black");
+                } else if (deviceValue == "2") {
+                    changeImg("sjq1", "lamp_yellow");
+                } else if (deviceValue == "1") {
+                    changeImg("sjq1", "lamp_red");
+                }
+                break;
+            //放料阀开
+            case "PC3CY027":
+                if (deviceValue == "0") {//停止、故障
+                    changeImg("flfk1", "lamp_black");
+                } else if (deviceValue == "2") {//启动
+                    changeImg("flfk1", "lamp_yellow");
+                } else if (deviceValue == "1") {//启动
+                    changeImg("flfk1", "lamp_red");
+                }
+                break;
+            case "PC2CY027":
+                if (deviceValue == "0") {//停止、故障
+                    changeImg("flfk2", "lamp_black");
+                } else if (deviceValue == "2") {//启动
+                    changeImg("flfk2", "lamp_yellow");
+                } else if (deviceValue == "1") {//启动
+                    changeImg("flfk2", "lamp_red");
+                }
+                break;
+            //放料阀关
+            case "PC3CY028":
+                if (deviceValue == "0") {//停止、故障
+                    changeImg("flfg1", "lamp_black");
+                } else if (deviceValue == "2") {//启动
+                    changeImg("flfg1", "lamp_yellow");
+                } else if (deviceValue == "1") {//启动
+                    changeImg("flfg1", "lamp_red");
+                }
+                break;
+            case "PC2CY028":
+                if (deviceValue == "0") {//停止、故障
+                    changeImg("flfg2", "lamp_black");
+                    //changeImg("zddj2_zt2", "lamp_black");
+                } else if (deviceValue == "2") {//启动
+                    changeImg("flfg2", "lamp_yellow");
+                    //changeImg("zddj2_zt2", "lamp_yellow");
+                } else if (deviceValue == "1") {//启动
+                    changeImg("flfg2", "lamp_red");
+                    //changeImg("zddj2_zt2", "lamp_red");
+                }
+                break;
+
+            //-------------------------------------------------------------------------------------------------------------------------------
+            //初采定时
+            /*case "PC3CY032":
+             writeText("ccds1", deviceValue);
+             break;
+             case "PC2CY032":
+             writeText("ccds2", deviceValue);
+             break;
+             //初采次数
+             case "PC3CS006":
+             writeText("cccs1", deviceValue);
+             break;
+             case "PC2CS006":
+             writeText("cccs2", deviceValue);
+             break;*/
+            //重量
+            case "PC3CS009":
+                writeText("zl1TD", parseFloat(deviceValue)>600?"0":deviceValue);
+                break;
+            case "PC3CY017"://下次采样时间1
+                writeText("xccysj1", deviceValue);
+                writeText("ccds1", deviceValue);
+                break;
+            // case "DC2RC101"://皮带秤瞬时流量
+            //     writeText("pdssll1", deviceValue);
+            //     break;
+            case "PC2CY017"://下次采样时间2
+                writeText("ccds2", deviceValue);
+                break;
+            case "PC3CY018"://开始缩分时间1
+                writeText("kssfsj1", deviceValue);
+                break;
+            case "PC3CS008"://缩分频率1
+                writeText("sfpl1", deviceValue);
+                break;
+            case "PC3CS003"://装样次数1
+                writeText("zycs1", deviceValue);
+                writeText("cccs1", deviceValue);
+                break;
+            case "PC2CS003"://装样次数2
+                writeText("cccs2", deviceValue);
+                break;
+            case "PC3CY021"://当前接料桶1
+                writeText("dqjlt1", deviceValue + "号桶");
+                if (deviceValue == "1") {
+                    document.getElementById("arrow1_1").style.display = 'block';
+                    document.getElementById("arrow1_2").style.display = 'none';
+                    document.getElementById("arrow1_3").style.display = 'none';
+                    document.getElementById("arrow1_4").style.display = 'none';
+                    document.getElementById("arrow1_5").style.display = 'none';
+                    document.getElementById("arrow1_6").style.display = 'none';
+                } else if (deviceValue == "2") {
+                    document.getElementById("arrow1_1").style.display = 'none';
+                    document.getElementById("arrow1_2").style.display = 'block';
+                    document.getElementById("arrow1_3").style.display = 'none';
+                    document.getElementById("arrow1_4").style.display = 'none';
+                    document.getElementById("arrow1_5").style.display = 'none';
+                    document.getElementById("arrow1_6").style.display = 'none';
+                } else if (deviceValue == "3") {
+                    document.getElementById("arrow1_1").style.display = 'none';
+                    document.getElementById("arrow1_2").style.display = 'none';
+                    document.getElementById("arrow1_3").style.display = 'block';
+                    document.getElementById("arrow1_4").style.display = 'none';
+                    document.getElementById("arrow1_5").style.display = 'none';
+                    document.getElementById("arrow1_6").style.display = 'none';
+                } else if (deviceValue == "4") {
+                    document.getElementById("arrow1_1").style.display = 'none';
+                    document.getElementById("arrow1_2").style.display = 'none';
+                    document.getElementById("arrow1_3").style.display = 'none';
+                    document.getElementById("arrow1_4").style.display = 'block';
+                    document.getElementById("arrow1_5").style.display = 'none';
+                    document.getElementById("arrow1_6").style.display = 'none';
+                } else if (deviceValue == "5") {
+                    document.getElementById("arrow1_1").style.display = 'none';
+                    document.getElementById("arrow1_2").style.display = 'none';
+                    document.getElementById("arrow1_3").style.display = 'none';
+                    document.getElementById("arrow1_4").style.display = 'none';
+                    document.getElementById("arrow1_5").style.display = 'block';
+                    document.getElementById("arrow1_6").style.display = 'none';
+                } else if (deviceValue == "6") {
+                    document.getElementById("arrow1_1").style.display = 'none';
+                    document.getElementById("arrow1_2").style.display = 'none';
+                    document.getElementById("arrow1_3").style.display = 'none';
+                    document.getElementById("arrow1_4").style.display = 'none';
+                    document.getElementById("arrow1_5").style.display = 'none';
+                    document.getElementById("arrow1_6").style.display = 'block';
+                }
+                break;
+            //---------------------------------------------------------------------------------------------------------------
+            //运行方式
+            case "PC3CS007"://采样机1控制模式
+                if (deviceValue == "0") {//1：管控中心控制；0：操作员控制
+                    writeText("cyj1runtype", "本地");
+                } else if (deviceValue == "1") {
+                    writeText("cyj1runtype", "远程");
+                }
+                break;
+            case "PC3CS010"://采样机1控制模式
+                if (deviceValue == "0") {//1：管控中心控制；0：操作员控制
+                    writeText("kzms1", "手动");
+                } else if (deviceValue == "1") {
+                    writeText("kzms1", "自动");
+                }
+                break;
+            case "PC3CS011"://采样机1控制模式
+                if (deviceValue == "0") {//1：管控中心控制；0：操作员控制
+                    writeText("xtzt1", "解锁");
+                } else if (deviceValue == "1") {
+                    writeText("xtzt1", "联锁");
+                }
+                break;
+            case "PC3CY012"://输送电机1 公共皮带
+                if (deviceValue == "0" || deviceValue == "2") {//0：停止；1：启动；2：故障
+                    changeImg("ssdj1", "lamp_black");
+                    changeImg("ssdj1tab", "lamp_black");
+                } else if (deviceValue == "1") {
+                    changeImg("ssdj1", "lamp_red");
+                    changeImg("ssdj1tab", "lamp_red");
+                }
+                break;
+            //采样间隔时间
+            case "PC3CS001":
+                writeText("cyjgsj1TD", parseInt(deviceValue)/10);
+                break;
+            case "PC3ZT001":
+                var sbzt1Txt = ""; //0停止 1运行 2故障 3就绪
+                if(deviceValue == "0"){
+                    sbzt1Txt = "停止";
+                }else if(deviceValue == "1"){
+                    sbzt1Txt = "运行";
+                }else if(deviceValue == "2"){
+                    sbzt1Txt = "故障";
+                }else if(deviceValue == "3"){
+                    sbzt1Txt = "就绪";
+                }
+                writeText("sbzt1", sbzt1Txt);
+                break;
+            case "PC3CY022":
+                writeText("dqflt1", deviceValue + "号桶");
+                if (deviceValue == "1") {
+                    changeImg("fangliaotong1_1", "imgnow");
+                    changeImg("fangliaotong1_2", "imggray");
+                    changeImg("fangliaotong1_3", "imggray");
+                    changeImg("fangliaotong1_4", "imggray");
+                    changeImg("fangliaotong1_5", "imggray");
+                    changeImg("fangliaotong1_6", "imggray");
+                } else if (deviceValue == "2") {
+                    changeImg("fangliaotong1_1", "imggray");
+                    changeImg("fangliaotong1_2", "imgnow");
+                    changeImg("fangliaotong1_3", "imggray");
+                    changeImg("fangliaotong1_4", "imggray");
+                    changeImg("fangliaotong1_5", "imggray");
+                    changeImg("fangliaotong1_6", "imggray");
+                } else if (deviceValue == "3") {
+                    changeImg("fangliaotong1_1", "imggray");
+                    changeImg("fangliaotong1_2", "imggray");
+                    changeImg("fangliaotong1_3", "imgnow");
+                    changeImg("fangliaotong1_4", "imggray");
+                    changeImg("fangliaotong1_5", "imggray");
+                    changeImg("fangliaotong1_6", "imggray");
+                } else if (deviceValue == "4") {
+                    changeImg("fangliaotong1_1", "imggray");
+                    changeImg("fangliaotong1_2", "imggray");
+                    changeImg("fangliaotong1_3", "imggray");
+                    changeImg("fangliaotong1_4", "imgnow");
+                    changeImg("fangliaotong1_5", "imggray");
+                    changeImg("fangliaotong1_6", "imggray");
+                } else if (deviceValue == "5") {
+                    changeImg("fangliaotong1_1", "imggray");
+                    changeImg("fangliaotong1_2", "imggray");
+                    changeImg("fangliaotong1_3", "imggray");
+                    changeImg("fangliaotong1_4", "imggray");
+                    changeImg("fangliaotong1_5", "imgnow");
+                    changeImg("fangliaotong1_6", "imggray");
+                } else if (deviceValue == "6") {
+                    changeImg("fangliaotong1_1", "imggray");
+                    changeImg("fangliaotong1_2", "imggray");
+                    changeImg("fangliaotong1_3", "imggray");
+                    changeImg("fangliaotong1_4", "imggray");
+                    changeImg("fangliaotong1_5", "imggray");
+                    changeImg("fangliaotong1_6", "imgnow");
+                }
+                break;
+
+            //瞬时流量
+            case "SMCK_DEVICE":
+                var o = deviceValue[0];
+                writeText("pdssll1", o.Balence_M0_Real);
+                break;
+            //new  end
+            //收集器 TODO 暂时没有测点
+            //罐底开门 TODO 暂时没有测点
+            //采样机三通 TODO 暂时没有测点
+            //包装机 TODO 暂时没有测点
+            default:
+        }
+    }
+</script>

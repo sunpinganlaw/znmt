@@ -1,0 +1,171 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>化验设备国标信息</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+    <#include "/include/exportExcel.html"/>
+</head>
+<body>
+<div id="layoutDiv" class="easyui-layout" style="height:100%">
+    <div id="tb">
+
+        <label for="startDate">开始时间</label>
+        <input class="easyui-datebox" name="startDate" id="startDate"  style="width:145px;"/>
+        <label for="endDate">结束时间</label>
+        <input class="easyui-datebox" name="endDate" id="endDate"  style="width:145px;"/>
+        <label for="statusQry">状态：</label>
+        <select id="statusQry" name="statusQry" class="easyui-combobox" data-options="panelHeight:'auto'"  style="width:80px;" >
+            <option value="">全部</option>
+            <option selected value="1">有效</option>
+            <option value="0">无效</option>
+        </select>
+        <span style="margin-left: 0;">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add"  onclick="add()">新增</a>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="del();">作废</a>
+         <input type="hidden" id="doActionTag"/>
+        </span>
+
+        <input type="hidden" id="idHidden" />
+    </div>
+
+    <div data-options="region:'center',title:'化验设备国标信息',noheader:false;">
+        <table id="labStandDg"></table>
+    </div>
+</div>
+
+<!--预报查看编辑窗口-->
+<div id="labStandWin" ></div>
+</body>
+</html>
+<script type="text/javascript">
+    $labStandDg = $("#labStandDg");
+    var rowObject ;
+    var selectedRowObj;
+
+    $(function () {
+        var myDate = new Date();
+        var defaultBeginTime = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+        var defaultEndTime =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+
+        $labStandDg.datagrid({
+            url:  '${base}/business/labory/qryLabStandardList',
+            animate: true,
+            border:true,
+            height: $(this).height() - 2,
+            width: $(this).width() - 2,
+            idField:'labStandardId',
+            singleSelect:true,
+            rownumbers:true,
+            queryParams: {//默认进来查当天
+                search_startTime:defaultBeginTime,
+                search_endTime:defaultEndTime,
+                search_status:"1"
+            },
+            columns: [
+                [
+                    //{field: 'labStandardId', title: '序号',align:'center', width: "50px"},
+                    {field: 'deviceName', title: '化验仪器',align:'center', width: "120px"},
+                    {field: 'chemicalType', title: '化验指标',align:'center', width: "80px"},
+                    {field: 'standardName', title: '国标标准',align:'center', width:"140px"},
+                    {field: 'status', title: '状态',align:'center', width:"60px",formatter:transfer},
+                    {field: 'beginDate', title: '生效时间',align:'center', width:"120px"},
+                    {field: 'endDate', title: '失效时间',align:'center', width:"120px"},
+                    {field: 'opName', title: '操作人',align:'center', width:"80px"},
+                    {field: 'insertTime', title: '操作时间',align:'center', width:"120px"},
+                    {field: 'updateName', title: '更新人',align:'center', width:"80px"},
+                    {field: 'updateTime', title: '更新时间',align:'center', width:"120px"},
+                    {field: 'remark', title: '备注',align:'center', width:"300px"}
+                ]
+            ],
+            toolbar: '#tb'
+        })
+    });
+
+    function transfer (values,row) {
+        switch(values){
+            case '1':
+                values ='有效';
+                break;
+            case '0':
+                values ='无效';
+                break;
+        }
+        return values;
+    }
+
+    function qry(){
+        var paramO = new Object();
+        var startTime = $("#startDate").datebox("getValue");
+        var endTime = $("#endDate").datebox("getValue");
+        var statusQry = $("#statusQry").combobox("getValue");
+
+        if (startTime != null && startTime != "" && startTime.length > 0) {
+            paramO.search_startTime = startTime;
+        }
+        if (endTime != null && endTime != "" && endTime.length > 0) {
+            paramO.search_endTime = endTime;
+        }
+        if (statusQry != null && statusQry != "" && statusQry.length > 0) {
+            paramO.search_status = statusQry;
+        }
+        //console.log(paramO);
+        $labStandDg.datagrid("load",paramO);
+    }
+
+    //新增
+    function add(){
+        document.getElementById("doActionTag").value = "ADD";
+        $('#labStandWin').window({
+            modal : true,
+            title : '新增化验设备国标信息',
+            width : 450,
+            height : 220,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/labory/gotoEditLabStandInfo',
+            onClose : function() {
+                refreshDg();
+            }
+        });
+    }
+
+    //作废
+    function del() {
+        debugger;
+        var selectedRow = $labStandDg.datagrid('getSelected');
+        if (selectedRow) {
+              $.messager.confirm('提示', '作废后，所选记录将作废！ 确定继续操作?', function (r) {
+                if (r) {
+                    //提交数据
+                    var labStandardId = selectedRow.labStandardId;
+                    alert(labStandardId);
+                    $.post("${base}/business/labory/delLabStandardInfo/"+labStandardId, function(rsp) {
+                        if(rsp.successful){
+                            showMsg("提示", rsp.msg);
+                            refreshDg();
+                        } else {
+                            showMsg("提示", rsp.msg);
+                        }
+                    }, "JSON").error(function() {
+                                showMsg("提示", "删除数据失败！");
+                            });
+                }
+            });
+        } else {
+            showMsg("提示", "请先选择要删除的信息！");
+            return false;
+        }
+    }
+
+    function refreshDg(){
+        $("#labStandDg").datagrid("reload");
+    }
+
+</script>

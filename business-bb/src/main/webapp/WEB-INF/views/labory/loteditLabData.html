@@ -1,0 +1,231 @@
+<div class="form-div">
+    <form id="ff" method="post">
+            <div title="天平数据录入"style="overflow:auto;padding:0px;">
+                <table >
+
+                    <tr>
+                        <td >温度:</td>
+                        <td>
+                            <input class="easyui-numberbox" id="temperature" name="temperature" style="width:145px" data-options="required:true,min:0,precision:1">
+                        </td>
+                        <td >湿度:</td>
+                        <td>
+                            <input class="easyui-numberbox" id="humidity" name="humidity" style="width:145px" data-options="required:true,min:0,precision:1">
+                        </td>
+                    </tr>
+                    <!--<tr>-->
+                        <!--<td>执行标准:</td>-->
+                        <!--<td colspan="3">-->
+                            <!--<input id="standard" name="standard" style="width:145px;"/>-->
+                        <!--</td>-->
+                    <!--</tr>-->
+                </table>
+            </div>
+        <hr style="height:1px;border:none;border-top:1px dashed #0066CC;" />
+        <div id = "dynamicDiv"></div>
+    </form>
+    <div class="submit-div">
+        <a href="javascript:void(0)" id="addButton" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm()">提交</a>
+    </div>
+</div>
+<script type="text/javascript">
+
+    var paramObj = new Object();
+//    $(function () {
+//        var uri;
+//        if(dataType == 'Scales'){
+//            uri = '${base}/business/tool/getComboboxOpt/SCALES_STANDARD';
+//        } else if(dataType == 'S'){
+//            uri = '${base}/business/tool/getComboboxOpt/S';
+//        } else if(dataType == 'Hot'){
+//            uri = '${base}/business/tool/getComboboxOpt/HOT';
+//        } else if(dataType == 'I'){
+//            uri = '${base}/business/tool/getComboboxOpt/IA';
+//        } else if(dataType == 'La'){
+//            uri = '${base}/business/tool/getComboboxOpt/LA';
+//        } else if(dataType == 'Hw'){
+//            uri = '${base}/business/tool/getComboboxOpt/H';
+//        } else if(dataType == 'Melt'){
+//            uri = '${base}/business/tool/getComboboxOpt/MELT';
+//        }
+//
+//        $('#standard').combobox({
+//            url: uri,
+//            valueField:'id',
+//            textField:'name',
+//            panelHeight:'auto',
+//            required:true
+//        });
+//    });
+
+
+    function submitForm() {
+        //获取公共部分值
+        var commonObj = new Object();
+        commonObj.temperature = $("#temperature").numberbox("getValue");
+        commonObj.humidity = $("#humidity").numberbox("getValue");
+        //commonObj.standard = $("#standard").combobox("getValue");
+
+        if (commonObj.temperature == null || commonObj.temperature == ""){
+            showMsg("提示", "请录入温度值");
+            return false;
+        }
+
+        if (commonObj.humidity == null || commonObj.humidity == ""){
+            showMsg("提示", "请录入湿度值");
+            return false;
+        }
+
+//        if (commonObj.standard == null || commonObj.standard == ""){
+//            showMsg("提示", "请选择化验标准信息");
+//            return false;
+//        }
+
+        //打开遮罩
+        $.messager.progress({ msg: '正在处理，请稍候...' });
+
+        //放入参数对象
+        paramObj["publicInfo"] = JSON.stringify(commonObj);
+        var idArray = [];
+        var idScaleArray = [];
+        if(dataType == 'mt'){
+//            for ( var i = 0; i<selectedLa.length; i++) {
+//                var o = {};
+//                o.id = selectedLa[i].id;
+//                idArray[i] = o;
+//            }
+
+            for ( var i = 0; i<selectedScaless.length; i++) {
+                var o = {};
+                o.id = selectedScaless[i].id;
+                idScaleArray[i] = o;
+            }
+        } else if(dataType == 'mad'){
+            for ( var i = 0; i<selectedI.length; i++) {
+                var o = {};
+                o.id = selectedI[i].id;
+                idArray[i] = o;
+            }
+
+            for ( var i = 0; i<selectedScaless.length; i++) {
+                var o = {};
+                o.id = selectedScaless[i].id;
+                idScaleArray[i] = o;
+            }
+        } else if(dataType == 'aad'){
+            for ( var i = 0; i<selectedA.length; i++) {
+                var o = {};
+                o.id = selectedA[i].id;
+                idArray[i] = o;
+            }
+
+            for ( var i = 0; i<selectedScaless.length; i++) {
+                var o = {};
+                o.id = selectedScaless[i].id;
+                idScaleArray[i] = o;
+            }
+        } else if(dataType == 'vad'){
+            for ( var i = 0; i<selectedV.length; i++) {
+                var o = {};
+                o.id = selectedV[i].id;
+                idArray[i] = o;
+            }
+
+            for ( var i = 0; i<selectedScaless.length; i++) {
+                var o = {};
+                o.id = selectedScaless[i].id;
+                idScaleArray[i] = o;
+            }
+        } else if(dataType == 'S'){
+            for ( var i = 0; i<selectedS.length; i++) {
+                var o = {};
+                o.id = selectedS[i].id;
+                idArray[i] = o;
+            }
+        } else if(dataType == 'Hot'){
+            for ( var i = 0; i<selectedHot.length; i++) {
+                var o = {};
+                o.id = selectedHot[i].id;
+                idArray[i] = o;
+            }
+        } else if(dataType == 'Hw'){
+            for ( var i = 0; i<selectedHw.length; i++) {
+                var o = {};
+                o.id = selectedHw[i].id;
+                idArray[i] = o;
+            }
+        } else if(dataType == 'Melt'){
+            for ( var i = 0; i<selectedMelt.length; i++) {
+                var o = {};
+                o.id = selectedMelt[i].id;
+                idArray[i] = o;
+            }
+        }
+
+        paramObj["deviceDataString"] = JSON.stringify(idArray);
+        paramObj["scalesDataString"] = JSON.stringify(idScaleArray);
+
+        //提交数据
+        $.post("${base}/business/labory/labOrgDataConfirm/"+dataType, paramObj, function(rsp) {
+            if(rsp.successful){
+                //关闭遮罩
+                $.messager.progress('close');
+                showMsg("提示", rsp.msg);
+                if(dataType == 'mt'){//ok
+//                    $laDg.datagrid('clearChecked');
+//                    $laDg.datagrid('clearSelections');
+                    $labScaleMTDataDg.datagrid('clearChecked');
+                    $labScaleMTDataDg.datagrid('clearSelections');
+                    selectedLa = null;
+                    selectedScaless = null;
+                } else if(dataType == 'mad'){//ok
+                    $iDg.datagrid('clearChecked');
+                    $iDg.datagrid('clearSelections');
+                    $labScaleMADDataDg.datagrid('clearChecked');
+                    $labScaleMADDataDg.datagrid('clearSelections');
+                    selectedI = null;
+                    selectedScaless = null;
+                } else if(dataType == 'aad'){//ok
+                    $labADataDg.datagrid('clearChecked');
+                    $labADataDg.datagrid('clearSelections');
+                    $labScaleAADDataDg.datagrid('clearChecked');
+                    $labScaleAADDataDg.datagrid('clearSelections');
+                    selectedA = null;
+                    selectedScaless = null;
+                } else if(dataType == 'vad'){//ok
+                    $labVDataDg.datagrid('clearChecked');
+                    $labVDataDg.datagrid('clearSelections');
+                    $labScaleVADDataDg.datagrid('clearChecked');
+                    $labScaleVADDataDg.datagrid('clearSelections');
+                    selectedV = null;
+                    selectedScaless = null;
+                }else if(dataType == 'S'){
+                    $sDg.datagrid('clearChecked');
+                    $sDg.datagrid('clearSelections');
+                    selectedS = null;
+                } else if(dataType == 'Hot'){
+                    $hotDg.datagrid('clearChecked');
+                    $hotDg.datagrid('clearSelections');
+                    selectedHot = null;
+                } else if(dataType == 'Hw'){
+                    $hwDg.datagrid('clearChecked');
+                    $hwDg.datagrid('clearSelections');
+                    selectedHw = null;
+                } else if(dataType == 'Melt'){
+                    $labMeltDataDg.datagrid('clearChecked');
+                    $labMeltDataDg.datagrid('clearSelections');
+                    selectedMelt = null;
+                }
+                dataType = null;
+                //关闭编辑窗口
+                $('#confirmWin').window('close');
+            } else {
+                //关闭遮罩
+                $.messager.progress('close');
+                showMsg("提示", rsp.msg);
+            }
+        });
+
+    }
+
+</script>

@@ -1,0 +1,240 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>化验月报表统计</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+    <#include "/include/exportExcel.html"/>
+</head>
+
+<body>
+
+    <div id="tb" >
+        <form id="rptFF" method="post">
+            <div class="well">
+                <label for="beginDate">开始时间</label>
+                <input class="easyui-datebox" id="beginDate" style="width:145px">
+
+                <label for="endDate">结束时间</label>
+                <input class="easyui-datebox" id="endDate" style="width:145px">
+
+                <label for="batchNoType">批次类型</label>
+                <select id="batchNoType" name="batchNoType" class="easyui-combobox" data-options="required:true,panelHeight:'auto'"  style="width:145px;" >
+                    <option selected value="1">入厂煤批次</option>
+                    <!--<option value="1">火车煤批次</option>-->
+                    <!--<option value="2">水运煤批次</option>-->
+                    <option value="9">入炉煤批次</option>
+                </select>
+
+                <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qryMonthRpt()">查询</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-excel"  onclick="qryEXL()">导出EXCEL</a>
+
+            </div>
+        </form>
+
+    </div>
+
+    <div id="tx" style="margin: 4px;width: 99%">
+        <table id="dg" title="化验月报表统计" ></table>
+    </div>
+
+    <div id="PrintWin"></div>
+</body>
+
+<script type="text/javascript">
+    $dg = $("#dg");
+    var paramObj = new Object();
+    var myDate = new Date();
+    var beginDate= myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+    var endDate =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+    paramObj.search_beginDate = beginDate;
+    paramObj.search_endDate = endDate;
+
+    function qryMonthRpt(){
+        var paramO = new Object();
+
+        var beginDate= $("#beginDate").datebox("getValue");
+        var endDate = $("#endDate").datebox("getValue");
+        var batchType = $("#batchNoType").datebox("getValue");
+        var apprStatus = "2";//只查询审批完成的
+
+        paramO.search_apprStatus = apprStatus;
+
+        if (beginDate != null && beginDate != "" && beginDate.length > 0) {
+            paramO.search_beginDate = beginDate;
+        }else{
+            paramO.search_beginDate  = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+        }
+
+        if (endDate != null && endDate != "" && endDate.length > 0) {
+            paramO.search_endDate = endDate;
+        }else{
+            paramO.search_endDate =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+        }
+
+        if (batchType != null && batchType != "" && batchType.length > 0) {
+            paramO.search_batchType = batchType;
+            paramO.search_batchNoType = '9';
+        }else{
+            paramO.search_batchType = 2;
+        }
+        $dg.datagrid('load',paramO);
+    }
+
+    //初始化查询报表，全量查询
+    $(function () {
+        $dg.datagrid({
+          //  url: "${base}/business/labory/monthRptListView",
+            url: "${base}/business/labory/qryReportData4BB",
+            pagination: true,
+            pagenumber:false,
+//           pageSize:100,
+//           pageList: [100, 150],
+//           fitColumns: true,
+            height: $(this).height() - 8,
+            width: $(this).width() - 8,
+            idField:'recordNo',
+            singleSelect:true,
+            rownumbers: true,
+            toolbar: '#tb',
+            queryParams: {//默认第一次查询是当天
+                search_beginDate:beginDate,
+                search_endDate:endDate,
+             //   search_apprStatus:"2" //只查询审批完成的
+            },
+            frozenColumns:[
+                [
+           //     {field: 'batchNo', title: '批次号', width: 120, align:'center'},
+                {field: 'laborCode', title: '化验编码', width: 120, align:'center'},
+                    {field: 'insertTime', title: '来煤日期', width:100, align:'center',formatter:truncValue },
+                    {field: 'hyDate', title: '化验日期', width:100, align:'center',formatter:truncValue }
+                ]
+            ],
+            columns: [
+                [
+                    {field: 'mt', title: '全水(Mt)(%)', width: 80, align:'center',formatter:roundNum1},
+                    {field: 'mad', title: '水分(Mad)(%)', width:100, align:'center',formatter:roundNum2},
+                    {field: 'aar', title: '灰分(Aar)(%)', width: 100, align:'center',formatter:roundNum2},
+                    {field: 'aad', title: '灰分(Aad)(%)', width:100, align:'center',formatter:roundNum2},
+                    {field: 'ad', title: '灰分(Ad)(%)', width:100, align:'center',formatter:roundNum2},
+                    {field: 'var', title: '挥发分(Var)(%)', width: 100, align:'center',formatter:roundNum2},
+                    {field: 'vad', title: '挥发分(Vad)(%)', width: 100, align:'center',formatter:roundNum2},
+                    {field: 'vd', title: '挥发分(Vd)(%)', width:100, align:'center',formatter:roundNum2},
+                    {field: 'vdaf', title: '挥发分(Vdaf)(%)', width:100, align:'center',formatter:roundNum2},
+                    {field: 'star', title: '全硫(St_ar)(%)', width: 100, align:'center',formatter:roundNum2},
+                    {field: 'stad', title: '全硫(St_ad)(%)', width:100, align:'center',formatter:roundNum2},
+                    {field: 'std', title: '全硫(St_d)(%)', width:100, align:'center',formatter:roundNum2},
+                    {field: 'qbad', title: '弹筒发热(Qb_ad)(MJ/Kg)', width: 150, align:'center',formatter:roundNum3},
+                    {field: 'qgrad', title: '高位发热量(Qgr_ad)(MJ/Kg)', width:180, align:'center',formatter:roundNum2},
+                    {field: 'qgrd', title: '高位发热量(Qgr_d)(MJ/Kg)', width:180, align:'center',formatter:roundNum2},
+                    {field: 'qnetarj', title: '低位发热量(Qnet_ar)(MJ/Kg)', width: 180, align:'center',formatter:roundNum2},
+                    {field: 'had', title: '氢值(Had)(%)', width: 80, align:'center',formatter:roundNum2}
+                ]
+            ]
+        });
+    });
+
+
+    function qryEXL() {
+        var beginDate = $("#beginDate").datebox("getValue");
+        var endDate = $("#endDate").datebox("getValue");
+        var batchType = $("#batchNoType").datebox("getValue");
+        var apprStatus = "2" //只查询审批完成的
+        var inputObj = {
+            beginDate: beginDate,
+            endDate: endDate,
+            batchType: batchType,
+            apprStatus :apprStatus,
+            batchNoType :'9'
+        }
+        exportExcel($dg,"org.gxz.znrl.mapper","LaboryMapper","qryMonthRptNum","qryReportData4BB",inputObj,"","","");
+    }
+
+    function truncValue(value, row, index){
+        var o = "";
+        if (value!= null){
+            o = value.substr(0,10);
+        }
+        return  o;
+    }
+
+    function roundNum1 (values,row){
+        if(values ==null){
+            return "";
+        }
+        var num = 1;
+        var Str = values.split(".");
+        if(Str[0]==null||Str[0]==""){
+            Str[0]="0"
+        }
+        var i = 0;
+        if(Str[1] != null && Str[1] != undefined){
+            i = Str[1].length;
+        }
+        var tmp = "";
+        for(var i ;i < num;i++){
+            tmp += "0";
+        }
+        if(Str[1]==null || Str[1]==undefined){
+            Str[1]=tmp;
+        }else{
+            Str[1] += tmp;
+        }
+        return Str[0]+"."+Str[1];
+    }
+
+    function roundNum2 (values,row){
+        if(values ==null){
+            return "";
+        }
+        var num = 2;
+        var Str = values.split(".");
+        if(Str[0]==null||Str[0]==""){
+            Str[0]="0"
+        }
+        var i = 0;
+        if(Str[1] != null && Str[1] != undefined){
+            i = Str[1].length;
+        }
+        var tmp = "";
+        for(var i ;i < num;i++){
+            tmp += "0";
+        }
+        if(Str[1]==null || Str[1]==undefined){
+            Str[1]=tmp;
+        }else{
+            Str[1] += tmp;
+        }
+        return Str[0]+"."+Str[1];
+    }
+
+    function roundNum3 (values,row){
+        if(values ==null){
+            return "";
+        }
+        var num = 3;
+        var Str = values.split(".");
+        if(Str[0]==null||Str[0]==""){
+            Str[0]="0"
+        }
+        var i = 0;
+        if(Str[1] != null && Str[1] != undefined){
+            i = Str[1].length;
+        }
+        var tmp = "";
+        for(var i ;i < num;i++){
+            tmp += "0";
+        }
+        if(Str[1]==null || Str[1]==undefined){
+            Str[1]=tmp;
+        }else{
+            Str[1] += tmp;
+        }
+        return Str[0]+"."+Str[1];
+    }
+</script>
+</html>

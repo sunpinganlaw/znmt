@@ -1,0 +1,74 @@
+﻿<div class="form-div">
+    <form id="labStandardForm" method="post">
+        <!--<input type="hidden" id="labManRandomId" name="labManRandomId"/>-->
+        <table>
+            <tr>
+                <td>化验设备</td>
+                <td><input id="deviceNo" name="deviceNo" class="easyui-combobox" style="width:130px;" data-options="required:true,valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/LAB_DEVICE'" /></td>
+                <td>化验指标</td>
+                <td><select id="chemicalType" name="chemicalType" style="width:100px;" class="easyui-combobox" data-options="required:true,panelHeight:'auto'" style="width:126px;" >
+                    <option value="MT">全水</option>
+                    <option value="MAD">水分</option>
+                    <option value="AAD">灰分</option>
+                    <option value="VAD">挥发分</option>
+                    <option value="HOT">热值</option>
+                    <option value="S">硫</option>
+                    <option value="H">氢</option>
+                </select></td>
+            </tr>
+            <tr>
+                <td >国标信息</td>
+                <td colspan="3"><input class="easyui-textbox" style="width:260px;" data-options="required:true" id="standardName" name="standardName" /></td>
+            </tr>
+            <tr>
+                <td>备注</td>
+                <td colspan="3"><input class="easyui-textbox" data-options="multiline:true" id="remark" name="remark" style="width:330px; height:60px""/></td>
+            </tr>
+        </table>
+    </form>
+
+    <div class="submit-div">
+        <a href="javascript:void(0)" id="add" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm()">保存</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var doActionTag = document.getElementById("doActionTag").value;
+
+    //提交表单
+    function submitForm() {
+    debugger;
+        if (! $("#labStandardForm").form('validate')) {
+            showMsg("提示", "有必填项未输入值!");
+            return false;
+        }
+
+        $.messager.confirm('提示', '确定保存?', function (r) {
+            if (r) {
+                //提交保存
+                save();
+            }
+        });
+    }
+
+    //保存
+    function save() {
+        var params = $("#labStandardForm").serialize();
+        var postUrl = "";
+        if (doActionTag == "ADD") {
+            postUrl = "${base}/business/labory/editLabStandardInfo/add";
+        } else {
+        }
+
+        $.post(postUrl, params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示", rsp.msg);
+                $('#labStandWin').window('close');
+                $labStandDg.datagrid('reload');
+            } else {
+                showMsg("提示", rsp.msg);
+            }
+        });
+    }
+
+</script>

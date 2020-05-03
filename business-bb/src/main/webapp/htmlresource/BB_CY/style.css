@@ -1,0 +1,86 @@
+.state_red{background-image: url(img/state_red.png); }
+.state_green{background-image: url(img/state_green.png); }
+.state i{ height:20px; width:20px; position:absolute;}
+.lamp_red {
+background-image: url(img/lamp_red.png);
+width: 20px;
+height: 20px;
+display: block;
+margin:0 auto;
+
+}
+.lamp_black {
+background-image: url(img/lamp_black.png);
+width: 20px;
+height: 20px;
+display: block;
+margin:0 auto;
+}
+.lamp_yellow {
+    background-image: url(img/lamp_yellow.png);
+    width: 20px;
+    height: 20px;
+    display: block;
+    margin:0 auto;
+}
+.sampling_tank dl {
+text-align: center;
+margin: 0;
+font-size: 12px;
+padding:3px;
+position:relative;
+line-height:
+}
+.sampling_tank dt {
+color: #FFF;
+position:absolute;
+top:20px;
+margin-left:10px;
+font-size: 16px;
+
+}
+.sampling_tank dd {
+color:;
+clear: both;
+margin: 0;
+}
+.sampling_tank .man {
+background-image: url(img/man.png);
+background-position: center;
+background-repeat: no-repeat;
+padding: 35px 10px;
+}
+.sampling_tank .kong {
+background-image: url(img/kong.png);
+background-position: center;
+background-repeat: no-repeat;
+padding: 35px 10px;
+}
+.clear{ clear:both}
+.sampling_tank dd{-webkit-margin-start:0px!important;
+-webkit-margin-after: 0px;
+-webkit-margin-start: 0px;
+-webkit-margin-end: 0px;}
+td {
+height: 35px;
+border: 1px solid #454545;
+color:#FFF;
+font-size:14px;
+text-indent:6px;
+}
+.equipment td{height:55px;}
+
+.imgwrap{ position: absolute; width:250px; height:44px; z-index:10;}
+.imggray,.imgnow{ width:29px; height:44px;  float:left; margin-right:10px;}
+.imggray{background:url(img/imggray.jpg) no-repeat; }
+.imgnow{background:url(img/imgnow.jpg) no-repeat; }
+.imgpos01{ left:385px; top:160px; }
+.imgpos02{ left:515px; top:278px; }
+.imgjiantoupos1,.imgjiantoupos2,.imgjiantoupos3,.imgjiantoupos4,.imgjiantoupos5,.imgjiantoupos6{position:absolute; top:-23px; background:url(img/jiantou.jpg) no-repeat; width:29px; height:24px;z-index:11;}
+.imgjiantoupos1{left:0px; }
+.imgjiantoupos2{left:39px; }
+.imgjiantoupos3{left:78px; }
+.imgjiantoupos4{left:117px; }
+.imgjiantoupos5{left:156px; }
+.imgjiantoupos6{left:195px; }
+

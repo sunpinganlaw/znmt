@@ -1,0 +1,441 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>轮船来煤管理</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+
+<body>
+
+<div id="tb">
+    <table>
+        <tr>
+            <td>
+                <label for="beginDate">来货日期：</label>
+                <input class="easyui-datebox" id="beginDate" style="width:120px">&nbsp;—&nbsp;
+                <input class="easyui-datebox" id="endDate"  style="width:120px">
+                <label for="shipId">船名(船号)：</label>
+                <input id="shipId" class="easyui-combobox" style="width:160px;"
+                       data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/SHIP_INFO'" />
+                <a href="javascript:void(0)" id="qryBtn" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="editShipRec('ADD');">新增</a>
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit" onclick="editShipRec('MOD');">修改</a>
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="delShipTransRec();">删除</a>
+                <!--<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-cut" onclick="batShipTransRec()">分批</a>-->
+                <!--<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-search" onclick="editShipRec('VIEW');">详情</a>-->
+                <!--<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-ok" onclick="setCurrentShip();">设定接卸船</a>-->
+                <!--<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit" onclick="finishUnload();">接卸完成</a>-->
+
+                <input type="hidden" id="shipRecActionTag">
+                <input type="hidden" id="shipRecIdHidden">
+
+                <input type="hidden" id="shipCargoActionTag">
+                <input type="hidden" id="shipCargoIdHidden">
+
+                <input type="hidden" id="goodNoHidden">
+                <input type="hidden" id="goodNameHidden">
+
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div id="detailtb">
+    <table>
+        <tr>
+            <td>
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="editShipCargoRec('ADD');">新增</a>
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit" onclick="editShipCargoRec('MOD');">修改</a>
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="delShipCargoRec();">删除</a>
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="uploadExcel();">上传条码</a>
+                <form  enctype="multipart/form-data" id="importCsv" >
+                    <input type="file" name="file" id="file" accept=".xlsx" onchange="importCsv4zt()"/>
+                    <input type="hidden" id="prefix" name="prefix"/>
+                    <input type="hidden" id="actionType" name="actionType"/>
+                </form>
+            </td>
+        </tr>
+    </table>
+
+</div>
+
+<div id="tx" style="margin: 5px;width: 90%">
+    <table id="shipBasicDg" title="船运信息"></table>
+</div>
+
+<div id="det" style="margin: 5px;width: 90%">
+    <table id="shipCargolDg" title="提单信息"></table>
+</div>
+
+<div id="editShipRecWin" ></div>
+<div id="editShipCargoRecWin" ></div>
+<div id="viewShipBatchDetailWin" ></div>
+<div id="setCurrentShipWin" ></div>
+<div id="finishUnloadWin" ></div>
+
+</body>
+<script type="text/javascript">
+    //全局变量
+    $basicdg = $("#shipBasicDg");
+    $shipCargolDg = $("#shipCargolDg");
+    var oneTrainInfo;
+    var selectedTrains;
+
+    $(function () {
+        //刚进入页面时，查询日期默认取当前日的
+        var myDate = new Date();
+        var defaultBeginTime = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+        var defaultEndTime =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+
+        $basicdg.datagrid({
+            url: "${base}/business/monitor/qryShipTransInfo",
+            fitColumns: true,
+            height: $(this).height()/2+10,
+            width: $(this).width()-14,
+            idField:'shipRecID',
+            singleSelect:true,
+            rownumbers:true,
+            queryParams: {//默认进来查当天
+                search_beginDate:defaultBeginTime,
+                search_endDate:defaultEndTime
+            },
+            columns: [
+                [
+                    {field: 'shipTransNo', title: '运输编号',align:'center', width:25,hidden:"true"},
+                    {field: 'shipName', title: '船名',align:'center', width:20},
+                    {field: 'waybillNo', title: '航次',align:'center', width: 15},
+                    // {field: 'statusName', title: '船舶状态',align:'center', width: 15},
+                    // {field: 'shipTypeName', title: '船舶类型',align:'center', width: 20},
+                    // // {field: 'finalPortName', title: '到达港口',align:'center', width: 20},
+                    // {field: 'estimateTime', title: '预计到港时间',align:'center', width: 25},
+                    // {field: 'factTime', title: '实际到港时间',align:'center', width: 25},
+                    // {field: 'arrangeTime', title: '接卸时间',align:'center', width: 25},
+                    // {field: 'unloadTime', title: '卸港完成时间',align:'center', width: 25},
+                    {field: 'factTime', title: '到港时间',align:'center', width: 25},
+                    {field: 'berthNo', title: '泊位号',align:'center', width: 10}
+                ]
+            ],
+            toolbar: '#tb',
+            onClickRow:function(rowIndex, rowData){
+                var o = {};
+                o.search_shipRecID = rowData.shipRecID;
+                $shipCargolDg.datagrid('clearSelections');
+                document.getElementById("shipRecActionTag").value = "";
+                document.getElementById("shipCargoActionTag").value = "";
+                document.getElementById("shipCargoIdHidden").value = "";
+
+                document.getElementById("goodNoHidden").value = "";
+                document.getElementById("goodNameHidden").value = "";
+                $shipCargolDg.datagrid('load', o);
+            }
+        })
+    });
+
+    //查询
+    function qry(){
+        var beginDate = $("#beginDate").datebox("getValue");
+        var endDate = $("#endDate").datebox("getValue");
+        var shipId = $("#shipId").combobox("getValue");
+
+        var qryObj = {};
+        if (beginDate != null && beginDate != "" && beginDate.length > 0) {
+            qryObj.search_beginDate = beginDate;
+        }
+
+        if (endDate != null && endDate != "" && endDate.length > 0) {
+            qryObj.search_endDate = endDate;
+        }
+
+        if (shipId != null && shipId != "" && shipId.length > 0) {
+            qryObj.search_shipId = shipId;
+        }
+
+        $basicdg.datagrid('load', qryObj);
+    }
+
+
+    $(function () {
+        $shipCargolDg.datagrid({
+            url: "${base}/business/monitor/qryShipCargoInfo",
+            fitColumns: true,
+            height: $(this).height()/2-20,
+            width: $(this).width()-24,
+            idField:'recordNo',
+            singleSelect:false,
+            rownumbers:true,
+            ctrlSelect:true,
+            queryParams: {//默认进来查不到数据
+                search_shipRecID:'-1'
+            },
+            toolbar: '#detailtb',
+            columns: [
+                [
+                    {field: 'recordNo', title: '货',align:'center', width:18,hidden:'true'},
+                    {field: 'goodNo', title: '货物代码',align:'center', width:18,hidden:'true'},
+                    {field: 'goodName', title: '货物名称',align:'center', width:18},
+                    {field: 'goodType', title: '货物类型',align:'center', width: 18,hidden:'true'},
+                    {field: 'goodTypeName', title: '货物类型',align:'center', width: 18},
+                    {field: 'tickQty', title: '提单重量(KG)',align:'center', width:20},
+                    {field: 'venName', title: '客户信息',align:'center', width:20},
+                    {field: 'tradeName', title: '贸易类型',align:'center', width:20},
+                    {field: 'billNo', title: '提单号',align:'center', width:18},
+                    // {field: 'factTime', title: '作业建立时间',align:'center', width:20},
+                    {field: 'sampleType', title: '进出方',align:'center', width:18,hidden:'true'},
+                    {field: 'sampleTypeName', title: '进出方向',align:'center', width:18},
+                    {field: 'areaName', title: '跺位名称',align:'center', width:18},
+                    {field: 'areaPosition', title: '跺位编码',align:'center', width:18},
+                    {field: 'areaHeight', title: '跺位高度',align:'center', width:18},
+                    // {field: 'storageCode', title: '堆场编码',align:'center', width:18},
+                    {field: 'storageName', title: '提单占堆垛尺寸',align:'center', width:18},
+                    {field: 'isBatchName', title: '作业状态',align:'center', width:18}
+
+                ]
+            ]
+        });
+    });
+
+    function editShipRec(shipRecActionTag){
+        document.getElementById("shipRecActionTag").value = shipRecActionTag;
+        var winTitle;
+
+        if (shipRecActionTag == "ADD") {
+            winTitle = '新增提单信息';
+        } else if (shipRecActionTag == "MOD") {
+            winTitle = '修改船运记录';
+            var selectedRow = $basicdg.datagrid('getSelected');
+            if (selectedRow) {
+                document.getElementById("shipRecIdHidden").value = selectedRow.shipRecID;
+            } else {
+                showMsg("提示", "请先选择要修改的船运记录");
+                return false;
+            }
+        } else if (shipRecActionTag == "VIEW") {
+            winTitle = '查看船运记录详情';
+            var selectedRow = $basicdg.datagrid('getSelected');
+            if (selectedRow) {
+                document.getElementById("shipRecIdHidden").value = selectedRow.shipRecID;
+            } else {
+                showMsg("提示", "请先选择要查看的船运记录");
+                return false;
+            }
+        }
+
+        $('#editShipRecWin').window({
+            modal : true,
+            title : winTitle,
+            width : 500,
+            height : 200,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/monitor/editShipRecInfo'
+        });
+    }
+
+    function setCurrentShip() {
+        $('#setCurrentShipWin').window({
+            modal : true,
+            title : '设置当前接卸船',
+            width : 500,
+            height : 340,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/monitor/setCurrentShipPage'
+        });
+    }
+
+    function finishUnload() {
+        var selectedRow = $basicdg.datagrid('getSelected');
+        if (selectedRow) {
+            document.getElementById("shipRecIdHidden").value = selectedRow.shipRecID;
+        } else {
+            showMsg("提示", "请先选择卸完的船！");
+            return false;
+        }
+
+        $('#finishUnloadWin').window({
+            modal : true,
+            title : '接卸完成',
+            width : 280,
+            height : 180,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/monitor/finishUnload'
+        });
+    }
+
+    function delShipTransRec(){
+        var selectedRow = $basicdg.datagrid('getSelected');
+        if (selectedRow) {
+            $.messager.confirm('提示', '确定要删除所选提单信息?', function (r) {
+                if (r) {
+                    var params = "shipRecID=" + selectedRow.shipRecID;
+                    $.post("${base}/business/monitor/editShipTransRec/DEL", params, function (rsp) {
+                        if (rsp.successful) {
+                            showMsg("提示",rsp.msg);
+
+                            reload();
+                        } else {
+                            showMsg("提示", rsp.msg);
+                        }
+                    });
+                }
+            });
+        } else {
+            showMsg("提示", "请先选择要删除的船运记录");
+            return false;
+        }
+    }
+
+    function batShipTransRec(){
+        var selectedRow = $basicdg.datagrid('getSelected');
+        if (selectedRow) {
+            $.messager.confirm('提示', '确定要分批?', function (r) {
+                if (r) {
+                    var params = "shipRecID=" + selectedRow.shipRecID;
+                    $.post("${base}/business/monitor/editShipTransRec/BAT", params, function (rsp) {
+                        if (rsp.successful) {
+                            showMsg("提示",rsp.msg);
+
+                            reload();
+                        } else {
+                            showMsg("提示", rsp.msg);
+                        }
+                    });
+                }
+            });
+        } else {
+            showMsg("提示", "请先选择要分批的船运记录");
+            return false;
+        }
+    }
+
+
+    function editShipCargoRec(shipCargoActionTag){
+        var selectedRow = $basicdg.datagrid('getSelected');
+        if (selectedRow) {
+            document.getElementById("shipRecIdHidden").value = selectedRow.shipRecID;
+        } else {
+            showMsg("提示", "请先选择船运煤所属的船运记录");
+            return false;
+        }
+        document.getElementById("shipCargoActionTag").value = shipCargoActionTag;
+        var winTitle;
+
+        if (shipCargoActionTag == "ADD") {
+            winTitle = '新增提单信息';
+
+
+        } else if (shipCargoActionTag == "MOD") {
+            winTitle = '修改提单信息';
+            var selectedCargoRow = $shipCargolDg.datagrid('getSelected');
+            if (selectedCargoRow) {
+                document.getElementById("shipCargoIdHidden").value = selectedCargoRow.recordNo;
+                document.getElementById("goodNoHidden").value= $shipCargolDg.datagrid('getSelected').goodNo;
+                document.getElementById("goodNameHidden").value=selectedCargoRow.goodName;
+
+            } else {
+                showMsg("提示", "请先选择要修改的提单信息");
+                return false;
+            }
+        }
+        $('#editShipCargoRecWin').window({
+            modal : true,
+            title : winTitle,
+            width : 800,
+            height : 200,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/monitor/editShipCargoRecInfo'
+        });
+    }
+
+    function delShipCargoRec(){
+        var selectedRow = $shipCargolDg.datagrid('getSelected');
+        if (selectedRow) {
+            $.messager.confirm('提示', '确定要删除所提单信息?', function (r) {
+                if (r) {
+                    var params = "recordNo=" + selectedRow.recordNo;
+
+                    $.post("${base}/business/monitor/editShipCargoRec/DEL", params, function (rsp) {
+                        if (rsp.successful) {
+                            showMsg("提示",rsp.msg);
+                            $shipCargolDg.datagrid('reload');
+                        } else {
+                            showMsg("提示", rsp.msg);
+                        }
+                    });
+                }
+            });
+        } else {
+            showMsg("提示", "请先选择要删除的提单信息");
+            return false;
+        }
+    }
+    function uploadExcel() {
+
+        var selectedCargoRow = $shipCargolDg.datagrid('getSelected');
+        if (selectedCargoRow) {
+            document.getElementById("prefix").value = selectedCargoRow.recordNo;
+        } else {
+            showMsg("提示", "请先选择要添加的提单信息");
+            return false;
+        }
+
+        $('#actionType').val('add');
+
+        var formData = new FormData($("#importCsv")[0]);
+        $.ajax({
+            url: '${base}/business/pointConfig/importCsv4zt',
+            type: 'POST',
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                if (data.successful) {
+                    $.messager.alert('系统提示', data.msg, 'success');
+                    reload(prefix);
+                } else {
+                    $.messager.alert('错误！', data.msg, 'error');
+                }
+            },
+            error: function (XmlHttpRequest) {
+                $.messager.alert('错误！',"处理异常，服务器状态 ："+XmlHttpRequest.status+",信息："+XmlHttpRequest.statusText, 'error');
+            }
+        });
+
+        $("#importCsv")[0].reset();
+    }
+
+
+
+    function reload(){
+        $.messager.progress({ msg: '正在刷新页面！' });
+        try{
+            setTimeout(function(){$basicdg.datagrid("reload");}, 150);
+            setTimeout(function(){$shipCargolDg.datagrid("reload");},350);
+        }catch (e){
+            alert(e);
+        }
+        //延迟1.5秒取消遮罩，防止重复点
+        setTimeout(function(){
+            $.messager.progress('close');
+        }, 1500);
+    }
+
+    function roundNum (values,row) {
+        return Math.round(values);
+    }
+
+</script>
+</html>

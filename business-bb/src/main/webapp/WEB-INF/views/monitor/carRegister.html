@@ -1,0 +1,242 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>汽车入厂注册</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <#include "/include/common.html"/>
+
+</head>
+
+<body>
+
+<div id="layoutDiv" class="easyui-layout" style="height:100%;">
+    <div id="tb">
+        <input type="hidden" id="doAction" /><!--动作隐藏按钮-->
+
+        <label for="beginDate">注册日期：</label>
+        <input class="easyui-datebox" id="beginDate" style="width:120px">&nbsp;—&nbsp;
+        <input class="easyui-datebox" id="endDate"  style="width:120px">
+        <!--<label for="cardIdQry">卡号：</label>-->
+        <!--<input class="easyui-textbox" id="cardIdQry" style="width:120px;" value=""/>-->
+        <label for="carIdQry">车牌号：</label>
+        <input class="easyui-textbox" id="carIdQry" style="width:130px;" value=""/>
+        <label for="validStaQry">状态：</label>
+        <select id="validStaQry" name="validStaQry" class="easyui-combobox" data-options="panelHeight:'auto'"  style="width:80px;" >
+            <option value="">全部</option>
+            <option selected value="1">有效</option>
+            <option value="0">无效</option>
+        </select>
+        <!--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="getCard2()">扫描车卡</a>-->
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>
+        <!--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="viewDetail()">详情</a>-->
+
+        <@shiro.hasPermission name="CARRegiste:edit">
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit" onclick="modify();">修改</a>
+        </@shiro.hasPermission>
+
+        <@shiro.hasPermission name="CARRegiste:delete">
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="deleteCarRegInfo();">删除</a>
+        </@shiro.hasPermission>
+
+        <@shiro.hasPermission name="CARRegiste:save">
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="add('-1');">新增车辆</a>
+        </@shiro.hasPermission>
+        <!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
+        <!--<span style="color: #0099FF">今日发卡总数:&nbsp;<strong id="strongChar"></strong>&nbsp;张</span>-->
+        <form  enctype="multipart/form-data" id="importCsv" >
+            <input type="file" name="file" id="file" accept=".xlsx" />
+            <input type="hidden" id="prefix" name="prefix"/>
+            <input type="hidden" id="actionType" name="actionType"/>
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="uploadExcel();">批量导入</a>
+        </form>
+
+    </div>
+
+    <div data-options="region:'center',title:'注册发卡记录',noheader:false;">
+        <table id="carRegDg"></table>
+    </div>
+</div>
+
+<!--注册查看编辑窗口-->
+<div id="carRegEditWin" ></div>
+</body>
+</html>
+<script type="text/javascript">
+    $carRegDg = $("#carRegDg");
+
+    function qry(){
+        var paramO = new Object();
+        var beginDate = $("#beginDate").datebox("getValue");
+        var endDate = $("#endDate").datebox("getValue");
+        // var cardIdQry = $("#cardIdQry").textbox("getValue");
+        var carIdQry = $("#carIdQry").textbox("getValue");
+        var validStaQry = $("#validStaQry").combobox("getValue");
+
+        //查询条件的，都必须带上 search_ 这个前缀，才能让后台的beanUtil里捕获到这个参数并映射到entity条件里。。 xieyt
+        if (beginDate != null && beginDate != "" && beginDate.length > 0) {
+            paramO.search_beginDate = beginDate;
+        }
+        if (endDate != null && endDate != "" && endDate.length > 0) {
+            paramO.search_endDate = endDate;
+        }
+        // if (cardIdQry != null && cardIdQry != "" && cardIdQry.length > 0) {
+        //     paramO.search_cardId = cardIdQry;
+        // }
+        if (carIdQry != null && carIdQry != "" && carIdQry.length > 0) {
+            paramO.search_carId = carIdQry;
+        }
+        if (validStaQry != null && validStaQry != "" && validStaQry.length > 0) {
+            paramO.search_validSta = validStaQry;
+        }
+
+        $carRegDg.datagrid("load",paramO);
+    }
+
+
+
+
+    //修改车辆详情
+    function modify() {
+        document.getElementById("doAction").value = "MOD";
+        var selectedRow = $carRegDg.datagrid('getSelected');
+        if (selectedRow) {
+            $('#carRegEditWin').window({
+                modal : true,
+                title : '车辆详情',
+                width : 1100,
+                height : 230,
+                collapsible : false,
+                minimizable : false,
+                maximizable : true,
+                href : '${base}/business/monitor/carDetail/'+selectedRow.recId,
+                onClose : function() {
+                    $carRegDg.datagrid('reload');
+                }
+            });
+        }else{
+            showMsg("提示", "请先选择需要修改的信息!");
+            return false;
+        }
+    }
+
+    $(function () {
+        $carRegDg.datagrid({
+            url:  '${base}/business/monitor/registeredCarList',
+            fitColumns: true,
+            animate: true,
+            border:true,
+            height: $(this).height() - 2,
+            width: $(this).width() - 2,
+            idField:'recId',
+            singleSelect:true,
+            rownumbers:true,
+            pagination: true,
+            pagenumber:true,
+            pageSize:15,
+            pageList: [15, 30, 45],
+            queryParams: {//默认进来查不到数据
+                search_validSta: '1'
+            },
+            columns: [
+                [
+                    // {field: 'cardId', title: '卡号',align:'center', width:30},
+                    // {field: 'cardTypeName', title: '卡类型',align:'center', width:30},
+                    {field: 'carId', title: '前车牌号',align:'center', width: 30},
+                    // {field: 'backCarId', title: '后车牌号',align:'center', width:30},
+                    {field: 'statusName', title: '状态',align:'center', width:20},
+                    // {field: 'transTypeName', title: '运输类型',align:'center', width:30},
+                    {field: 'orgName', title: '运输单位',align:'center', width:45},
+                    // {field: 'carTypeName', title: '车型',align:'center', width: 30},
+                    {field: 'stdQty', title: '标准载重(吨)',align:'center', width:20},
+                    {field: 'regDtm', title: '注册时间',align:'center', width:50},
+                    {field: 'endDtm', title: '失效时间',align:'center', width:50}
+                ]
+            ],
+            toolbar: '#tb'
+//            onLoadSuccess:function(data){
+//                qryTodayRegCarCnt();
+//            }
+        })
+    });
+
+    function add(recId) {
+        document.getElementById("doAction").value = "ADD";
+        $('#carRegEditWin').window({
+            modal : true,
+            title : '车辆新增信息',
+            width : 1020,
+            height : 230,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/monitor/carDetail/'+recId,
+            onClose : function() {
+                $carRegDg.datagrid('load');
+            }
+        });
+    }
+
+
+    //删除一行
+    function deleteCarRegInfo() {
+        var selectedRow = $carRegDg.datagrid('getSelected');
+        if (selectedRow) {
+            $.messager.confirm('提示', '数据将删除，确定继续操作?', function (r) {
+                if (r) {
+                    //提交数据
+                    var recId = selectedRow.recId;
+                    $.post("${base}/business/monitor/deleteCarRegInfo/"+recId, function(rsp) {
+                        if(rsp.successful){
+                            showMsg("提示", rsp.msg);
+                            $carRegDg.datagrid("reload");
+                        } else {
+                            showMsg("提示", rsp.msg);
+                        }
+                    }, "JSON").error(function() {
+                        showMsg("提示", "删除数据失败！");
+                    });
+                }
+            });
+        } else {
+            showMsg("提示", "请先选择要删除的信息！");
+            return false;
+        }
+    }
+
+    function uploadExcel() {
+
+        document.getElementById("prefix").value ='carRegister';
+        $('#actionType').val('add');
+
+        var formData = new FormData($("#importCsv")[0]);
+        $.ajax({
+            url: '${base}/business/pointConfig/importCsv4car',
+            type: 'POST',
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                if (data.successful) {
+                    $.messager.alert('系统提示', data.msg, 'success');
+                    reload(prefix);
+                } else {
+                    $.messager.alert('错误！', data.msg, 'error');
+                }
+            },
+            error: function (XmlHttpRequest) {
+                $.messager.alert('错误！',"处理异常，服务器状态 ："+XmlHttpRequest.status+",信息："+XmlHttpRequest.statusText, 'error');
+            }
+        });
+
+        $("#importCsv")[0].reset();
+    }
+
+
+</script>

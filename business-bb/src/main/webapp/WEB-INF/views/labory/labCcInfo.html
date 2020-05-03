@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>化验数据超标信息</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+<body>
+<div id="layoutDiv" class="easyui-layout" style="height:100%">
+    <div id="tb">
+
+        <label for="startDate">开始时间</label>
+        <input class="easyui-datebox" name="startDate" id="startDate"  style="width:145px;"/>
+        <label for="endDate">结束时间</label>
+        <input class="easyui-datebox" name="endDate" id="endDate"  style="width:145px;"/>
+        <label for="endDate">化验编码</label>
+        <input class="easyui-textbox" name="laborCode" id="laborCode"  style="width:145px;"/>
+        <span style="margin-left: 0;">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>
+        <@shiro.hasPermission name="labCcInfo:save">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add"  onclick="edit()">填报数据取舍依据</a>
+        </@shiro.hasPermission>
+         <input type="hidden" id="doActionTag"/>
+        </span>
+
+        <input type="hidden" id="idHidden" />
+    </div>
+
+    <div data-options="region:'center',title:'化验数据超标信息',noheader:false;">
+        <table id="labCcDg"></table>
+    </div>
+</div>
+
+<!--预报查看编辑窗口-->
+<div id="labCcWin" ></div>
+</body>
+</html>
+<script type="text/javascript">
+    $labCcDg = $("#labCcDg");
+    var rowObject ;
+    var selectedRowObj;
+
+    $(function () {
+        var myDate = new Date();
+        var defaultBeginTime = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+        var defaultEndTime =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+
+        $labCcDg.datagrid({
+            url:  '${base}/business/labory/qryLabCcInfoList',
+            animate: true,
+            border:true,
+            height: $(this).height() - 2,
+            width: $(this).width() - 2,
+            idField:'labCcId',
+            singleSelect:true,
+            rownumbers:true,
+            pagination: true,
+            pagenumber:true,
+            pageSize:20,
+            pageList: [20, 60],
+            queryParams: {//默认进来查当天
+                search_startTime:defaultBeginTime,
+                search_endTime:defaultEndTime
+            },
+            columns: [
+                [
+                    //{field: 'labStandardId', title: '序号',align:'center', width: "50px"},
+                    {field: 'laborCode', title: '化验编码',align:'center', width: "120px"},
+                    {field: 'chemicalType', title: '化验指标',align:'center', width: "100px"},
+                    {field: 'ccStatus', title: '超差状态',align:'center', width:"100px",formatter:transfer},
+                    {field: 'opName', title: '填报人',align:'center', width:"100px"},
+                    {field: 'opReason', title: '数据取舍依据',align:'center', width:"900px"}
+                    //{field: 'remark', title: '备注',align:'center', width:"300px"}
+                ]
+            ],
+            toolbar: '#tb'
+        })
+    });
+
+    function transfer (values,row) {
+        return "已超差";
+    }
+
+    function qry(){
+        var paramO = new Object();
+        var startTime = $("#startDate").datebox("getValue");
+        var endTime = $("#endDate").datebox("getValue");
+        var laborCode = $("#laborCode").textbox("getValue");
+
+        if (startTime != null && startTime != "" && startTime.length > 0) {
+            paramO.search_startTime = startTime;
+        }
+        if (endTime != null && endTime != "" && endTime.length > 0) {
+            paramO.search_endTime = endTime;
+        }
+        if (laborCode != null && laborCode != "" && laborCode.length > 0) {
+            paramO.search_laborCode = laborCode;
+        }
+        $labCcDg.datagrid("load",paramO);
+    }
+
+    //填报信息
+    function edit(){
+        var selectedRow = $labCcDg.datagrid('getSelected');
+        if (selectedRow) {
+            document.getElementById("idHidden").value = selectedRow.labCcId;
+        } else {
+            showMsg("提示", "请先选择填报取舍依据的记录");
+            return false;
+        }
+
+        $('#labCcWin').window({
+            modal : true,
+            title : '填报超差数据的取舍依据',
+            width : 550,
+            height : 250,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/labory/gotoEditLabCcInfo'
+        });
+    }
+
+</script>

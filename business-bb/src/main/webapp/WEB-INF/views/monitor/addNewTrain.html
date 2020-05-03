@@ -1,0 +1,149 @@
+    <div class="form-div">
+        <form id="ffNew" method="post">
+                <table>
+                    <tr>
+                        <td>车号：</td>
+                        <td><input class="easyui-textbox" data-options="missingMessage:'ceshi'" id="carIdQry" style="width: 145px;" /></td>
+                        <td colspan="2"><input type="button" value="搜索" onclick="qry()"/>
+                        <td colspan="4"><input type="button"  value="完成选择" onclick="saveNewTrainInfo()"/>
+                            <span style="color: #0099FF;">&nbsp;&nbsp;&nbsp;全部选择完毕后，点击【完成选择】按钮。</span></td>
+                    </tr>
+
+                    <tr>
+                        <div data-options="region:'center',title:'车辆基本信息',noheader:false;">
+                            <table id="carRegDg"></table>
+                        </div>
+                    </tr>
+
+                </table>
+
+            <hr style="height:1px;border:none;border-top:1px dashed #0066CC;" />
+
+
+            <br>
+
+
+        </form>
+
+    </div>
+
+<script type="text/javascript">
+    var paramObj = new Object();
+    $carRegDg = $("#carRegDg");
+
+    $(function () {
+        //修改时加载数据到控件
+        var hrecordNo = document.getElementById("hiddenRecordNo").value;
+        var hmodifyTag = document.getElementById("trainModifyTag").value;
+
+    });
+
+    function qry(){
+        var paramO = new Object();
+
+        var carIdQry = $("#carIdQry").textbox("getValue");
+
+        if (carIdQry != null && carIdQry != "" && carIdQry.length > 0) {
+            paramO.search_carId ="%"+ carIdQry+"%";
+        }
+
+        $carRegDg.datagrid("load",paramO);
+    }
+
+    $(function () {
+        $carRegDg.datagrid({
+            url:  '${base}/business/monitor/registeredCarList',
+            fitColumns: true,
+            animate: true,
+            border:true,
+            height: $(this).height() - 50,
+            width: $(this).width() - 2,
+            idField:'recId',
+            singleSelect:false,
+            rownumbers:true,
+            pagination: true,
+            pagenumber:true,
+            pageSize:45,
+            pageList: [45, 90, 100],
+            queryParams: {//默认进来查不到数据
+                search_validSta: '1'
+            },
+            columns: [
+                [
+                    {field: 'cardId', title: '卡号',align:'center', width:20,checkbox:true},
+                    {field: 'carId', title: '前车牌号',align:'center', width: 20},
+                    {field: 'orgName', title: '运输单位',align:'center', width:20},
+                    {field: 'transTypeName', title: '运输类型',align:'center', width:20},
+                    {field: 'endDtm', title: '失效时间',align:'center', width:20}
+                ]
+            ],
+
+        })
+    });
+
+
+
+    //提交保存
+    function saveNewTrainInfo() {
+        $.messager.confirm('提示', '确定保存?', function (r) {
+            if (r) {
+                //获取公共部分值
+                var commonObj = new Object();
+                var trainrow = $basicdg.datagrid('getSelected');
+                commonObj.recordNo = trainrow.recordNo;
+
+                selectedTrains = null;
+                var paramObj = new Object();
+                var arrayTrainCars = [];
+                var rows =  $carRegDg.datagrid('getSelections');
+
+                if (rows.length == 0) {
+                    showMsg("提示", "值守需要选择一个车辆信息");
+                    return false;
+                }else
+                {
+                    selectedTrains = rows;
+                    for ( var i = 0; i < selectedTrains.length; i++) {
+                        var o = {};
+                        o.carId = selectedTrains[i].carId;
+                        arrayTrainCars[i] = o;
+                    }
+                    paramObj["publicInfo"] = JSON.stringify(commonObj);
+                    paramObj["updateInfo"] = JSON.stringify(arrayTrainCars);
+
+                }
+
+                //打开遮罩
+                // $.messager.progress({ msg: '正在处理，请稍候...' });
+
+                //提交数据
+                $.post("${base}/business/monitor/addNewTrain", paramObj, function(rsp) {
+                    if(rsp.successful){
+                        //关闭遮罩
+                        // $.messager.progress('close');
+                        showMsg("提示", rsp.msg);
+
+                        var o = {};
+                        o.search_batchNo = trainrow.recordNo;
+                        $detaildg.datagrid('clearSelections');
+                        $detaildg.datagrid('load', o);
+
+                        $("#trainBasicDg").datagrid('clearSelections');
+
+                        $('#addNewTrainWin').window('close');
+
+
+                    } else {
+                        //关闭遮罩
+                        $.messager.progress('close');
+                        showMsg("提示", rsp.msg);
+                    }
+                }, "JSON").error(function() {
+                            $.messager.progress('close');
+                            showMsg("提示", "保存失败！");
+                        });
+            }
+        });
+    }
+
+</script>

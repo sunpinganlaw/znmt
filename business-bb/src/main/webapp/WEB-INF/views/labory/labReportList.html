@@ -1,0 +1,343 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>化验报告</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <#include "/include/common.html"/>
+
+</head>
+
+<body>
+    <div id="tbs">
+
+        <label for="sLaborCode">化验编码：</label>
+        <input id="sLaborCode" style="width:120px;"/>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="match();"></a>
+        <input type="hidden" id="comboboxInputVal"/>
+
+        <label for="sBeginDate">化验日期：</label>
+        <input class="easyui-datebox" id="sBeginDate" style="width:120px">&nbsp;—&nbsp;
+        <input class="easyui-datebox" id="sEndDate"  style="width:120px">
+
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qrySData();">查询</a>
+
+        <@shiro.hasPermission name="LabReport:control1">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok"  onclick="submitAppr();">提交审批</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-print"  onclick="previewRpt1();">化验报告预览</a>
+
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-print"  onclick="previewOriginalReport();">原始记录预览</a>
+        </@shiro.hasPermission>
+
+    </div>
+
+    <div>
+        <table id="labReportQryDg" ></table>
+    </div>
+
+    <div id="selectShipWin" ></div>
+</body>
+</html>
+
+<script type="text/javascript">
+    //查询数据表格准备
+    $reportQryDg = $("#labReportQryDg");
+
+    //下拉框获取化验编码
+    $('#sLaborCode').combobox({
+        url: '${base}/business/tool/getComboboxOpt/LABOR_CODE4BB',
+        panelHeight:'auto',
+        valueField:'id',
+        textField:'name',
+        onChange: function (n, o) {
+            if (n != undefined) {
+                document.getElementById("comboboxInputVal").value = n;
+            }
+        }
+    });
+
+    function match(){
+        var inputVal = document.getElementById("comboboxInputVal").value;
+        $("#sLaborCode").combobox("reload",  '${base}/business/tool/getComboboxOpt/LABOR_CODE/'+inputVal);
+    }
+
+    $(function(){
+        $reportQryDg.datagrid({
+            url: "${base}/business/labory/qryReportData4ShipBB",
+            fitColumns: false,
+            animate: true,
+            border:true,
+            singleSelect:true,
+            height: $(this).height() - 50,
+            width: $(this).width() - 2,
+            idField:'labReportId',
+            queryParams: {
+                search_laborCode:'-1'
+            },
+            frozenColumns: [
+                [   {field: 'laborCode', title: '化验编码',align:'center', width:100},
+                    {field: 'insertTime', title: '化验日期',align:'center', width: 100},
+                    {field: 'apprStatus', title: '审批状态',align:'center', width: 80},
+                    {field: 'batchType', title: '化验批次类型',align:'center', width: 80,hidden:true},
+                    {field: 'batchNo', title: '批次号',align:'center', width: 110}
+                ]
+            ],
+            columns: [
+                [
+                    {field: 'mt', title: 'Mt',align:'center', width: 100 ,formatter: roundNum1},
+                    {field: 'mad', title: 'Mad',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'aar', title: 'Aar',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'aad', title: 'Aad',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'ad', title: 'Ad',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'fcar', title: 'FCar',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'fcad', title: 'FCad',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'fcd', title: 'FCd',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'fcdaf', title: 'FCdaf',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'var', title: 'Var',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'vad', title: 'Vad',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'vd', title: 'Vd',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'vdaf', title: 'Vdaf',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'star', title: 'St,ar',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'stad', title: 'St,ad',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'std', title: 'St,d',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'har', title: 'Har',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'had', title: 'Had',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'hd', title: 'Hd',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'hdaf', title: 'Hdaf',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'qbad', title: 'Qb,ad（Mj/kg）',align:'center', width: 100,formatter: roundNum3},
+                    {field: 'qgrar', title: 'Qgr,ar（Mj/kg）',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'qgrad', title: 'Qgr,ad（Mj/kg）',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'qgrd', title: 'Qgr,d（Mj/kg）',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'qnetarj', title: 'Qnet,ar（Mj/kg）',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'qnetarm', title: 'Qnet,ar（kcal/kg）',align:'center', width: 100},
+                    {field: 'st', title: 'ST',align:'center', width: 100}
+                ]
+            ],
+            toolbar: '#tbs'
+        })
+    });
+
+
+    //查询
+    function qrySData() {
+        var qryBeginDate = $("#sBeginDate").datebox("getValue");
+        var qryEndDate =  $("#sEndDate").datebox("getValue");
+        var qryLaborCode = $("#sLaborCode").textbox("getValue");
+        var paramObj = new Object();
+
+        if (qryBeginDate != null && qryBeginDate != undefined && qryBeginDate != "") {
+            paramObj.search_beginDate = qryBeginDate;
+        }
+        if (qryEndDate != null && qryEndDate != undefined && qryEndDate != "") {
+            paramObj.search_endDate = qryEndDate;
+        }
+        if (qryLaborCode != null && qryLaborCode != undefined && qryLaborCode != "") {
+            paramObj.search_laborCode = qryLaborCode;
+        }
+
+        //加载数据
+        $reportQryDg.datagrid("load",paramObj);
+    }
+
+
+    //化验报告预览
+    function previewRpt1(){
+        //处理选择的数据
+        var reportIdArr = [];
+        var rows =  $reportQryDg.datagrid('getSelections');
+        if (rows.length == 0) {
+            showMsg("提示", "请选择一条记录查看预览");
+            return false;
+        } else if (rows.length > 1){
+            showMsg("提示", "只能选择一条记录查看预览");
+            return false;
+        }
+
+        window.open('${base}/business/labory/qryLabReportData/'+rows[0].laborCode+'/'+rows[0].apprStatusCode+'/'+rows[0].batchType,
+                'newwindow',
+                'height=820,width=1200,top=0,left=0,toolbar=no,menubar=no,scrollbars=no, resizable=no,location=no, status=no');
+    }
+
+    //原始报告预览
+    function previewOriginalReport(){
+        //处理选择的数据
+        var reportIdArr = [];
+        var rows =  $reportQryDg.datagrid('getSelections');
+        if (rows.length == 0) {
+            showMsg("提示", "请选择一条记录查看预览");
+            return false;
+        } else if (rows.length > 1){
+            showMsg("提示", "只能选择一条记录查看预览");
+            return false;
+        }
+
+        window.open('${base}/business/rptView/getReportJson/CoalOriginalRecord?laborCode='+ rows[0].laborCode+'&apprStatusCode='+ rows[0].apprStatusCode + '&batchType='+ rows[0].batchType,
+                'newwindow',
+                'height=820,width=1400,top=0,left=0,toolbar=no,menubar=no,scrollbars=no, resizable=no,location=no, status=no');
+
+    }
+
+    function selectShip() {
+        $('#selectShipWin').window({
+            modal : true,
+            title : '请先选择要查看化验报告的船',
+            width : 500,
+            height : 340,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/monitor/selectShipPage'
+        });
+    }
+
+    //发送采样机操作的命令
+    function submitAppr(){
+        var selectedRow = $reportQryDg.datagrid('getSelected');
+        if (selectedRow) {
+            if(selectedRow.apprStatus != '未审批'){
+                showMsg("提示", " 只有‘未审批’状态的化验报告才能提交审批。");
+                return false;
+            }
+
+            var param = {};
+            var labReportId = selectedRow.labReportId;
+            var laborCode = selectedRow.laborCode;
+            param.labReportId = labReportId;
+            param.laborCode = laborCode;
+
+            var paramObj = new Object();
+            paramObj.search_jsonStr = JSON.stringify(param);
+            paramObj.search_batchType = '';
+            paramObj.search_apprEventTypeCd = '5';//审批事件类型，5生成化验报告
+            $.messager.confirm('提示', '确定要提交审批?', function (r) {
+                if (r) {
+                    $.post("${base}/business/labory/submitLabResults", paramObj, function(rsp) {
+                        if(rsp.successful){
+                            //加载数据
+                            $reportQryDg.datagrid("reload");
+                            showMsg("提示", " 化验报告审批请求提交成功。");
+                        } else {
+                            showMsg("提示", rsp.msg);
+                        }
+                    });
+                }
+            });
+        } else {
+            showMsg("提示",  "请选择需要审批的化验报告!");
+            return false;
+        }
+    }
+
+//    function selectShip4Appr() {
+//        $('#selectShipWin').window({
+//            modal : true,
+//            title : '请先选择要提交审批的化验报告的船',
+//            width : 500,
+//            height : 340,
+//            collapsible : false,
+//            minimizable : false,
+//            maximizable : true,
+//            href : '${base}/business/monitor/selectShipPage4Appr'
+//        });
+//    }
+
+
+    //化验报告预览
+    function previewRpt(){
+        //处理选择的数据
+        var reportIdArr = [];
+        var rows =  $reportQryDg.datagrid('getSelections');
+        if (rows.length == 0) {
+            showMsg("提示", "请选择一条记录查看预览");
+            return false;
+        } else if (rows.length > 1){
+            showMsg("提示", "只能选择一条记录查看预览");
+            return false;
+        }
+
+        window.open('${base}/business/labory/qryLabReportData/'+rows[0].laborCode+'/'+rows[0].apprStatusCode+'/'+rows[0].batchType,
+                'newwindow',
+                'height=820,width=1200,top=0,left=0,toolbar=no,menubar=no,scrollbars=no, resizable=no,location=no, status=no');
+    }
+
+
+    function roundNum1 (values,row){
+        if(values ==null){
+            return "";
+        }
+        var num = 1;
+        var Str = values.split(".");
+        if(Str[0]==null||Str[0]==""){
+            Str[0]="0"
+        }
+        var i = 0;
+        if(Str[1] != null && Str[1] != undefined){
+            i = Str[1].length;
+        }
+        var tmp = "";
+        for(var i ;i < num;i++){
+            tmp += "0";
+        }
+        if(Str[1]==null || Str[1]==undefined){
+            Str[1]=tmp;
+        }else{
+            Str[1] += tmp;
+        }
+        return Str[0]+"."+Str[1];
+    }
+
+    function roundNum2 (values,row){
+        if(values ==null){
+            return "";
+        }
+        var num = 2;
+        var Str = values.split(".");
+        if(Str[0]==null||Str[0]==""){
+            Str[0]="0"
+        }
+        var i = 0;
+        if(Str[1] != null && Str[1] != undefined){
+            i = Str[1].length;
+        }
+        var tmp = "";
+        for(var i ;i < num;i++){
+            tmp += "0";
+        }
+        if(Str[1]==null || Str[1]==undefined){
+            Str[1]=tmp;
+        }else{
+            Str[1] += tmp;
+        }
+        return Str[0]+"."+Str[1];
+    }
+
+    function roundNum3 (values,row){
+        if(values ==null){
+            return "";
+        }
+        var num = 3;
+        var Str = values.split(".");
+        if(Str[0]==null||Str[0]==""){
+            Str[0]="0"
+        }
+        var i = 0;
+        if(Str[1] != null && Str[1] != undefined){
+            i = Str[1].length;
+        }
+        var tmp = "";
+        for(var i ;i < num;i++){
+            tmp += "0";
+        }
+        if(Str[1]==null || Str[1]==undefined){
+            Str[1]=tmp;
+        }else{
+            Str[1] += tmp;
+        }
+        return Str[0]+"."+Str[1];
+    }
+
+</script>

@@ -1,0 +1,164 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <#include "/include/common.html"/>
+    <title>化验报告</title>
+
+    <style type="text/css">
+
+        body{ background-color:#fff; color:#000; font-size:0.9em; width:1000px; margin:0 auto;}
+        h1{ font-size:2em; text-align:center; line-height:2em;}
+        table.table01{border-left:1px solid #000;border-top:1px solid #000;}
+        table.table01 td{ border-right:1px solid #000;border-bottom:1px solid #000; padding:5px; text-align:center;}
+        .style01{ height:3.5em; line-height:3.5em;}
+
+    </style>
+
+</head>
+
+<body>
+<div style="text-align: right"><a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-print" onclick="printLabRpt1();">打印</a></div>
+<!--startprint-->
+<div>&nbsp;</div>
+<h1>国电常州发电有限公司</h1>
+<h1>检&nbsp;&nbsp;&nbsp;验&nbsp;&nbsp;&nbsp;报&nbsp;&nbsp;&nbsp;告</h1>
+<h1>（内部发布）</h1>
+<div id="reportHint" style="text-align: center">&nbsp;</div>
+<table width="95%" border="0" cellspacing="0" cellpadding="0" class="table01">
+    <tr>
+        <td style="text-align: left" colspan="2"  width="50%">&nbsp;&nbsp;&nbsp;船  号：<strong id="shipName">&nbsp;</strong></td>
+        <td style="text-align: left" width="50%">&nbsp;&nbsp;&nbsp;煤  种：<strong id="coalName">&nbsp;</strong></td>
+    </tr>
+    <tr>
+        <td style="text-align: left" colspan="2"  width="50%">&nbsp;&nbsp;&nbsp;采样方式：<strong id="sampleTypeName">&nbsp;</strong></td>
+        <td style="text-align: left" width="50%">&nbsp;&nbsp;&nbsp;检验项目：Mt、Mad、Aar、Vad、Qnet,ar、St,ar、ST</td>
+    </tr>
+    <tr>
+        <td style="text-align: left" colspan="2"  width="50%">&nbsp;&nbsp;&nbsp;采、制样依据：GB/475-2008、GB/474-2008</td>
+        <td style="text-align: left" width="50%">&nbsp;&nbsp;&nbsp;检验依据：GB/T211-2007、GB/T212-2008、GB/T213-2008、GB/T214-2007、GB/T219-2008</td>
+    </tr>
+    <tr>
+        <td style="text-align: left" colspan="2"  width="50%">&nbsp;&nbsp;&nbsp;报告发送日期：<strong id="deployDate">&nbsp;</strong></td>
+        <td style="text-align: left" width="50%">&nbsp;&nbsp;&nbsp;检验设备：鼓风干燥箱、高温马弗炉、量热仪、测硫仪、灰熔点仪、自动工业分析仪</td>
+    </tr>
+    <tr>
+        <td colspan="3">检&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            验&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            结&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;果</td>
+    </tr>
+    <tr>
+        <td width="30%">检验项目 \ 样品编号</td>
+        <td colspan="2" width="70%"><h3 id="laborCodes">&nbsp;</h3></td>
+    </tr>
+    <tr>
+        <td width="30%">全水分  Mt %</td>
+        <td colspan="2" width="70%"><h3 id="mt">&nbsp;</h3></td>
+    </tr>
+    <tr>
+        <td width="30%">水  分  Mad %</td>
+        <td colspan="2" width="70%"><h3 id="mad" >&nbsp;</h3></td>
+    </tr>
+    <tr>
+        <td width="30%">灰  分  Aar %</td>
+        <td colspan="2" width="70%"><h3 id="aar">&nbsp;</h3></td>
+    </tr>
+    <tr>
+        <td width="30%">挥发分  Vad %</td>
+        <td colspan="2" width="70%"><h3 id="vad">&nbsp;</h3></td>
+    </tr>
+    <tr>
+        <td width="30%">全  硫  St,ar %</td>
+        <td colspan="2" width="70%"><h3 id="star">&nbsp;</h3></td>
+    </tr>
+    <tr>
+        <td width="30%">低位发热量 Qnet,ar MJ/kg</td>
+        <td colspan="2" width="70%"><h3><strong id="qnetar" >&nbsp;</strong><strong>(</strong><strong id="qnetarm">&nbsp;</strong><strong>)</strong></h3></td>
+    </tr>
+    <tr>
+        <td width="30%">煤灰熔融性 ST ℃：</td>
+        <td colspan="2" width="70%"><h3 id="st" >&nbsp;</h3></td>
+    </tr>
+    <tr>
+        <td colspan="3" id="remark" style="text-align: left" width="70%">
+            <br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            备注：此报告为<strong id="laborCodes1">&nbsp;</strong>的平均结果。 <strong id="remarks">&nbsp;</strong>
+            <br/>
+        </td>
+    </tr>
+
+</table>
+<div>&nbsp;</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    发布部门：<strong>经营计划部（煤检中心）</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    发布人：<strong>方清华</strong></div>
+<div>&nbsp;</div>
+<!--endprint-->
+</body>
+</html>
+
+<script type="text/javascript">
+    $(function(){
+        var labReportData = ${LabReportData};
+        //alert(JSON.stringify(labReportData));
+        if (labReportData.report_status != "OK") {
+            alert("该船的化验样还未完成，请等待样品化验结束后再查看该化验报告");
+            return false;
+        } else {
+            document.getElementById("mt").innerHTML = toDecimal(labReportData.mt, 1);
+            document.getElementById("mad").innerHTML = toDecimal(labReportData.mad, 2);
+            document.getElementById("aar").innerHTML = toDecimal(labReportData.aar, 2);
+            document.getElementById("vad").innerHTML = toDecimal(labReportData.vad, 2);
+            document.getElementById("star").innerHTML = toDecimal(labReportData.star, 2);
+            document.getElementById("qnetar").innerHTML = toDecimal(labReportData.qnetar, 2);
+            document.getElementById("qnetarm").innerHTML = labReportData.qnetarm;
+            document.getElementById("st").innerHTML = labReportData.st;
+
+            document.getElementById("sampleTypeName").innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;"+labReportData.sample_type_name;
+            document.getElementById("laborCodes").innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;"+labReportData.labor_codes;
+            document.getElementById("laborCodes1").innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;"+labReportData.labor_codes;
+            document.getElementById("shipName").innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;"+labReportData.ship_name;
+            document.getElementById("coalName").innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;"+labReportData.coal_name;
+            document.getElementById("deployDate").innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;"+labReportData.deploy_date;
+            document.getElementById("remarks").innerHTML = "              St,ad "+labReportData.stad+"%             Vdaf "+labReportData.vdaf+"%";
+        }
+    });
+
+    function printLabRpt1() {
+        var bdhtml = window.document.body.innerHTML;
+        var sprnstr = "<!--startprint-->";
+        var eprnstr = "<!--endprint-->";
+        var prnhtml = bdhtml.substr(bdhtml.indexOf(sprnstr)+17);
+        prnhtml = prnhtml.substring(0,prnhtml.indexOf(eprnstr));
+        window.document.body.innerHTML=prnhtml;
+        window.print();
+    }
+
+    function toDecimal(x, bit) {
+        var f = parseFloat(x);
+        if (isNaN(f)) {
+            return false;
+        }
+        var f = Math.round(x*Math.pow(10,bit))/Math.pow(10,bit);
+        var s = f.toString();
+        var rs = s.indexOf('.');
+        if (rs < 0) {
+            rs = s.length;
+            s += '.';
+        }
+        while (s.length <= rs + parseInt(bit)) {
+            s += '0';
+        }
+        return s;
+    }
+</script>

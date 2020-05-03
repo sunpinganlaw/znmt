@@ -1,0 +1,77 @@
+    <div id="selectTb">
+        <table>
+            <tr>
+                <td>
+                    <input type="button" onclick="submitSelect();" value="确定"/>
+                </td>
+
+            </tr>
+        </table>
+    </div>
+
+    <div id="spl" style="margin: 5px;width: 99%">
+        <table id="shipListDg" ></table>
+    </div>
+
+<script type="text/javascript">
+
+$shipListDg = $("#shipListDg");
+
+//初始化查询
+$(function () {
+    var paramObj = {};
+    var myDate = new Date();
+    var qryBeginDate = getDateStr(-100);
+    var qryEndDate =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+
+    paramObj.search_beginDate = qryBeginDate;
+    paramObj.search_endDate = qryEndDate;
+
+    $shipListDg.datagrid({
+        url: "${base}/business/monitor/qryShipTransInfo",
+        fitColumns: true,
+        width: 465,
+        height: 290,
+        idField: 'shipRecID',
+        singleSelect:true,
+        rownumbers:true,
+        queryParams:paramObj,
+        columns: [
+            [   {field: 'shipRecID', title: 'ID',align:'center', width:25, checkbox:true},
+                {field: 'shipTransNo', title: '运输编号',align:'center', width:80},
+                {field: 'shipCode', title: '船名',align:'center', width:60},
+                {field: 'shipName', title: '船号',align:'center', width:60},
+                {field: 'factTime', title: '到港时间',align:'center', width:100}
+            ]
+        ],
+        toolbar: '#selectTb'
+    });
+});
+
+
+function submitSelect(){
+    var selectedRow = $shipListDg.datagrid('getSelected');
+    if (selectedRow) {
+        var shipRecId = selectedRow.shipRecID;
+
+        $('#selectShipWin').window('close');
+
+        window.open('${base}/business/labory/getLabReportData4Ship/'+shipRecId,
+                'newwindow',
+                'height=820,width=1200,top=0,left=0,toolbar=no,menubar=no,scrollbars=no, resizable=no,location=no, status=no');
+    } else {
+        showMsg("提示",  "请选择船!");
+        return false;
+    }
+}
+
+function getDateStr(addDayCount){
+    var strDate = new Date();
+    var beginDate = strDate.getTime();
+    var endDate = beginDate + (parseInt(addDayCount)*24*60*60*1000);
+    strDate.setTime(endDate);
+    var dtStart=new Date(strDate);
+    return  dtStart.getFullYear()+"-"+(parseInt(dtStart.getMonth())+1)+"-"+dtStart.getDate();
+}
+
+</script>

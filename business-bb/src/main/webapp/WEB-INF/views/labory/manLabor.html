@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>化验条形码管理</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <#include "/include/common.html"/>
+
+</head>
+
+<body>
+    <div id="mansampleTB">
+        <label for="beginDate">入厂日期：</label>
+        <input class="easyui-datebox" id="beginDate" style="width:120px">&nbsp;—&nbsp;
+        <input class="easyui-datebox" id="endDate"  style="width:120px">
+        <label for="transportType">来煤方式：</label>
+        <select id="transportType" name="transportType" class="easyui-combobox" data-options="panelHeight:'auto'"
+                style="width:145px;">
+            <option value="" selected>全部</option>
+            <option value="1">火车入厂煤</option>
+            <option value="2">水运入厂煤</option>
+            <option value="9">入炉煤</option>
+        </select>
+        <label for="packCode">封装编码</label>
+        <input class="easyui-textbox" id="packCode" style="width:250px;" value=""/>
+        <input type="hidden" id="hideSampleCode">
+        <!--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="getCard();">扫描卡</a>-->
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qryManSampleInfo();">查询</a>
+    </div>
+
+    <div style="margin: 5px;width: 98%">
+        <table id="manSampleDataDg" ></table>
+    </div>
+
+    <div id="printWin"></div>
+</body>
+</html>
+
+<script type="text/javascript">
+    //查询数据表格准备
+    $manSampleDataDg = $("#manSampleDataDg");
+    //天平
+    $(function(){
+
+        var thisDate = new Date();
+        var beginDate = thisDate.getFullYear()+"-"+(parseInt(thisDate.getMonth())+1)+"-"+thisDate.getDate();
+        var endDate =  thisDate.getFullYear()+"-"+(parseInt(thisDate.getMonth())+1)+"-"+thisDate.getDate();
+
+        $manSampleDataDg.datagrid({
+            url: "${base}/business/monitor/qryManInfo",
+            fitColumns: true,
+            height: $(this).height() - 15,
+            width: $(this).width() - 15,
+            idField:'id',
+            singleSelect:true,
+            queryParams: {
+                search_beginDate:beginDate,
+                search_endDate:endDate
+            },
+            columns: [
+                [
+//                    {field: 'batchNo', title: '批次号',align:'center', width: 90},
+                    {field: 'batchNoType', title: '批次类型',align:'center', width: 90,formatter:aliasName},
+                    {field: 'laborCode', title: '化验编码',align:'center', width: 90},
+//                    {field: 'manSampleCode', title: '人工采样编码',align:'center', width: 70},
+                    {field: 'samplingCode', title: '制样编码',align:'center', width: 70},
+//                    {field: 'carIds', title: '车号',align:'left', width: 320},
+//                    {field: 'xhNums', title: '车厢序号',align:'left', width: 200},
+                    {field: '_oper', title: '操作',align:'center', width:30,formatter:operLink}
+                ]
+            ],
+            toolbar: '#mansampleTB',
+            onLoadSuccess: function(data){
+                loadsucc();
+            }
+        })
+    });
+
+    //查询
+    function qryManSampleInfo() {
+        var  transportType = $("#transportType").combobox("getValue");
+        var   url = "${base}/business/monitor/qryManInfo";
+        var qryBeginDate = $("#beginDate").datebox("getValue");
+        var qryEndDate =  $("#endDate").datebox("getValue");
+        var packCode =  $("#packCode").textbox("getValue");
+        var paramObj = new Object();
+        if (qryBeginDate != null && qryBeginDate != undefined && qryBeginDate != "") {
+            paramObj.search_beginDate = qryBeginDate;
+        }
+        if (qryEndDate != null && qryEndDate != undefined && qryEndDate != "") {
+            paramObj.search_endDate = qryEndDate;
+        }
+        if (packCode != null && packCode != undefined && packCode != "") {
+            paramObj.search_packCode = packCode;
+        }
+        if (transportType != null && transportType != undefined && transportType != "") {
+            paramObj.search_batchNoType = transportType;
+        }
+        $manSampleDataDg.datagrid("load",paramObj);
+//        $manSampleDataDg.datagrid({
+//            url: url,
+//            fitColumns: true,
+//            height: $(this).height() - 15,
+//            width: $(this).width() - 15,
+//            idField:'id',
+//            singleSelect:true,
+//            queryParams: paramObj,
+//            columns: [
+//                [
+////                    {field: 'batchNo', title: '批次号',align:'center', width: 90},
+//                    {field: 'batchNoType', title: '批次类型',align:'center', width: 90,formmator:aliasName},
+//                    {field: 'laborCode', title: '化验编码',align:'center', width: 90},
+////                    {field: 'manSampleCode', title: '人工采样编码',align:'center', width: 70},
+//                    {field: 'samplingCode', title: '制样编码',align:'center', width: 70},
+////                    {field: 'carIds', title: '车号',align:'left', width: 320},
+////                    {field: 'xhNums', title: '车厢序号',align:'left', width: 200},
+//                    {field: '_oper', title: '操作',align:'center', width:30,formatter:operLink}
+//                ]
+//            ],
+//            toolbar: '#mansampleTB',
+//            onLoadSuccess: function(data){
+//            }
+//
+//        });
+    }
+    function loadsucc(data){
+        if (packCode != null && packCode != undefined && packCode != "") {
+            var rows = $manSampleDataDg.datagrid('getRows');
+            if (rows.length == 1) {
+               $.messager.alert('当前化验码',rows[0]['laborCode']);
+            }
+        }
+    }
+
+    function operLink(val,row,index){
+        var sc = row.laborCode;
+        var batchNoType = row.batchNoType;
+        if ( batchNoType != '5' ){
+            return '<a href="javascript:void(0)" onclick="printSampleCode('+sc+')">打印</a>';
+        }else{//系统外批次不支持打印化验条码（有英文字母）
+            return '打印';
+        }
+    }
+
+    function aliasName(val,row,index){
+        var batchNoType = row.batchNoType;
+        if (batchNoType == '1') {
+            return '入厂批次';
+        } else if (batchNoType == '2') {
+            return '入厂批次';
+        } else if (batchNoType == '9') {
+            return '入炉批次';
+        } else{
+            return '未知';
+        }
+    }
+
+    function printSampleCode(laborCode){
+        window.open('${base}/business/monitor/barcodePrintWin/'+laborCode,
+                'newwindow',
+                'height=500,width=800,top=0,left=0,toolbar=no,menubar=no,scrollbars=no, resizable=no,location=no, status=no');
+    }
+    function getCard() {
+        $("#packCode").textbox('setValue',"");
+        var recId = "-1";
+        $.post("${base}/business/monitor/getCardBySampling/"+recId, function(rsp) {
+            if(rsp.successful){
+                $("#packCode").textbox('setValue',rsp.msg);
+            }
+        }, "JSON").error(function() {
+                    showMsg("提示", "获得卡号失败，请查看连接线是否正常连接！");
+                });
+    }
+
+</script>

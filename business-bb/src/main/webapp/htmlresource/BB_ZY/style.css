@@ -1,0 +1,62 @@
+.lamp_red {
+background-image: url(img/lamp_red.png);
+width: 20px;
+height: 20px;
+display: block;
+margin:0 auto;
+
+}
+.lamp_black {
+background-image: url(img/lamp_black.png);
+width: 20px;
+height: 20px;
+display: block;
+margin:0 auto;
+}
+.sampling_tank dl {
+text-align: center;
+margin: 0;
+font-size: 12px;
+padding:3px;
+position:relative;
+line-height:
+}
+.sampling_tank dt {
+color: #FFF;
+position:absolute;
+top:20px;
+margin-left:10px;
+font-size: 16px;
+
+}
+.sampling_tank dd {
+color:;
+clear: both;
+margin: 0;
+}
+.sampling_tank .man {
+background-image: url(img/man.png);
+background-position: center;
+background-repeat: no-repeat;
+padding: 35px 10px;
+}
+.sampling_tank .kong {
+background-image: url(img/kong.png);
+background-position: center;
+background-repeat: no-repeat;
+padding: 35px 10px;
+}
+.clear{ clear:both}
+.sampling_tank dd{-webkit-margin-start:0px!important;
+-webkit-margin-after: 0px;
+-webkit-margin-start: 0px;
+-webkit-margin-end: 0px;}
+td {
+height: 35px;
+border: 1px solid #454545;
+text-align: left;
+color:#FFF;
+font-size:14px;
+text-indent:6px;
+}
+.equipment td{height:55px;}
