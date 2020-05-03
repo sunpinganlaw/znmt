@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>煤场可视化</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" href="js/ext/css/css/ext-all.css">
+    <link rel="stylesheet" href="js/three_js/autocomplete.css">
+    <style>
+
+    </style>
+</head>
+<body>
+
+<div id="container" style="background-color: green">
+
+</div>
+
+<div id="wait">
+        <span class="progress">
+            <span class="bar"></span>
+        </span>
+    <br/>
+    (行走视角:W, A, S, D = 移动,左键 = 环视;鸟瞰视角:左键 = 环视，中键 = 拖动，滚轮 = 缩放)
+</div>
+
+<script src="js/jquery/jquery-1.6.2.min.js"></script>
+<script src="js/three_js/builder/three.js"></script>
+<script src="js/three_js/Detector.js"></script>
+<script src="js/three_js/loaders/FBXLoader.js"></script>
+<script src="js/three_js/controls/CameraControls.js"></script>
+<script src="js/three_js/controls/OrbitControls.js"></script>
+<script src="js/three_js/controls/CanvasRenderer.js"></script>
+<script src="js/three_js/controller.js"></script>
+
+<script>
+    var control;
+    /*
+     * 禁止右键*/
+    function nocontextmenu() {
+        event.cancelBubble = true
+        event.returnValue = false;
+        return false;
+    }
+
+    function norightclick(e){
+        if (window.Event) {
+            if (e.which == 2 || e.which == 3)
+                return false;
+        } else if (event.button == 2 || event.button == 3){
+            event.cancelBubble = true
+            event.returnValue = false;
+            return false;
+        }
+    }
+
+    $(function(){
+        document.oncontextmenu = nocontextmenu;
+        document.onmousedown = norightclick;
+
+        if (!Detector.webgl ){
+            Detector.addGetWebGLMessage();
+        }
+
+        control = new THREE.Create({domElement:$("#container"),
+            //场景加载完毕后回调方法见complete方法，不加载记得关闭等待提示框
+            loadercomplete:function(){
+                complete();
+            },
+            //鼠标双击物品回调，主要用于展示物品的属性信息
+            mousedbclick:function(item){
+
+            },
+            mouserclick:function (item) {
+
+            },
+            pointrclick:function (item) {
+
+            },
+            exhibitionData:function (value){
+
+            },
+            errorDispose:function (message) {
+
+            },
+            cameraprojection:THREE.CameraProjection.PerspectiveCamera});
+
+            $("#container").focus();
+    })
+
+    function complete(){
+        //关闭等待提示页面
+        $("#wait").css("display","none");
+    }
+</script>
+</body>
+</html>
