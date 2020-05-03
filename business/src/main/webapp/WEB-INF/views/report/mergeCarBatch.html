@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>采样单元合并</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+<body>
+<div id="layoutDiv" class="easyui-layout" style="height:100%">
+    <div id="tb">
+       <table>
+        <tr>
+        <td>
+        <label for="startTime">批次开始时间</label>
+        <input class="easyui-datebox" name="startTime" id="startTime"  style="width:145px;"/>
+        <label for="endTime">批次结束时间</label>
+        <input class="easyui-datebox" name="endTime" id="endTime"  style="width:145px;"/>
+        <label for="isValid">批次状态</label>
+        <select id="isValid" name="isValid" class="easyui-combobox" data-options="panelHeight:'auto'"
+                style="width:145px;">
+            <option value="" selected>全部</option>
+            <option value="0">批次未结束</option>
+            <option value="1">批次结束</option>
+            <option value="2">批次已合并</option>
+        </select>
+        <span style="margin-left: 0;">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-merge" onclick="mergeCarBatch();">批次合并</a>
+        </span>
+         </td>
+        </tr>
+       </table>
+    </div>
+
+    <div data-options="region:'center',title:'批次信息列表数据',noheader:false;">
+        <table id="mergeCarBatchDg"></table>
+    </div>
+</div>
+
+</body>
+</html>
+<script type="text/javascript">
+    $mergeCarBatchDg = $("#mergeCarBatchDg");
+    $(function () {
+        $mergeCarBatchDg.datagrid({
+            url:  '${base}/business/report/qryMergeCarBatchList',
+            fitColumns: true,
+            animate: true,
+            border:true,
+            height: $(this).height() - 2,
+            width: $(this).width() - 2,
+            idField:'batchNo',
+            rownumbers:true,
+            pagination: true,
+            pagenumber:true,
+            pageSize:70,
+            pageList: [70, 100],
+            frozenColumns:[
+                [
+                    {field: 'batchNo', title: '批次号',align:'center', width:"120px"},
+                    {field: 'sampleCode', title: '采样编码',align:'center', width:"100px"},
+                    {field: 'venName', title: '供应商',align:'center', width: "120px"},
+                    {field: 'mineName', title: '矿点',align:'center', width: "100px"},
+                    {field: 'coalName', title: '煤种',align:'center', width: "60px"},
+                    {field: 'thisBatchQty', title: '总吨数',align:'center', width:"80px"},
+                    {field: 'batchState', title: '状态',align:'center', width:"90px"},
+                    {field: 'batchTime', title: '批次生成时间',align:'center', width:"120px"},
+                    {field: 'startTime', title: '采样开始时间',align:'center', width:"120px"},
+                    {field: 'endTime', title: '采样结束时间',align:'center', width:"120px"}
+                ]
+            ],
+            columns: [
+                [
+                    {field: 'carIds', title: '车牌号',align:'left', width:"1000px"}
+                ]
+            ],
+            toolbar: '#tb'
+        })
+    });
+
+    //查询批次信息
+    function qry(){
+        var paramO = new Object();
+        var startTime = $("#startTime").datebox("getValue");
+        var endTime = $("#endTime").datebox("getValue");
+        var isValid = $("#isValid").datebox("getValue");
+
+        if (startTime != null && startTime != "" && startTime.length > 0) {
+            paramO.search_startTime = startTime;
+        }
+        if (endTime != null && endTime != "" && endTime.length > 0) {
+            paramO.search_endTime = endTime;
+        }
+        if (isValid != null && isValid != "" && isValid.length > 0) {
+            paramO.search_isValid = isValid;
+        }
+        $mergeCarBatchDg.datagrid("load",paramO);
+    }
+    function mergeCarBatch() {
+        var rowsBasic =  $mergeCarBatchDg.datagrid('getChecked');
+        var tempMsg = "";
+        if (rowsBasic.length <= 1) {
+            showMsg("提示", "请至少选择2个批次进行合并");
+            return false;
+        }
+        for (var row in rowsBasic) {
+            tempMsg += tempMsg == ""?rowsBasic[row].batchNo:","+rowsBasic[row].batchNo;
+        }
+
+        $.messager.confirm('提示', tempMsg+'合并后原有分批信息也会被清除，确定保存?', function (r) {
+            if (r) {
+                $.messager.progress();
+                var arrayBatchNos = [];
+                for ( var i = 0; i < rowsBasic.length; i++) {
+                    arrayBatchNos[i] = rowsBasic[i].batchNo;
+                }
+                var paramObj = {};
+                paramObj["updateInfo"] = JSON.stringify(arrayBatchNos);
+
+                //alert(paramObj["updateInfo"] );
+
+                //提交数据
+                $.post("${base}/business/monitor/mergeCarBatchNo", paramObj, function(rsp) {
+                    if(rsp.successful){
+                        $.messager.progress('close');
+                        showMsg("提示", rsp.msg);
+                        $mergeCarBatchDg.datagrid('clearChecked');
+                        $mergeCarBatchDg.datagrid('clearSelections');
+                        $mergeCarBatchDg.datagrid('reload');
+                    } else {
+                        $.messager.progress('close');
+                        showMsg("提示", rsp.msg);
+                    }
+                });
+            }
+        });
+    }
+</script>

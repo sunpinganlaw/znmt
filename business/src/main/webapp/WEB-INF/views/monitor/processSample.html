@@ -1,0 +1,141 @@
+<div id="tb12" style="margin: 1px;width: 99%">
+    <table style="border:1px;">
+        <tr>
+            <td>存样日期</td>
+            <td>
+                <input class="easyui-datebox" id="storeBeginDt" style="width:145px">
+                <input class="easyui-datebox" id="storeEndDt" style="width:145px">
+            </td>
+            <td>样包编码</td>
+            <td>
+                <input class="easyui-textbox"   id="qryBagId" style="width:145px;"/>
+            </td>
+            <td>
+                <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qryForGetSample();">查询</a> &nbsp;&nbsp;
+                <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save"  onclick="boxSubmitToAppr();">提交审批</a>
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+<div style="margin: 4px;width: 96%;">
+    <table id="forGetSampleDg" class="easyui-datagrid"
+           data-options="method:'get',border:true,singleSelect:false,fitColumns:true">
+        <thead>
+        <tr>
+            <th data-options="field:'bagId',width:18,align:'center'">存样包ID</th>
+            <th data-options="field:'grain',width:20,align:'center'">颗粒度</th>
+            <th data-options="field:'boxNo',width:20,align:'center'">存样柜编号</th>
+            <th data-options="field:'bagStatus',width:20,align:'center'">存样包状态</th>
+            <th data-options="field:'samTime',width:28,align:'center'">存样时间</th>
+            <th data-options="field:'keeper',width:18,align:'center'">存样人</th>
+            <th data-options="field:'takeSampleStatus',width:20,align:'center'">取样包状态</th>
+            <th data-options="field:'takeSampleTime',width:28,align:'center'">取样时间</th>
+            <th data-options="field:'taker',width:18,align:'center'">取样人</th>
+            <th data-options="field:'reCheckTake',width:20,align:'center'">取样复查</th>
+            <!--<th data-options="field:'cleanSampleStatus',width:20,align:'center'">清样包状态</th>-->
+            <!--<th data-options="field:'cleanSampleTime',width:28,align:'center'">清样时间</th>-->
+            <!--<th data-options="field:'cleaner',width:18,align:'center'">清样人</th>-->
+            <!--<th data-options="field:'reCheckClean',width:20,align:'center'">清样复查</th>-->
+        </tr>
+        </thead>
+    </table>
+</div>
+
+<script type="text/javascript">
+    $forGetSampleDg = $("#forGetSampleDg");
+
+    function qryForGetSample() {
+        var paramO={};
+        var qryBagId =  $("#qryBagId").textbox("getValue");
+        var storeBeginDt =  $("#storeBeginDt").datebox("getValue");
+        var storeEndDt =  $("#storeEndDt").datebox("getValue");
+        var tsamsta = "is null";
+        var csamsta = "is null";
+        var samidsc = "'W','Y'";
+
+        if (qryBagId != null && qryBagId.length > 0) {
+            paramO.search_bagId = qryBagId;
+        }
+        if (storeBeginDt != null && storeBeginDt.length > 0) {
+            paramO.search_beginSamTime = storeBeginDt;
+        }
+        if (storeEndDt != null && storeEndDt.length > 0) {
+            paramO.search_endSamTime = storeEndDt;
+        }
+        if (tsamsta != null && tsamsta.length > 0) {
+            paramO.search_tsamsta = tsamsta;
+        }
+        if (csamsta != null && csamsta.length > 0) {
+            paramO.search_csamsta = csamsta;
+        }
+        if (samidsc != null && samidsc.length > 0) {
+            paramO.search_samidsc = samidsc;
+        }
+
+        $forGetSampleDg.datagrid({
+            url: "${base}/business/monitor/qrySample4GetList",
+            fitColumns: true,
+            width: $(this).width() - 130,
+            height: 500,
+            idField:'bagId',
+            rownumbers:true,
+            queryParams:paramO,
+            toolbar: '#tb12',
+            columns: [
+                [
+                    {field: 'bagId', title: '样包编码',align:'center', width:18,checkbox:true},
+                    {field: 'grain', title: '颗粒度',align:'center', width:20},
+                    {field: 'boxNo', title: '存样柜编号',align:'center', width: 20},
+                    {field: 'bagStatus', title: '存样包状态',align:'center', width:20},
+                    {field: 'samTime', title: '存样时间',align:'center', width: 28},
+                    {field: 'keeper', title: '存样人',align:'center', width:18},
+                    {field: 'takeSampleStatus', title: '取样包状态',align:'center', width:20},
+                    {field: 'takeSampleTime', title: '取样时间',align:'center', width:28},
+                    {field: 'taker', title: '取样人',align:'center', width:18},
+                    {field: 'reCheckTake', title: '取样复查',align:'center', width:20}
+//                    {field: 'cleanSampleStatus', title: '清样包状态',align:'center', width:20},
+//                    {field: 'cleanSampleTime', title: '清样时间',align:'center', width:28},
+//                    {field: 'cleaner', title: '清样人',align:'center', width:18},
+//                    {field: 'reCheckClean', title: '清样复查',align:'center', width:20}
+                ]
+            ]
+        });
+    }
+
+
+    //提交审批
+    function boxSubmitToAppr(){
+        var selRows = $forGetSampleDg.datagrid('getChecked');
+        var recIdArr = [];
+        if (selRows != null && selRows.length > 0) {
+            for (var i=0;i<selRows.length;i++) {
+                recIdArr[i] = selRows[i].bagId;
+            }
+        } else {
+            showMsg("提示","请先选择请求审批的记录！");
+            return false;
+        }
+
+        var remark = "";//预留备注信息
+
+        var jsonStr = JSON.stringify(recIdArr);
+        var params = {}
+
+        params.search_apprEventTypeCd = dealTag;//电子样柜取样审批事件
+        params.search_remark = remark;
+        params.search_jsonStr = jsonStr;
+
+        $.post("${base}/business/approve/boxSubmitToApprove", params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示",rsp.msg);
+                $forGetSampleDg.datagrid('clearChecked');//必须要清理下，否则会被记录下上一次审批的id
+            } else {
+                $forGetSampleDg.datagrid('clearChecked');
+                showMsg("提示", rsp.msg);
+            }
+        })
+    }
+
+</script>

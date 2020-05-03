@@ -1,0 +1,34 @@
+    <div>
+        <table id="sampleBagDg" class="easyui-datagrid"
+               data-options="method:'get',border:true,singleSelect:true,fitColumns:true">
+            <thead>
+            <tr>
+                <th data-options="field:'bagId',width:18,align:'center'">存样包ID</th>
+                <th data-options="field:'grain',width:20,align:'center'">颗粒度</th>
+                <th data-options="field:'boxNo',width:20,align:'center'">存样柜编号</th>
+                <th data-options="field:'bagStatus',width:20,align:'center'">存样包状态</th>
+                <th data-options="field:'samTime',width:28,align:'center'">存样时间</th>
+                <th data-options="field:'keeper',width:18,align:'center'">存样人</th>
+                <th data-options="field:'takeSampleStatus',width:20,align:'center'">取样包状态</th>
+                <th data-options="field:'takeSampleTime',width:28,align:'center'">取样时间</th>
+                <th data-options="field:'taker',width:18,align:'center'">取样人</th>
+                <th data-options="field:'reCheckTake',width:20,align:'center'">取样复查</th>
+                <th data-options="field:'cleanSampleStatus',width:20,align:'center'">清样包状态</th>
+                <th data-options="field:'cleanSampleTime',width:28,align:'center'">清样时间</th>
+                <th data-options="field:'cleaner',width:18,align:'center'">清样人</th>
+                <th data-options="field:'reCheckClean',width:20,align:'center'">清样复查</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+
+<script type="text/javascript">
+    //加载读取的详情信息
+   var bagInfoList = JSON.parse(JSON.stringify(${bagInfoList}));
+   if(bagInfoList != undefined && bagInfoList != null && bagInfoList != "") {
+       $('#sampleBagDg').datagrid({
+           data: bagInfoList
+       });
+   }
+
+</script>

@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>交通运输数据大屏</title>
+    <link rel="stylesheet" href="https://unpkg.com/swiper/css/swiper.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="app" class="app">
+        <div class="home">
+            <div class="title">交通运输数据大屏</div>
+            <div style="width: 735px;height: 738px;top: 76px;left: 583px;">
+                <div class="tap-head" id="changeMap">
+                    <span class="active">物流线路</span>
+                    <span>车源分布</span>
+                </div>
+                <div class="tap-body">
+                    <div class="top-total">
+                        累计运输量
+                        <span>13,526</span>
+                    </div>
+                    <div id="chart0"
+                        style="position: absolute;left: 0;top: 130px;width: 746px;height: 500px;background:url('../assets/china.png') no-repeat center;background-size: contain;">
+                    </div>
+                </div>
+            </div>
+            <div class="borderImg" style="width: 549px;height: 250px;top: 67px;left: 25px;"></div>
+            <div class="borderImg" style="width: 549px;height: 348px;top: 330px; left: 23px;"></div>
+            <div class="borderImg" style="width: 549px;height: 370px;top: 686px;left: 23px;"></div>
+            <div class="borderImg borderImg1" style="width: 553px;height: 262px;top: 73px;right: 24px;"></div>
+            <div class="borderImg" style="width: 553px;height: 400px;top: 341px;right: 24px;"></div>
+            <div class="borderImg" style="width: 557px;height: 301px;top: 751px;right: 24px;"></div>
+            <div class="borderImg" style="width: 753px;height: 305px;top: 750px;left: 575px;"></div>
+            <div
+                style="width: 202px;height: 193px;top: 10px;left: 85px;background-size:contain;background-image:url('../assets/xz.png')">
+            </div>
+            <div class="text" style="width:125px;height: 30px;top: 109px;left: 122px;">本月新增用户</div>
+            <div class="count" style="width: 134px;top: 141px;left: 113px;text-align:center">8,238</div>
+            <div
+                style="width:202px;height:193px;top:10px;left:297px;background-size:contain;background-image:url('../assets/xz1.png')">
+            </div>
+            <div class="text" style="width: 125px;height: 30px;top: 109px;left: 334px;">本月新增用户</div>
+            <div class="count" style="width: 134px;top: 141px;left: 327px;text-align:center">824</div>
+            <div id="chart1" style="width: 500px;height: 106px;top: 202px;left: 30px;"></div>
+            <div class="cart-title" style="width: 325px;height: 30px;top: 358px;left: 33px;">ETC卡年金额消费区间车辆分布</div>
+            <div id="chart2" style="width: 549px;height: 311px;top: 388px;left: 24px;"></div>
+            <div class="cart-title" style="width: 228px;height: 30px;top: 720px;left: 35px;">ETC卡充值TOP企业</div>
+            <div id="chart3" style="width: 477px;height: 277px;top: 763px;left: 75px;">
+                <div style="height:100%;">
+                    <div class="swiper-container">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide">
+                                <div class="swiper-item">
+                                    <div class="swiper-title">
+                                        <span class="num"
+                                            style="margin-right: 10px; background: linear-gradient(to right, rgba(23, 216, 161, 0.6), rgba(0, 0, 0, 0)); font-size: 16px; font-weight: normal; color: rgb(255, 255, 255); text-shadow: rgba(50, 123, 250, 0.6) 0px 0px 12px;">NO
+                                            1</span>
+                                        <div class="value-wrap">
+                                            <div class="value"
+                                                style="font-size: 16px; color: rgb(204, 204, 204); font-weight: normal; overflow: visible; transform: translate3d(0.1px, 0.001px, 0.001px); transition: transform 0s linear 0s;">
+                                                中国石油天然气运输公司钦州分公司1</div>
+                                        </div>
+                                    </div>
+                                    <div class="swiper-wrap">
+                                        <div class="bar"
+                                            style="background: linear-gradient(to right, rgba(50, 123, 250, 0.3), rgba(50, 123, 250, 0.8)); height: 12px; border-radius: 6px; width: 77%;">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swiper-item">
+                                    <div class="swiper-title">
+                                        <span class="num"
+                                            style="margin-right: 10px; background: linear-gradient(to right, rgba(23, 216, 161, 0.6), rgba(0, 0, 0, 0)); font-size: 16px; font-weight: normal; color: rgb(255, 255, 255); text-shadow: rgba(50, 123, 250, 0.6) 0px 0px 12px;">NO
+                                            2</span>
+                                        <div class="value-wrap">
+                                            <div class="value"
+                                                style="font-size: 16px; color: rgb(204, 204, 204); font-weight: normal; overflow: visible; transform: translate3d(0.1px, 0.001px, 0.001px); transition: transform 0s linear 0s;">
+                                                中国石油天然气运输公司钦州分公司2</div>
+                                        </div>
+                                    </div>
+                                    <div class="swiper-wrap">
+                                        <div class="bar"
+                                            style="background: linear-gradient(to right, rgba(50, 123, 250, 0.3), rgba(50, 123, 250, 0.8)); height: 12px; border-radius: 6px; width: 77%;">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swiper-item">
+                                    <div class="swiper-title">
+                                        <span class="num"
+                                            style="margin-right: 10px; background: linear-gradient(to right, rgba(23, 216, 161, 0.6), rgba(0, 0, 0, 0)); font-size: 16px; font-weight: normal; color: rgb(255, 255, 255); text-shadow: rgba(50, 123, 250, 0.6) 0px 0px 12px;">NO
+                                            3</span>
+                                        <div class="value-wrap">
+                                            <div class="value"
+                                                style="font-size: 16px; color: rgb(204, 204, 204); font-weight: normal; overflow: visible; transform: translate3d(0.1px, 0.001px, 0.001px); transition: transform 0s linear 0s;">
+                                                中国石油天然气运输公司钦州分公司3</div>
+                                        </div>
+                                    </div>
+                                    <div class="swiper-wrap">
+                                        <div class="bar"
+                                            style="background: linear-gradient(to right, rgba(50, 123, 250, 0.3), rgba(50, 123, 250, 0.8)); height: 12px; border-radius: 6px; width: 77%;">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swiper-item">
+                                    <div class="swiper-title">
+                                        <span class="num"
+                                            style="margin-right: 10px; background: linear-gradient(to right, rgba(23, 216, 161, 0.6), rgba(0, 0, 0, 0)); font-size: 16px; font-weight: normal; color: rgb(255, 255, 255); text-shadow: rgba(50, 123, 250, 0.6) 0px 0px 12px;">NO
+                                            4</span>
+                                        <div class="value-wrap">
+                                            <div class="value"
+                                                style="font-size: 16px; color: rgb(204, 204, 204); font-weight: normal; overflow: visible; transform: translate3d(0.1px, 0.001px, 0.001px); transition: transform 0s linear 0s;">
+                                                中国石油天然气运输公司钦州分公司4</div>
+                                        </div>
+                                    </div>
+                                    <div class="swiper-wrap">
+                                        <div class="bar"
+                                            style="background: linear-gradient(to right, rgba(50, 123, 250, 0.3), rgba(50, 123, 250, 0.8)); height: 12px; border-radius: 6px; width: 77%;">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swiper-item">
+                                    <div class="swiper-title">
+                                        <span class="num"
+                                            style="margin-right: 10px; background: linear-gradient(to right, rgba(23, 216, 161, 0.6), rgba(0, 0, 0, 0)); font-size: 16px; font-weight: normal; color: rgb(255, 255, 255); text-shadow: rgba(50, 123, 250, 0.6) 0px 0px 12px;">NO
+                                            5</span>
+                                        <div class="value-wrap">
+                                            <div class="value"
+                                                style="font-size: 16px; color: rgb(204, 204, 204); font-weight: normal; overflow: visible; transform: translate3d(0.1px, 0.001px, 0.001px); transition: transform 0s linear 0s;">
+                                                中国石油天然气运输公司钦州分公司5</div>
+                                        </div>
+                                    </div>
+                                    <div class="swiper-wrap">
+                                        <div class="bar"
+                                            style="background: linear-gradient(to right, rgba(50, 123, 250, 0.3), rgba(50, 123, 250, 0.8)); height: 12px; border-radius: 6px; width: 77%;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="swiper-title">
+                                    <span class="num"
+                                        style="margin-right: 10px; background: linear-gradient(to right, rgba(23, 216, 161, 0.6), rgba(0, 0, 0, 0)); font-size: 16px; font-weight: normal; color: rgb(255, 255, 255); text-shadow: rgba(50, 123, 250, 0.6) 0px 0px 12px;">NO
+                                        6</span>
+                                    <div class="value-wrap">
+                                        <div class="value"
+                                            style="font-size: 16px; color: rgb(204, 204, 204); font-weight: normal; overflow: visible; transform: translate3d(0.1px, 0.001px, 0.001px); transition: transform 0s linear 0s;">
+                                            中国石油天然气运输公司钦州分公司6</div>
+                                    </div>
+                                </div>
+                                <div class="swiper-wrap">
+                                    <div class="bar"
+                                        style="background: linear-gradient(to right, rgba(50, 123, 250, 0.3), rgba(50, 123, 250, 0.8)); height: 12px; border-radius: 6px; width: 77%;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="date" style="width: 296px;height: 30px;top: 22px;left: 1619px;">
+                <span class="text" id="date">2019-11-10</span>
+                <span class="text" id="time" style="margin-left: 16px;">15:36:27</span>
+                <span class="text" id="week" style="margin-left: 16px;">星期日</span>
+            </div>
+            <div class="order-text" style="top: 142px;">
+                本月订单量
+                <span>201</span>单
+            </div>
+            <div class="order-text" style="top: 244px;">
+                本月订单量
+                <span>132</span>单
+            </div>
+            <div id="chart4" style="width: 266px;height: 64px;top: 136px;right: 48px;"></div>
+            <div id="chart5" style="width: 266px;height: 64px;top: 240px;right: 48px;"></div>
+            <div class="cart-title" style="width: 125px; height: 30px; top: 368px; left: 1361px;">线路运单情况</div>
+            <div style="width: 248px; height: 36px; top: 360px; left: 1625px;">
+                <div class="item-container">
+                    <div class="ratio"></div>
+                    <span class="ratio-text">运单分布</span>
+                </div>
+                <div class="item-container">
+                    <div class="ratio"></div>
+                    <span class="ratio-text">运输时效</span>
+                </div>
+            </div>
+            <div id="chart6" style="width: 280px;height: 335px;top: 398px;left: 1345px;"></div>
+            <div id="chart7" style="width: 209px;height: 335px; top: 398px;right: 81px;"></div>
+            <div class="cart-title" style="width: 125px; height: 30px; top: 771px; left: 1361px;">车辆类型统计</div>
+            <div id="chart8" style="width:545px; height: 250px; top: 798px; left: 1345px;"></div>
+            <div class="cart-title" style="width: 272px; height: 30px; top: 772px;left: 590px;">IC卡到了运输证逐月申领量</div>
+            <div id="chart9" style="width: 723px;height: 252px;top: 799px;left: 582px;"></div>
+        </div>
+
+    </div>
+    <script src="./jquery-1.11.1.min.js"></script>
+    <script src="echarts.min.js"></script>
+    <script src="https://gallerybox.echartsjs.com/dep/echarts/map/js/china.js"></script>
+    <script src="./echarts-wordcloud.min.js"></script>
+    <script src="https://unpkg.com/swiper/js/swiper.min.js"> </script>
+    <script>
+        var index = {
+            createDate() {
+                weekObj = {
+                    1: '星期一',
+                    2: '星期二',
+                    3: '星期三',
+                    4: '星期四',
+                    5: '星期五',
+                    6: '星期六',
+                    0: '星期日'
+                }
+                let date = new Date()
+                var dateStr = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`,
+                    timeStr = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds()}`;
+                $("#date").html(dateStr)
+                $("#time").html(timeStr)
+                $("#week").html(weekObj[date.getDay()])
+            },
+            scaleView() {
+                let app = document.getElementById('app'), scale = Math.min(
+                    window.innerWidth / 1920,
+                    window.innerHeight / 1080
+                );
+                app.style.transform = `scale(${scale})`;
+                let scaleLeft = (window.innerWidth - app.getBoundingClientRect().width) / 2, scaleTop = (window.innerHeight - app.getBoundingClientRect().height) / 2;
+                app.style.left = `${scaleLeft}px`;
+                app.style.top = `${scaleTop}px`;
+            },
+            createline1() {
+                let myChart = echarts.init(document.getElementById('chart1'));
+                var option = {
+                    backgroundColor: 'transparent',
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+
+                    grid: {
+                        top: '10px',
+                        left: 0,
+                        right: 0,
+                        bottom: 0
+                    },
+                    xAxis: {
+                        show: false,
+                        data: ['2018-01', '2018-02', '2018-03', '2018-04', '2018-05', '2018-06', '2018-07', '2018-08', '2018-09', '2018-10', '2018-11', '2018-12'],
+                    },
+                    yAxis: {
+                        show: false,
+
+                    },
+                    series: [{
+                        name: 'new_members',
+                        type: 'line',
+                        color: '#4186F9',
+                        smooth: true,
+                        areaStyle: {
+                            normal: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                    offset: 0,
+                                    color: 'rgba(65,134,249, 0.9)'
+                                }, {
+                                    offset: 0.8,
+                                    color: 'rgba(65,134,249, 0)'
+                                }], false),
+                                shadowBlur: 10
+                            }
+                        },
+                        symbol: 'circle',
+                        symbolSize: 8,
+                        data: [10000, 8000, 10000, 8000, 10000, 8000, 10000, 8000, 10000, 8000, 10000, 8000]
+                    }, {
+                        name: 'active_members',
+                        type: 'line',
+                        color: '#14C491',
+                        smooth: true,
+                        symbol: 'emptyCircle',
+                        symbolSize: 8,
+                        itemStyle: {
+                            borderColor: '#058023',
+                            borderWidth: 1,
+                        },
+                        data: [5000, 4500, 5000, 4500, 5000, 4500, 5000, 4500, 5000, 4500, 5000, 4500]
+                    }]
+                }
+                myChart.setOption(option);
+            },
+            createline4() {
+                let myChart = echarts.init(document.getElementById('chart4'));
+                var option = {
+                    backgroundColor: 'transparent',
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    grid: {
+                        top: '10px',
+                        left: 0,
+                        right: 0,
+                        bottom: '0',
+                    },
+                    xAxis: {
+                        show: false,
+                        data: ['2018-01', '2018-02', '2018-03', '2018-04', '2018-05', '2018-06', '2018-07'],
+                    },
+                    yAxis: {
+                        show: false,
+                    },
+                    series: [{
+                        name: 'new_members',
+                        type: 'line',
+                        smooth: true,
+                        areaStyle: {
+                            normal: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                    offset: 0,
+                                    color: 'rgba(65,134,249, 0.5)'
+                                }, {
+                                    offset: 1,
+                                    color: 'rgba(65,134,249, 0)'
+                                }], false),
+                                shadowBlur: 10
+                            }
+                        },
+                        symbol: 'circle',
+                        symbolSize: 6,
+                        itemStyle: {
+                            color: '#0A0B34',
+                            borderColor: '#4186F9',
+                            borderWidth: 2,
+                        },
+                        lineStyle: {
+                            color: '#4186F9',
+                        },
+                        data: [10000, 8000, 10000, 8000, 10000, 8000, 10000]
+                    }]
+                }
+                myChart.setOption(option);
+            },
+            createline5() {
+
+                let myChart = echarts.init(document.getElementById('chart5'));
+                var option = {
+                    backgroundColor: 'transparent',
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    grid: {
+                        top: '10px',
+                        left: 0,
+                        right: 0,
+                        bottom: '0',
+                    },
+                    xAxis: {
+                        show: false,
+                        data: ['2018-01', '2018-02', '2018-03', '2018-04', '2018-05', '2018-06', '2018-07'],
+                    },
+                    yAxis: {
+                        show: false,
+                    },
+                    series: [{
+                        name: 'new_members',
+                        type: 'line',
+                        smooth: true,
+                        areaStyle: {
+                            normal: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                    offset: 0,
+                                    color: 'rgba(65,249,238, 0.5)'
+                                }, {
+                                    offset: 1,
+                                    color: 'rgba(65,249,238, 0)'
+                                }], false),
+                                shadowBlur: 10
+                            }
+                        },
+                        symbol: 'circle',
+                        symbolSize: 6,
+                        itemStyle: {
+                            color: '#0A0B34',
+                            borderColor: '#0ef8da',
+                            borderWidth: 2,
+
+                        },
+                        lineStyle: {
+                            color: '#0ef8da',
+                        },
+                        data: [10000, 8000, 10000, 8000, 10000, 8000, 10000]
+                    }]
+                }
+                myChart.setOption(option);
+            },
+            createPie() {
+                // ETC卡年金额消费区间车辆分布图
+                var myPie = echarts.init(document.getElementById('chart2'))
+                // 设置饼图的数据以及数据名称
+                var data = [
+                    {
+                        value: 32.61, name: '小于2万', itemStyle: {
+                            color: {
+                                type: 'linear',
+                                x: 1,
+                                y: 1,
+                                x2: 0,
+                                y2: 0,
+                                colorStops: [{
+                                    offset: 0, color: 'rgba(37,94,204,1)' // 0% 处的颜色
+                                }, {
+                                    offset: 1, color: 'rgba(37,94,204,.5)' // 100% 处的颜色
+                                }],
+                                global: false // 缺省为 false
+                            },
+                            borderColor: '#3b7fff'
+                        }
+                    },
+                    {
+                        value: 19.52, name: '2万至5万', itemStyle: {
+                            color: {
+                                type: 'linear',
+                                x: 1,
+                                y: 1,
+                                x2: 0,
+                                y2: 0,
+                                colorStops: [{
+                                    offset: 0, color: 'rgba(35,190,166,1)' // 0% 处的颜色
+                                }, {
+                                    offset: 1, color: 'rgba(35,190,166,.5)' // 100% 处的颜色
+                                }],
+                                global: false // 缺省为 false
+                            },
+                            borderColor: '#4eeed4'
+                        }
+                    },
+                    {
+                        value: 18.96, name: '10万至20万',
+                        itemStyle: {
+                            color: {
+                                type: 'linear',
+                                x: 1,
+                                y: 0,
+                                x2: 0,
+                                y2: 1,
+                                colorStops: [{
+                                    offset: 0, color: 'rgba(255,230,110,.5)' // 0% 处的颜色
+                                }, {
+                                    offset: 1, color: 'rgba(255,230,110,1)' // 100% 处的颜色
+                                }],
+                                global: false // 缺省为 false
+                            },
+                            borderColor: '#ffe76a'
+                        }
+                    },
+                    {
+                        value: 18.77, name: '2万至10万',
+                        itemStyle: {
+                            color: {
+                                type: 'linear',
+                                x: 0.5,
+                                y: 0,
+                                x2: 0.5,
+                                y2: 1,
+                                colorStops: [{
+                                    offset: 0, color: 'rgba(225,60,122,.5)' // 0% 处的颜色
+                                }, {
+                                    offset: 1, color: 'rgba(230,32,94,1)' // 100% 处的颜色
+                                }],
+                                global: false // 缺省为 false
+                            },
+                            borderColor: '#ff80a8'
+                        }
+                    },
+                    {
+                        value: 9.27, name: '20万至40万',
+                        itemStyle: {
+                            color: {
+                                type: 'linear',
+                                x: 0.5,
+                                y: 0,
+                                x2: 0.5,
+                                y2: 1,
+                                colorStops: [{
+                                    offset: 0, color: '#D53A35' // 0% 处的颜色
+                                }, {
+                                    offset: 1, color: '#D53A35' // 100% 处的颜色
+                                }],
+                                global: false // 缺省为 false
+                            },
+                            borderColor: '#D53A35'
+                        }
+                    },
+                    {
+                        value: 0.87, name: '40万至70万',
+                        itemStyle: {
+                            color: {
+                                type: 'linear',
+                                x: 0.5,
+                                y: 0,
+                                x2: 0.5,
+                                y2: 1,
+                                colorStops: [{
+                                    offset: 0, color: '#54ff08' // 0% 处的颜色
+                                }, {
+                                    offset: 1, color: '#54ff08' // 100% 处的颜色
+                                }],
+                                global: false // 缺省为 false
+                            },
+                            borderColor: '#54ff08'
+                        }
+                    }
+                ]
+                // 饼图的配置对象
+                var option_pie = {
+                    grid: {
+                        bottom: 200
+                    },
+                    // 瞬时间饼图颜色
+                    color: ['#1f4692', '#117363', '#827c5d', '#b5355d', '#d53a35'],
+                    calculable: true,
+                    series: [{
+                        name: '车辆分布',
+                        type: 'pie',
+                        radius: 100,
+                        roseType: 'radius',
+                        label: {
+                            formatter: [
+                                '{b|{b}}',
+                                '{c|{c}%}'
+                            ].join('\n'),
+                            // 标签文本的颜色
+                            rich: {
+                                b: {
+                                    color: '#5c5c63',
+                                    fontSize: 17
+                                },
+                                c: {
+                                    color: '#c9cad0',
+                                    fontSize: 16
+                                }
+                            },
+
+                        },
+                        labelLine: {
+                            lineStyle: {
+                                color: '#fff'
+                            }
+                        },
+                        itemStyle: {
+                            borderWidth: 2
+                        },
+                        data
+                    }]
+                }
+                myPie.setOption(option_pie)
+                // 设置默认选中高亮部分
+                // 当前高亮部分的索引
+                var currentIndex = 0
+                // 循环搞定的间隔时间（毫秒）
+                var timeout = 1500
+
+                setInterval(function () {
+                    var len = data.length
+                    myPie.dispatchAction({
+                        type: 'downplay',
+                        dataIndex: currentIndex
+                    })
+
+                    currentIndex = currentIndex > len - 1 ? 0 : currentIndex + 1
+                    myPie.dispatchAction({
+                        type: 'highlight',
+                        dataIndex: currentIndex
+                    })
+                }, timeout)
+            },
+            createMap() {
+                let myChart = echarts.init(document.getElementById('chart0'));
+                var geoCoordMap = {
+                    '北京': [116.46, 39.92],
+                    '上海': [121.48, 31.22],
+                    '广州': [113.23, 23.16],
+                    '深圳': [114.07, 22.62],
+                    '芜湖': [118.38, 31.33]
+                };
+                var BJData = [
+                    [{ name: '北京' }, { name: '上海', value: 95 }],
+                    [{ name: '北京' }, { name: '广州', value: 90 }]
+                ];
+                var SHData = [
+                    [{ name: '上海' }, { name: '芜湖', value: 95 }],
+                    [{ name: '上海' }, { name: '深圳', value: 90 }]
+                ];
+                var GZData = [
+                    [{ name: '广州' }, { name: '深圳', value: 95 }],
+                    [{ name: '广州' }, { name: '芜湖', value: 90 }]
+                ];
+                var cityData = [
+                    { name: '北京', value: 100 },
+                    { name: '上海', value: 90 },
+                    { name: '广州', value: 80 },
+                    { name: '深圳', value: 70 },
+                    { name: '芜湖', value: 60 },
+                ];
+                var convertData1 = function (data) {
+                    var res = [];
+                    for (var i = 0; i < data.length; i++) {
+                        var dataItem = data[i];
+                        var fromCoord = geoCoordMap[dataItem[0].name];
+                        var toCoord = geoCoordMap[dataItem[1].name];
+                        if (fromCoord && toCoord) {
+                            res.push({
+                                fromName: dataItem[0].name,
+                                toName: dataItem[1].name,
+                                coords: [fromCoord, toCoord],
+                                value: dataItem[1].value
+                            });
+                        }
+                    }
+                    return res;
+                };
+                var convertData2 = function (data) {
+                    var res = [];
+                    for (var i = 0; i < data.length; i++) {
+                        var geoCoord = geoCoordMap[data[i].name];
+                        if (geoCoord) {
+                            res.push({
+                                name: data[i].name,
+                                value: geoCoord.concat(data[i].value)
+                            });
+                        }
+                    }
+                    return res;
+                };
+                var lines = [];
+                [['北京', BJData], ['上海', SHData], ['广州', GZData]].forEach(function (item, i) {
+                    //console.log(item,i);
+                    lines.push(
+                        {
+                            name: item[0] + ' Top10',
+                            type: 'lines',
+                            zlevel: 1,
+                            symbol: ['none', 'none'],
+                            effect: {
+                                show: true,
+                                period: 3,
+                                trailLength: 0.2,
+                                symbol: 'arrow',
+                                symbolSize: 8
+                            },
+                            lineStyle: {
+                                normal: {
+                                    color: '#F4C907',
+                                    width: 1,
+                                    opacity: 0.6,
+                                    curveness: 0.2
+                                }
+                            },
+                            data: convertData1(item[1])
+                        });
+                });
+
+                var citys = [{
+                    name: '城市',
+                    type: 'effectScatter',
+                    coordinateSystem: 'geo',
+                    data: convertData2(cityData),
+                    symbolSize: function (val) {
+                        return 8;
+                    },
+                    label: {
+                        normal: {
+                            formatter: '{b}',
+                            position: 'right',
+                            show: false
+                        },
+                        emphasis: {
+                            show: true
+                        }
+                    },
+                    rippleEffect: {
+                        color: '#E47423',
+                        scale: 3,
+                        brushType: 'stroke'
+                    },
+                    itemStyle: {
+                        normal: {
+                            color: '#fff',
+                            borderColor: '#E47423',
+                            borderWidth: 2,
+                            shadowBlur: 20,
+                            shadowColor: '#E47423'
+                        }
+                    },
+                },
+                {
+                    name: '前5',
+                    type: 'effectScatter',
+                    coordinateSystem: 'geo',
+                    data: convertData2(cityData.sort(function (a, b) {
+                        return b.value - a.value;
+                    }).slice(0, 4)),
+                    symbolSize: function (val) {
+                        return 8;
+                    },
+                    showEffectOn: 'render',
+                    rippleEffect: {
+                        color: '#E47423',
+                        scale: 5,
+                        brushType: 'stroke'
+                    },
+                    itemStyle: {
+                        normal: {
+                            color: '#fff',
+                            borderColor: '#E47423',
+                            borderWidth: 2,
+                            shadowBlur: 20,
+                            shadowColor: '#E47423'
+                        }
+                    },
+                    zlevel: 1
+                }]
+                var seriesdata = [lines, citys], i = 0;
+                option = {
+                    backgroundColor: 'transparent',
+                    grid: {
+                        top: '0%',
+                        left: '0%',
+                        right: '0%',
+                        bottom: '0%',
+                        containLabel: true
+                    },
+                    geo: {
+                        map: 'china',
+                        zoom: 1.25,
+                        label: {
+                            emphasis: {
+                                show: false
+                            },
+                        },
+                        itemStyle: {
+                            normal: {
+                                areaColor: 'transparent',
+                                borderColor: '#1499BA'
+                            },
+                            emphasis: {
+                                areaColor: 'transparent'
+                            }
+                        }
+                    },
+                    series: seriesdata[i]
+                };
+                myChart.setOption(option);
+                $("#changeMap span").click(function () {
+                    $this = $(this)
+                    if ($this.hasClass('active')) {
+                        return
+                    }
+                    $this.addClass('active').siblings().removeClass('active')
+                    option.series = seriesdata[$this.index()]
+                    myChart.setOption(option);
+                })
+
+            },
+            creataBar() {
+                // 线路运单情况
+                var myLeftBar = echarts.init(document.getElementById("chart6"));
+                var myRightBar = echarts.init(document.getElementById("chart7"));
+
+                // 左侧柱状图的配置项
+                var option_left = {
+                    // 悬浮提示框的配置选项
+                    tooltip: {
+                        trigger: "axis",
+                        formatter: '{b}：{c}',
+                        backgroundColor: 'rgba(155,55,155,1)',
+                        borderColor: '#fff',
+                        borderWidth: 2,
+                        axisPointer: {
+                            // 坐标轴指示器，坐标轴触发有效
+                            type: "shadow" // 默认为直线，可选为：'line' | 'shadow'
+                        }
+                    },
+                    grid: {
+                        left: "30px",
+                        right: "4%",
+                        bottom: "3%",
+                        containLabel: true
+                    },
+                    xAxis: {
+                        show: false
+                    },
+                    yAxis: [
+                        {
+                            type: "category",
+                            axisTick: { show: false },
+                            boundaryGap: false,
+                            axisLine: {
+                                lineStyle: {
+                                    color: '#1c9ead'
+                                }
+                            },
+                            axisLabel: {
+                                color: '#fff',
+                                fontSize:16
+                            },
+                            axisTick: {
+                                show: true
+                            },
+                            data: ["玉林->湖北", "玉林->西安", "北京->湖北", "上海->西安", "西安->湖北", "广州->西安"]
+                        }
+                    ],
+                    series: [
+                        {
+                            name: "利润",
+                            type: "bar",
+                            label: {
+                                normal: {
+                                    show: true,
+                                    position: "right",
+                                    color: '#fff',
+                                }
+                            },
+                            itemStyle: {
+                                color: new echarts.graphic.LinearGradient(
+                                    1, 0, 0, 1,
+                                    [
+                                        { offset: 1, color: '#155de9' },
+                                        { offset: 0, color: 'rgba(39,94,200,.3)' }
+                                    ]
+                                )
+                            },
+                            barWidth: 16,
+                            data: [354, 1543, 395, 2521, 393, 2021]
+                        }
+                    ]
+                };
+
+                // 右侧柱状图的配置项
+                var option_right = {
+                    // 悬浮提示框的配置选项
+                    tooltip: {
+                        trigger: "axis",
+                        formatter: '{b}：{c}',
+                        backgroundColor: 'rgba(155,55,155,1)',
+                        borderColor: '#fff',
+                        borderWidth: 2,
+                        axisPointer: {
+                            // 坐标轴指示器，坐标轴触发有效
+                            type: "shadow" // 默认为直线，可选为：'line' | 'shadow'
+                        }
+                    },
+                    grid: {
+                        left: "3%",
+                        right: "15px",
+                        bottom: "3%",
+                        containLabel: true
+                    },
+                    xAxis: {
+                        show: false
+                    },
+                    yAxis: [
+                        {
+                            type: "category",
+                            axisTick: { show: false },
+                            boundaryGap: false,
+                            axisLine: {
+                                show: false
+                            },
+                            axisLabel: {
+                                show: false
+                            },
+                            axisTick: {
+                                show: false
+                            },
+                            data: ["玉林->湖北", "玉林->西安", "北京->湖北", "上海->西安", "西安->湖北", "广州->西安"]
+                        }
+                    ],
+                    series: [
+                        {
+                            name: "利润",
+                            type: "bar",
+                            label: {
+                                normal: {
+                                    show: true,
+                                    position: "right",
+                                    color: '#fff'
+                                }
+                            },
+                            itemStyle: {
+                                color: new echarts.graphic.LinearGradient(
+                                    1, 0, 0, 1,
+                                    [
+                                        { offset: 1, color: '#3bffce' },
+                                        { offset: 0, color: 'rgba(59,255,206,.3)' }
+                                    ]
+                                )
+                            },
+                            barWidth: 16,
+                            data: [35, 15, 39, 25, 39, 20]
+                        }
+                    ]
+                }
+                myLeftBar.setOption(option_left);
+                myRightBar.setOption(option_right);
+            },
+            //车辆统计类型
+            createWordCloud() {
+                var wordChart = echarts.init(document.getElementById('chart8'))
+                var data = [
+                    { name: '小型普通货车', value: 98 },
+                    { name: '中型厢式货车', value: 140 },
+                    { name: '重型半挂牵引车', value: 302 },
+                    { name: '重型厢式货车', value: 230 },
+                    { name: '大型普通客车', value: 125 },
+                    { name: '挂车', value: 45 },
+                ]
+                wordChart.setOption({
+                    series: [
+                        {
+                            type: "wordCloud",
+                            sizeRange: [12, 40], //最小文字——最大文字
+                            rotationRange: [0, 90], //旋转角度区间
+                            rotationStep: 90, //旋转角度间隔
+                            // maskImage: maskImage, //遮罩图片
+                            width: 500, //遮罩图片宽度
+                            height: 250, //遮罩图片高度
+                            left: "center",
+                            top: "center",
+                            data: data,
+                            gridSize: 10, //字符间距
+                            textStyle: {
+                                normal: {
+                                    color: function () {
+                                        return (
+                                            "rgb(" +
+                                            [
+                                                Math.round(Math.random() * 255),
+                                                Math.round(Math.random() * 255),
+                                                Math.round(Math.random() * 255)
+                                            ].join(",") +
+                                            ")"
+                                        );
+                                    }
+                                },
+                                emphasis: {
+                                    shadowBlur: 10,
+                                    shadowColor: "#333"
+                                }
+                            }
+                        }
+                    ]
+                });
+            },
+            swiper() {
+                var mySwiper = new Swiper('.swiper-container', {
+                    speed: 1000,
+                    loop: true, // 循环模式选项
+                    autoplay: true,
+                })
+            },
+            createline9() {
+                // IC卡道路运输证逐月申领量
+                var lineChart = echarts.init(document.getElementById("chart9"));
+                var option_line = {
+                    grid: {
+                        left: "0",
+                        right: "0",
+                        top: '20px',
+                        bottom: 0,
+                        containLabel: true
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    xAxis: {
+                        type: "category",
+                        axisPointer: {
+                            show: true
+                        },
+                        axisTick: {
+                            //去掉坐标轴刻线
+                            show: false
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                color: "#22bde3" //X轴的颜色
+                            }
+                        },
+                        axisLabel: {
+                            color: "#ccc",
+                            boundaryGap: false
+                        },
+                        data: [
+                            "2018-01",
+                            "2018-02",
+                            "2018-03",
+                            "2018-04",
+                            "2018-05",
+                            "2018-06",
+                            "2018-07",
+                            "2018-08",
+                            "2018-09",
+                            "2018-10",
+                            "2018-11",
+                            "2018-12",
+                            "2019-01",
+                            "2019-03",
+                            "2019-04",
+                            "2019-05",
+                            "2019-06",
+                            "2019-07"
+                        ]
+                    },
+                    yAxis: {
+                        type: "value",
+                        nameTextStyle: {
+                            color: "#ccc"
+                        },
+                        axisTick: {
+                            //去掉坐标轴刻线
+                            show: false
+                        },
+                        axisLine: {
+                            show: false
+                        },
+                        axisLabel: {
+                            color: "#ccc"
+                        },
+                        splitLine: {
+                            show: true,
+                            lineStyle: {
+                                color: 'rgba(225,225,225,.5)'
+                            }
+
+                        }
+                    },
+                    series: [
+                        {
+                            type: "line",
+                            smooth: true, //平滑曲线
+                            color: '#3076f0',
+                            data: [
+                                20000,
+                                8723,
+                                20000,
+                                20000,
+                                20000,
+                                10000,
+                                10000,
+                                9948,
+                                7284,
+                                6628,
+                                7210,
+                                5035,
+                                3321,
+                                1895,
+                                3942,
+                                4521,
+                                4441,
+                                4103,
+                                4269
+                            ],
+                            markLine: {
+                                symbol: 'none',
+                                data: [
+                                    {
+                                        lineStyle: {
+                                            type: 'solid',
+                                            color:'red'
+                                        },
+                                        label: {
+                                            color: '#a30636',
+                                            position: 'start',
+                                            formatter: [
+                                                '{a|{c}}'
+                                            ].join(''),
+                                            rich: {
+                                                a: {
+                                                    padding: [3, 6, 6, 3],
+                                                    backgroundColor: '#a30636',
+                                                    borderRadius: 4,
+                                                    color: '#fff'
+                                                }
+                                            }
+                                        },
+                                        name: '标线1起点',
+                                        value: 400,
+                                        symbol: 'none',
+                                        xAxis: 1,
+                                        yAxis: 3000
+                                    }
+                                ]
+                            },
+                            // 设置折线区域的背景色
+                            areaStyle: {
+                                normal: {
+                                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                        { offset: 0, color: "#1f3a7f" },
+                                        { offset: 0.5, color: "#182d66" },
+                                        { offset: 1, color: "#0e1c4c" }
+                                    ])
+                                }
+                            }
+                        }
+                    ]
+                };
+                lineChart.setOption(option_line);
+            }
+        }
+        index.createDate();
+        index.scaleView();
+        index.createline1();
+        index.createMap();
+        index.createline4();
+        index.createline5();
+        index.createPie();
+        index.creataBar();
+        index.createWordCloud();
+        index.swiper();
+        index.createline9();
+        window.onresize = index.scaleView;
+        setInterval(function () {
+            index.createDate()
+        }, 1000)
+    </script>
+</body>
+
+</html>

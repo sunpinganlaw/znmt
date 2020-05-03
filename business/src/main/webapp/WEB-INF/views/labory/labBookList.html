@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>化验台账</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+<body>
+<div id="layoutDiv" class="easyui-layout" style="height:100%">
+    <div id="tb">
+        <label for="sBeginDate">化验日期：</label>
+        <input class="easyui-datebox" id="sBeginDate" style="width:120px">&nbsp;—&nbsp;
+        <input class="easyui-datebox" id="sEndDate"  style="width:120px">
+        <label for="sApprStatus">审批状态：</label>
+        <input id="sApprStatus" style="width:120px;"/>
+
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qrySData();">查询</a>
+        <@shiro.hasPermission name="LabBook:control1">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="viewAndPrint();">详情及打印</a>
+        </@shiro.hasPermission>
+        <input type="hidden" id="canPrint" />
+    </div>
+
+    <div data-options="region:'center',title:'制样明细',noheader:false;">
+        <table id="sampleCodeDg"></table>
+    </div>
+</div>
+
+<!--预报查看编辑窗口-->
+<div id="samplingRptWin" ></div>
+</body>
+</html>
+<script type="text/javascript">
+    var zyTypeList= [ {id:'1',name:'离线制样'},{id:'0',name:'在线制样'}];
+    $sampleCodeDg = $("#sampleCodeDg");
+    var rowObject ;
+    $(function () {
+        $sampleCodeDg.datagrid({
+            url: "${base}/business/labory/qryBookData",
+            fitColumns: true,
+            height: $(this).height() - 2,
+            width: $(this).width() - 2,
+            idField:'standingBookId',
+            singleSelect:true,
+            rownumbers:true,
+            columns: [
+                [
+//                    {field: 'standingBookId', title: '-',align:'center', width:10,checkbox:true},
+                    //{field: 'laborCode', title: '化验编码',align:'center', width:100},
+                    {field: 'hyDate', title: '化验日期',align:'center', width: 100},
+                    {field: 'zbDate', title: '制表时间',align:'center', width: 100},
+                    {field: 'zbName', title: '制表人',align:'center', width: 60},
+                    {field: 'jhTime', title: '稽核时间',align:'center', width: 100},
+                    {field: 'jhName', title: '稽核人',align:'center', width: 60},
+                    {field: 'apprDate', title: '审批时间',align:'center', width: 100},
+                    {field: 'apprName', title: '审批人',align:'center', width: 60},
+                    {field: 'apprDesc', title: '审批意见',align:'center', width: 100},
+                    {field: 'apprStatus', title: '审批状态',align:'center', width: 60}
+                    //{field: '_oper', title: '操作',align:'center', width:30,formatter:operLink}
+                ]
+            ],
+            toolbar: '#tb',
+            onDblClickRow: function(rowIndex, rowData){
+
+            }
+        })
+    });
+
+
+    $('#sApprStatus').combobox({
+        panelHeight:'auto',
+        valueField:'id',
+        textField:'name',
+        data: [
+            {id: '', name: '全部', selected: true},
+            {id: '0', name: '未审批'},
+            {id: '1',name: '审批中'},
+            {id: '2',name: '审批通过'},
+            {id: '3',name: '审批未通过'}
+        ]
+    });
+    //查询
+    function qrySData() {
+        var qryBeginDate = $("#sBeginDate").datebox("getValue");
+        var qryEndDate =  $("#sEndDate").datebox("getValue");
+        var qryApprStatus = $("#sApprStatus").textbox("getValue");
+        var paramObj = new Object();
+
+        if (qryBeginDate != null && qryBeginDate != undefined && qryBeginDate != "") {
+            paramObj.search_beginDate = qryBeginDate;
+        }
+        if (qryEndDate != null && qryEndDate != undefined && qryEndDate != "") {
+            paramObj.search_endDate = qryEndDate;
+        }
+        if (qryApprStatus != null && qryApprStatus != undefined && qryApprStatus != "") {
+            paramObj.search_apprStatus = qryApprStatus;
+        }
+        //加载数据
+        $sampleCodeDg.datagrid("load",paramObj);
+
+    }
+
+    function viewAndPrint() {
+        var selectedRow = $sampleCodeDg.datagrid('getSelected');
+        if (selectedRow){
+            rowObject = selectedRow;
+
+            if (selectedRow.apprStatusCode == "2") {//审批通过才能打印
+                document.getElementById("canPrint").value = "Y";
+            } else {
+                document.getElementById("canPrint").value = "N";
+            }
+            qrySamplingRptListView(selectedRow.standingBookId);
+        }else{
+            showMsg("提示", "请先选择需要查看的信息!");
+            return false;
+        }
+    }
+
+    //双击查询
+    function qrySamplingRptListView(standingBookId) {
+        var win = $('#samplingRptWin').window({
+            modal : true,
+            title : '化验台账明细查询',
+            width : $(this).width() - 100,
+            height :  $(this).height() - 80,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/labory/bookRptView'
+        });
+    }
+</script>

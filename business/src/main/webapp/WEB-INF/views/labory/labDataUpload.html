@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>化验室数据上传</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+
+<body>
+    <div id="tb">
+        <table>
+            <tr>
+                <td>
+                    <label for="laborCode">化验编码：</label>
+                    <!--<input id="laborCode" class="easyui-textbox" data-options="required:true" style="width:145px;"  />-->
+
+                    <input id="laborCode" style="width:120px;"/>
+                    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="match();">模糊匹配</a>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="javascript:void(0)" class="easyui-linkbutton"  onclick="batchUpload();">一键上传</a>
+                    <input type="hidden" id="comboboxInputVal"/>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="tx" style="margin: 5px;width: 90%">
+        <table id="labDataUploadCfgDg" title="化验数据上传"></table>
+    </div>
+</body>
+<script type="text/javascript">
+//全局变量
+$labDataUploadCfgDg = $("#labDataUploadCfgDg");
+
+//下拉框获取化验编码
+$('#laborCode').combobox({
+    url: '${base}/business/tool/getComboboxOpt/LABOR_CODE',
+    panelHeight:'auto',
+    valueField:'id',
+    textField:'name',
+    onChange: function (n, o) {
+        if (n != undefined) {
+            document.getElementById("comboboxInputVal").value = n;
+        }
+    }
+});
+
+$(function () {
+    $labDataUploadCfgDg.datagrid({
+        url: "${base}/business/labory/qryLabDataUploadCfg",
+        fitColumns: true,
+        height: $(this).height()-15,
+        width: $(this).width()-20,
+        idField:'labCfgId',
+        singleSelect:true,
+        rownumbers:true,
+        queryParams: {},
+        columns: [
+            [
+                {field: 'configName', title: '化验设备名称',align:'center', width:25},
+                {field: 'ip', title: '服务器IP',align:'center', width:20},
+                {field: 'latestOpTime', title: '最近成功上传时间',align:'center', width: 25},
+                {field: 'op', title: '操作',align:'center', width: 15,formatter:operLink}
+            ]
+        ],
+        toolbar: '#tb'
+    })
+});
+
+function match(){
+    var inputVal = document.getElementById("comboboxInputVal").value;
+    $("#laborCode").combobox("reload",  '${base}/business/tool/getComboboxOpt/LABOR_CODE/'+inputVal);
+}
+
+function batchUpload() {
+    var laborCode =  $("#laborCode").combobox("getValue");
+
+    if (laborCode == null || laborCode == "" || laborCode.length == 0) {
+        showMsg("提示", "请输入您要上传数据的化验编码！");
+        return false;
+    }
+
+    $.messager.confirm('提示', '化验室相应的电脑开机后才能上传数据！ 确定继续?', function (r) {
+        if (r) {
+            var allRows = $labDataUploadCfgDg.datagrid('getRows');
+
+            for (var i=0;i<allRows.length;i++) {
+                var paramObj = new Object();
+                paramObj.search_labCfgId = allRows[i].labCfgId;
+                paramObj.search_laborCode = laborCode;
+                //打开遮罩
+                $.messager.progress({ msg: '正在上传 '+allRows[i].configName+' 的化验数据...' });
+                $.post("${base}/business/labory/uploadLabData", paramObj, function(rsp) {
+                    if(rsp.successful){
+                        //关闭遮罩
+                        $.messager.progress('close');
+                        showMsg("提示", rsp.msg);
+                        $labDataUploadCfgDg.datagrid('reload');
+                    } else {
+                        //关闭遮罩
+                        $.messager.progress('close');
+                        showMsg("提示", rsp.msg);
+                    }
+                });
+            }
+        }
+    });
+
+}
+
+function operLink(val,row,index){
+    var labCfgId = row.labCfgId;
+    return '<a href="javascript:void(0);"  onclick="upload('+labCfgId+');">上传数据</a>';
+}
+
+function upload(labCfgId){
+    var laborCode =  $("#laborCode").combobox("getValue");
+
+    if (laborCode == null || laborCode == "" || laborCode.length == 0) {
+        showMsg("提示", "请输入您要上传数据的化验编码！");
+        return false;
+    }
+
+    //取值
+    var paramObj = new Object();
+    paramObj.search_labCfgId = labCfgId;
+    paramObj.search_laborCode = laborCode;
+            //打开遮罩
+    $.messager.progress({ msg: '正在上传，请稍候...' });
+    $.post("${base}/business/labory/uploadLabData", paramObj, function(rsp) {
+        if(rsp.successful){
+            //关闭遮罩
+            $.messager.progress('close');
+            showMsg("提示", rsp.msg);
+            $labDataUploadCfgDg.datagrid('reload');
+        } else {
+            //关闭遮罩
+            $.messager.progress('close');
+            showMsg("提示", rsp.msg);
+        }
+    });
+}
+</script>
+</html>

@@ -1,0 +1,126 @@
+<div style="width: 90%">
+    <div id="tbRB">
+        <table>
+            <tr>
+                <td>
+                    <label for="beginDateRB">入厂日期：</label>
+                    <input class="easyui-datebox" id="beginDateRB" style="width:120px">&nbsp;—&nbsp;
+                    <input class="easyui-datebox" id="endDateRB"  style="width:120px">
+                    <a href="javascript:void(0)"  class="easyui-linkbutton" iconCls="icon-search"  onclick="qryRB()">查询</a>
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-cut" onclick="mergeCarBatchs();">合并批次</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="tx"  style="margin: 5px;width: 90%">
+        <table id="carBasicDgRB"  style=";width: 90%"></table>
+    </div>
+
+</div>
+<script type="text/javascript">
+//全局变量
+$basicdgRB = $("#carBasicDgRB");
+
+$(function () {
+    //刚进入页面时，查询日期默认取当前日的
+    var myDate = new Date();
+    var defaultStartTime = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+    var defaultEndTime =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+    var defaultBatchNoType = "0";//0 汽车批次
+
+    $basicdgRB.datagrid({
+        url: "${base}/business/monitor/carBasicList",
+        fitColumns: false,
+        height: $(this).height()-5,
+        width: $(this).width()-350,
+        idField:'batchNo',
+        singleSelect:false,
+        rownumbers:true,
+        queryParams: {//默认进来查当天
+            search_beginDate:defaultStartTime,
+            search_endDate:defaultEndTime,
+            search_batchNoType:defaultBatchNoType
+        },
+        columns: [
+            [   {field: 'sampleCode', title: '',align:'center', width:20, checkbox:true},
+                {field: 'batchNo', title: '批次',align:'center', width:160},
+                {field: 'recordDtm', title: '批次生成时间',align:'center', width:180},
+                {field: 'venName', title: '供应商',align:'center', width: 250},
+                {field: 'colryName', title: '矿点',align:'center', width: 130},
+                {field: 'coalName', title: '煤种',align:'center', width: 80},
+                {field: 'totalEntryCnt', title: '总车数',align:'center', width: 50},
+                {field: 'totalMzQty', title: '总毛重',align:'center', width: 80},
+                {field: 'totalPzQty', title: '总皮重',align:'center', width: 80},
+                {field: 'totalNetQty', title: '总净重',align:'center', width: 80},
+                {field: 'totalKdQty', title: '总扣吨',align:'center', width: 80},
+                {field: 'totalTickQty', title: '总票重',align:'center', width: 80}
+            ]
+        ],
+        toolbar: '#tbRB',
+        onClickRow:function(rowIndex, rowData){
+            var o = {};
+            o.search_trainNo = rowData.trainNo;
+        }
+    })
+});
+
+//查询
+function qryRB(){
+    var beginDate = $("#beginDateRB").datebox("getValue");
+    var endDate = $("#endDateRB").datebox("getValue");
+
+    var qryObj = {};
+    if (beginDate != null && beginDate != "" && beginDate.length > 0) {
+        qryObj.search_beginDate = beginDate;
+    }
+
+    if (endDate!= null && endDate != "" && endDate.length > 0) {
+        qryObj.search_endDate = endDate;
+    }
+    qryObj.search_batchNoType = '0';//0 汽车批次
+
+    $basicdgRB.datagrid('load', qryObj);
+}
+
+
+function mergeCarBatchs(){
+    var rowsBasic =  $basicdgRB.datagrid('getChecked');
+    if (rowsBasic.length <= 1) {
+        showMsg("提示", "请至少选择2个批次进行合并");
+        return false;
+    }
+
+    $.messager.confirm('提示', '所选批次将合并到其中较早的批次中，其余批次将清除，确定保存?', function (r) {
+        if (r) {
+            debugger;
+            var arrayCarBatchNos = [];
+            for ( var i = 0; i < rowsBasic.length; i++) {
+                arrayCarBatchNos[i] = rowsBasic[i].batchNo;
+            }
+
+            var paramObj = {};
+            //放入票重数据
+            paramObj["updateInfo"] = JSON.stringify(arrayCarBatchNos);
+
+            //提交数据
+            $.post("${base}/business/monitor/mergeCarBatchs", paramObj, function(rsp) {
+                if(rsp.successful){
+                    //关闭遮罩
+                    $.messager.progress('close');
+                    showMsg("提示", rsp.msg);
+                    $basicdgRB.datagrid('clearChecked');
+                    $basicdgRB.datagrid('clearSelections');
+                    $basicdgRB.datagrid('reload');
+                } else {
+                    //关闭遮罩
+                    $.messager.progress('close');
+                    showMsg("提示", rsp.msg);
+                }
+            });
+        }
+    });
+}
+
+</script>
+</html>

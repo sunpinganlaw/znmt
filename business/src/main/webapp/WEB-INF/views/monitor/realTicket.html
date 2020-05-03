@@ -1,0 +1,92 @@
+<div class="form-div">
+    <form id="carTransRecordForm" method="post">
+        <div>
+            <table>
+                <tr>
+                    <td>水尺单号</td>
+                    <td><input id="attachBatchNo" name="attachBatchNo" class="easyui-combogrid" style="width:145px;" required
+                               data-options="valueField:'transferNo',textField:'transferNo',panelHeight:'300px',url:'${base}/business/tool/getComboboxOpt/SHUICHI_TICKET',  panelWidth:650,
+                        columns:[[
+                            {field:'transferNo',title:'水尺单号',width:150,sortable:true},
+                            {field:'shipName',title:'船名',width:150,sortable:true},
+                            {field:'transportNum',title:'船号',width:100,sortable:true},
+                            {field:'coalName',title:'煤种',width:100,sortable:true},
+                            {field:'shuiChi',title:'水尺',width:100,sortable:true}
+
+                            ]]" /></td>
+                    <td id="buttonTD" colspan="2">
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm();">保存</a></td>
+                </tr>
+            </table>
+        </div>
+    </form>
+   </div>
+
+<script type="text/javascript">
+   var no = "${no}";
+   var transtype = "${transtype}";
+    //提交表单
+    function submitForm(){
+
+        if (! $("#carTransRecordForm").form('validate')) {
+            showMsg("提示", "有必填项未输入值!");
+            return false;
+        }
+
+        var attachBatchNo = $("#attachBatchNo").combogrid('grid').datagrid('getSelected').transferNo;
+
+        if (attachBatchNo == null || attachBatchNo == ""){
+            showMsg("提示","请选择关联的水尺单号");
+            return false;
+        }
+
+        $.messager.confirm('提示', '确定保存?', function (r) {
+            if (r) {
+                //提交保存
+                save();
+            }
+        });
+    }
+
+    //保存
+    function save(){
+        var params = {};
+        if (transtype =='train'){
+            params.trainNo = no;
+            params.attachBatchNo = $("#attachBatchNo").combogrid('grid').datagrid('getSelected').transferNo;
+
+            var postUrl   = "${base}/business/monitor/trainRegister";
+            var effectRow = new Object();
+            effectRow["publicInfo"] = JSON.stringify(params);
+
+            $.post(postUrl, effectRow, function (rsp) {
+                if (rsp.successful) {
+                    showMsg("提示","保存成功");
+                    $('#editTrainWin').window('close');
+                } else {
+                    showMsg("提示", "保存失败");
+                }
+            }).error(function () {
+                showMsg("提示", "保存失败!");
+            });
+        }else{
+            params.batchNo = no;
+            params.attachBatchNo = $("#attachBatchNo").combogrid('grid').datagrid('getSelected').transferNo;
+            var postUrl   = "${base}/business/monitor/carTransRecNew/mod";
+
+            $.post(postUrl, params, function (rsp) {
+                if (rsp.successful) {
+                    showMsg("提示","保存成功");
+                    $('#editCarWin').window('close');
+                } else {
+                    showMsg("提示", "保存失败");
+                }
+            }).error(function () {
+                showMsg("提示", "保存失败!");
+            });
+       }
+
+    }
+
+
+</script>

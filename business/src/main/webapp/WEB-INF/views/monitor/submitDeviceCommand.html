@@ -1,0 +1,86 @@
+    <div id="displayTb">
+        <table>
+            <tr>
+                <td>采样编码选择：</td>
+                <td><input class="easyui-textbox" id="sampleCode4Command" style="width: 145px;" /></td>
+                <td>
+                    <input type="button" onclick="sendDeviceCommand();" value="提交"/>
+                </td>
+
+            </tr>
+        </table>
+    </div>
+
+    <div id="spl" style="margin: 5px;width: 99%">
+        <table id="sampleCodesDg" ></table>
+    </div>
+
+
+<script type="text/javascript">
+
+$dg = $("#sampleCodesDg");
+
+
+//初始化查询
+$(function () {
+    var machineType = document.getElementById("hideMachineType").value;
+    var commandCode = document.getElementById("hideCommandCode").value;
+    var transType = document.getElementById("hideTransType").value;
+
+    $dg.datagrid({
+        url: "${base}/business/monitor/qrySampleCodesByTransType/"+machineType+"/"+commandCode+"/"+transType,
+        fitColumns: true,
+        width: 345,
+        height: 240,
+        idField: 'sampleCode',
+        singleSelect:true,
+        showHeader:false,
+        rownumbers:true,
+        columns: [
+            [
+                {field: 'remark', title: '采样编码(批次号)',align:'center', width:60}
+            ]
+        ],
+        toolbar: '#displayTb',
+        onClickRow:function(rowIndex, rowData){
+            $("#sampleCode4Command").textbox('setValue', rowData.sampleCode);
+        }
+    });
+});
+
+
+//发送采样机操作的命令
+function sendDeviceCommand(){
+    var sampleCode = $("#sampleCode4Command").textbox('getValue');
+    var machineType = document.getElementById("hideMachineType").value;
+    var machineCode = document.getElementById("hideMachineCode").value;
+    var commandCode = document.getElementById("hideCommandCode").value;
+
+    //启动、卸样、打包需要输入采样编码
+    if (sampleCode == null || sampleCode == "" || sampleCode.length == 0) {
+        alert("请先选择采样编码！");
+        return false;
+    }
+
+    var r = confirm( '确定要执行该操作?');
+    if (r == true){
+        var paramObj = new Object();
+        paramObj.search_commandCode = commandCode;//命令代码
+        paramObj.search_machineCode = machineCode;//设备编码
+        paramObj.search_machineType = machineType;//1:采样机 2.制样机 3.翻车机
+        paramObj.search_sampleCode = sampleCode;//采样编码
+
+        $.post("${base}/business/monitor/commitCtrlCmd", paramObj, function (rsp) {
+            if (rsp) {
+                alert( rsp.msg);
+                $('#submitDeviceCommandWin').window('close');
+            } else {
+                alert("操作指令发送失败!");
+            }
+        }).error(function () {
+                    alert("操作指令发送异常!");
+                });
+    }
+}
+
+</script>

@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>&nbsp;</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <#include "/include/common.html"/>
+    <style type="text/css">
+        .barcodeImg{margin:10px 0px}
+    </style>
+
+</head>
+
+<body>
+
+<!--startprint-->
+<div style="margin:10px">
+    <div id="bcTarget" class="barcodeImg"></div>
+</div>
+<!--endprint-->
+</body>
+</html>
+<script type="text/javascript">
+    $(function(){
+        var sc = JSON.stringify(${printSmpleCodeStr});
+        $("#bcTarget").empty().barcode(sc, "code128", {barWidth:1.5, barHeight:25,showHRI:false});
+
+        var bdhtml = window.document.body.innerHTML;
+        var sprnstr = "<!--startprint-->";
+        var eprnstr = "<!--endprint-->";
+        var prnhtml = bdhtml.substr(bdhtml.indexOf(sprnstr)+17);
+        prnhtml = prnhtml.substring(0,prnhtml.indexOf(eprnstr));
+        window.document.body.innerHTML=prnhtml;
+        window.print();
+    });
+</script>

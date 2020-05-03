@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>添加标样化验码</title>
+    <script type='text/javascript' src='${base}/static/common/globalDef.js'></script>
+    <#include "../../common/include/common.html"/>
+
+</head>
+<body>
+<div class="page_content" >
+    <form id="laborCode">
+        <!-- 标题与编号区 -->
+        <table style="width:90%;margin-top: 30px;margin-left: 20px;">
+            <tr>
+                <td style="font-size: x-large;text-align: center;">添加标样化验码</td>
+            </tr>
+        </table>
+        <div class="groupTitle"><span></span></div>
+
+        <table class="tableStyle" formMode="transparent" style="margin-top: 15px; width:95%;">
+            <tr>
+                <td>标样名称：</td>
+                <td>
+                    <div class="selectSuggestion validate[required]" id="sample_name" name="sample_name" autoCheck="false"
+                         url="${base}/mis/base/misEUI.do?businessCode=coal.qrySampleName" dataRoot="rows"
+                         selWidth="200" keepDefaultStyle="true"></div>
+                    <span class="star">*</span>
+                </td>
+            </tr>
+
+            <tr>
+                <td>化验设备：</td>
+                <td>
+                    <div class="selectTree validate[required]" multiMode="true" noGroup="true"
+                         url="${base}/businessBaseAction/businessBaseByTree.do?businessCode=coal.qryDeviceName"
+                         id="device_no" name="device_no" selWidth="200" keepDefaultStyle="true"></div>
+                    <span class="star">*</span>
+                </td>
+            </tr>
+
+            <tr>
+                <td>化验指标：</td>
+                <td>
+                    <select class="validate[required]" id="target" name="target" prompt="请选择"
+                            data='{"list":[{"value":"A","key":"灰分"},{"value":"V","key":"挥发分"},{"value":"S","key":"硫分"},{"value":"H","key":"氢值"},{"value":"Q","key":"热值"}]}'
+                            selWidth="200" keepDefaultStyle="true"></select>
+                    <span class="star">*</span>
+                </td>
+            </tr>
+
+        </table>
+
+    </form>
+</div>
+
+<script type="text/javascript">
+
+    var modulePath = 'business/labory';
+    function initComplete() {
+        initForm();
+    }
+    function initForm() {
+        // 表单提交
+        $('#laborCode').attr("action", modulePath + '/save');
+        $('#laborCode').submit(function () {
+            // 判断表单的客户端验证是否通过
+            var valid = $('#laborCode').validationEngine({returnIsValid: true});
+            if (valid) {
+                $(this).ajaxSubmit({
+                    data: {"tableName": "BATCH_NO_INFO", "v_doActionTag": "ADD"},
+                    // 表单提交成功后的回调
+                    success: function (rspText, statusText, xhr, $form) {
+                        var rspData = JSON.parse(rspText);
+                        if (rspData.success == false) {
+                            top.Toast("showErrorToast", rspData.resultMsg);
+                        } else {
+                            top.Toast("showSuccessToast", rspData.resultMsg);
+                            saveCloseWinHandler();
+                        }
+                    }
+                });
+            }
+            // 阻止表单默认提交事件
+            return false;
+        });
+    }
+    function submitHandler() {
+        // 判断表单的客户端验证是否通过
+        var valid = $('#laborCode').validationEngine({returnIsValid: true});
+        if (valid) {
+            top.Dialog.confirm("是否确认保存？", function () {
+                $('#laborCode').submit()
+                //阻止表单默认提交事件
+                return false;
+            });
+        }
+    }
+    function saveCloseWinHandler() {
+        sysGlobalParams.saveCloseWinHandler();
+    }
+
+</script>
+
+</body>
+
+</html>

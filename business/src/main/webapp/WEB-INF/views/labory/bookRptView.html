@@ -1,0 +1,123 @@
+<div class="form-div">
+
+    <div id="printButton" style="text-align: right">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-print"
+           onclick="qryReportRptView();">打印</a>
+    </div>
+
+    <!--startprint-->
+    <div>
+        <div class="text" style="font-size: 30px;text-align: center">化验台账</div>
+        <table>
+            <tr>
+                <td>
+
+                </td>
+            </tr>
+            <tr>
+                <td>化验时间:</td>
+                <td width="500px" name="hyDate" id="hyDate"></td>
+                <td rowspan="18"></td>
+                <td>制表时间:</td>
+                <td name="zbDate" id="zbDate"></td>
+            </tr>
+        </table>
+    </div>
+
+    <div data-options="region:'center',title:'台账明细',noheader:false;">
+        <table id="labReportQryDg"></table>
+    </div>
+
+    <table>
+        <tr></tr>
+        <tr>
+            <td>审核:</td>
+            <td width="400px"></td>
+            <td>校核:</td>
+            <td width="400px"></td>
+            <td>制表:</td>
+        </tr>
+    </table>
+</div>
+<!--endprint-->
+
+<script type="text/javascript">
+    //审批没有通过的台账，不能打印
+    $(function () {
+        if (document.getElementById("canPrint").value == "Y") {
+            document.getElementById("printButton").style.display = "block";
+        } else {
+            document.getElementById("printButton").style.display = "none";
+        }
+    });
+
+    //
+    $reportQryDg = $("#labReportQryDg");
+    $(function () {
+        document.all.hyDate.innerText = rowObject.hyDate;
+        document.all.zbDate.innerText = rowObject.zbDate;
+
+        $reportQryDg.datagrid({
+            url: "${base}/business/labory/qryReportDataView/" + rowObject.standingBookId,
+            fitColumns: true,
+            animate: true,
+            border: true,
+            height: $(this).height() - 100,
+            width: $(this).width() - 20,
+            idField: 'recId',
+            singleSelect: true,
+            queryParams: {
+                search_laborCode: '-1'
+            },
+            frozenColumns: [
+                [
+                    {field: 'laborCode', title: '化验编码', align: 'center', width: 80},
+//                    {field: 'venName', title: '煤矿单位', align: 'center', width: 80},
+                    {field: 'coalName', title: '煤种', align: 'center', width: 80},
+                    {field: 'insertTime', title: '化验时间', align: 'center', width: 80}
+//                    {field: 'standard', title: '煤量（吨）',align:'center', width: 160}
+//                    {field: 'standard', title: '车数',align:'center', width: 160}
+                ]
+            ],
+            columns: [
+                [
+                    {field: 'mt', title: 'mt</br>(%)', align: 'center', width: 50},
+                    {field: 'mad', title: 'mad</br>(%)', align: 'center', width: 50},
+                    {field: 'aad', title: 'aad</br>(%)', align: 'center', width: 50},
+                    {field: 'ad', title: 'ad</br>(%)', align: 'center', width: 50},
+                    {field: 'aar', title: 'aar</br>(%)', align: 'center', width: 50},
+                    {field: 'vad', title: 'vad</br>(%)', align: 'center', width: 50},
+                    {field: 'vd', title: 'vd</br>(%)', align: 'center', width: 50},
+                    {field: 'vdaf', title: 'vdaf</br>(%)', align: 'center', width: 50},
+                    {field: 'stad', title: 'st,ad</br>(%)', align: 'center', width: 50},
+                    {field: 'std', title: 'st,d</br>(%)', align: 'center', width: 50},
+                    {field: 'hd', title: 'hd</br>(%)', align: 'center', width: 50},
+                    {field: 'had', title: 'had</br>(%)', align: 'center', width: 50},
+//                  {field: 'had', title: '空干基碳',align:'center', width: 100},
+//                  {field: 'had', title: '空干基氮',align:'center', width: 100},
+                    {field: 'qbad', title: 'qb,ad</br>(J/g)', align: 'center', width: 50},
+//                    {field: 'qbar', title: '收到基弹筒发热量',align:'center', width: 100},
+//                    {field: 'qbd', title: '干燥基弹筒发热量',align:'center', width: 100},
+//                    {field: 'qbdaf', title: '干燥无灰基弹筒发热量',align:'center', width: 100},
+//                    {field: 'qgrad', title: 'qgr,ad</br>((J/g)', align: 'center', width: 50},
+//                    {field: 'qgrar', title: '收到基高位发热量',align:'center', width: 100},
+                    {field: 'qgrd', title: 'qgr,d</br>((J/g)',align:'center', width: 50},
+//                    {field: 'qgrdaf', title: '干燥无灰基高位发热量',align:'center', width: 100},
+//                    {field: 'qnetad', title: 'qnet,ad</br>((J/g)', align: 'center', width: 50}
+                    {field: 'qnetarj', title: 'qnet,ar</br>((J/g)',align:'center', width: 50}
+//                    {field: 'qnetark', title: '干燥基低位发热量(kj)',align:'center', width: 100},
+//                    {field: 'qnetdaf', title: '干燥基低位发热量',align:'center', width: 100},
+                ]
+            ]
+        })
+
+    });
+
+    function qryReportRptView(standingBookId) {
+        var printStr = rowObject.standingBookId + "::" + rowObject.hyDate + "::" + rowObject.zbDate;
+        window.open('${base}/business/labory/reportRptPrn/' + printStr,
+                'newwindow',
+                'height=500,width=1300,top=0,left=0,toolbar=no,menubar=no,scrollbars=no, resizable=no,location=no, status=no');
+    }
+
+</script>

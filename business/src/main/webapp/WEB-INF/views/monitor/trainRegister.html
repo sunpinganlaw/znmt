@@ -1,0 +1,563 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>火车来煤管理</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+
+<body>
+
+    <div id="tb">
+        <table>
+            <tr>
+                <td>
+                    <label for="beginTime">入厂日期：</label>
+                    <input class="easyui-datebox" id="beginTime" style="width:120px">&nbsp;—&nbsp;
+                    <input class="easyui-datebox" id="endTime"  style="width:120px">
+                    <label for="qryTrainNo">车次：</label>
+                    <input class="easyui-textbox" id="qryTrainNo" style="width:130px;" value=""/>
+
+                    <a href="javascript:void(0)" id="qryBtn" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-print" onclick="pr();">打印翻车单</a>
+
+                    <!--<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit" onclick="modify('M');">修改</a>-->
+                    <@shiro.hasPermission name="Registe:delete">
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="deleteTrain();">删除车次</a>
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="deleteTrainbody();">删除车节</a>
+                    </@shiro.hasPermission>
+
+                    <@shiro.hasPermission name="Registe:save">
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="addTrains();">新增车</a><!--可批量新增车，公共信息只需输入一次-->
+                    </@shiro.hasPermission>
+
+                    <@shiro.hasPermission name="Registe:control1">
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit" onclick="adjustOrder();">对位调序</a>
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit" onclick="batchTrainDPRecord('2');">录大票分批</a>
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-cut" onclick="trainRebuild();">车次重组</a>
+                    <!--<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit" onclick="batchTrainDPRecord('1');">批量录入大票</a>-->
+                    <!--<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-cut" onclick="dealTrainBatchInfo();">执行分批</a>-->
+                    <!--<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit" onclick="modify('D');">大票录入</a>-->
+                     </@shiro.hasPermission>
+
+                    <input type="hidden" id="hiddenRecordNo"/>
+                    <input type="hidden" id="hideTrainNo">
+                    <input type="hidden" id="trainModifyTag"><!--修改标识，1修改  2大票录入-->
+                    <input type="hidden" id="hideIsBatchTag"><!--批量录入大票后是否进行分批标志-->
+                    <input type="hidden" id="hideTrackNo">
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="tx" style="margin: 5px;width: 90%">
+        <table id="trainBasicDg" ></table>
+    </div>
+
+    <div id="det" style="margin: 5px;width: 90%">
+        <table id="trainDetailDg" ></table>
+    </div>
+
+    <div id="editTrainWin" ></div>
+
+    <div id="modifyOneTrainInfoWin" ></div>
+
+    <div id="batchTrainDPRecordWin" ></div>
+
+    <div id="printFcListWin" ></div>
+
+    <div id="adjustTrainOrderWin" ></div>
+
+    <div id="addNewTrainWin" ></div>
+
+    <div id="trainRebuildWin" ></div>
+
+</body>
+<script type="text/javascript">
+//全局变量
+$basicdg = $("#trainBasicDg");
+$detaildg = $("#trainDetailDg");
+var oneTrainInfo;
+var selectedTrains;
+
+$(function () {
+    //刚进入页面时，查询日期默认取当前日的
+    var myDate = new Date();
+    var defaultBeginTime = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+    var defaultEndTime =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+
+    $basicdg.datagrid({
+        url: "${base}/business/monitor/trainBasicList",
+        fitColumns: true,
+        height: $(this).height()/2-60,
+        width: $(this).width()-25,
+        idField:'trainNo',
+        singleSelect:true,
+        rownumbers:true,
+        queryParams: {//默认进来查当天
+            search_beginTime:defaultBeginTime,
+            search_endTime:defaultEndTime
+        },
+        columns: [
+            [
+                {field: 'trainNo', title: '车次',align:'center', width:20},
+                {field: 'recordDtm', title: '入厂日期',align:'center', width:25},
+                {field: 'carCnt', title: '车数',align:'center', width: 15},
+                {field: 'totalMzQty', title: '总毛重(t)',align:'center', width: 15},
+                {field: 'totalNetQty', title: '总净重(t)',align:'center', width: 15},
+                {field: 'remark', title: '备注',align:'center', width:40}
+            ]
+        ],
+        toolbar: '#tb',
+        onClickRow:function(rowIndex, rowData){
+            var o = {};
+            o.search_trainNo = rowData.trainNo;
+            $detaildg.datagrid('clearSelections');
+            $detaildg.datagrid('load', o);
+        }
+    })
+});
+
+//查询
+function qry(){
+    var beginTime = $("#beginTime").datebox("getValue");
+    var endTime = $("#endTime").datebox("getValue");
+    var trainNo = $("#qryTrainNo").textbox("getValue");
+
+    var qryObj = {};
+    if (beginTime != null && beginTime != "" && beginTime.length > 0) {
+        qryObj.search_beginTime = beginTime;
+    }
+
+    if (endTime != null && endTime != "" && endTime.length > 0) {
+        qryObj.search_endTime = endTime;
+    }
+
+    if (trainNo != null && trainNo != "" && trainNo.length > 0) {
+        qryObj.search_trainNo = trainNo;
+    }
+
+    $basicdg.datagrid('load', qryObj);
+}
+
+
+$(function () {
+    $detaildg.datagrid({
+        url: "${base}/business/monitor/trainDetailList",
+        fitColumns: true,
+        height: $(this).height()/2+55,
+        width: $(this).width()-25,
+        idField:'recordNo',
+        singleSelect:false,
+        rownumbers:true,
+        ctrlSelect:true,
+        queryParams: {//默认进来查不到数据
+            search_trainNo:'-1'
+        },
+        columns: [
+            [
+                {field: 'recordNo', title: '流水号',align:'center', width:25, checkbox:true},
+                {field: 'xhNum', title: '车厢序号',align:'center', width:18},
+                {field: 'carId', title: '车号',align:'center', width:18},
+                {field: 'trackNo', title: '轨道号',align:'center', width:18},
+                {field: 'batchNo', title: '批次号',align:'center', width: 35},
+                //{field: 'sampleCode', title: '采样编码',align:'center', width:30},
+                {field: 'attachBatchNo', title: '抽检批次号',align:'center', width: 35},
+                {field: 'mineName', title: '矿点',align:'center', width:35},
+                {field: 'coalName', title: '煤种',align:'center', width: 18},
+//                {field: 'venName', title: '供应商',align:'center', width:30},
+                {field: 'sampleTypName', title: '采样方式',align:'center', width:22},
+                {field: 'emptyFlgName', title: '是否空车',align:'center', width:20},
+                {field: 'tickQty', title: '票重(t)',align:'center', width:18},
+                {field: 'mzQty', title: '毛重(t)',align:'center', width:18},
+                {field: 'pzQty', title: '皮重(t)',align:'center', width:18},
+                {field: 'netQty', title: '净重(t)',align:'center', width:18},
+                {field: 'speed', title: '过衡速度',align:'center', width:18},
+
+                {field: 'startPlaceName', title: '发站',align:'center', width:18},
+                {field: 'finalPlaceName', title: '到站',align:'center', width:18},
+                {field: 'aimTime', title: '对位时间',align:'center', width:40},
+
+                //{field: 'ydQty', title: '盈亏(t)',align:'center', width:18},
+                //{field: 'lossQty', title: '运损(t)',align:'center', width:18},
+                //{field: 'carTyp', title: '车型',align:'center', width:18},
+                {field: 'fcTime', title: '翻车时间',align:'center', width:40},
+                {field: '_oper', title: '操作',align:'center', width:25,formatter:operLink}
+            ]
+        ],
+        rowStyler: function(index,row){
+            if (row.mzQty > 100) {
+                return 'background-color:#ff081e;';//超重红色
+            } else if(row.mzQty < 30  || row.emptyFlg == "0") {
+                return 'background-color:#0DFF7C;';//空车绿色
+            }
+        }
+//        onDblClickRow:function(rowIndex, rowData){
+//            oneTrainInfo = rowData;
+//            modifyOneTrainInfo();
+//        }
+    });
+
+});
+
+function operLink(val,row,index){
+    var rn = row.recordNo;
+    //return '<a href="javascript:void(0)" onclick="modifyOneTrainInfo('+rn+',2)">大票录入</a>&nbsp;<a href="javascript:void(0)" onclick="modifyOneTrainInfo('+rn+',1)">修改</a>&nbsp;<a href="javascript:void(0)" onclick="deleteOneTrain('+rn+')">删除</a>';
+
+    //丰城的不需要在这里录入大票
+    return '<a href="javascript:void(0)" onclick="modifyOneTrainInfo('+rn+',1)">修改</a>&nbsp;<a href="javascript:void(0)" onclick="deleteOneTrain('+rn+')">删除</a>';
+}
+
+//删除一节车厢
+function deleteOneTrain(recordNo) {
+    $.messager.confirm('提示', '数据将删除，确定继续操作?', function (r) {
+        if (r) {
+            $.post("${base}/business/monitor/deleteOneTrain/"+recordNo, function(rsp) {
+                if(rsp.successful){
+                    showMsg("提示", rsp.msg);
+                    $detaildg.datagrid('clearChecked');
+                    $detaildg.datagrid('clearSelections');
+                    //$detaildg.datagrid("reload");
+                    //$basicdg.datagrid("reload");
+					reload();
+                } else {
+                    showMsg("提示", rsp.msg);
+                }
+            }, "JSON").error(function() {
+                        showMsg("提示", "删除数据失败！");
+                    });
+        }
+    });
+}
+
+function modifyOneTrainInfo(rn,modifyTag){
+    document.getElementById("hiddenRecordNo").value = rn;
+    document.getElementById("trainModifyTag").value = modifyTag;
+    var mt = "修改火车车厢信息（蓝色输入部分不能编辑）";
+    if (modifyTag == "2"){
+        mt = "火车大票信息录入（蓝色输入部分不能编辑）";
+    }
+
+    $('#modifyOneTrainInfoWin').window({
+        modal : true,
+        title : mt,
+        width : 475,
+        height : 350,
+        collapsible : false,
+        minimizable : false,
+        maximizable : true,
+        href : '${base}/business/monitor/modifyOneTrainInfoWin'
+    });
+}
+
+
+function batchTrainDPRecord(isBatchTag){
+    //处理之前先清理下；
+    selectedTrains = null;
+    document.getElementById("hideIsBatchTag").value = isBatchTag;
+
+    var rows =  $detaildg.datagrid('getSelections');
+    if (rows.length == 0) {
+        showMsg("提示", "选择要录大票车厢的数据");
+        return false;
+    } else {
+        selectedTrains = rows;
+    }
+
+    $('#batchTrainDPRecordWin').window({
+        modal : true,
+        title : "火车大票信息批量录入",
+        width : 475,
+        height : 400,
+        collapsible : false,
+        minimizable : false,
+        maximizable : true,
+        href : '${base}/business/monitor/batchTrainDPRecord'
+    });
+}
+
+function deleteTrainbody(){
+    //处理之前先清理下；
+    selectedTrains = null;
+
+    var paramObj = new Object();
+    var commonObj = new Object();
+    var arrayTrainCars = [];
+
+    var rows =  $detaildg.datagrid('getSelections');
+    var trainrow = $basicdg.datagrid('getSelected');
+
+    if (rows.length == 0) {
+        showMsg("提示", "选择要删除的车厢记录数据");
+        return false;
+    } else {
+        selectedTrains = rows;
+        for ( var i = 0; i < selectedTrains.length; i++) {
+            var o = {};
+            o.carId = selectedTrains[i].carId;
+            arrayTrainCars[i] = o;
+        }
+        commonObj.trainNo = trainrow.trainNo;
+        paramObj["publicInfo"] = JSON.stringify(commonObj);
+        paramObj["updateInfo"] = JSON.stringify(arrayTrainCars);
+
+        //alert( paramObj["updateInfo"]);
+        if (selectedTrains) {
+            $.messager.confirm('提示', '数据将删除，确定继续操作?', function (r) {
+                if (r) {
+                    //提交数据
+                    $.post("${base}/business/monitor/deleteMassTrainBody/", paramObj,function(rsp) {
+                        if(rsp.successful){
+                            showMsg("提示", rsp.msg);
+                            $detaildg.datagrid("reload");
+                        } else {
+                            showMsg("提示", rsp.msg);
+                        }
+                    }, "JSON").error(function() {
+                        showMsg("提示", "删除数据失败！");
+                    });
+                }
+            });
+        } else {
+            showMsg("提示", "请先选择要删除的车节信息！");
+            return false;
+        }
+    }
+}
+
+
+function adjustOrder(){
+    //处理之前先清理下；
+    selectedTrains = null;
+
+    var rowsBasic =  $basicdg.datagrid('getSelections');
+    if (rowsBasic.length == 0) {
+        showMsg("提示", "请选择要调序的车次");
+        return false;
+    } else {
+        document.getElementById("hideTrainNo").value = rowsBasic[0].trainNo;
+    }
+
+    var rowsDetail =  $detaildg.datagrid('getSelections');
+    if (rowsDetail.length == 0) {
+        showMsg("提示", "请选择要调序的车厢");
+        return false;
+    } else {
+        document.getElementById("hideTrackNo").value = rowsDetail[0].trackNo;
+        selectedTrains = rowsDetail;
+    }
+
+    $('#adjustTrainOrderWin').window({
+        modal : true,
+        title : "火车对位调序",
+        width : 500,
+        height : 460,
+        collapsible : false,
+        minimizable : false,
+        maximizable : true,
+        href : '${base}/business/monitor/adjustTrainOrder'
+    });
+}
+
+
+function trainRebuild(){
+    $('#trainRebuildWin').window({
+        modal : true,
+        title : "火车车厢重组",
+        width : 1100,
+        height : 500,
+        collapsible : false,
+        minimizable : false,
+        maximizable : true,
+        href : '${base}/business/monitor/gotoTrainRebuild'
+    });
+}
+
+
+//删除一行
+function deleteTrain() {
+    var selectedRow = $basicdg.datagrid('getSelected');
+    if (selectedRow) {
+        $.messager.confirm('提示', '数据将删除，确定继续操作?', function (r) {
+            if (r) {
+                //提交数据
+                var delTrainNo = selectedRow.trainNo;
+                $.post("${base}/business/monitor/deleteTrainInfo/"+delTrainNo, function(rsp) {
+                    if(rsp.successful){
+                        showMsg("提示", rsp.msg);
+                        $detaildg.datagrid('clearChecked');
+                        $detaildg.datagrid('clearSelections');
+                        //$basicdg.datagrid("reload");
+                        //$detaildg.datagrid("reload");
+						reload();
+                    } else {
+                        showMsg("提示", rsp.msg);
+                    }
+                }, "JSON").error(function() {
+                    showMsg("提示", "删除数据失败！");
+                });
+            }
+        });
+    } else {
+        showMsg("提示", "请先选择要删除的火车基础信息！");
+    }
+}
+
+
+//来煤分批
+function dealTrainBatchInfo() {
+    var selectedRow = $basicdg.datagrid('getSelected');
+    if (selectedRow) {
+        $.messager.confirm('重要提示', '1.来煤分批后一旦开始采样，将不能再修改分批信息！\n2.如果该车次煤已经分批过，本次分批会导致原来分批数据被重置！\n请确定录入数据已经正确后再执行该操作!\n确定继续操作?', function (r) {
+            if (r) {
+                //提交数据
+                var delTrainNo = selectedRow.trainNo;
+                $.post("${base}/business/monitor/dealTrainBatchInfo/"+delTrainNo, function(rsp) {
+                    if(rsp.successful){
+                        showMsg("提示", rsp.msg);
+                        //$basicdg.datagrid("reload");
+                        //$detaildg.datagrid("reload");
+						reload();
+                    } else {
+                        showMsg("提示", rsp.msg);
+                    }
+                }, "JSON").error(function() {
+                            showMsg("提示", "来煤分批失败！");
+                        });
+            }
+        });
+    } else {
+        showMsg("提示", "请先选择要分批的车次！");
+    }
+}
+
+//修改 这种方式在车厢多的时候，很慢，消耗客户端资源大，不用，留着，仅供以后参考
+function modify(tag){
+    var selectedRow = $basicdg.datagrid('getSelected');
+    if (selectedRow) {
+        document.getElementById("hideTrainNo").value = selectedRow.trainNo;
+        if (tag == 'M') {
+            addTrain();
+        } else {
+            trainDPRec();
+        }
+    } else {
+        showMsg("提示",  "请先选择要修改的火车基础信息！");
+    }
+}
+
+//新增火车信息,新增时候传入 -1，表示不需要查询到数据，修改时传入选择记录的trainNo
+function addNewTrain(){
+    document.getElementById("hideTrainNo").value = "-1";
+    addTrain();
+}
+function addTrain(){
+    $('#editTrainWin').window({
+        modal : true,
+        title : '编辑火车入厂信息',
+        width : 1200,//1755
+        height : 400,//740
+        collapsible : false,
+        minimizable : false,
+        maximizable : true,
+        href : '${base}/business/monitor/editTrainInfo/-1'
+    });
+}
+
+//批量新增火车车厢，可以在原车上增，也可完全新增
+function addTrains(){
+    $('#addNewTrainWin').window({
+        modal : true,
+        title : '新增火车车厢',
+        width : 880,//1755
+        height : 500,//740
+        collapsible : false,
+        minimizable : false,
+        maximizable : true,
+        href : '${base}/business/monitor/gotoAddNewTrain'
+    });
+}
+
+
+//火车大票录入
+function trainDPRec(){
+    $('#editTrainWin').window({
+        modal : true,
+        title : '火车大票录入',
+        width : 1200,//1755
+        height : 400,//740
+        collapsible : false,
+        minimizable : false,
+        maximizable : true,
+        href : '${base}/business/monitor/editTrainDPInfo/-1'
+    });
+}
+
+//打印翻车单
+function pr(){
+    printFCList1();
+    printFCList2();
+}
+
+function printFCList1(){
+    var selectedRow = $basicdg.datagrid('getSelected');
+    if (selectedRow) {
+        var rowarr = $detaildg.datagrid('getRows');
+        if (rowarr[0].batchNo == null || rowarr[0].batchNo == undefined ||rowarr[0].batchNo == ""){
+            showMsg("提示",  "未分批的车不能打印翻车单！");
+            return;
+        }
+
+        //打印翻车单
+        window.open('${base}/business/monitor/printFCList/'+selectedRow.trainNo,
+                'newwindow111',
+                'height=600,width=1000,top=0,left=0,toolbar=no,menubar=no,scrollbars=no, resizable=no,location=no, status=no',replace=false);
+    } else {
+        showMsg("提示",  "请先选择打印的翻车的车次！");
+        return;
+    }
+}
+
+function printFCList2(){
+    var selectedRow = $basicdg.datagrid('getSelected');
+    if (selectedRow) {
+        var rowarr = $detaildg.datagrid('getRows');
+        if (rowarr[0].batchNo == null || rowarr[0].batchNo == undefined ||rowarr[0].batchNo == ""){
+            showMsg("提示",  "未分批的车不能打印翻车单！");
+            return;
+        }
+
+        //打印抽检煤的单子
+        for (var j=0;j<rowarr.length;j++) {
+            if (rowarr[j].attachBatchNo != null && rowarr[j].attachBatchNo != undefined && rowarr[j].attachBatchNo != ""){
+                window.open('${base}/business/monitor/printCheckSampleList/'+selectedRow.trainNo+'/'+rowarr[j].attachBatchNo,
+                        'newwin',
+                        'height=600,width=1000,top=150,left=150,toolbar=no,menubar=no,scrollbars=no, resizable=no,location=no, status=no',replace=false);
+                break;
+            }
+        }
+    } else {
+        showMsg("提示",  "请先选择打印的翻车的车次！");
+        return;
+    }
+}
+
+function reload(){
+    $.messager.progress({ msg: '正在刷新页面！' });
+    try{
+        setTimeout(function(){$basicdg.datagrid("reload");}, 150);
+        setTimeout(function(){$detaildg.datagrid("reload");},350);
+    }catch (e){
+        alert(e);
+    }
+    //延迟1.5秒取消遮罩，防止重复点
+    setTimeout(function(){
+        $.messager.progress('close');
+    }, 1500);
+}
+</script>
+</html>

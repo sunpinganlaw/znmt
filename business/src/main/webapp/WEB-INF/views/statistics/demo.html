@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>制样报表</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+    <script type="text/javascript" src="${base}/styles/js/echarts-all.js"></script>
+</head>
+<body>
+<div id="layoutDiv" class="easyui-layout" style="height:100%;margin-top: 20px;margin-left: 10px">
+
+    <div id="tb">
+        <label for="statLatType">纬度类型</label>
+        <input id="statLatType" name="statLatType"/>
+        <label for="beginDate">统计时间</label>
+        <input class="easyui-datebox" name="beginDate" id="beginDate" style="width:145px;"/>~
+        <input class="easyui-datebox" name="endDate" id="endDate" style="width:145px;"/>
+        <input id="db" />
+        <span style="margin-left: 0%;">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" onclick="qry()">查询</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" onclick="exportExcel()">导出Excel</a>
+        </span>
+    </div>
+    <div id="main" style="height:400px;margin-top: 10px;clear: right"></div>
+    <div id="tableMain" style="height:300px;width:800px;margin-top: 10px;margin: 0 auto;">
+        <!--<table style="width:100%;"><tr><td style="text-align:center" ></td></tr></table>-->
+    </div>
+    <!--<div id="tableMain" style="height:300px;margin-top: 10px;clear: right; text-align:center"></div>-->
+</div>
+
+<div id="samplingRptWin"></div>
+</body>
+</html>
+<script type="text/javascript">
+    $('#statLatType').combobox({
+        panelHeight:'auto',
+        valueField:'id',
+        textField:'name',
+        data: [
+            {id: '2', name: '月报表'},
+            {id: '3', name: '日报表', selected: true}
+        ],
+        onChange: function (n, o) {
+            if (n != undefined) {
+                alert(n);
+            }
+        }
+    });
+
+    function qry() {
+        var param = new Object();
+        var statLatType = $("#statLatType").textbox("getValue");
+        var beginDate = $("#beginDate").datebox("getValue");
+        var endDate = $("#endDate").datebox("getValue");
+
+        //报表标识，每个报表都不一样，可以在页面直接写死成常量
+        param.search_reportTypeCd = "DEMO_REPORT";
+
+        if (statLatType != null && statLatType != "" && statLatType.length > 0) {
+            param.search_statLatType = statLatType;
+        }
+        if (beginDate != null && beginDate != "" && beginDate.length > 0) {
+            param.search_beginDate = beginDate;
+        }
+        if (endDate != null && endDate != "" && endDate.length > 0) {
+            param.search_endDate = endDate;
+        }
+
+        //开始查询
+        alert(JSON.stringify(param));
+        $.messager.progress();
+        $.ajax({
+            async: true,
+            cache: false,
+            type: 'POST',
+            data: param,
+            url: '${base}/business/statistics/qryStatisticsData',
+            error: function () {// 请求失败处理函数
+                $.messager.progress('close');
+                showMsg("提示", "查询数据失败!");
+            },
+            success: function (json) {
+
+                $.messager.progress('close');
+                var jsonData0 = new Array();
+                var jsonData1 = new Array();
+                for (var i = 0; i < json.length; i++) {
+                    jsonData0.push(Number(json[i].statLat));
+                    jsonData1.push(Number(json[i].statResult1));
+                }
+
+                var myChart = echarts.init(document.getElementById('main'));
+                var option = {
+                    title: {
+                        text: 'DEMO统计柱状图，链接到百度示例代码',
+                        subtext: '副标题',
+                        link: 'http://echarts.baidu.com/doc/example.html'
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    calculable : true,
+                    toolbox: {
+                        show : true,
+                        feature : {
+                            magicType : {show: true, type: ['line', 'bar']},
+                            restore : {show: true},
+                            saveAsImage : {show: true}
+                        }
+                    },
+                    legend: {
+                        data: ['demo测试数据']
+                    },
+                    xAxis: [
+                        {
+                            type: 'category',
+                            data: jsonData0
+                        }
+                    ],
+                    yAxis: [
+                        {
+                            type: 'value',
+                            name: 'DEMO百分比'
+                        }
+                    ],
+                    series: [
+                        {
+                            "name": "测试1",
+                            "type": "bar",
+                            "data": jsonData1,
+                            markPoint: {
+                                data: [
+                                    {type: 'max', name: '最大值'},
+                                    {type: 'min', name: '最小值'}
+                                ]
+                            },
+                            markLine: {
+                                data: [
+                                    {type: 'average', name: '平均值'}
+                                ]
+                            }
+                        }
+                    ]
+                };
+                myChart.setOption(option);
+
+                //加载table数据
+                loadTable(json);
+            }
+        });
+    }
+
+
+    function loadTable(json){
+        var strTR = '';
+        for (var i = 0; i < json.length; i++) {
+            strTR = strTR + '<tr><td>' + json[i].statLat + '</td><td>' + json[i].statResult1 + '</td></tr>';
+        }
+
+        var trs = '<table id="dataTb" cellspacing="0" bordercolordark="#efefef" width="70%" bordercolorlight="#333333" border="1"><tr bgcolor="#f0f8ff"><th>月份</th><th>指标值</th></tr>'+ strTR +'</table>';
+
+        $('#tableMain').append(trs);
+    }
+
+    function exportExcel(){
+        var table = document.getElementById("dataTb");
+        var uri = 'data:application/vnd.ms-excel;base64,';
+        var template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><?xml version="1.0" encoding="UTF-8" standalone="yes"?><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table border="1" style="vnd.ms-excel.numberformat:@">{table}</table></body></html>';
+        var base64 = function (s) {
+            return window.btoa(unescape(encodeURIComponent(s)));
+        };
+        var format = function (s, c) {
+            return s.replace(/{(\w+)}/g, function (m, p){return c[p];});
+        };
+        var ctx = {worksheet: '', table: table.innerHTML};
+        window.location.href = uri + base64(format(template, ctx));
+    }
+
+    //输入控件修改成只能选择月份的
+    function changeDBOX(dbName) {
+        $('#'+dbName).datebox({
+            onShowPanel: function () {//显示日趋选择对象后再触发弹出月份层的事件，初始化时没有生成月份层
+                span.trigger('click'); //触发click事件弹出月份层
+                if (!tds) setTimeout(function () {//延时触发获取月份对象，因为上面的事件触发和对象生成有时间间隔
+                    tds = p.find('div.calendar-menu-month-inner td');
+                    tds.click(function (e) {
+                        e.stopPropagation(); //禁止冒泡执行easyui给月份绑定的事件
+                        var year = /\d{4}/.exec(span.html())[0]//得到年份
+                                , month = parseInt($(this).attr('abbr'), 10); //月份，这里不需要+1
+                        $('#'+dbName).datebox('hidePanel')//隐藏日期对象
+                                .datebox('setValue', year + '-' + month); //设置日期的值
+                    });
+                }, 0);
+                yearIpt.unbind();//解绑年份输入框中任何事件
+            },
+            parser: function (s) {
+                if (!s) return new Date();
+                var arr = s.split('-');
+                return new Date(parseInt(arr[0], 10), parseInt(arr[1], 10) - 1, 1);
+            },
+            formatter: function (d) { return d.getFullYear() + '-' + (d.getMonth() + 1); }
+        });
+
+        var p = $('#'+dbName).datebox('panel'), //日期选择对象
+                tds = false, //日期选择对象中月份
+                yearIpt = p.find('input.calendar-menu-year'),//年份输入框
+                span = p.find('span.calendar-text'); //显示月份层的触发控件
+//        console.log(yearIpt);
+    }
+
+    $(function () {
+        changeDBOX("db");
+    });
+</script>

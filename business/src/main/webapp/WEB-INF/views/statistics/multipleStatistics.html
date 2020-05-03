@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>月度综合统计报表</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+    <link rel="stylesheet" type="text/css" href="${base}/styles/css/statistics.css">
+    <script type="text/javascript" src="${base}/styles/js/echarts-all.js"></script>
+    <script type="text/javascript" src="${base}/styles/js/statistics/statistics.js"></script>
+    <script type="text/javascript" src="${base}/styles/js/statistics/coalBurnStatistics.js"></script>
+    <script type="text/javascript" src="${base}/styles/js/statistics/coalInStatistics.js"></script>
+    <script type="text/javascript" src="${base}/styles/js/statistics/equipmentCheckRateStatistics.js"></script>
+    <script type="text/javascript" src="${base}/styles/js/statistics/checkRateStatistics.js"></script>
+    <script type="text/javascript" src="${base}/styles/js/statistics/autoWorkLoadStatistics.js"></script>
+    <script type="text/javascript" src="${base}/styles/js/statistics/sampleCheckStatistics.js"></script>
+</head>
+<body>
+<div id="layoutDiv" class="easyui-layout" style="height:100%;margin-top: 20px;margin-left: 10px">
+    <table style="width: 99%">
+        <tr style="width: 99%">
+            <td style="width: 30%">
+                <div id="coalInWeight" style="height:200px;margin-top: 10px;clear: right"></div>
+            </td>
+            <td style="width: 30%">
+                <div id="coalInCheckRate" style="height:200px;margin-top: 10px;clear: right"></div>
+            </td>
+            <td style="width: 30%">
+                <div id="autoWorkRate" style="height:200px;margin-top: 10px;clear: right"></div>
+            </td>
+        </tr>
+        <tr style="width: 99%">
+            <td style="width: 30%">
+                <div id="coalBurn" style="height:200px;margin-top: 10px;clear: right"></div>
+            </td>
+            <td style="width: 30%">
+                <div id="coalBurnCheckRate" style="height:200px;margin-top: 10px;clear: right"></div>
+            </td>
+            <td style="width: 30%">
+                <div id="sampleCheckRate" style="height:200px;margin-top: 10px;clear: right"></div>
+            </td>
+        </tr>
+        <tr style="width: 99%">
+            <td style="width: 30%">
+                <div id="equipmentCheckRate" style="height:200px;margin-top: 10px;clear: right"></div>
+            </td>
+            <td style="width: 30%">
+                <div id="coalInQty" style="height:200px;margin-top: 10px;clear: right"></div>
+            </td>
+            <td style="width: 30%">
+                <div id="coalBurnQty" style="height:200px;margin-top: 10px;clear: right"></div>
+            </td>
+        </tr>
+    </table>
+
+</div>
+</body>
+</html>
+
+<script type="text/javascript">
+
+    $(function () {
+        initHeaderTool();
+        qryCoalBurn();
+        qryCoalInWeight();
+      //  qryCoalInQty();
+        qryCoalInCheckRate();
+        qryCoalBurnCheckRate();
+        qryEquipmentCheckRate();
+        qryAutoWorkRate();
+        qrySampleCheckRate();
+    });
+
+    document.getElementById("coalInWeight").ondblclick = function(){
+        parent.parent.addTab("入厂来煤量统计报表||icon-sys||${base}/business/statistics/coalInStatistics");
+    }
+    document.getElementById("coalInCheckRate").ondblclick = function(){
+        parent.parent.addTab("入厂煤检斤检质统计报表||icon-sys||${base}/business/statistics/checkRateStatistics");
+    }
+    document.getElementById("coalBurn").ondblclick = function(){
+        parent.parent.addTab("入炉上煤量统计报表||icon-sys||${base}/business/statistics/coalBurnStatistics");
+    }
+    document.getElementById("coalBurnCheckRate").ondblclick = function(){
+        parent.parent.addTab("入炉煤检斤检质统计报表||icon-sys||${base}/business/statistics/checkRateStatistics");
+    }
+    document.getElementById("equipmentCheckRate").ondblclick = function(){
+        parent.parent.addTab("设备鉴定率统计报表||icon-sys||${base}/business/statistics/equipmentCheckRateStatistics");
+    }
+    document.getElementById("autoWorkRate").ondblclick = function(){
+        parent.parent.addTab("设备投运率统计报表||icon-sys||${base}/business/statistics/autoWorkRateStatistics");
+    }
+    document.getElementById("sampleCheckRate").ondblclick = function(){
+        parent.parent.addTab("存查样抽检统计报表||icon-sys||${base}/business/statistics/sampleCheckStatistics");
+    }
+    //入炉煤上没量统计
+    function qryCoalBurn(){
+        $.messager.progress();
+        $.ajax({
+            async: true,
+            cache: false,
+            type: 'POST',
+            data: getDefaultparam('COAL_BURN'),//调用公共函数中的方法，获取请求参数
+            url: '${base}/business/statistics/qryStatisticsData',
+            error: function () {// 请求失败处理函数
+                $.messager.progress('close');
+                showDataClalBurn([],'coalBurn',false);
+                showMsg("提示", "查询数据失败!");
+            },
+            success: function (json) {
+                if(json.length == 0){
+                    showDataClalBurn([],'coalBurn',false);
+                    showMsg("提示", "未查询到数据!");
+                    return;
+                }else{
+                    showDataClalBurn(json,'coalBurn',false);
+                }
+            }
+        });
+    }
+
+    //入厂煤月进煤量统计报表
+    function qryCoalInWeight(){
+        $.messager.progress();
+        $.ajax({
+            async: true,
+            cache: false,
+            type: 'POST',
+            data: getDefaultparam('COAL_IN'),//调用公共函数中的方法，获取请求参数
+            url: '${base}/business/statistics/qryStatisticsData',
+            error: function () {// 请求失败处理函数
+                $.messager.progress('close');
+                showDataCoalIn([],'coalInWeight',false);
+                showMsg("提示", "查询数据失败!");
+            },
+            success: function (json) {
+                if(json.length == 0){
+                    showDataCoalIn([],'coalInWeight',false);
+                    showMsg("提示", "未查询到数据!");
+                    return;
+                }else{
+                    showDataCoalIn(json,'coalInWeight',false);
+                }
+            }
+        });
+    }
+
+    //入厂煤化验报表
+    function qryCoalInQty(){
+        $.messager.progress();
+        $.ajax({
+            async: true,
+            cache: false,
+            type: 'POST',
+            data: getDefaultparam('COAL_IN'),//调用公共函数中的方法，获取请求参数
+            url: '${base}/business/statistics/qryStatisticsData',
+            error: function () {// 请求失败处理函数
+                $.messager.progress('close');
+                showDataClalBurn([],'coalInQty',false);
+                showMsg("提示", "查询数据失败!");
+            },
+            success: function (json) {
+                if(json.length == 0){
+                    showDataClalBurn([],'coalInQty',false);
+                    showMsg("提示", "未查询到数据!");
+                    return;
+                }else{
+                    showDataClalBurn(json,'coalInQty',false);
+                }
+            }
+        });
+    }
+
+    //入厂煤检斤检质率
+    function qryCoalInCheckRate(){
+        $.messager.progress();
+        $.ajax({
+            async: true,
+            cache: false,
+            type: 'POST',
+            data: getDefaultparam('CHECK_RATE'),//调用公共函数中的方法，获取请求参数
+            url: '${base}/business/statistics/qryStatisticsData',
+            error: function () {// 请求失败处理函数
+                $.messager.progress('close');
+                showDataCheckRate([],'coalInCheckRate',false);
+                showMsg("提示", "查询数据失败!");
+            },
+            success: function (json) {
+                if(json.length == 0){
+                    showDataCheckRate([],'coalInCheckRate',false);
+                    showMsg("提示", "未查询到数据!");
+                    return;
+                }else{
+                    showDataCheckRate(json,'coalInCheckRate',false);
+                }
+            }
+        });
+    }
+
+    //入炉煤检斤检质率
+    function qryCoalBurnCheckRate(){
+        $.messager.progress();
+        $.ajax({
+            async: true,
+            cache: false,
+            type: 'POST',
+            data: getDefaultparam('CHECK_RATE'),//调用公共函数中的方法，获取请求参数
+            url: '${base}/business/statistics/qryStatisticsData',
+            error: function () {// 请求失败处理函数
+                $.messager.progress('close');
+                showDataCheckRate([],'coalBurnCheckRate',false);
+                showMsg("提示", "查询数据失败!");
+            },
+            success: function (json) {
+                if(json.length == 0){
+                    showDataCheckRate([],'coalBurnCheckRate',false);
+                    showMsg("提示", "未查询到数据!");
+                    return;
+                }else{
+                    showDataCheckRate(json,'coalBurnCheckRate',false);
+                }
+            }
+        });
+    }
+
+    //入炉煤检斤检质率
+    function qryCoalBurnCheckRate(){
+        $.messager.progress();
+        $.ajax({
+            async: true,
+            cache: false,
+            type: 'POST',
+            data: getDefaultparam('CHECK_RATE'),//调用公共函数中的方法，获取请求参数
+            url: '${base}/business/statistics/qryStatisticsData',
+            error: function () {// 请求失败处理函数
+                $.messager.progress('close');
+                showDataCheckRate([],'coalBurnCheckRate',false);
+                showMsg("提示", "查询数据失败!");
+            },
+            success: function (json) {
+                if(json.length == 0){
+                    showDataCheckRate([],'coalBurnCheckRate',false);
+                    showMsg("提示", "未查询到数据!");
+                    return;
+                }else{
+                    showDataCheckRate(json,'coalBurnCheckRate',false);
+                }
+            }
+        });
+    }
+
+    //设备鉴定率
+    function qryEquipmentCheckRate(){
+        $.messager.progress();
+        $.ajax({
+            async: true,
+            cache: false,
+            type: 'POST',
+            data: getDefaultparam('DEVICE_CHECK'),//调用公共函数中的方法，获取请求参数
+            url: '${base}/business/statistics/qryStatisticsData',
+            error: function () {// 请求失败处理函数
+                $.messager.progress('close');
+                showDataEquipmentCheckRate([],'equipmentCheckRate',false);
+                showMsg("提示", "查询数据失败!");
+            },
+            success: function (json) {
+                if(json.length == 0){
+                    showDataEquipmentCheckRate([],'equipmentCheckRate',false);
+                    showMsg("提示", "未查询到数据!");
+                    return;
+                }else{
+                    showDataEquipmentCheckRate(json,'equipmentCheckRate',false);
+                }
+            }
+        });
+    }
+
+    //自动化投运率
+    function qryAutoWorkRate(){
+        $.messager.progress();
+        $.ajax({
+            async: true,
+            cache: false,
+            type: 'POST',
+            data: getDefaultparam('AUTO_WORK'),//调用公共函数中的方法，获取请求参数
+            url: '${base}/business/statistics/qryStatisticsData',
+            error: function () {// 请求失败处理函数
+                $.messager.progress('close');
+                showDataAutoWork([],'autoWorkRate',false);
+                showMsg("提示", "查询数据失败!");
+            },
+            success: function (json) {
+                if(json.length == 0){
+                    showDataAutoWork([],'autoWorkRate',false);
+                    showMsg("提示", "未查询到数据!");
+                    return;
+                }else{
+                    showDataAutoWork(json,'autoWorkRate',false);
+                }
+            }
+        });
+    }
+
+    //存查样抽检率
+    function qrySampleCheckRate(){
+        $.messager.progress();
+        $.ajax({
+            async: true,
+            cache: false,
+            type: 'POST',
+            data: getDefaultparam('SAMPLE_CHECK'),//调用公共函数中的方法，获取请求参数
+            url: '${base}/business/statistics/qryStatisticsData',
+            error: function () {// 请求失败处理函数
+                $.messager.progress('close');
+                showDataSampleCheck([],'sampleCheckRate',false);
+                showMsg("提示", "查询数据失败!");
+            },
+            success: function (json) {
+                if(json.length == 0){
+                    showDataSampleCheck([],'sampleCheckRate',false);
+                    showMsg("提示", "未查询到数据!");
+                    return;
+                }else{
+                    showDataSampleCheck(json,'sampleCheckRate',false);
+                }
+            }
+        });
+    }
+
+
+    function getDefaultparam(qryTypeName){
+        var param = new Object();
+
+        var myDate = new Date();
+        var beginTime = myDate.getFullYear()+"-01-01";
+        var endTime =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+
+        param.search_reportTypeCd = qryTypeName;
+        param.search_statLatType = '2';
+        param.search_beginDate = beginTime;
+        param.search_endDate = endTime;
+        return param;
+    }
+</script>

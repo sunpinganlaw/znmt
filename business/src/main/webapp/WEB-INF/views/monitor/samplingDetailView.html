@@ -1,0 +1,90 @@
+<div class="form-div">
+    <form id="samplingDetailForm" method="post">
+        <table>
+            <tr>
+                <td >制样编码:</td>
+                <td><input class="easyui-textbox" type="text" readonly="readonly" name="samplingCodeDiv" id="samplingCodeDiv"/></td>
+                <td >采样编码:</td>
+                <td><input class="easyui-textbox" type="text" readonly="readonly" name="sampleCodeDiv" id="sampleCodeDiv"/></td>
+            </tr>
+            <tr>
+                <td >批次编码:</td>
+                <td><input class="easyui-textbox" type="text" readonly="readonly" name="batchNoDiv" id="batchNoDiv"/></td>
+                <td >制样方式:</td>
+                <td><input class="easyui-textbox" type="text" readonly="readonly" name="zyTypeDiv" id="zyTypeDiv"/></td>
+            </tr>
+            <tr>
+                <td >制样人员:</td>
+                <td><input class="easyui-textbox" type="text" readonly="readonly" name="userNameDiv" id="userNameDiv"/></td>
+                <td >来样重量(g):</td>
+                <td><input class="easyui-textbox" type="text" readonly="readonly" id="zyWeightDiv" name="zyWeightDiv" /></td>
+            </tr>
+            <tr>
+                <td >样瓶数:</td>
+                <td ><input class="easyui-textbox" readonly="readonly" type="text" name="partNum" id="partNum"/></td>
+                <td >制样时间:</td>
+                <td><input class="easyui-textbox" type="text" readonly="readonly" id="endTimeDiv" name="endTimeDiv" /></td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div id="" class="easyui-panel" title="出样信息" style="width:98%;height:131px;padding:0px;" data-options="fit:false" >
+    <table id="samplingList" class="easyui-datagrid"
+           data-options="method:'get',border:true,singleSelect:true,fitColumns:true">
+        <thead>
+        <tr>
+            <th data-options="field:'sampleType',width:140,align:'center'">出样类型</th>
+            <th data-options="field:'packCode',width:170,align:'center'">封装码</th>
+            <th data-options="field:'sampleWeight',width:80,align:'center'">出样重量(g)</th>
+        </tr>
+        </thead>
+    </table>
+</div>
+<script type="text/javascript">
+
+    //加载读取的详情信息
+    var respEntity = JSON.parse(JSON.stringify(${samplingRptEntity}));
+
+    $(function () {
+        var partNum = 0;
+        $("#samplingCodeDiv").val(respEntity.samplingCode);
+        $("#sampleCodeDiv").val(respEntity.sampleCode);
+        $("#batchNoDiv").val(respEntity.batchNo);
+        if (respEntity.zyType== "1") {
+            $("#zyTypeDiv").val("离线制样");
+        } else if (respEntity.zyType== "0")  {
+            $("#zyTypeDiv").val("在线制样");
+        } else {
+            $("#zyTypeDiv").val("未知");
+        }
+        $("#userNameDiv").val(respEntity.userName);
+        $("#zyWeightDiv").val(respEntity.zyWeight);
+        $("#endTimeDiv").val(respEntity.endTime);
+        if (respEntity.packCode3 != null) {
+            partNum++;
+        }
+        if (respEntity.packCode6 != null) {
+            partNum++;
+        }
+        if (respEntity.packCode21 != null) {
+            partNum++;
+        }
+        if (respEntity.packCode22 != null) {
+            partNum++;
+        }
+        if (respEntity.packCode33 != null) {
+            partNum++;
+        }
+        if (respEntity.packCode34 != null) {
+            partNum++;
+        }
+        if (respEntity.packCode35 != null) {
+            partNum++;
+        }
+        $("#partNum").val(partNum);
+
+        $("#samplingList").datagrid({
+            url:  '${base}/business/report/qrySamplingRptListView/'+respEntity.samplingCode
+        })
+    });
+</script>

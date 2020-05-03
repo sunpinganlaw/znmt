@@ -1,0 +1,166 @@
+<style>
+    .refreshImg {
+        float: right;
+        position: relative;
+        margin-top: 3px;
+        cursor:pointer;
+    }
+</style>
+<div class="form-div">
+        <form id="samplingResRecordForm" method="post" >
+                <table>
+                    <tr>
+                        <td>制样方式</td>
+                        <td><select id="zyType" name="zyType" class="easyui-combobox" data-options="panelHeight:'auto'"  style="width:195px;" >
+                            <option selected value="1">离线制样</option>
+                            <option  value="0">在线制样</option>
+                        </select></td>
+                        <td>来样重量(g)</td>
+                        <td><input class="easyui-numberbox" data-options="precision:2"  id="zyWeight" name="zyWeight" style="width:150px;"/></td>
+<!--                     <td>制样人</td>
+                        <td colspan="3"><input id="userCode" name="userCode" class="easyui-combobox" style="width:100px;" data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/SYS_USER'" /></td>
+                   -->
+                    </tr>
+                    <tr>
+                        <td>6mm全水样封装码</td>
+                        <td><input class="easyui-textbox"   id="packCode6" name="packCode6" style="width:195px;"/><img class="refreshImg" id="refreshCode6" src="${base}/styles/easyui/themes/icons/refresh.png"></td>
+                        <td>重量(g)</td>
+                        <td><input class="easyui-numberbox" data-options="precision:2"  id="sampleWeight61" name="sampleWeight61" style="width:150px;"/></td>
+<!--                        <td>制样开始时间</td>
+                        <td><input class="easyui-datetimebox"  id="startTime6" name="startTime6" style="width:100px"></td>
+                        <td>制样结束时间</td>
+                        <td><input class="easyui-datetimebox"  id="endTime6" name="endTime6" style="width:100px"></td>-->
+                    </tr>
+                    <tr>
+                        <td>3mm存查样封装码</td>
+                        <td><input class="easyui-textbox"   id="packCode3" name="packCode3" style="width:195px;"/><img class="refreshImg" id="refreshCode3"  src="${base}/styles/easyui/themes/icons/refresh.png"></td>
+                        <td>重量(g)</td>
+                        <td><input class="easyui-numberbox" data-options="precision:2"  id="sampleWeight32" name="sampleWeight32" style="width:150px;"/></td>
+<!--                        <td>制样开始时间</td>
+                        <td><input class="easyui-datetimebox"  id="startTime3" name="startTime3" style="width:100px"></td>
+                        <td>制样结束时间</td>
+                        <td><input class="easyui-datetimebox"  id="endTime3" name="endTime3" style="width:100px"></td>-->
+                    </tr>
+                    <tr>
+                        <td>0.2mm化验样封装码</td>
+                        <td><input class="easyui-textbox"   id="packCode21" name="packCode21" style="width:195px;"/><img class="refreshImg" id="refreshCode21"  src="${base}/styles/easyui/themes/icons/refresh.png"></td>
+                        <td>重量(g)</td>
+                        <td><input class="easyui-numberbox" data-options="precision:2"  id="sampleWeight21" name="sampleWeight21" style="width:150px;"/></td>
+<!--                        <td>制样开始时间</td>
+                        <td><input class="easyui-datetimebox"  id="startTime21" name="startTime21" style="width:100px"></td>
+                        <td>制样结束时间</td>
+                        <td><input class="easyui-datetimebox"  id="endTime21" name="endTime21" style="width:100px"></td>-->
+                    </tr>
+                    <tr>
+                        <td>0.2mm存查样封装码</td>
+                        <td><input class="easyui-textbox"   id="packCode22" name="packCode22" style="width:195px;"/><img class="refreshImg" id="refreshCode22"  src="${base}/styles/easyui/themes/icons/refresh.png"></td>
+                        <td>重量(g)</td>
+                        <td><input class="easyui-numberbox" data-options="precision:2"  id="sampleWeight22" name="sampleWeight22" style="width:150px;"/></td>
+<!--                        <td>制样开始时间</td>
+                        <td><input class="easyui-datetimebox"  id="startTime22" name="startTime22" style="width:100px"></td>
+                        <td>制样结束时间</td>
+                        <td><input class="easyui-datetimebox"  id="endTime22" name="endTime22" style="width:100px"></td>-->
+                    </tr>
+
+<!--                      <tr>
+                        <td>0.2mm存查样封装码</td>
+                         <td><input class="easyui-textbox"   id="packCode22" name="packCode22" style="width:195px;"/><img class="refreshImg" id="refreshCode22"  src="${base}/styles/easyui/themes/icons/refresh.png"></td>
+                      </tr>-->
+                     <tr>
+                        <td>制样开始时间</td>
+                        <td><input class="easyui-datetimebox"  id="startTime" name="startTime" style="width:195px"></td>
+                        <td>制样结束时间</td>
+                        <td><input class="easyui-datetimebox"  id="endTime" name="endTime" style="width:150px"></td>
+                     </tr>
+                    <tr>
+                        <td>制样人</td>
+                        <td colspan="3"><input id="userCode" name="userCode" class="easyui-combobox" style="width:195px;"
+                                   data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/SYS_USER'" /></td>
+                    </tr>
+                    <tr id="opTR1">
+                        <td style="text-align: center" colspan="8">
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm()">保存</a>
+                        </td>
+                    </tr>
+                </table>
+
+        </form>
+    </div>
+
+<script type="text/javascript">
+    $(function () {
+        var qryObj = {};
+        qryObj.search_samplingCode = document.getElementById("samplingCodeHidden").value;
+        $.post("${base}/business/report/qrySamplingRptList", qryObj, function (rsp) {
+            if (rsp) {
+                if (rsp.rows.length > 0) {
+                    $('#samplingResRecordForm').form('load',rsp.rows[0]);
+                }
+            }
+        });
+        /*生产编码规则，制样编码+000+（61，31，22，21）一共16位
+        20151104 小普，平安，大黄定下*/
+        $(".refreshImg").click(function () {
+            switch($(this).attr("id"))
+            {
+                case "refreshCode6":
+                    $('#packCode6').textbox('setValue', createPackCode($("#samplingCodeHidden").val(),"61"));
+                    break;
+                case "refreshCode3":
+                    $('#packCode3').textbox('setValue', createPackCode($("#samplingCodeHidden").val(),"32"));
+                    break;
+                case "refreshCode21":
+                    $('#packCode21').textbox('setValue', createPackCode($("#samplingCodeHidden").val(),"21"));
+                    break;
+                case "refreshCode22":
+                    $('#packCode22').textbox('setValue', createPackCode($("#samplingCodeHidden").val(),"22"));
+                    break;
+                default:
+                    alert("异常");
+            }
+        });
+    });
+    function createPackCode(samplingCode,type) {
+        var supplementZero = "";
+        for (var i=0;i<16-(samplingCode.length+type.length);i++) {
+            supplementZero+="0";
+        }
+        return (samplingCode+supplementZero+type);
+    }
+    //提交表单
+    function submitForm(){
+        if (! $("#samplingResRecordForm").form('validate')) {
+            showMsg("提示", "有必填项未输入值!");
+            return false;
+        }
+
+        $.messager.confirm('提示', '确定保存?', function (r) {
+            if (r) {
+                //提交保存
+                save();
+            }
+        });
+    }
+
+    //保存
+    function save(){
+        var params = $("#samplingResRecordForm").serialize();
+        var samplingCode = document.getElementById("samplingCodeHidden").value;
+        var sampleCode = document.getElementById("sampleCodeHidden").value;
+
+        params = params + "&samplingCode=" + samplingCode;
+        params = params + "&sampleCode=" + sampleCode;
+        //alert(params);
+
+        $.post("${base}/business/monitor/editSamplingResultRec", params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示",rsp.msg);
+                $('#editSamplingResRecordWin').window('close');
+                $sampleCodeDg.datagrid('reload');
+            } else {
+                showMsg("提示", rsp.msg);
+            }
+        });
+    }
+
+</script>

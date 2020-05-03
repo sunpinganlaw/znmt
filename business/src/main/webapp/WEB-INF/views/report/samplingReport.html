@@ -1,0 +1,195 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+<title>制样报告</title>
+
+<style type="text/css">
+	body{ background-color:#fff; color:#000; font-size:1em;  width:1000px; margin:0 auto;}
+	h1{ font-size:2em; text-align:center; line-height:2em; position:relative;}
+	table.table01{border:3px solid #000; margin:0; padding:0;}
+	table.table01 td{ border-right:1px solid #000;border-bottom:1px solid #000; line-height:25px; padding:15px 5px; text-align:center;}
+	table.table01 td.styrr{ text-align:right;}
+	table.table01 td.letter{ font-size:1.3em; }
+	table.table01 td.letter sub sub{ font-size:0.3em;}
+	.stymr01{ margin-right:300px;}
+	p.textleft{ text-align:left; margin-top:0;}
+	.textright{ text-align:right;}
+	.textright02{ text-align:right; padding-right:150px;}
+	.fr{ float:right; padding-right:130px;}
+
+    td,p,span{font-size:16px;}
+</style>
+
+</head>
+
+<body>
+
+<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-print" onclick="printLabRpt();">打印</a>
+<div id="printButton1" style="text-align: right">&nbsp;</div>
+<!--startprint-->
+<h1>制样报告</h1>
+
+<p><span id = "date">制样日期:</span><span id = "time" class="fr">制样时间：</span></p>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0" class="table01">
+ <tr>
+ <td width="25%">样品编码</td>
+ <td width="25%" id = "samplingCode1">&nbsp;</td>
+ <td width="25%">制样人</td>
+ <td width="25%" id = "samplingMan1">&nbsp;</td>
+ </tr>
+  <tr>
+ <td>总样重量/kg</td>
+ <td id = "totalWeight1">&nbsp;</td>
+ <td>全水分煤样重量/kg</td>
+ <td id= "MtWeight1">&nbsp;</td>
+ </tr>
+  <tr>
+ <td>存查样重量/g</td>
+ <td id = "storageWeight1">&nbsp;</td>
+ <td>分析煤样重量/g</td>
+ <td id="analyseWeight1">&nbsp;</td>
+ </tr>
+  <tr>
+ <td>煤种</td>
+ <td id = "coalType1"></td>
+ <td>依据标准</td>
+ <td>执行标准 GB474－2008
+GB/T19494.2-2004</td>
+ </tr>
+  <tr>
+ <td rowspan="2">制样方式</td>
+ <td colspan="3" id = "samplingType1"></td>
+ </tr>
+  <tr>
+ <td colspan="3" id = "device1"></td>
+ </tr>
+
+  <tr>
+    <td height="120" colspan="5" valign="top" style="text-align:left"><p>制样过程简述：</p>
+    <p id = "resume1">&nbsp;</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p></td>
+  </tr>
+ 
+   <tr>
+    <td height="120" colspan="5" valign="top" style="text-align:left"><p>其它需要说明的事项：</p>
+     <p id = "remark1">&nbsp;</p>
+     <p>&nbsp;</p>
+     <p>&nbsp;</p></td>
+  </tr>
+</table>
+<!--endprint-->
+</body>
+
+
+<script type="text/javascript">
+    $(function() {
+        var samplingReport = ${samplingReportData};
+        document.getElementById("samplingCode1").innerHTML = samplingReport.samplingCode1;
+        document.getElementById("samplingMan1").innerHTML = samplingReport.samplingMan1;
+        document.getElementById("totalWeight1").innerHTML = samplingReport.totalWeight1;
+        document.getElementById("MtWeight1").innerHTML = samplingReport.MtWeight1;
+        document.getElementById("storageWeight1").innerHTML = samplingReport.storageWeight1;
+        document.getElementById("analyseWeight1").innerHTML = samplingReport.analyseWeight1;
+        document.getElementById("coalType1").innerHTML = decodeCoal(samplingReport.coalType1);
+        document.getElementById("samplingType1").innerHTML =decodeSample(samplingReport.samplingType1);
+        document.getElementById("device1").innerHTML = decodeDevice(samplingReport.device1);
+        document.getElementById("resume1").innerHTML = samplingReport.resume1;
+        document.getElementById("remark1").innerHTML = samplingReport.remark1;
+
+        document.getElementById("date").innerHTML = '制样日期：' + samplingReport.startTime1.substring(0,10);
+        document.getElementById("time").innerHTML = '制样时间：' + samplingReport.startTime1.substring(10,19);
+    })
+
+    function decodeCoal(type) {
+        switch (type) {
+            case '0' :
+                return "无烟煤";
+                break;
+            case '1':
+                return "烟煤";
+                break;
+            case '2':
+                return "贫瘦煤";
+                break;
+            case '3':
+                return "石油焦";
+                break;
+            default:
+                return "无烟煤";
+                break;
+        }
+    }
+
+    function decodeSample(type) {
+        switch (type) {
+            case '0':
+                return "智能化在线制样";
+                break;
+            case '1':
+                return "智能化离线制样";
+                break;
+            case '2':
+                return "智能化半自动制样 ";
+                break;
+            case '3':
+                return "人工制样";
+                break;
+            default:
+                return "智能化在线制样";
+                break;
+        }
+    }
+
+    function decodeDevice(type){
+        switch(type){
+            case '0':
+                return "13mm破碎机";
+                break;
+            case '1':
+                return "6mm破碎机";
+                break;
+            case '2':
+                return "3mm破碎机";
+                break;
+            case '3':
+                return "二分器";
+                break;
+            case '4':
+                return "十字分样板";
+                break;
+            case '5':
+                return "研磨机";
+                break;
+            default:
+                return "研磨机";
+                break;
+        }
+    }
+
+
+    function printLabRpt() {
+        var bdhtml = window.document.body.innerHTML;
+        var sprnstr = "<!--startprint-->";
+        var eprnstr = "<!--endprint-->";
+        var prnhtml = bdhtml.substr(bdhtml.indexOf(sprnstr)+17);
+        prnhtml = prnhtml.substring(0,prnhtml.indexOf(eprnstr));
+        window.document.body.innerHTML=prnhtml;
+        window.print();
+    }
+
+</script>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>入厂来煤量统计报表</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+    <link rel="stylesheet" type="text/css" href="${base}/styles/css/statistics.css">
+    <script type="text/javascript" src="${base}/styles/js/echarts-all.js"></script>
+    <script type="text/javascript" src="${base}/styles/js/statistics/statistics.js"></script>
+    <script type="text/javascript" src="${base}/styles/js/statistics/coalInStatistics.js"></script>
+</head>
+<body>
+<div id="layoutDiv" class="easyui-layout" style="height:100%;margin-top: 20px;margin-left: 10px">
+    <div id="tb">
+        <table>
+            <tbody>
+            <tr>
+                <td>
+                    <label for="statLatType">报表类型</label>
+                    <input id="statLatType" name="statLatType"/>
+                </td>
+                <td id="qryDate">
+                    <label>时间范围</label> &nbsp;&nbsp;
+                    <input class="easyui-datebox" name="beginDate" id="beginDate" style="width:145px;"/>~
+                    <input class="easyui-datebox" name="endDate" id="endDate" style="width:145px;"/>
+                </td>
+                <td id="qryDateOnlyMonth">
+                    <label>时间范围</label> &nbsp;&nbsp;
+                    <input id="beginDateOnlyMonth" style="width:145px;"/>
+                    <input id="endDateOnlyMonth" style="width:145px;"/>
+                </td>
+                <td>
+                    <span style="margin-left: 0%;">
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" onclick="qry()">查询</a>
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" onclick="exportExcel()">导出Excel</a>
+                    </span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="main" style="height:400px;margin-top: 10px;clear: right"></div>
+    <div title="数据明细" id="tableMain" style="width:800px;height:600px;margin-top: 10px;margin: 0 auto;">
+    </div>
+</div>
+</body>
+</html>
+
+<script type="text/javascript">
+    var reportTypeCd ='COAL_IN';
+
+    $(function () {
+        initHeaderTool();
+        changeDBOX("beginDateOnlyMonth");
+        changeDBOX("endDateOnlyMonth");
+        showDataCoalIn([],'main',true);
+    });
+    var statLatTypeFlag = null;
+    function qry(){
+        statLatTypeFlag = $("#statLatType").textbox("getValue"); //2月，3日，日报才需要进行rowspan合并，月报不需要
+        $.messager.progress();
+        $.ajax({
+            async: true,
+            cache: false,
+            type: 'POST',
+            data: getParam(reportTypeCd),//调用公共函数中的方法，获取请求参数
+            url: '${base}/business/statistics/qryStatisticsData',
+            error: function () {// 请求失败处理函数
+                $.messager.progress('close');
+                showDataCoalIn([],'main',true);
+                showMsg("提示", "查询数据失败!");
+            },
+            success: function (json) {
+                if(json.length == 0){
+                    showDataCoalIn([],'main',true);
+                    showMsg("提示", "未查询到数据!");
+                    return;
+                }else{
+                    showDataCoalIn(json,'main',true);
+                }
+            }
+        });
+    }
+
+    //获取 日期 td的rowspan
+    //举例：monthDatasRows 为 [3,3,2], rowspanPosArray 为 [0,3,6],则在i=0时，rowspan=3，i=3时rowspan=3,i=6时rowspan=2
+    function getRowSpanByI(i,rowspanPosArray,monthDatasRows){
+        for(var j =0;j< rowspanPosArray.length;j++){
+            if(i == rowspanPosArray[j]){
+                return monthDatasRows[j]
+            }
+        }
+        return -1;
+    }
+
+    //加载table，显示详情数据
+    function loadTable(json,monthDatasRows){
+        $("#tableMain").empty();
+        var tableArray = new Array();
+        tableArray.push('<table id="dataTb" class = "dataShowT" ><tobody>');
+        if(statLatTypeFlag == "3"){//日报，需要合并数据和单元格
+            tableArray.push('<th height="30px" width="80px">');tableArray.push('日期');tableArray.push('</th>');
+        }else if(statLatTypeFlag == "2"){//月报，不需要合并数据和单元格
+            tableArray.push('<th height="30px" width="80px">');tableArray.push('月份');tableArray.push('</th>');
+        }
+        tableArray.push('<th height="30px" width="130px">');tableArray.push('批次号');tableArray.push('</th>');
+        tableArray.push('<th height="30px" width="100px">');tableArray.push('采样码');tableArray.push('</th>');
+        tableArray.push('<th height="30px" width="100px">');tableArray.push('制样码');tableArray.push('</th>');
+        tableArray.push('<th height="30px" width="100px">');tableArray.push('化验码');tableArray.push('</th>');
+        tableArray.push('<th height="30px" width="90px">');tableArray.push('来煤量(吨)');tableArray.push('</th>');
+
+        //根据monthDatasRows计算rowspanArray
+        var rowspanPosArray = new Array();
+        if(statLatTypeFlag == "3"){//日报，需要合并数据和单元格
+            /*
+             计算td的rowspan,比如第一个月，3条，第二个月3条，第三个月2条，则在i=0时，rowspan=3，i=3时rowspan=3,i=6时rowspan=2
+             3,3,2
+             0 1 2 3 4 5 6 7
+             |     |     |
+             0 3 6
+             下面： monthDatasRows 为 [3,3,2], rowspanArray 为 [0,3,6]
+            */
+            rowspanPosArray.push(0);
+            var nums = 0;
+            for(var j =0;j< monthDatasRows.length-1;j++){
+                nums += monthDatasRows[j];
+                rowspanPosArray.push(nums);
+            }
+        }
+
+        if(json.length > 0){
+            for (var i = 0; i < json.length; i++) {
+                if(statLatTypeFlag == "3"){//日报，需要合并数据和单元格
+                    tableArray.push('<tr height="30">');
+                    //获取 日期 td的rowspan
+                    var rowspan = getRowSpanByI(i,rowspanPosArray,monthDatasRows);
+                    if( rowspan!= -1){
+                        tableArray.push('<td rowspan="'+rowspan+'">');tableArray.push(json[i].statLat);tableArray.push('</td>');
+                    }
+                    tableArray.push('<td>');tableArray.push(json[i].statResult1);tableArray.push('</td>');
+                    tableArray.push('<td>');tableArray.push(json[i].statResult2);tableArray.push('</td>');
+                    tableArray.push('<td>');tableArray.push(json[i].statResult3);tableArray.push('</td>');
+                    tableArray.push('<td>');tableArray.push(json[i].statResult4);tableArray.push('</td>');
+                    tableArray.push('<td>');tableArray.push(json[i].statResult5);tableArray.push('</td>');
+                    tableArray.push('</tr>');
+                }else if(statLatTypeFlag == "2"){//月报，不需要合并数据和单元格
+                    tableArray.push('<tr height="30">');
+                    tableArray.push('<td>');tableArray.push(json[i].statLat);tableArray.push('</td>');
+                    tableArray.push('<td>');tableArray.push(json[i].statResult1);tableArray.push('</td>');
+                    tableArray.push('<td>');tableArray.push(json[i].statResult2);tableArray.push('</td>');
+                    tableArray.push('<td>');tableArray.push(json[i].statResult3);tableArray.push('</td>');
+                    tableArray.push('<td>');tableArray.push(json[i].statResult4);tableArray.push('</td>');
+                    tableArray.push('<td>');tableArray.push(json[i].statResult5);tableArray.push('</td>');
+                    tableArray.push('</tr>');
+                }
+            }
+        }else{
+            for (var i = 0; i < initTrNums; i++) {
+                tableArray.push('<tr height="30">');
+                tableArray.push('<td>');tableArray.push("");tableArray.push('</td>');
+                tableArray.push('<td>');tableArray.push("");tableArray.push('</td>');
+                tableArray.push('<td>');tableArray.push("");tableArray.push('</td>');
+                tableArray.push('<td>');tableArray.push("");tableArray.push('</td>');
+                tableArray.push('<td>');tableArray.push("");tableArray.push('</td>');
+                tableArray.push('<td>');tableArray.push("");tableArray.push('</td>');
+                tableArray.push('</tr>');
+            }
+        }
+        tableArray.push('</tobody></table>');
+        $('#tableMain').append(tableArray.join(""));
+    }
+
+</script>

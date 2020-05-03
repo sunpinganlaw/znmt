@@ -1,0 +1,47 @@
+<div class="form-div">
+    <form id="sampleDetailForm" method="post">
+        <table>
+            <tr>
+                <td >采样编码:</td>
+                <td><input class="easyui-textbox" type="text" readonly="readonly" name="sampleCode" id="sampleCode"/></td>
+                <td >批次编码:</td>
+                <td><input class="easyui-textbox" type="text" readonly="readonly" name="batchNo" id="batchNo"/></td>
+            </tr>
+            <tr>
+                <td >采样人员:</td>
+                <td><input class="easyui-textbox" type="text" readonly="readonly" name="userName" id="userName"/></td>
+                <td >采样方式:</td>
+                <td><input class="easyui-textbox" type="text" readonly="readonly" name="sampleType" id="sampleType"/></td>
+            </tr>
+            <tr>
+                <td >采样子样数:</td>
+                <td><input class="easyui-textbox" type="text" readonly="readonly" name="sampleCntNew" id="sampleCntNew"/></td>
+                <td >采样缩分次数:</td>
+                <td><input class="easyui-textbox" type="text" readonly="readonly" name="suofenCnt" id="suofenCnt"/></td>
+            </tr>
+            <tr>
+                <td >批次总吨数(t):</td>
+                <td><input class="easyui-textbox" type="text" readonly="readonly" id="totalNetQty" name="totalNetQty" /></td>
+                <td >采样留样量(Kg):</td>
+                <td><input class="easyui-textbox" type="text" readonly="readonly" id="sampleQty" name="sampleQty" /></td>
+            </tr>
+            <tr>
+                <td >采样开始时间:</td>
+                <td ><input class="easyui-textbox" type="text" readonly="readonly" id="startTime" name="startTime" /></td>
+                <td >采样结束时间:</td>
+                <td><input class="easyui-textbox"  type="text" readonly="readonly" id="endTime" name="endTime" /></td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<script type="text/javascript">
+
+    $(function(){
+        var respEntity = JSON.parse(JSON.stringify(${sampleRptEntity}));
+        if(respEntity != undefined && respEntity != null && respEntity != "") {
+            $('#sampleDetailForm').form('load', respEntity);
+        }
+    })
+
+</script>

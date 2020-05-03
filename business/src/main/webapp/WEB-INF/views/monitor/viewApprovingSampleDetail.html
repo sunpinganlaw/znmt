@@ -1,0 +1,37 @@
+<div style="margin: 4px;width: 96%;">
+    <table id="approvingSampleDetailDg"></table>
+</div>
+
+<script type="text/javascript">
+    $approvingSampleDetailDg = $("#approvingSampleDetailDg");
+
+    $(function () {
+        $approvingSampleDetailDg.datagrid({
+            url: "${base}/business/monitor/qryCabinetSampleList",
+            fitColumns: true,
+            height: 340,
+            width: 900,
+            idField:'cabinetRecId',
+            rownumbers:true,
+            queryParams: {
+                search_apprEventId:document.getElementById("h_apprEventId").value // 通过审批关键事件ID来获取提交的审批数据
+            },
+            columns: [
+                [
+                    {field: 'ggName', title: '柜名',align:'center', width:10},
+                    {field: 'ccName', title: '层名',align:'center', width: 10},
+                    {field: 'wwName', title: '位名',align:'center', width:10},
+                    {field: 'isEnabledName', title: '是否可用',align:'center', width: 15},
+                    {field: 'makeSampleTime', title: '制样时间',align:'center', width:28},
+                    {field: 'depositTime', title: '存样时间',align:'center', width:28},
+                    {field: 'sampleTypeName', title: '煤样类型',align:'center', width:22},
+                    {field: 'packCode', title: '封装码',align:'center', width:25},
+                    {field: 'sampleStatusName', title: '样瓶状态',align:'center', width:20}
+                    // {field: 'opName', title: '操作人',align:'center', width:18},
+                    // {field: 'insertTime', title: '操作时间',align:'center', width:28}
+                ]
+            ]
+        });
+    });
+
+</script>

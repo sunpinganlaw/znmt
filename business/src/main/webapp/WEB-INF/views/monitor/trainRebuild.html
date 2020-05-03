@@ -1,0 +1,242 @@
+<div style="width: 90%">
+    <div id="tbRB">
+        <table>
+            <tr>
+                <td>
+                    <label for="beginTimeRB">入厂日期：</label>
+                    <input class="easyui-datebox" id="beginTimeRB" style="width:120px">&nbsp;—&nbsp;
+                    <input class="easyui-datebox" id="endTimeRB"  style="width:120px">
+                    <label for="qryTrainNoRB">车次：</label>
+                    <input class="easyui-textbox" id="qryTrainNoRB" style="width:130px;" value=""/>
+                    <a href="javascript:void(0)"  class="easyui-linkbutton" iconCls="icon-search"  onclick="qryRB()">查询</a>
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-cut" onclick="mergeTrains();">合并车次</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="tx"  style="margin: 5px;width: 90%">
+        <table id="trainBasicDgRB"  style=";width: 90%"></table>
+    </div>
+
+    <!--<hr style="height:1px;border:none;border-top:1px dashed #0066CC;" />-->
+
+    <div id="tbDRB">
+        <table>
+            <tr>
+                <td>
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-cut" onclick="splitIntoNewTrain();">组成新车次</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="detRB" style="margin: 5px;width: 90%">
+        <table id="trainDetailDgRB" ></table>
+    </div>
+</div>
+<script type="text/javascript">
+//全局变量
+$basicdgRB = $("#trainBasicDgRB");
+$detaildgRB = $("#trainDetailDgRB");
+
+$(function () {
+    //刚进入页面时，查询日期默认取当前日的
+    var myDate = new Date();
+    var defaultBeginTime = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+    var defaultEndTime =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+
+    $basicdgRB.datagrid({
+        url: "${base}/business/monitor/trainBasicList",
+        fitColumns: true,
+        height: $(this).height()/2-50,
+        width: $(this).width()-123,
+        idField:'trainNo',
+        singleSelect:false,
+        rownumbers:true,
+        queryParams: {//默认进来查当天
+            search_beginTime:defaultBeginTime,
+            search_endTime:defaultEndTime
+        },
+        columns: [
+            [   {field: 'trainNo', title: '',align:'center', width:20, checkbox:true},
+                {field: 'trainNoAlias', title: '车次',align:'center', width:20},
+                {field: 'recordDtm', title: '入厂日期',align:'center', width:25},
+                {field: 'carCnt', title: '车数',align:'center', width: 15},
+                {field: 'totalMzQty', title: '总毛重(t)',align:'center', width: 15},
+                {field: 'totalNetQty', title: '总净重(t)',align:'center', width: 15}
+            ]
+        ],
+        toolbar: '#tbRB',
+        onClickRow:function(rowIndex, rowData){
+            var o = {};
+            o.search_trainNo = rowData.trainNo;
+            $detaildgRB.datagrid('clearSelections');
+            $detaildgRB.datagrid('load', o);
+        }
+    })
+});
+
+//查询
+function qryRB(){
+    var beginTime = $("#beginTimeRB").datebox("getValue");
+    var endTime = $("#endTimeRB").datebox("getValue");
+    var trainNo = $("#qryTrainNoRB").textbox("getValue");
+
+    var qryObj = {};
+    if (beginTime != null && beginTime != "" && beginTime.length > 0) {
+        qryObj.search_beginTime = beginTime;
+    }
+
+    if (endTime != null && endTime != "" && endTime.length > 0) {
+        qryObj.search_endTime = endTime;
+    }
+
+    if (trainNo != null && trainNo != "" && trainNo.length > 0) {
+        qryObj.search_trainNo = trainNo;
+    }
+
+    $basicdgRB.datagrid('load', qryObj);
+}
+
+
+$(function () {
+    $detaildgRB.datagrid({
+        url: "${base}/business/monitor/trainDetailList",
+        fitColumns: true,
+        height: $(this).height()/2-8,
+        width: $(this).width()-123,
+        idField:'recordNo',
+        singleSelect:false,
+        rownumbers:true,
+        ctrlSelect:true,
+        queryParams: {//默认进来查不到数据
+            search_trainNo:'-1'
+        },
+        columns: [
+            [
+                {field: 'recordNo', title: '流水号',align:'center', width:25, checkbox:true},
+                {field: 'xhNum', title: '车厢序号',align:'center', width:18},
+                {field: 'carId', title: '车号',align:'center', width:18},
+                {field: 'trackNo', title: '轨道号',align:'center', width:18},
+                {field: 'batchNo', title: '批次号',align:'center', width: 35},
+                {field: 'mineName', title: '矿点',align:'center', width:35},
+                {field: 'coalName', title: '煤种',align:'center', width: 18},
+                {field: 'netQty', title: '净重(t)',align:'center', width:18},
+                {field: 'startPlaceName', title: '发站',align:'center', width:18},
+                {field: 'finalPlaceName', title: '到站',align:'center', width:18},
+            ]
+        ],
+        toolbar: '#tbDRB',
+        rowStyler: function(index,row){
+            if (row.mzQty > 100) {
+                return 'background-color:#ff081e;';//超重红色
+            } else if(row.mzQty < 30  || row.emptyFlg == "0") {
+                return 'background-color:#0DFF7C;';//空车绿色
+            }
+        }
+    });
+});
+
+
+function mergeTrains(){
+    var rowsBasic =  $basicdgRB.datagrid('getChecked');
+    if (rowsBasic.length <= 1) {
+        showMsg("提示", "请至少选择2个车次进行合并");
+        return false;
+    }
+
+    $.messager.confirm('提示', '合并后原有分批信息也会被清除，确定保存?', function (r) {
+        if (r) {
+            var arrayTrainNos = [];
+            for ( var i = 0; i < rowsBasic.length; i++) {
+                arrayTrainNos[i] = rowsBasic[i].trainNo;
+            }
+
+            var paramObj = {};
+            //放入票重数据
+            paramObj["updateInfo"] = JSON.stringify(arrayTrainNos);
+
+            //提交数据
+            $.post("${base}/business/monitor/mergeTrain", paramObj, function(rsp) {
+                if(rsp.successful){
+                    //关闭遮罩
+                    $.messager.progress('close');
+                    showMsg("提示", rsp.msg);
+                    $detaildgRB.datagrid('clearChecked');
+                    $detaildgRB.datagrid('clearSelections');
+                    $basicdgRB.datagrid('clearChecked');
+                    $basicdgRB.datagrid('clearSelections');
+
+                    $detaildg.datagrid('clearChecked');
+                    $detaildg.datagrid('clearSelections');
+                    $basicdg.datagrid('clearChecked');
+                    $basicdg.datagrid('clearSelections');
+
+                    $basicdgRB.datagrid('reload');
+                    $detaildgRB.datagrid('reload');
+                    $basicdg.datagrid('reload');
+                    $detaildg.datagrid('reload');
+                } else {
+                    //关闭遮罩
+                    $.messager.progress('close');
+                    showMsg("提示", rsp.msg);
+                }
+            });
+        }
+    });
+}
+
+
+function splitIntoNewTrain(){
+    var rowsDetail =  $detaildgRB.datagrid('getChecked');
+    if (rowsDetail.length <= 0) {
+        showMsg("提示", "请至少选择1节车厢作为组成新车次");
+        return false;
+    }
+
+    $.messager.confirm('提示', '重组出的新车次会被清除原有分批信息，确定保存?', function (r) {
+        if (r) {
+            var arrayRecordNos = [];
+            for ( var i = 0; i < rowsDetail.length; i++) {
+                arrayRecordNos[i] = rowsDetail[i].recordNo;
+            }
+
+            var paramObj = {};
+            //放入票重数据
+            paramObj["updateInfo"] = JSON.stringify(arrayRecordNos);
+
+            //提交数据
+            $.post("${base}/business/monitor/splitTrain", paramObj, function(rsp) {
+                if(rsp.successful){
+                    //关闭遮罩
+                    $.messager.progress('close');
+                    showMsg("提示", rsp.msg);
+                    $detaildgRB.datagrid('clearChecked');
+                    $detaildgRB.datagrid('clearSelections');
+                    $basicdgRB.datagrid('clearChecked');
+                    $basicdgRB.datagrid('clearSelections');
+
+                    $detaildg.datagrid('clearChecked');
+                    $detaildg.datagrid('clearSelections');
+                    $basicdg.datagrid('clearChecked');
+                    $basicdg.datagrid('clearSelections');
+
+                    $basicdgRB.datagrid('reload');
+                    $detaildgRB.datagrid('reload');
+                    $basicdg.datagrid('reload');
+                    $detaildg.datagrid('reload');
+                } else {
+                    //关闭遮罩
+                    $.messager.progress('close');
+                    showMsg("提示", rsp.msg);
+                }
+            });
+
+        }
+    });
+
+}
+
+</script>
+</html>

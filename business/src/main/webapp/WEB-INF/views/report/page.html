@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Testing websockets</title>
+</head>
+<body>
+	<div id="messages"></div>
+	<script type="text/javascript">
+		//var webSocket = new WebSocket('ws://192.168.1.100/websocket');
+        var webSocket = new WebSocket('ws://192.168.1.108:8080/intf/ws');
+        //var webSocket = new WebSocket('ws://localhost/websocket');
+
+		webSocket.onerror = function(event) {
+			onError(event);
+		};
+
+		webSocket.onopen = function(event) {
+			onOpen(event);
+		};
+
+		webSocket.onmessage = function(event) {
+			onMessage(event);
+		};
+
+		function onMessage(event) {
+			document.getElementById('messages').innerHTML += '<br />' + event.data;
+            //字符串转换为java对象
+//            var o = JSON.parse(event.data);
+//            alert("Command:"+ o.Command);
+//            alert("RC2HL001:"+ o.RC2HL001);
+//            alert("CP:"+ o.CP);
+		}
+
+		function onOpen(event) {
+			document.getElementById('messages').innerHTML = 'Connection established';
+		}
+
+		function onError(event) {
+			alert(event.data);
+		}
+
+//		function start() {
+//            var txt = document.getElementById('txt').value;
+//			webSocket.send(txt);
+//			return false;
+//		}
+	</script>
+</body>
+</html>

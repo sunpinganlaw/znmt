@@ -1,0 +1,47 @@
+
+<div id="det" style="margin: 5px;width: 90%">
+    <table id="ygDg" ></table>
+</div>
+
+<script type="text/javascript">
+$ygDg = $("#ygDg");
+
+$(function () {
+    //刚进入页面时，查询日期默认取当前日的
+    var myDate = new Date();
+    var defaultBeginTime = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+(parseInt(myDate.getDate())-2);
+    var defaultEndTime =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+    var apprKeyId = document.getElementById("h_apprEventId").value;
+
+    $ygDg.datagrid({
+        url: "${base}/business/monitor/qryYGCabinetInfo",
+        fitColumns: true,
+        height: $(this).height()-10,
+        width: $(this).width()-15,
+        idField:'sampleStoreId',
+        rownumbers:true,
+        queryParams: {
+            search_apprKeyId: apprKeyId
+        },
+        columns: [
+            [
+                {field: 'samplingCode', title: '制样码',align:'center', width: 10},
+                {field: 'sampleTypeName', title: '样品类型',align:'center', width:10},
+                {field: 'sampleStatusName', title: '样品状态',align:'center', width: 10},
+                {field: 'capCode', title: '封装码(盖)',align:'center', width: 18},
+                {field: 'bottomCode', title: '封装码(底)',align:'center', width: 18},
+                {field: 'plainCode', title: '明码',align:'center', width: 15},
+                {field: 'samplingTime', title: '制样时间',align:'center', width: 15},
+                {field: 'storeTime', title: '存样时间',align:'center', width: 15}
+//                {field: 'endTime', title: '弃、取时间',align:'center', width: 15},
+//                {field: 'remark', title: '备注',align:'center', width: 15}
+            ]
+        ],
+        rowStyler: function(index,row){
+            if (parseInt(row.storeDates) >= 90) {
+                return 'background-color:#ff081e;';//超期红色
+            }
+        }
+    });
+});
+</script>

@@ -1,0 +1,278 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>存查样柜</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+
+<body>
+    <div id="tb" >
+        <table>
+            <tr>
+                    <label for="batchNo">批次码：</label>
+                    <input class="easyui-textbox" id = "batchNo" style="width:145px;" value=""/>&nbsp;&nbsp;
+                    <label for="samplingCode">制样码：</label>
+                    <input class="easyui-textbox" id="samplingCode" style="width:145px;" value=""/>&nbsp;&nbsp;
+                    <label for="packCode">封装码：</label>
+                    <input class="easyui-textbox" id="packCode" style="width:145px;" value=""/>&nbsp;&nbsp;
+                    <label for="laborCode">化验码：</label>
+                    <input class="easyui-textbox" id="laborCode" style="width:145px;" value=""/>&nbsp;&nbsp;
+                    <label for="beginDate">存样日期：</label>
+                    <input class="easyui-datebox" id="beginDate" style="width:120px">&nbsp;—&nbsp;
+                    <input class="easyui-datebox" id="endDate"  style="width:120px">
+            </tr>
+            <br/><br/>
+            <tr>
+                    <label for="sampleStatus">样瓶状态：</label>
+                    <select  class="easyui-combobox" data-options="panelHeight:'auto'" id="sampleStatus" name="sampleStatus" style="width:145px;"/>
+                        <option value="">全部</option>
+                        <option value="1">正常煤样瓶</option>
+                        <option value="2">超期煤样瓶</option>
+                        <option value="3">无效煤样瓶</option>
+                        <!--<option value="4">无瓶子</option>-->
+                    </tr>&nbsp;&nbsp;
+                    <label for="sampleType">煤样类型：</label>
+                    <select id="sampleType" name="sampleType" class="easyui-combobox" data-options="panelHeight:'auto'" style="width:145px;">
+                        <option value="">全部</option>
+                        <option value="61">6mm全水样</option>
+                        <option value="32">3mm存查样</option>
+                        <option value="21">0.2mm化验样</option>
+                        <option value="22">0.2mm存查样</option>
+                    </select>&nbsp;&nbsp;
+                    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>
+            </tr>
+            <tr>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <hr style="height:1px;border:none;border-top:1px dashed #0066CC;" />
+
+                    <label for="destination">目的站：</label>
+                    <input id="destination" name="destination" style="width:145px;"/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <label for="remark">备注：</label>
+                    <input class="easyui-textbox" id="remark" style="width:200px;" value=""/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="javascript:void(0)" id="qryBtnGet" class="easyui-linkbutton" iconCls="icon-search"  onclick="submitToAppr('1')">取样</a>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="javascript:void(0)" id="qryBtn" class="easyui-linkbutton" iconCls="icon-clear"  onclick="submitToAppr('2')">弃样</a>
+            </tr>
+        </table>
+
+
+        <table style="width:95%;">
+            <tr>
+                <td style="text-align: right">
+                    <div>&nbsp;</div>
+                    <div style="text-align: left">
+                        <span>&nbsp;总仓位:</span>
+                        <span style="color: #0099FF;"><strong id="totalCntYG">&nbsp;</strong></span>
+                        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;已用仓位:</span>
+                        <span style="color: #0099FF;"><strong id="usedCntYG">&nbsp;</strong></span>
+                        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;剩余仓位:</span>
+                        <span style="color: #0099FF;"><strong id="leftCntYG">&nbsp;</strong></span>
+                        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;正常煤样数:</span>
+                        <span style="color: #0099FF;"><strong id="normalCntYG">&nbsp;</strong></span>
+                        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;超期煤样数:</span>
+                        <span style="color: #0099FF;"><strong id="outtimeCntYG">&nbsp;</strong></span>
+                        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;异常样:</span>
+                        <span style="color: #0099FF;"><strong id="exceptCntYG">&nbsp;</strong></span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+    </div>
+
+    <div id="det" style="margin: 5px;width: 90%">
+        <table id="ygDg" ></table>
+    </div>
+
+    <div id="editTrainWin" ></div>
+
+</body>
+</html>
+<script type="text/javascript">
+$ygDg = $("#ygDg");
+
+$(function () {
+    //刚进入页面时，查询日期默认取当前日的
+    var myDate = new Date();
+    var defaultBeginTime = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+(parseInt(myDate.getDate())-2);
+    var defaultEndTime =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+
+    loadCabinetSumInfo();
+
+    $('#destination').combobox({
+        url:'${base}/business/tool/getDictionaryByType/CABINET_DEST',
+        valueField:'id',
+        textField:'name',
+        panelHeight:'auto'
+    });
+
+    $ygDg.datagrid({
+        url: "${base}/business/monitor/qryKyCabinetInfoList",
+        pagination: true,
+        pagenumber:true,
+        pageSize:50,
+        pageList: [50, 100],
+        height: $(this).height()-10,
+        width: $(this).width()-8,
+        fitColumns: true,
+        idField:'cabinetRecId',
+        rownumbers:true,
+        queryParams: {//默认进来查近2天
+            search_storeBeginTime:defaultBeginTime,
+            search_storeEndTime:defaultEndTime,
+            search_sampleStatus : "1" //默认查询近两天的已存样
+        },
+        columns: [
+            [
+                {field: 'cabinetRecId', title: '',align:'center', checkbox:true},
+                {field: 'batchNo', title: '批次号',align:'center', width: 10},
+                {field: 'samplingCode', title: '制样码',align:'center', width: 10},
+                {field: 'laborCode', title: '化验码',align:'center', width: 10},
+                {field: 'sampleTypeName', title: '样品类型',align:'center', width:10},
+                {field: 'sampleStatusName', title: '样品状态',align:'center', width: 10},
+                {field: 'packCode', title: '封装码(盖)',align:'center', width: 20},
+                {field: 'makeSampleTime', title: '制样时间',align:'center', width: 20},
+                {field: 'depositTime', title: '存样时间',align:'center', width: 20},
+                {field: 'ggName', title: '柜面',align:'center', width: 10},
+                {field: 'ccName', title: '层号',align:'center', width: 10},
+                {field: 'wwName', title: '位号',align:'center', width: 10},
+                {field: 'ppName', title: '盘位',align:'center', width: 10}
+            ]
+        ],
+        toolbar: '#tb',
+        onClickRow:function(rowIndex, rowData){
+            $(this).datagrid('unselectRow', rowIndex);
+        }
+    });
+});
+
+//查询
+function qry(){
+    var beginDate = $("#beginDate").datebox("getValue");
+    var endDate = $("#endDate").datebox("getValue");
+    var samplingCode = $("#samplingCode").textbox("getValue");
+    var laborCode = $("#laborCode").textbox("getValue");
+    var packCode = $("#packCode").textbox("getValue");
+    var batchNo = $("#batchNo").textbox("getValue");
+    var sampleStatus = $("#sampleStatus").combobox("getValue");
+    var sampleType = $("#sampleType").combobox("getValue");
+
+    var qryObj = {};
+    if (beginDate != null && beginDate != "" && beginDate.length > 0) {
+        qryObj.search_depositStartTime = beginDate;
+    }
+
+    if (endDate != null && endDate != "" && endDate.length > 0) {
+        qryObj.search_depositEndTime = endDate;
+    }
+
+    if (samplingCode != null && samplingCode != "" && samplingCode.length > 0) {
+        qryObj.search_samplingCode = samplingCode;
+    }
+
+    if (laborCode != null && laborCode != "" && laborCode != "-1" && laborCode.length > 0) {
+        qryObj.search_laborCode = laborCode;
+    }
+
+    if (batchNo != null && batchNo != "" && batchNo != "-1" && batchNo.length > 0) {
+        qryObj.search_batchNo = batchNo;
+    }
+
+    if (sampleStatus != null && sampleStatus != "" && sampleStatus != "-1" && sampleStatus.length > 0) {
+        qryObj.search_sampleStatus = sampleStatus;
+    }
+
+    if (sampleType != null && sampleType != "" && sampleType.length > 0) {
+        qryObj.search_sampleType = sampleType;
+    }
+
+    if(packCode != null && packCode != "" && packCode.length > 0){
+        qryObj.search_packCode = packCode;
+    }
+    $ygDg.datagrid('load', qryObj);
+}
+
+//查询柜子汇总信息
+function loadCabinetSumInfo() {
+    var myDate = new Date();
+    $.post("${base}/business/monitor/qryKYCabinetSumInfo", function(rsp) {
+        if(rsp.successful){
+            var sumObj = rsp.data;
+            document.getElementById("totalCntYG").innerText = sumObj.totalCnt;
+            document.getElementById("usedCntYG").innerText = (sumObj.totalCnt - sumObj.leftCnt);
+            document.getElementById("normalCntYG").innerText = sumObj.normalCnt;
+            document.getElementById("outtimeCntYG").innerText = sumObj.outtimeCnt;
+            document.getElementById("leftCntYG").innerText = sumObj.leftCnt;
+            document.getElementById("exceptCntYG").innerText = sumObj.exceptCnt;
+        } else {
+            showMsg("提示", rsp.msg);
+        }
+    });
+}
+
+//提交审批
+function submitToAppr(apprEventTypeCd) {
+    var selRows = $ygDg.datagrid('getChecked');
+    var recIdArr = [];
+    if (selRows != null && selRows.length > 0) {
+        for (var i = 0; i < selRows.length; i++) {
+            if (selRows[i].sampleStatus != "1") {
+                showMsg("提示", "只有状态为 '已存样'、'审批未通过' 的样品才可以做取、弃样操作申请！");
+                return false;
+            }
+            recIdArr[i] = selRows[i].cabinetRecId;
+        }
+    } else {
+        showMsg("提示", "请先选择请求审批的记录！");
+        return false;
+    }
+
+    var destination;
+    if (apprEventTypeCd == "2") {
+        $("#destination").combobox("setValue", "3");
+        destination = "3";//弃样则无须填写
+    } else if (apprEventTypeCd == "1"){
+        destination = $("#destination").combobox("getValue");
+        if (destination == null || destination == "") {
+            showMsg("提示", "取样时必须选择取样的目的站！");
+            return false;
+        }
+    } else {
+        showMsg("提示", "不支持的操作！");
+        return false;
+    }
+    var remark = $("#remark").textbox("getValue");
+
+    var jsonStr = JSON.stringify(recIdArr);
+    alert(jsonStr);
+    var params = {}
+
+    params.search_destination = destination;
+    params.search_dealType = apprEventTypeCd;
+    params.search_remark = remark;
+    params.search_jsonStr = jsonStr;
+
+    var postUrl = "${base}/business/approve/submitToApprove";
+
+    $.post(postUrl, params, function (rsp) {
+        if (rsp.successful) {
+            showMsg("提示", rsp.msg);
+            $ygDg.datagrid('clearChecked');//必须要清理下，否则会被记录下上一次审批的id
+            $ygDg.datagrid('clearSelections');
+            $ygDg.datagrid('reload');
+        } else {
+            showMsg("提示", rsp.msg);
+        }
+    })
+}
+
+</script>

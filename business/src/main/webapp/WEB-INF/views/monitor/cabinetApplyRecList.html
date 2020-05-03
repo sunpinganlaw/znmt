@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>取弃样申请记录</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+<body>
+<div id="layoutDiv" class="easyui-layout" style="height:100%">
+    <div id="tb" style="width: 100%">
+        <table style="width: 100%;background: #F4F4F4">
+            <tr>
+                <td style="text-align: left">
+                    <label for="depositStartTime">申请时间</label>
+                    <input class="easyui-datebox" name="depositStartTime" id="depositStartTime"  style="width:145px;"/> &nbsp;~&nbsp;
+                    <input class="easyui-datebox" name="depositEndTime" id="depositEndTime"  style="width:145px;"/>
+                    <label for="opType">类型</label>
+                    <select id="opType" name="opType" class="easyui-combobox" data-options="panelHeight:'auto'"
+                            style="width:145px;">
+                        <option value="">全部</option>
+                        <option value="1">取样</option>
+                        <option value="2">弃样</option>
+                        <option value="3">自动弃样</option>
+                    </select>
+                    <a href="javascript:void(0)"  class="easyui-linkbutton" iconCls="icon-search" onclick="qry();">查询</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div data-options="region:'center',title:'存查样历史清单',noheader:false;">
+        <table id="cabinetApplyRecDg"></table>
+    </div>
+</div>
+
+</body>
+</html>
+<script type="text/javascript">
+    $cabinetApplyRecDg = $("#cabinetApplyRecDg");
+    $(function () {
+        var myDate = new Date();
+        var defaultBeginTime = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+        var defaultEndTime =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+
+        $cabinetApplyRecDg.datagrid({
+            url:  '${base}/business/monitor/qryCabinetApplyRecList',
+            fitColumns: true,
+            animate: true,
+            border:true,
+            height: $(this).height() - 2,
+            width: $(this).width() - 2,
+            idField:'recId',
+            singleSelect:true,
+            rownumbers:true,
+            pagination: true,
+            pagenumber:true,
+            pageSize:70,
+            pageList: [70, 100],
+            queryParams: {//默认进来查当天
+                search_depositStartTime:defaultBeginTime,
+                search_depositEndTime:defaultEndTime
+            },
+            columns: [
+                [
+//                    {field: 'ggName', title: '柜名', align: 'center', width: 10},
+//                    {field: 'ccName', title: '层名', align: 'center', width: 10},
+//                    {field: 'wwName', title: '位名', align: 'center', width: 10},
+                    {field: 'batchNo', title: '样品批次号', align: 'center', width: 30},
+                    {field: 'samplingCode', title: '制样编码', align: 'center', width: 30},
+
+//                    {field: 'isEnabledName', title: '是否可用', align: 'center', width: 15},
+//                    {field: 'makeSampleTime', title: '制样时间', align: 'center', width: 30},
+//                    {field: 'depositTime', title: '存样时间', align: 'center', width: 30},
+                    {field: 'sampleTypeName', title: '煤样类型', align: 'center', width : 20},
+                    {field: 'packCode', title: '封装码', align: 'center', width: 30},
+//                    {field: 'sampleStatusName', title: '样瓶状态', align: 'center', width: 15},
+                    {field: 'opType', title: '操作类型', align: 'center', width: 15},
+//                    {field: 'opDest', title: '目的站', align: 'center', width: 25},
+//                    {field: 'opResult', title: '操作状态', align: 'center', width: 15},
+                    {field: 'opName', title: '申请人', align: 'center', width: 15},
+                    {field: 'opTime', title: '申请时间', align: 'center', width: 20},
+
+                    {field: 'apprStatus', title: '审批状态', align: 'center', width: 15},
+                    {field: 'updateName', title: '审批人', align: 'center', width: 15},
+                    {field: 'updateTime', title: '审批时间', align: 'center', width: 20}
+
+                ]
+            ],
+            toolbar: '#tb'
+        })
+    });
+
+    function qry(){
+        var paramO = {};
+        var opType = $("#opType").combobox("getValue");
+        var depositStartTime = $("#depositStartTime").combobox("getValue");
+        var depositEndTime = $("#depositEndTime").combobox("getValue");
+
+        if (opType != null && opType.length > 0) {
+            paramO.search_opType = opType;
+        }
+        if (depositStartTime != null && depositStartTime.length > 0) {
+            paramO.search_depositStartTime = depositStartTime;
+        }
+        if (depositEndTime != null && depositEndTime.length > 0) {
+            paramO.search_depositEndTime = depositEndTime;
+        }
+
+        $cabinetApplyRecDg.datagrid("load", paramO);
+    }
+</script>

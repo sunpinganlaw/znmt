@@ -1,0 +1,225 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>修改标煤样品信息</title>
+    <script type='text/javascript' src='${base}/static/common/globalDef.js'></script>
+    <#include "../../common/include/common.html"/>
+    <style type="text/css">
+        .groupTitle {
+            height: 10px;
+            margin: 0 0px 0px 0px;
+            border-bottom: 2px dashed #c9efe2;
+        }
+
+        /*防止表格编辑时向右偏移*/
+        .l-grid-row-cell-editing {
+            padding-left: 0px !important;
+        }
+
+        .l-grid td div {
+            float: none;
+        }
+    </style>
+</head>
+<body>
+<div class="page_content" >
+    <form id="coalSample">
+        <!-- 标题与编号区 -->
+        <table style="width:90%;margin-top: 35px;margin-left: 100px;">
+            <tr>
+                <td colspan="2" style="font-size: x-large;text-align: center;padding-bottom:20px;">修改标煤样品信息</td>
+            </tr>
+        </table>
+        <div class="groupTitle"><span></span></div>
+
+        <table class="tableStyle" formMode="transparent" style="margin-top: 15px;">
+            <tr>
+                <td>标煤样品ID：</td>
+                <td>
+                    <input type="text" class="validate[required]" id="sample_id" name="sample_id"
+                           style="width: 300px" readonly/>
+                    <span class="star">*</span>
+                </td>
+                <td>标煤样品名称：</td>
+                <td>
+                    <input type="text" class="validate[required]" id="sample_name" name="sample_name"
+                           style="width: 300px" />
+                    <span class="star">*</span>
+                </td>
+                <td>标煤样品状态：</td>
+                <td>
+                    <select class="validate[required]" id="status" name="status" data='{"list":[{"value":"0","key":"有效"},{"value":"1","key":"失效"}]}'
+                            selWidth="300" keepDefaultStyle="true">
+                    </select><span class="star">*</span>
+                </td>
+            </tr>
+
+            <tr>
+                <td>启用时间：</td>
+                <td>
+                    <input type="text" class="date" id="start_dt" name="start_dt"dateFmt="yyyy-MM-dd" style="width: 300px"　/>
+                </td>
+                <td>失效时间：</td>
+                <td>
+                    <input type="text" class="date" id="end_dt" name="end_dt" dateFmt="yyyy-MM-dd" style="width: 300px"　/>
+                </td>
+            </tr>
+
+            <tr>
+                <td>干基灰分上限：</td>
+                <td>
+                    <input type="text" id="ad_upperlimit" name="ad_upperlimit" style="width: 300px"　/>
+                </td>
+                <td>干基灰分下限：</td>
+                <td>
+                    <input type="text" id="ad_lowerlimit" name="ad_lowerlimit"style="width: 300px"　/>
+                </td>
+                <td>干基灰分不确定度：</td>
+                <td>
+                    <input type="text" id="ad_uncertainty" name="ad_uncertainty" style="width: 300px"　/>
+                </td>
+            </tr>
+
+            <tr>
+                <td>干基挥发分上限：</td>
+                <td>
+                    <input type="text" id="vd_upperlimit" name="vd_upperlimit" style="width: 300px"　/>
+                </td>
+                <td>干基挥发分下限：</td>
+                <td>
+                    <input type="text" id="vd_lowerlimit" name="vd_lowerlimit" style="width: 300px"　/>
+                </td>
+                <td>干基挥发分不确定度：</td>
+                <td>
+                    <input type="text" id="vd_uncertainty" name="vd_uncertainty" style="width: 300px"　/>
+                </td>
+            </tr>
+
+            <tr>
+                <td>干基硫分上限：</td>
+                <td>
+                    <input type="text" id="std_upperlimit" name="std_upperlimit" style="width: 300px"　/>
+                </td>
+                <td>干基硫分下限：</td>
+                <td>
+                    <input type="text" id="std_lowerlimit" name="std_lowerlimit" style="width: 300px"　/>
+                </td>
+                <td>干基硫分不确定度：</td>
+                <td>
+                    <input type="text" id="std_uncertainty" name="std_uncertainty" style="width: 300px"　/>
+                </td>
+            </tr>
+
+            <tr>
+                <td>干基高位发热量上限：</td>
+                <td>
+                    <input type="text" id="qgrd_upperlimit" name="qgrd_upperlimit" style="width: 300px"　/>
+                </td>
+                <td>干基高位发热量下限：</td>
+                <td>
+                    <input type="text" id="qgrd_lowerlimit" name="qgrd_lowerlimit" style="width: 300px"　/>
+                </td>
+                <td>干基高位发热量不确定度：</td>
+                <td>
+                    <input type="text" id="qgrd_uncertainty" name="qgrd_uncertainty" style="width: 300px"　/>
+                </td>
+            </tr>
+
+            <tr>
+                <td>干基氢值上限：</td>
+                <td>
+                    <input type="text" id="hd_upperlimit" name="hd_upperlimit" style="width: 300px"　/>
+                </td>
+                <td>干基氢值下限：</td>
+                <td>
+                    <input type="text" id="hd_lowerlimit" name="hd_lowerlimit" style="width: 300px"　/>
+                </td>
+                <td>干基氢值不确定度：</td>
+                <td>
+                    <input type="text" id="hd_uncertainty" name="hd_uncertainty" style="width: 300px"　/>
+                </td>
+            </tr>
+
+            <tr>
+                <td>灰熔点上限：</td>
+                <td>
+                    <input type="text" id="st_upperlimit" name="st_upperlimit" style="width: 300px"　/>
+                </td>
+                <td>灰熔点下限：</td>
+                <td>
+                    <input type="text" id="st_lowerlimit" name="st_lowerlimit" style="width: 300px"　/>
+                </td>
+                <td>灰熔点不确定度：</td>
+                <td>
+                    <input type="text" id="st_uncertainty" name="st_uncertainty" style="width: 300px"　/>
+                </td>
+            </tr>
+
+            <tr>
+                <td>备注说明：</td>
+                <td colspan="3"><textarea style="width:100%;height:80px" id="remark" name="remark" ></textarea></td>
+            </tr>
+
+        </table>
+
+    </form>
+</div>
+
+<script type="text/javascript">
+
+    var modulePath = 'business/labory';
+    var sampleID=getRequestParam().sample_id;
+    function initComplete() {
+        var rspData= getJsonData('${base}/mis/base/misEUI.do?businessCode=coal.qrySampleByID',{sample_id: sampleID});
+        initFormByJson('coalSample', rspData.rows[0]);
+        $('#remark').val(rspData.rows[0].remark);
+        $('#status').attr("selectedValue",rspData.rows[0].status);
+        initForm();
+    }
+    function initForm() {
+        // 表单提交
+        $('#coalSample').attr("action", modulePath + '/save');
+        $('#coalSample').submit(function () {
+            // 判断表单的客户端验证是否通过
+            var valid = $('#coalSample').validationEngine({returnIsValid: true});
+            if (valid) {
+                $(this).ajaxSubmit({
+                    data: {"tableName": "STANDARD_COAL_SAMPLE", "v_doActionTag": "MOD"},
+                    // 表单提交成功后的回调
+                    success: function (rspText, statusText, xhr, $form) {
+                        var rspData = JSON.parse(rspText);
+                        if (rspData.success == false) {
+                            top.Toast("showErrorToast", rspData.resultMsg);
+                        } else {
+                            top.Toast("showSuccessToast", rspData.resultMsg);
+                            saveCloseWinHandler();
+                        }
+                    }
+                });
+            }
+            // 阻止表单默认提交事件
+            return false;
+        });
+    }
+    function submitHandler() {
+        // 判断表单的客户端验证是否通过
+        var valid = $('#coalSample').validationEngine({returnIsValid: true});
+        if (valid) {
+            top.Dialog.confirm("是否确认保存？", function () {
+                $('#coalSample').submit()
+                //阻止表单默认提交事件
+                return false;
+            });
+        }
+    }
+    function saveCloseWinHandler() {
+        sysGlobalParams.saveCloseWinHandler();
+    }
+
+</script>
+
+</body>
+
+</html>

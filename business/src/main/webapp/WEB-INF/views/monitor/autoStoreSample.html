@@ -1,0 +1,598 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>气动存查样柜监控</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <#include "/include/common.html"/>
+
+    <style type="text/css">
+        .easy-table01{ background: #FFFFFF; border: 1px solid #d4d4d4; width: 100%; margin: 10px;}
+        .easy-table01 td{ border: 1px solid #009900; color: #0099FF; text-align: center; padding: 5px; width:4%; height: 20px;}
+    </style>
+</head>
+
+<body>
+
+<div style="width: 100%; height: 30px;">
+    <table style="width: 95%; ">
+        <tr style="height: 12px;">
+            <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="hidden" id="abBox" value="A"></td>
+            <td>当前柜：<span style="color: #CC3300">&nbsp;<strong id="currGG">1号柜A面</strong>&nbsp;</span></td>
+            <td>切换柜面：<input id="changedCab" style="width:120px;"/></td>
+            <td style="text-align: center;padding: 5px;margin: 5px;">已存总数：<span style="color: #0099FF"><strong id="totalCnt"></strong></span></td>
+            <td style="text-align: center;padding: 5px;margin: 5px;">剩余总数：<span style="color: #0099FF"><strong id="leftCnt"></strong></span></td>
+            <td style="text-align: center;padding: 5px;margin: 5px;">到期总数：<span style="color: #0099FF"><strong id="expireCnt"></strong></span></td>
+            <td style="text-align: center;padding: 5px;margin: 5px;">无效瓶数：<span style="color: #0099FF"><strong id="invalidCnt"></strong></span></td>
+            <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+            <td><input type="button" onclick="dealSample('1')" value="取样"/>&nbsp;&nbsp;<input type="button" onclick="dealSample('2')" value="弃样"/></td>
+            <!--<td><input type="checkbox" checked onchange="alert(1)">直传</input></td>-->
+
+        </tr>
+    </table>
+</div>
+
+<table style="width: 98%">
+<tr>
+<td>
+<div>
+<table border="0" cellspacing="8" cellpadding="0" class="easy-table01">
+<tr id="tr14">
+    <td ondblclick="viewDetail('14-01');"><div><img id="img1401"/></div><div>C14-1</div></td>
+    <td ondblclick="viewDetail('14-02');"><div><img id="img1402"/></div><div>C14-2</div></td>
+    <td ondblclick="viewDetail('14-03');"><div><img id="img1403"/></div><div>C14-3</div></td>
+    <td ondblclick="viewDetail('14-04');"><div><img id="img1404"/></div><div>C14-4</div></td>
+    <td ondblclick="viewDetail('14-05');"><div><img id="img1405"/></div><div>C14-5</div></td>
+    <td ondblclick="viewDetail('14-06');"><div><img id="img1406"/></div><div>C14-6</div></td>
+    <td ondblclick="viewDetail('14-07');"><div><img id="img1407"/></div><div>C14-7</div></td>
+    <td ondblclick="viewDetail('14-08');"><div><img id="img1408"/></div><div>C14-8</div></td>
+    <td ondblclick="viewDetail('14-09');"><div><img id="img1409"/></div><div>C14-9</div></td>
+    <td ondblclick="viewDetail('14-10');"><div><img id="img1410"/></div><div>C14-10</div></td>
+    <td ondblclick="viewDetail('14-11');"><div><img id="img1411"/></div><div>C14-11</div></td>
+    <td ondblclick="viewDetail('14-12');"><div><img id="img1412"/></div><div>C14-12</div></td>
+    <td ondblclick="viewDetail('14-13');"><div><img id="img1413"/></div><div>C14-13</div></td>
+    <td ondblclick="viewDetail('14-14');"><div><img id="img1414"/></div><div>C14-14</div></td>
+    <td ondblclick="viewDetail('14-15');"><div><img id="img1415"/></div><div>C14-15</div></td>
+    <td ondblclick="viewDetail('14-16');"><div><img id="img1416"/></div><div>C14-16</div></td>
+    <td ondblclick="viewDetail('14-17');"><div><img id="img1417"/></div><div>C14-17</div></td>
+    <td ondblclick="viewDetail('14-18');"><div><img id="img1418"/></div><div>C14-18</div></td>
+    <td ondblclick="viewDetail('14-19');"><div><img id="img1419"/></div><div>C14-19</div></td>
+    <td ondblclick="viewDetail('14-20');"><div><img id="img1420"/></div><div>C14-20</div></td>
+    <td ondblclick="viewDetail('14-21');"><div><img id="img1421"/></div><div>C14-21</div></td>
+    <td ondblclick="viewDetail('14-22');"><div><img id="img1422"/></div><div>C14-22</div></td>
+    <td ondblclick="viewDetail('14-23');"><div><img id="img1423"/></div><div>C14-23</div></td>
+    <td ondblclick="viewDetail('14-24');"><div><img id="img1424"/></div><div>C14-24</div></td>
+</tr>
+<tr>
+    <td id="td1301" ondblclick="viewDetail('13-01');"><div><img id="img1301"/></div><div>C13-1</div></td>
+    <td id="td1302" ondblclick="viewDetail('13-02');"><div><img id="img1302"/></div><div>C13-2</div></td>
+    <td id="td1303" ondblclick="viewDetail('13-03');"><div><img id="img1303"/></div><div>C13-3</div></td>
+    <td ondblclick="viewDetail('13-04');"><div><img id="img1304"/></div><div>C13-4</div></td>
+    <td ondblclick="viewDetail('13-05');"><div><img id="img1305"/></div><div>C13-5</div></td>
+    <td ondblclick="viewDetail('13-06');"><div><img id="img1306"/></div><div>C13-6</div></td>
+    <td ondblclick="viewDetail('13-07');"><div><img id="img1307"/></div><div>C13-7</div></td>
+    <td ondblclick="viewDetail('13-08');"><div><img id="img1308"/></div><div>C13-8</div></td>
+    <td ondblclick="viewDetail('13-09');"><div><img id="img1309"/></div><div>C13-9</div></td>
+    <td ondblclick="viewDetail('13-10');"><div><img id="img1310"/></div><div>C13-10</div></td>
+    <td ondblclick="viewDetail('13-11');"><div><img id="img1311"/></div><div>C13-11</div></td>
+    <td ondblclick="viewDetail('13-12');"><div><img id="img1312"/></div><div>C13-12</div></td>
+    <td ondblclick="viewDetail('13-13');"><div><img id="img1313"/></div><div>C13-13</div></td>
+    <td ondblclick="viewDetail('13-14');"><div><img id="img1314"/></div><div>C13-14</div></td>
+    <td ondblclick="viewDetail('13-15');"><div><img id="img1315"/></div><div>C13-15</div></td>
+    <td ondblclick="viewDetail('13-16');"><div><img id="img1316"/></div><div>C13-16</div></td>
+    <td ondblclick="viewDetail('13-17');"><div><img id="img1317"/></div><div>C13-17</div></td>
+    <td ondblclick="viewDetail('13-18');"><div><img id="img1318"/></div><div>C13-18</div></td>
+    <td ondblclick="viewDetail('13-19');"><div><img id="img1319"/></div><div>C13-19</div></td>
+    <td ondblclick="viewDetail('13-20');"><div><img id="img1320"/></div><div>C13-20</div></td>
+    <td ondblclick="viewDetail('13-21');"><div><img id="img1321"/></div><div>C13-21</div></td>
+    <td ondblclick="viewDetail('13-22');"><div><img id="img1322"/></div><div>C13-22</div></td>
+    <td ondblclick="viewDetail('13-23');"><div><img id="img1323"/></div><div>C13-23</div></td>
+    <td ondblclick="viewDetail('13-24');"><div><img id="img1324"/></div><div>C13-24</div></td>
+</tr>
+<tr>
+    <td id="td1201" ondblclick="viewDetail('12-01');"><div><img id="img1201"/></div><div>C12-1</div></td>
+    <td ondblclick="viewDetail('12-02');"><div><img id="img1202"/></div><div>C12-2</div></td>
+    <td ondblclick="viewDetail('12-03');"><div><img id="img1203"/></div><div>C12-3</div></td>
+    <td ondblclick="viewDetail('12-04');"><div><img id="img1204"/></div><div>C12-4</div></td>
+    <td ondblclick="viewDetail('12-05');"><div><img id="img1205"/></div><div>C12-5</div></td>
+    <td ondblclick="viewDetail('12-06');"><div><img id="img1206"/></div><div>C12-6</div></td>
+    <td ondblclick="viewDetail('12-07');"><div><img id="img1207"/></div><div>C12-7</div></td>
+    <td ondblclick="viewDetail('12-08');"><div><img id="img1208"/></div><div>C12-8</div></td>
+    <td ondblclick="viewDetail('12-09');"><div><img id="img1209"/></div><div>C12-9</div></td>
+    <td ondblclick="viewDetail('12-10');"><div><img id="img1210"/></div><div>C12-10</div></td>
+    <td ondblclick="viewDetail('12-11');"><div><img id="img1211"/></div><div>C12-11</div></td>
+    <td ondblclick="viewDetail('12-12');"><div><img id="img1212"/></div><div>C12-12</div></td>
+    <td ondblclick="viewDetail('12-13');"><div><img id="img1213"/></div><div>C12-13</div></td>
+    <td ondblclick="viewDetail('12-14');"><div><img id="img1214"/></div><div>C12-14</div></td>
+    <td ondblclick="viewDetail('12-15');"><div><img id="img1215"/></div><div>C12-15</div></td>
+    <td ondblclick="viewDetail('12-16');"><div><img id="img1216"/></div><div>C12-16</div></td>
+    <td ondblclick="viewDetail('12-17');"><div><img id="img1217"/></div><div>C12-17</div></td>
+    <td ondblclick="viewDetail('12-18');"><div><img id="img1218"/></div><div>C12-18</div></td>
+    <td ondblclick="viewDetail('12-19');"><div><img id="img1219"/></div><div>C12-19</div></td>
+    <td ondblclick="viewDetail('12-20');"><div><img id="img1220"/></div><div>C12-20</div></td>
+    <td ondblclick="viewDetail('12-21');"><div><img id="img1221"/></div><div>C12-21</div></td>
+    <td ondblclick="viewDetail('12-22');"><div><img id="img1222"/></div><div>C12-22</div></td>
+    <td ondblclick="viewDetail('12-23');"><div><img id="img1223"/></div><div>C12-23</div></td>
+    <td ondblclick="viewDetail('12-24');"><div><img id="img1224"/></div><div>C12-24</div></td>
+</tr>
+<tr>
+    <td ondblclick="viewDetail('11-01');"><div><img id="img1101"/></div><div>C11-1</div></td>
+    <td ondblclick="viewDetail('11-02');"><div><img id="img1102"/></div><div>C11-2</div></td>
+    <td ondblclick="viewDetail('11-03');"><div><img id="img1103"/></div><div>C11-3</div></td>
+    <td ondblclick="viewDetail('11-04');"><div><img id="img1104"/></div><div>C11-4</div></td>
+    <td ondblclick="viewDetail('11-05');"><div><img id="img1105"/></div><div>C11-5</div></td>
+    <td ondblclick="viewDetail('11-06');"><div><img id="img1106"/></div><div>C11-6</div></td>
+    <td ondblclick="viewDetail('11-07');"><div><img id="img1107"/></div><div>C11-7</div></td>
+    <td ondblclick="viewDetail('11-08');"><div><img id="img1108"/></div><div>C11-8</div></td>
+    <td ondblclick="viewDetail('11-09');"><div><img id="img1109"/></div><div>C11-9</div></td>
+    <td ondblclick="viewDetail('11-10');"><div><img id="img1110"/></div><div>C11-10</div></td>
+    <td ondblclick="viewDetail('11-11');"><div><img id="img1111"/></div><div>C11-11</div></td>
+    <td ondblclick="viewDetail('11-12');"><div><img id="img1112"/></div><div>C11-12</div></td>
+    <td ondblclick="viewDetail('11-13');"><div><img id="img1113"/></div><div>C11-13</div></td>
+    <td ondblclick="viewDetail('11-14');"><div><img id="img1114"/></div><div>C11-14</div></td>
+    <td ondblclick="viewDetail('11-15');"><div><img id="img1115"/></div><div>C11-15</div></td>
+    <td ondblclick="viewDetail('11-16');"><div><img id="img1116"/></div><div>C11-16</div></td>
+    <td ondblclick="viewDetail('11-17');"><div><img id="img1117"/></div><div>C11-17</div></td>
+    <td ondblclick="viewDetail('11-18');"><div><img id="img1118"/></div><div>C11-18</div></td>
+    <td ondblclick="viewDetail('11-19');"><div><img id="img1119"/></div><div>C11-19</div></td>
+    <td ondblclick="viewDetail('11-20');"><div><img id="img1120"/></div><div>C11-20</div></td>
+    <td ondblclick="viewDetail('11-21');"><div><img id="img1121"/></div><div>C11-21</div></td>
+    <td ondblclick="viewDetail('11-22');"><div><img id="img1122"/></div><div>C11-22</div></td>
+    <td ondblclick="viewDetail('11-23');"><div><img id="img1123"/></div><div>C11-23</div></td>
+    <td ondblclick="viewDetail('11-24');"><div><img id="img1124"/></div><div>C11-24</div></td>
+</tr>
+<tr>
+    <td ondblclick="viewDetail('10-01');"><div><img id="img1001"/></div><div>C10-1</div></td>
+    <td ondblclick="viewDetail('10-02');"><div><img id="img1002"/></div><div>C10-2</div></td>
+    <td ondblclick="viewDetail('10-03');"><div><img id="img1003"/></div><div>C10-3</div></td>
+    <td ondblclick="viewDetail('10-04');"><div><img id="img1004"/></div><div>C10-4</div></td>
+    <td ondblclick="viewDetail('10-05');"><div><img id="img1005"/></div><div>C10-5</div></td>
+    <td ondblclick="viewDetail('10-06');"><div><img id="img1006"/></div><div>C10-6</div></td>
+    <td ondblclick="viewDetail('10-07');"><div><img id="img1007"/></div><div>C10-7</div></td>
+    <td ondblclick="viewDetail('10-08');"><div><img id="img1008"/></div><div>C10-8</div></td>
+    <td ondblclick="viewDetail('10-09');"><div><img id="img1009"/></div><div>C10-9</div></td>
+    <td ondblclick="viewDetail('10-10');"><div><img id="img1010"/></div><div>C10-10</div></td>
+    <td ondblclick="viewDetail('10-11');"><div><img id="img1011"/></div><div>C10-11</div></td>
+    <td ondblclick="viewDetail('10-12');"><div><img id="img1012"/></div><div>C10-12</div></td>
+    <td ondblclick="viewDetail('10-13');"><div><img id="img1013"/></div><div>C10-13</div></td>
+    <td ondblclick="viewDetail('10-14');"><div><img id="img1014"/></div><div>C10-14</div></td>
+    <td ondblclick="viewDetail('10-15');"><div><img id="img1015"/></div><div>C10-15</div></td>
+    <td ondblclick="viewDetail('10-16');"><div><img id="img1016"/></div><div>C10-16</div></td>
+    <td ondblclick="viewDetail('10-17');"><div><img id="img1017"/></div><div>C10-17</div></td>
+    <td ondblclick="viewDetail('10-18');"><div><img id="img1018"/></div><div>C10-18</div></td>
+    <td ondblclick="viewDetail('10-19');"><div><img id="img1019"/></div><div>C10-19</div></td>
+    <td ondblclick="viewDetail('10-20');"><div><img id="img1020"/></div><div>C10-20</div></td>
+    <td ondblclick="viewDetail('10-21');"><div><img id="img1021"/></div><div>C10-21</div></td>
+    <td ondblclick="viewDetail('10-22');"><div><img id="img1022"/></div><div>C10-22</div></td>
+    <td ondblclick="viewDetail('10-23');"><div><img id="img1023"/></div><div>C10-23</div></td>
+    <td ondblclick="viewDetail('10-24');"><div><img id="img1024"/></div><div>C10-24</div></td>
+</tr>
+<tr>
+    <td ondblclick="viewDetail('09-01');"><div><img id="img0901"/></div><div>C9-1</div></td>
+    <td ondblclick="viewDetail('09-02');"><div><img id="img0902"/></div><div>C9-2</div></td>
+    <td ondblclick="viewDetail('09-03');"><div><img id="img0903"/></div><div>C9-3</div></td>
+    <td ondblclick="viewDetail('09-04');"><div><img id="img0904"/></div><div>C9-4</div></td>
+    <td ondblclick="viewDetail('09-05');"><div><img id="img0905"/></div><div>C9-5</div></td>
+    <td ondblclick="viewDetail('09-06');"><div><img id="img0906"/></div><div>C9-6</div></td>
+    <td ondblclick="viewDetail('09-07');"><div><img id="img0907"/></div><div>C9-7</div></td>
+    <td ondblclick="viewDetail('09-08');"><div><img id="img0908"/></div><div>C9-8</div></td>
+    <td ondblclick="viewDetail('09-09');"><div><img id="img0909"/></div><div>C9-9</div></td>
+    <td ondblclick="viewDetail('09-10');"><div><img id="img0910"/></div><div>C9-10</div></td>
+    <td ondblclick="viewDetail('09-11');"><div><img id="img0911"/></div><div>C9-11</div></td>
+    <td ondblclick="viewDetail('09-12');"><div><img id="img0912"/></div><div>C9-12</div></td>
+    <td ondblclick="viewDetail('09-13');"><div><img id="img0913"/></div><div>C9-13</div></td>
+    <td ondblclick="viewDetail('09-14');"><div><img id="img0914"/></div><div>C9-14</div></td>
+    <td ondblclick="viewDetail('09-15');"><div><img id="img0915"/></div><div>C9-15</div></td>
+    <td ondblclick="viewDetail('09-16');"><div><img id="img0916"/></div><div>C9-16</div></td>
+    <td ondblclick="viewDetail('09-17');"><div><img id="img0917"/></div><div>C9-17</div></td>
+    <td ondblclick="viewDetail('09-18');"><div><img id="img0918"/></div><div>C9-18</div></td>
+    <td ondblclick="viewDetail('09-19');"><div><img id="img0919"/></div><div>C9-19</div></td>
+    <td ondblclick="viewDetail('09-20');"><div><img id="img0920"/></div><div>C9-20</div></td>
+    <td ondblclick="viewDetail('09-21');"><div><img id="img0921"/></div><div>C9-21</div></td>
+    <td ondblclick="viewDetail('09-22');"><div><img id="img0922"/></div><div>C9-22</div></td>
+    <td ondblclick="viewDetail('09-23');"><div><img id="img0923"/></div><div>C9-23</div></td>
+    <td ondblclick="viewDetail('09-24');"><div><img id="img0924"/></div><div>C9-24</div></td>
+</tr>
+<tr>
+    <td ondblclick="viewDetail('08-01');"><div><img id="img0801"/></div><div>C8-1</div></td>
+    <td ondblclick="viewDetail('08-02');"><div><img id="img0802"/></div><div>C8-2</div></td>
+    <td ondblclick="viewDetail('08-03');"><div><img id="img0803"/></div><div>C8-3</div></td>
+    <td ondblclick="viewDetail('08-04');"><div><img id="img0804"/></div><div>C8-4</div></td>
+    <td ondblclick="viewDetail('08-05');"><div><img id="img0805"/></div><div>C8-5</div></td>
+    <td ondblclick="viewDetail('08-06');"><div><img id="img0806"/></div><div>C8-6</div></td>
+    <td ondblclick="viewDetail('08-07');"><div><img id="img0807"/></div><div>C8-7</div></td>
+    <td ondblclick="viewDetail('08-08');"><div><img id="img0808"/></div><div>C8-8</div></td>
+    <td ondblclick="viewDetail('08-09');"><div><img id="img0809"/></div><div>C8-9</div></td>
+    <td ondblclick="viewDetail('08-10');"><div><img id="img0810"/></div><div>C8-10</div></td>
+    <td ondblclick="viewDetail('08-11');"><div><img id="img0811"/></div><div>C8-11</div></td>
+    <td ondblclick="viewDetail('08-12');"><div><img id="img0812"/></div><div>C8-12</div></td>
+    <td ondblclick="viewDetail('08-13');"><div><img id="img0813"/></div><div>C8-13</div></td>
+    <td ondblclick="viewDetail('08-14');"><div><img id="img0814"/></div><div>C8-14</div></td>
+    <td ondblclick="viewDetail('08-15');"><div><img id="img0815"/></div><div>C8-15</div></td>
+    <td ondblclick="viewDetail('08-16');"><div><img id="img0816"/></div><div>C8-16</div></td>
+    <td ondblclick="viewDetail('08-17');"><div><img id="img0817"/></div><div>C8-17</div></td>
+    <td ondblclick="viewDetail('08-18');"><div><img id="img0818"/></div><div>C8-18</div></td>
+    <td ondblclick="viewDetail('08-19');"><div><img id="img0819"/></div><div>C8-19</div></td>
+    <td ondblclick="viewDetail('08-20');"><div><img id="img0820"/></div><div>C8-20</div></td>
+    <td ondblclick="viewDetail('08-21');"><div><img id="img0821"/></div><div>C8-21</div></td>
+    <td ondblclick="viewDetail('08-22');"><div><img id="img0822"/></div><div>C8-22</div></td>
+    <td ondblclick="viewDetail('08-23');"><div><img id="img0823"/></div><div>C8-23</div></td>
+    <td ondblclick="viewDetail('08-24');"><div><img id="img0824"/></div><div>C8-24</div></td>
+</tr>
+<tr>
+    <td ondblclick="viewDetail('07-01');"><div><img id="img0701"/></div><div>C7-1</div></td>
+    <td ondblclick="viewDetail('07-02');"><div><img id="img0702"/></div><div>C7-2</div></td>
+    <td ondblclick="viewDetail('07-03');"><div><img id="img0703"/></div><div>C7-3</div></td>
+    <td ondblclick="viewDetail('07-04');"><div><img id="img0704"/></div><div>C7-4</div></td>
+    <td ondblclick="viewDetail('07-05');"><div><img id="img0705"/></div><div>C7-5</div></td>
+    <td ondblclick="viewDetail('07-06');"><div><img id="img0706"/></div><div>C7-6</div></td>
+    <td ondblclick="viewDetail('07-07');"><div><img id="img0707"/></div><div>C7-7</div></td>
+    <td ondblclick="viewDetail('07-08');"><div><img id="img0708"/></div><div>C7-8</div></td>
+    <td ondblclick="viewDetail('07-09');"><div><img id="img0709"/></div><div>C7-9</div></td>
+    <td ondblclick="viewDetail('07-10');"><div><img id="img0710"/></div><div>C7-10</div></td>
+    <td ondblclick="viewDetail('07-11');"><div><img id="img0711"/></div><div>C7-11</div></td>
+    <td ondblclick="viewDetail('07-12');"><div><img id="img0712"/></div><div>C7-12</div></td>
+    <td ondblclick="viewDetail('07-13');"><div><img id="img0713"/></div><div>C7-13</div></td>
+    <td ondblclick="viewDetail('07-14');"><div><img id="img0714"/></div><div>C7-14</div></td>
+    <td ondblclick="viewDetail('07-15');"><div><img id="img0715"/></div><div>C7-15</div></td>
+    <td ondblclick="viewDetail('07-16');"><div><img id="img0716"/></div><div>C7-16</div></td>
+    <td ondblclick="viewDetail('07-17');"><div><img id="img0717"/></div><div>C7-17</div></td>
+    <td ondblclick="viewDetail('07-18');"><div><img id="img0718"/></div><div>C7-18</div></td>
+    <td ondblclick="viewDetail('07-19');"><div><img id="img0719"/></div><div>C7-19</div></td>
+    <td ondblclick="viewDetail('07-20');"><div><img id="img0720"/></div><div>C7-20</div></td>
+    <td ondblclick="viewDetail('07-21');"><div><img id="img0721"/></div><div>C7-21</div></td>
+    <td ondblclick="viewDetail('07-22');"><div><img id="img0722"/></div><div>C7-22</div></td>
+    <td ondblclick="viewDetail('07-23');"><div><img id="img0723"/></div><div>C7-23</div></td>
+    <td ondblclick="viewDetail('07-24');"><div><img id="img0724"/></div><div>C7-24</div></td>
+</tr>
+<tr>
+    <td ondblclick="viewDetail('06-01');"><div><img id="img0601"/></div><div>C6-1</div></td>
+    <td ondblclick="viewDetail('06-02');"><div><img id="img0602"/></div><div>C6-2</div></td>
+    <td ondblclick="viewDetail('06-03');"><div><img id="img0603"/></div><div>C6-3</div></td>
+    <td ondblclick="viewDetail('06-04');"><div><img id="img0604"/></div><div>C6-4</div></td>
+    <td ondblclick="viewDetail('06-05');"><div><img id="img0605"/></div><div>C6-5</div></td>
+    <td ondblclick="viewDetail('06-06');"><div><img id="img0606"/></div><div>C6-6</div></td>
+    <td ondblclick="viewDetail('06-07');"><div><img id="img0607"/></div><div>C6-7</div></td>
+    <td ondblclick="viewDetail('06-08');"><div><img id="img0608"/></div><div>C6-8</div></td>
+    <td ondblclick="viewDetail('06-09');"><div><img id="img0609"/></div><div>C6-9</div></td>
+    <td ondblclick="viewDetail('06-10');"><div><img id="img0610"/></div><div>C6-10</div></td>
+    <td ondblclick="viewDetail('06-11');"><div><img id="img0611"/></div><div>C6-11</div></td>
+    <td ondblclick="viewDetail('06-12');"><div><img id="img0612"/></div><div>C6-12</div></td>
+    <td ondblclick="viewDetail('06-13');"><div><img id="img0613"/></div><div>C6-13</div></td>
+    <td ondblclick="viewDetail('06-14');"><div><img id="img0614"/></div><div>C6-14</div></td>
+    <td ondblclick="viewDetail('06-15');"><div><img id="img0615"/></div><div>C6-15</div></td>
+    <td ondblclick="viewDetail('06-16');"><div><img id="img0616"/></div><div>C6-16</div></td>
+    <td ondblclick="viewDetail('06-17');"><div><img id="img0617"/></div><div>C6-17</div></td>
+    <td ondblclick="viewDetail('06-18');"><div><img id="img0618"/></div><div>C6-18</div></td>
+    <td ondblclick="viewDetail('06-19');"><div><img id="img0619"/></div><div>C6-19</div></td>
+    <td ondblclick="viewDetail('06-20');"><div><img id="img0620"/></div><div>C6-20</div></td>
+    <td ondblclick="viewDetail('06-21');"><div><img id="img0621"/></div><div>C6-21</div></td>
+    <td ondblclick="viewDetail('06-22');"><div><img id="img0622"/></div><div>C6-22</div></td>
+    <td ondblclick="viewDetail('06-23');"><div><img id="img0623"/></div><div>C6-23</div></td>
+    <td ondblclick="viewDetail('06-24');"><div><img id="img0624"/></div><div>C6-24</div></td>
+</tr>
+<tr>
+    <td ondblclick="viewDetail('05-01');"><div><img id="img0501"/></div><div>C5-1</div></td>
+    <td ondblclick="viewDetail('05-02');"><div><img id="img0502"/></div><div>C5-2</div></td>
+    <td ondblclick="viewDetail('05-03');"><div><img id="img0503"/></div><div>C5-3</div></td>
+    <td ondblclick="viewDetail('05-04');"><div><img id="img0504"/></div><div>C5-4</div></td>
+    <td ondblclick="viewDetail('05-05');"><div><img id="img0505"/></div><div>C5-5</div></td>
+    <td ondblclick="viewDetail('05-06');"><div><img id="img0506"/></div><div>C5-6</div></td>
+    <td ondblclick="viewDetail('05-07');"><div><img id="img0507"/></div><div>C5-7</div></td>
+    <td ondblclick="viewDetail('05-08');"><div><img id="img0508"/></div><div>C5-8</div></td>
+    <td ondblclick="viewDetail('05-09');"><div><img id="img0509"/></div><div>C5-9</div></td>
+    <td ondblclick="viewDetail('05-10');"><div><img id="img0510"/></div><div>C5-10</div></td>
+    <td ondblclick="viewDetail('05-11');"><div><img id="img0511"/></div><div>C5-11</div></td>
+    <td ondblclick="viewDetail('05-12');"><div><img id="img0512"/></div><div>C5-12</div></td>
+    <td ondblclick="viewDetail('05-13');"><div><img id="img0513"/></div><div>C5-13</div></td>
+    <td ondblclick="viewDetail('05-14');"><div><img id="img0514"/></div><div>C5-14</div></td>
+    <td ondblclick="viewDetail('05-15');"><div><img id="img0515"/></div><div>C5-15</div></td>
+    <td ondblclick="viewDetail('05-16');"><div><img id="img0516"/></div><div>C5-16</div></td>
+    <td ondblclick="viewDetail('05-17');"><div><img id="img0517"/></div><div>C5-17</div></td>
+    <td ondblclick="viewDetail('05-18');"><div><img id="img0518"/></div><div>C5-18</div></td>
+    <td ondblclick="viewDetail('05-19');"><div><img id="img0519"/></div><div>C5-19</div></td>
+    <td ondblclick="viewDetail('05-20');"><div><img id="img0520"/></div><div>C5-20</div></td>
+    <td ondblclick="viewDetail('05-21');"><div><img id="img0521"/></div><div>C5-21</div></td>
+    <td ondblclick="viewDetail('05-22');"><div><img id="img0522"/></div><div>C5-22</div></td>
+    <td ondblclick="viewDetail('05-23');"><div><img id="img0523"/></div><div>C5-23</div></td>
+    <td ondblclick="viewDetail('05-24');"><div><img id="img0524"/></div><div>C5-24</div></td>
+</tr>
+<tr>
+    <td ondblclick="viewDetail('04-01');"><div><img id="img0401"/></div><div>C4-1</div></td>
+    <td ondblclick="viewDetail('04-02');"><div><img id="img0402"/></div><div>C4-2</div></td>
+    <td ondblclick="viewDetail('04-03');"><div><img id="img0403"/></div><div>C4-3</div></td>
+    <td ondblclick="viewDetail('04-04');"><div><img id="img0404"/></div><div>C4-4</div></td>
+    <td ondblclick="viewDetail('04-05');"><div><img id="img0405"/></div><div>C4-5</div></td>
+    <td ondblclick="viewDetail('04-06');"><div><img id="img0406"/></div><div>C4-6</div></td>
+    <td ondblclick="viewDetail('04-07');"><div><img id="img0407"/></div><div>C4-7</div></td>
+    <td ondblclick="viewDetail('04-08');"><div><img id="img0408"/></div><div>C4-8</div></td>
+    <td ondblclick="viewDetail('04-09');"><div><img id="img0409"/></div><div>C4-9</div></td>
+    <td ondblclick="viewDetail('04-10');"><div><img id="img0410"/></div><div>C4-10</div></td>
+    <td ondblclick="viewDetail('04-11');"><div><img id="img0411"/></div><div>C4-11</div></td>
+    <td ondblclick="viewDetail('04-12');"><div><img id="img0412"/></div><div>C4-12</div></td>
+    <td ondblclick="viewDetail('04-13');"><div><img id="img0413"/></div><div>C4-13</div></td>
+    <td ondblclick="viewDetail('04-14');"><div><img id="img0414"/></div><div>C4-14</div></td>
+    <td ondblclick="viewDetail('04-15');"><div><img id="img0415"/></div><div>C4-15</div></td>
+    <td ondblclick="viewDetail('04-16');"><div><img id="img0416"/></div><div>C4-16</div></td>
+    <td ondblclick="viewDetail('04-17');"><div><img id="img0417"/></div><div>C4-17</div></td>
+    <td ondblclick="viewDetail('04-18');"><div><img id="img0418"/></div><div>C4-18</div></td>
+    <td ondblclick="viewDetail('04-19');"><div><img id="img0419"/></div><div>C4-19</div></td>
+    <td ondblclick="viewDetail('04-20');"><div><img id="img0420"/></div><div>C4-20</div></td>
+    <td ondblclick="viewDetail('04-21');"><div><img id="img0421"/></div><div>C4-21</div></td>
+    <td ondblclick="viewDetail('04-22');"><div><img id="img0422"/></div><div>C4-22</div></td>
+    <td ondblclick="viewDetail('04-23');"><div><img id="img0423"/></div><div>C4-23</div></td>
+    <td ondblclick="viewDetail('04-24');"><div><img id="img0424"/></div><div>C4-24</div></td>
+</tr>
+<tr>
+    <td ondblclick="viewDetail('03-01');"><div><img id="img0301"/></div><div>C3-1</div></td>
+    <td ondblclick="viewDetail('03-02');"><div><img id="img0302"/></div><div>C3-2</div></td>
+    <td ondblclick="viewDetail('03-03');"><div><img id="img0303"/></div><div>C3-3</div></td>
+    <td ondblclick="viewDetail('03-04');"><div><img id="img0304"/></div><div>C3-4</div></td>
+    <td ondblclick="viewDetail('03-05');"><div><img id="img0305"/></div><div>C3-5</div></td>
+    <td ondblclick="viewDetail('03-06');"><div><img id="img0306"/></div><div>C3-6</div></td>
+    <td ondblclick="viewDetail('03-07');"><div><img id="img0307"/></div><div>C3-7</div></td>
+    <td ondblclick="viewDetail('03-08');"><div><img id="img0308"/></div><div>C3-8</div></td>
+    <td ondblclick="viewDetail('03-09');"><div><img id="img0309"/></div><div>C3-9</div></td>
+    <td ondblclick="viewDetail('03-10');"><div><img id="img0310"/></div><div>C3-10</div></td>
+    <td ondblclick="viewDetail('03-11');"><div><img id="img0311"/></div><div>C3-11</div></td>
+    <td ondblclick="viewDetail('03-12');"><div><img id="img0312"/></div><div>C3-12</div></td>
+    <td ondblclick="viewDetail('03-13');"><div><img id="img0313"/></div><div>C3-13</div></td>
+    <td ondblclick="viewDetail('03-14');"><div><img id="img0314"/></div><div>C3-14</div></td>
+    <td ondblclick="viewDetail('03-15');"><div><img id="img0315"/></div><div>C3-15</div></td>
+    <td ondblclick="viewDetail('03-16');"><div><img id="img0316"/></div><div>C3-16</div></td>
+    <td ondblclick="viewDetail('03-17');"><div><img id="img0317"/></div><div>C3-17</div></td>
+    <td ondblclick="viewDetail('03-18');"><div><img id="img0318"/></div><div>C3-18</div></td>
+    <td ondblclick="viewDetail('03-19');"><div><img id="img0319"/></div><div>C3-19</div></td>
+    <td ondblclick="viewDetail('03-20');"><div><img id="img0320"/></div><div>C3-20</div></td>
+    <td ondblclick="viewDetail('03-21');"><div><img id="img0321"/></div><div>C3-21</div></td>
+    <td ondblclick="viewDetail('03-22');"><div><img id="img0322"/></div><div>C3-22</div></td>
+    <td ondblclick="viewDetail('03-23');"><div><img id="img0323"/></div><div>C3-23</div></td>
+    <td ondblclick="viewDetail('03-24');"><div><img id="img0324"/></div><div>C3-24</div></td>
+</tr>
+<tr>
+    <td ondblclick="viewDetail('02-01');"><div><img id="img0201"/></div><div>C2-1</div></td>
+    <td ondblclick="viewDetail('02-02');"><div><img id="img0202"/></div><div>C2-2</div></td>
+    <td ondblclick="viewDetail('02-03');"><div><img id="img0203"/></div><div>C2-3</div></td>
+    <td ondblclick="viewDetail('02-04');"><div><img id="img0204"/></div><div>C2-4</div></td>
+    <td ondblclick="viewDetail('02-05');"><div><img id="img0205"/></div><div>C2-5</div></td>
+    <td ondblclick="viewDetail('02-06');"><div><img id="img0206"/></div><div>C2-6</div></td>
+    <td ondblclick="viewDetail('02-07');"><div><img id="img0207"/></div><div>C2-7</div></td>
+    <td ondblclick="viewDetail('02-08');"><div><img id="img0208"/></div><div>C2-8</div></td>
+    <td ondblclick="viewDetail('02-09');"><div><img id="img0209"/></div><div>C2-9</div></td>
+    <td ondblclick="viewDetail('02-10');"><div><img id="img0210"/></div><div>C2-10</div></td>
+    <td ondblclick="viewDetail('02-11');"><div><img id="img0211"/></div><div>C2-11</div></td>
+    <td ondblclick="viewDetail('02-12');"><div><img id="img0212"/></div><div>C2-12</div></td>
+    <td ondblclick="viewDetail('02-13');"><div><img id="img0213"/></div><div>C2-13</div></td>
+    <td ondblclick="viewDetail('02-14');"><div><img id="img0214"/></div><div>C2-14</div></td>
+    <td ondblclick="viewDetail('02-15');"><div><img id="img0215"/></div><div>C2-15</div></td>
+    <td ondblclick="viewDetail('02-16');"><div><img id="img0216"/></div><div>C2-16</div></td>
+    <td ondblclick="viewDetail('02-17');"><div><img id="img0217"/></div><div>C2-17</div></td>
+    <td ondblclick="viewDetail('02-18');"><div><img id="img0218"/></div><div>C2-18</div></td>
+    <td ondblclick="viewDetail('02-19');"><div><img id="img0219"/></div><div>C2-19</div></td>
+    <td ondblclick="viewDetail('02-20');"><div><img id="img0220"/></div><div>C2-20</div></td>
+    <td ondblclick="viewDetail('02-21');"><div><img id="img0221"/></div><div>C2-21</div></td>
+    <td ondblclick="viewDetail('02-22');"><div><img id="img0222"/></div><div>C2-22</div></td>
+    <td ondblclick="viewDetail('02-23');"><div><img id="img0223"/></div><div>C2-23</div></td>
+    <td ondblclick="viewDetail('02-24');"><div><img id="img0224"/></div><div>C2-24</div></td>
+</tr>
+<tr>
+    <td ondblclick="viewDetail('01-01');"><div><img id="img0101"/></div><div>C1-1</div></td>
+    <td ondblclick="viewDetail('01-02');"><div><img id="img0102"/></div><div>C1-2</div></td>
+    <td ondblclick="viewDetail('01-03');"><div><img id="img0103"/></div><div>C1-3</div></td>
+    <td ondblclick="viewDetail('01-04');"><div><img id="img0104"/></div><div>C1-4</div></td>
+    <td ondblclick="viewDetail('01-05');"><div><img id="img0105"/></div><div>C1-5</div></td>
+    <td ondblclick="viewDetail('01-06');"><div><img id="img0106"/></div><div>C1-6</div></td>
+    <td ondblclick="viewDetail('01-07');"><div><img id="img0107"/></div><div>C1-7</div></td>
+    <td ondblclick="viewDetail('01-08');"><div><img id="img0108"/></div><div>C1-8</div></td>
+    <td ondblclick="viewDetail('01-09');"><div><img id="img0109"/></div><div>C1-9</div></td>
+    <td ondblclick="viewDetail('01-10');"><div><img id="img0110"/></div><div>C1-10</div></td>
+    <td ondblclick="viewDetail('01-11');"><div><img id="img0111"/></div><div>C1-11</div></td>
+    <td ondblclick="viewDetail('01-12');"><div><img id="img0112"/></div><div>C1-12</div></td>
+    <td ondblclick="viewDetail('01-13');"><div><img id="img0113"/></div><div>C1-13</div></td>
+    <td ondblclick="viewDetail('01-14');"><div><img id="img0114"/></div><div>C1-14</div></td>
+    <td ondblclick="viewDetail('01-15');"><div><img id="img0115"/></div><div>C1-15</div></td>
+    <td ondblclick="viewDetail('01-16');"><div><img id="img0116"/></div><div>C1-16</div></td>
+    <td ondblclick="viewDetail('01-17');"><div><img id="img0117"/></div><div>C1-17</div></td>
+    <td ondblclick="viewDetail('01-18');"><div><img id="img0118"/></div><div>C1-18</div></td>
+    <td ondblclick="viewDetail('01-19');"><div><img id="img0119"/></div><div>C1-19</div></td>
+    <td ondblclick="viewDetail('01-20');"><div><img id="img0120"/></div><div>C1-20</div></td>
+    <td ondblclick="viewDetail('01-21');"><div><img id="img0121"/></div><div>C1-21</div></td>
+    <td ondblclick="viewDetail('01-22');"><div><img id="img0122"/></div><div>C1-22</div></td>
+    <td ondblclick="viewDetail('01-23');"><div><img id="img0123"/></div><div>C1-23</div></td>
+    <td ondblclick="viewDetail('01-24');"><div><img id="img0124"/></div><div>C1-24</div></td>
+</tr>
+
+</table>
+</div>
+</td>
+</tr>
+</table>
+
+<!--样包详情-->
+<div id="sampleDetailInfoWin" ></div>
+<!--弃样取样窗口-->
+<div id="dealSampleWin" ></div>
+</body>
+</html>
+<script type="text/javascript">
+    $(function(){
+        $('#changedCab').combobox({
+            panelHeight:'auto',
+            valueField:'id',
+            textField:'name',
+            data: [
+                {id: '1-A%', name: '1号柜A面', selected: true},
+                {id: '1-B%', name: '1号柜B面'},
+                {id: '2-A%', name: '2号柜A面'},
+                {id: '2-B%', name: '2号柜B面'}
+            ],
+            onChange: function (newVal,oldVal) {
+                changeCabinet(newVal);
+            }
+        });
+    });
+
+
+    var param = {};
+    var dealTag;
+    var qrySampleStatus;
+    //页面刚进来时默认查询第一个柜子的A面
+    param.search_ggName = "1";
+    param.search_ccLikeName = "A%";
+
+    function loadCabinetInfo() {
+        //var mian = $("#changedCab").combobox("getValue");
+        //var mianTag = mian.split("-")[1];
+
+        var mianTag = document.getElementById("abBox").value;
+        //A隐藏
+        if (mianTag == "A") {
+            document.getElementById("tr14").style.display = "none";
+
+            document.getElementById("td1301").innerHTML = "";
+            document.getElementById("td1302").innerHTML = "";
+            document.getElementById("td1303").innerHTML = "";
+            document.getElementById("td1201").innerHTML = "";
+        } else if (mianTag == "B") {
+            document.getElementById("tr14").style.display = "";
+
+            document.getElementById("td1301").innerHTML = '<div><img id="img1301"/></div><div>C13-1</div>';
+            document.getElementById("td1302").innerHTML = '<div><img id="img1302"/></div><div>C13-2</div>';
+            document.getElementById("td1303").innerHTML = '<div><img id="img1303"/></div><div>C13-3</div>';
+            document.getElementById("td1201").innerHTML = '<div><img id="img1201"/></div><div>C12-1</div>';
+        }
+
+        //打开遮罩
+        $.messager.progress({ msg: '正在加载数据，请稍候...' });
+
+        var totalStored = 0;
+        var normal = 0;
+        var left = 0;
+        var expired = 0;
+        var invalid = 0;
+        var noBottle = 0;
+
+        $.post("${base}/business/monitor/qryCabinetInfoList", param, function (rsp) {
+            if (rsp) {
+                $.each(rsp, function(i, val) {
+                    if (val.sampleStatus == '1'){//正常瓶
+                        normal++;
+                        if (isValidBox(val.idName, mianTag)) {
+                            document.getElementById(val.idName).src="${base}/styles/images/pm25/exist.png";
+                        }
+                    } else if(val.sampleStatus == '2') {//超期瓶
+                        expired++;
+                        if (isValidBox(val.idName, mianTag)) {
+                            document.getElementById(val.idName).src = "${base}/styles/images/pm25/red.png";
+                        }
+                    } else if(val.sampleStatus == '3') {//无效瓶
+                        invalid++;
+                        if (isValidBox(val.idName, mianTag)) {
+                            document.getElementById(val.idName).src = "${base}/styles/images/pm25/useless.png";
+                        }
+                    } else if(val.sampleStatus == '4') {//无瓶
+                        noBottle++;
+                        if (isValidBox(val.idName, mianTag)) {
+                            document.getElementById(val.idName).src = "${base}/styles/images/pm25/none.png";
+                        }
+                    } else {
+                        document.getElementById(val.idName).src = "";
+                    }
+                })
+
+                $("#totalCnt").html(normal+expired+invalid);
+                $("#leftCnt").html(noBottle);
+                $("#expireCnt").html(expired);
+                $("#invalidCnt").html(invalid);
+                $.messager.progress('close');
+            } else {
+                $.messager.progress('close');
+                showMsg("提示", "查询存样柜数据失败！");
+                return false;
+            }
+        });
+    }
+
+    //A面的13-1,2,3， 12-1是没有的，14行是空的
+    function isValidBox(idName, mianTag){
+        if (mianTag == "A") {
+            if (idName == "img1301" || idName == "img1302"|| idName == "img1303"|| idName == "img1201" || idName.substring(3,5)=="14") {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    //初始化
+    $(function(){
+        loadCabinetInfo();
+    });
+
+
+    function changeCabinet(selectVal){
+        var cabArr = selectVal.split("-");
+        param.search_ggName = cabArr[0];
+        param.search_ccLikeName = cabArr[1];
+
+        if (selectVal == "1-A%") {
+            $("#currGG").html("1号柜A面");
+            document.getElementById("abBox").value = "A";
+        } else if (selectVal == "1-B%") {
+            $("#currGG").html("1号柜B面");
+            document.getElementById("abBox").value = "B";
+        } else if (selectVal == "2-A%") {
+            $("#currGG").html("2号柜A面");
+            document.getElementById("abBox").value = "A";
+        } else if (selectVal == "2-B%") {
+            $("#currGG").html("2号柜B面");
+            document.getElementById("abBox").value = "B";
+        }
+        loadCabinetInfo();
+    }
+
+    //查看单个箱子的详情
+    function viewDetail(curboxno){
+        //获取当前点击柜子的位置，组成 柜子X层X位，如：1-A-01-04
+        var curCabinet = param.search_ggName +"-"+document.getElementById("abBox").value+ "-" + curboxno;//1XA01X04
+
+        //这些位置不需要
+        if (curCabinet == "1-A-13-01"||curCabinet == "1-A-13-02"||curCabinet == "1-A-13-03"||curCabinet == "1-A-12-01"||
+                curCabinet == "2-A-13-01"||curCabinet == "2-A-13-02"||curCabinet == "2-A-13-03"||curCabinet == "2-A-12-01") {
+            return false;
+        }
+
+        $('#sampleDetailInfoWin').window({
+            modal : true,
+            title : '存查样品详情',
+            width : 480,
+            height : 260,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/monitor/qryAutoSampleDetail/'+curCabinet
+        });
+    }
+
+     function dealSample(dealType){
+        var dealName = dealType=="1"?"取样":"弃样";
+        dealTag = dealType;
+        qrySampleStatus = dealType=="1"?"1":"2";//暂时先认为弃样只对状态为2的
+        $('#dealSampleWin').window({
+            modal : true,
+            title : dealName,
+            width : 1024,
+            height : 440,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/monitor/dealSample'
+        });
+    }
+</script>

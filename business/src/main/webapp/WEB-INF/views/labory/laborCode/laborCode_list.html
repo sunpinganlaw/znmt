@@ -1,0 +1,221 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>标煤样品化验</title>
+    <#include "../../common/include/common.html"/>
+    <style type="text/css">
+        /*body {
+            background: #fff;
+        }*/
+    </style>
+</head>
+
+<body id="contentDiv" style="overflow-x: hidden;">
+<div class="page_content">
+    <div class="infoCard infoCard2">
+        <div class="attendance_list_operation">
+            <!-- 搜索条件在左 -->
+            <table border="0" cellspacing="0" cellpadding="0" class="search_content"
+                   style="float: left;margin-left: 10px;">
+                <!--<div>-->
+                    <!--<input type="hidden" id="labor_code" name="labor_code"/>-->
+                <!--</div>-->
+                <tr>
+                    <td>标样名称：</td>
+                    <td>
+                        <div class="selectSuggestion" id="sample_name" name="sample_name" autoCheck="false"
+                             url="${base}/mis/base/misEUI.do?businessCode=coal.qrySampleName" dataRoot="rows"
+                             selWidth="200" keepDefaultStyle="true"></div>
+                    </td>
+                    <td>日期：</td>
+                    <td>
+                        <input style="width:200px;" type="text" id="beginDate" name="beginDate" dateFmt="yyyy-MM-dd"  class="date validate[custom[date]]"/>~
+                        <input style="width:200px;" type="text" id="endDate" name="endDate" dateFmt="yyyy-MM-dd"  class="date validate[custom[date]]"/>
+                    </td>
+                    <td>化验指标：</td>
+                    <td>
+                        <select id="target" name="target" prompt="请选择"
+                                data='{"list":[{"value":"A","key":"灰分"},{"value":"V","key":"挥发分"},{"value":"S","key":"硫分"},{"value":"H","key":"氢值"},{"value":"Q","key":"热值"}]}'
+                                selWidth="200"></select>
+                    </td>
+                </tr>
+            </table>
+            <!--搜索按钮在右 -->
+            <table border="0" cellspacing="0" cellpadding="0" class="search_content">
+                <tr>
+                    <td>
+                        <button type="button" class="primary" onclick="qrySampleList()">
+                            <span class="icon_find">查询</span></button>
+                    </td>
+                    <td>
+                        <button type="button" onclick="clearAllIn()"><span class="icon_clear">重置</span></button>
+                    </td>
+                    <td>
+                        <button type="button" class="primary" onclick="add()">
+                            <span class="icon_add">新增</span></button>
+                    </td>
+                </tr>
+            </table>
+            <div class="clear"></div>
+            <div id="dataBasic"></div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    var grid;
+    var modulePath = 'business/labory';
+    var toolbarItems = [
+        {text: '批量删除', click: batchRemove, iconClass: 'icon_delete'},{line : true },
+        // {text: '生成标样化验单', click: labReport, iconClass: 'icon_export'},{line : true },
+        {text: '刷新', click: refresh, iconClass: 'icon_refresh'},{line : true }
+    ];
+    /**
+     * 初始化函数
+     */
+    function initComplete() {
+        initGrid();
+    }
+
+    /**
+     * 标煤样品信息表
+     */
+    function initGrid() {
+        var columnDef = [{
+            display: '标样名称',
+            name: 'sample_name',
+            width: "20%"
+        }, {
+            display: '化验指标',
+            name: 'target',
+            width: "20%",
+            render: function (rowdata, rowindex, value, column) {
+                switch (value) {
+                    case 'A':
+                        return '<span>灰分</span>';
+                    case 'V':
+                        return '<span>挥发分</span>';
+                    case 'S':
+                        return '<span>硫分</span>';
+                    case 'H':
+                        return '<span>氢值</span>';
+                    case 'Q':
+                        return '<span>热值</span>';
+                }
+            }
+        }, {
+            display: '化验设备',
+            name: 'device_name',
+            width: "20%"
+        }, {
+            display: '化验码',
+            id: 'labor_code',
+            name: 'labor_code',
+            width: "20%"
+        }, {
+            display: '化验时间',
+            name: 'insert_time',
+            width: "20%"
+        }];
+        // 请求参数
+        var param = {};
+        grid = $("#dataBasic").quiGrid({
+            columns: columnDef,
+            url: "${base}/mis/base/misEUI.do?businessCode=coal.qryLaborCode",
+            params: param,
+            record: "total",
+            pageParmName: "page",
+            pagesizeParmName: "rows",
+            toolbar:{
+                items: toolbarItems
+            },
+            rownumbers: true,
+            checkbox: true,
+            height: '100%',
+            width: "100%",
+            pageSize: 10,
+            percentWidthMode: false
+        });
+    }
+    function qrySampleList() {
+        // 请求参数
+        var param = {};
+        param.sample_name = $('#sample_name').attr('relText');
+        param.target = $('#target').attr('relValue');
+        $.each($(".date"), function (index, item) {
+            param[$(item).attr("name")] = $(item).val();
+        });
+        param = deleteEmptyNode(param);
+        grid.setOptions({params: param});
+        //页号重置为1
+        grid.setNewPage(1);
+        grid.loadData();
+    }
+
+    // 监听查询框的回车事件
+    $(document).keyup(function(event){
+        if(event.keyCode ==13){
+            qrySampleList();//不关闭窗口
+        }
+    });
+
+    // 新增
+    function add() {
+        var diag = new top.Dialog();
+        diag.Title = "添加化验码";
+        diag.Width = 400;
+        diag.Height = 400;
+        diag.URL = modulePath + '/laborCode/addPage',
+            diag.OkButtonText = "保 存";
+        diag.OKEvent = function() {
+            diag.innerFrame.contentWindow.submitHandler();
+        };
+        diag.show();
+    }
+
+    //批量删除
+    function batchRemove() {
+        var selectedRows = grid.getSelectedRows();
+        var selectedNum = selectedRows.length;
+        if (selectedNum == 0) {
+            top.Toast("showWarningToast", '请选择要删除的记录');
+            return;
+        }
+        top.Dialog.confirm("确定要删除选中的记录吗？", function() {
+            var ids = "";
+            for(var i = 0; i<selectedNum; i++) {
+                ids += selectedRows[i].labor_code + ",";
+            }
+            ids = ids.substring(0,ids.length-1);
+            $.post(modulePath + "/save", {"laborCds": ids,"tableName": "BATCH_NO_INFO","v_doActionTag": "BDEL"}, //获取所有选中行
+                function(rspData) {
+                    //alert(rspData);
+                    var jsonData = rspData;//JSON.parse(rspData);
+                    top.Toast(jsonData.success == false ? "showErrorToast" : "showSuccessToast", jsonData.resultMsg);
+                    grid.loadData();
+                    showCondition(0);
+                },
+                "json");
+        }, null, null, null, 100);
+    }
+
+    //刷新表格数据并重置排序和页数
+    function refresh() {
+        grid.loadData();
+        showCondition(0);
+    }
+
+    /*重置查询条件*/
+    function clearAllIn() {
+        $('.selectSuggestion').render();
+        $('#beginDate,#endDate').val('');
+        $('#target').attr("relValue",'');
+        $('#target').render();
+        qrySampleList();
+    }
+</script>
+
+</html>

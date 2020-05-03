@@ -1,0 +1,164 @@
+<div class="form-div">
+    <form id="ff" method="post">
+            <div title="天平数据录入"style="overflow:auto;padding:0px;">
+                <table >
+
+                    <tr>
+                        <td >温度:</td>
+                        <td>
+                            <input class="easyui-numberbox" id="temperature" name="temperature" style="width:145px" data-options="required:true,min:0,precision:1">
+                        </td>
+                        <td >湿度:</td>
+                        <td>
+                            <input class="easyui-numberbox" id="humidity" name="humidity" style="width:145px" data-options="required:true,min:0,precision:1">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td >焦渣特性:</td>
+                        <td>
+                            <input id="lossStyle" name="lossStyle" style="width:145px;">
+                        </td>
+                        <td >执行标准:</td>
+                        <td>
+                            <input id="standard" name="standard" class="easyui-combobox" style="width:145px;" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        <hr style="height:1px;border:none;border-top:1px dashed #0066CC;" />
+        <div id = "dynamicDiv"></div>
+    </form>
+    <div class="submit-div">
+        <a href="javascript:void(0)" id="addButton" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm()">提交</a>
+    </div>
+</div>
+<script type="text/javascript">
+    var paramObj = new Object();
+    $(function () {
+        $('#lossStyle').combobox({
+            url:'${base}/business/tool/getDictionaryByType/LOSS_STYLE',
+            valueField:'id',
+            textField:'name',
+            panelHeight:'auto',
+            required:true,
+            onLoadSuccess:function () {
+
+                var lossStyle_tmp = "";
+                var lossStyle_flg = 0;
+                var divObj = document.getElementById("dynamicDiv");
+                for ( var i = 0; i<selectedScaless.length; i++) {
+                    if(selectedScaless[i].lossStyle!=null &&selectedScaless[i].lossStyle != ""){
+                        if(lossStyle_tmp ==""){
+                            lossStyle_tmp = selectedScaless[i].lossStyle;
+                        }else{
+                            if(lossStyle_tmp!=selectedScaless[i].lossStyle){
+                                lossStyle_flg = 1;
+                            }
+                        }
+                    }
+                    divObj.innerHTML = divObj.innerHTML+'<div>'+'[化验编码:'+selectedScaless[i].laborCode+'] &nbsp;&nbsp;[化验人:'+selectedScaless[i].opName+'] &nbsp;&nbsp; [化验设备'+selectedScaless[i].deviceName+']</div>';
+                }
+                if(lossStyle_flg==0&&lossStyle_tmp!=""){
+                    $(this).combobox("setValue",lossStyle_tmp);
+                }
+            }
+        });
+
+        $('#standard').combobox({
+            url:'${base}/business/tool/getComboboxOpt/SCALES_STANDARD',
+            valueField:'id',
+            textField:'name',
+            panelHeight:'auto',
+            required:true
+        });
+        /*
+        var lossStyle_tmp = "";
+        var lossStyle_flg = 0;
+        var divObj = document.getElementById("dynamicDiv");
+        for ( var i = 0; i<selectedScaless.length; i++) {
+            if(selectedScaless[i].lossStyle!=null &&selectedScaless[i].lossStyle != ""){
+                if(lossStyle_tmp ==""){
+                    lossStyle_tmp = selectedScaless[i].lossStyle;
+                }else{
+                    if(lossStyle_tmp!=selectedScaless[i].lossStyle){
+                        lossStyle_flg = 1;
+                    }
+                }
+            }
+            divObj.innerHTML = divObj.innerHTML+'<div>'+'[化验编码:'+selectedScaless[i].laborCode+'] &nbsp;&nbsp;[化验人:'+selectedScaless[i].opName+'] &nbsp;&nbsp; [化验设备'+selectedScaless[i].deviceName+']</div>';
+        }
+        if(lossStyle_flg==0&&lossStyle_tmp!=""){
+            alert(lossStyle_flg+lossStyle_tmp);
+            $("#lossStyle").combobox("setValue",lossStyle_tmp);
+        }
+        */
+    });
+
+    function submitForm() {
+        //获取公共部分值
+        var commonObj = new Object();
+        commonObj.temperature = $("#temperature").numberbox("getValue");
+        commonObj.humidity = $("#humidity").numberbox("getValue");
+        commonObj.lossStyle = $("#lossStyle").combobox("getValue");
+        commonObj.standard = $("#standard").combobox("getValue");
+
+        if (commonObj.temperature == null || commonObj.temperature == ""){
+            showMsg("提示", "请录入温度值");
+            return false;
+        }
+
+        if (commonObj.humidity == null || commonObj.humidity == ""){
+            showMsg("提示", "请录入湿度值");
+            return false;
+        }
+
+        if (commonObj.lossStyle == null || commonObj.lossStyle == ""){
+            showMsg("提示", "请选择焦渣特性信息");
+            return false;
+        }
+
+        if (commonObj.standard == null || commonObj.standard == ""){
+            showMsg("提示", "请选择化验标准信息");
+            return false;
+        }
+
+        //打开遮罩
+        $.messager.progress({ msg: '正在处理，请稍候...' });
+
+        //放入参数对象
+        paramObj["publicInfo"] = JSON.stringify(commonObj);
+
+        var arrayTickQtys = [];
+        for ( var i = 0; i<selectedScaless.length; i++) {
+            var o = {};
+            o.id = selectedScaless[i].id;
+            arrayTickQtys[i] = o;
+        }
+
+        //放入票重数据
+        paramObj["updateInfo"] = JSON.stringify(arrayTickQtys);
+
+        //提交数据
+        $.post("${base}/business/labory/scalesLotAddSubmit", paramObj, function(rsp) {
+            if(rsp.successful){
+                //关闭遮罩
+                $.messager.progress('close');
+                showMsg("提示", rsp.msg);
+                $scalesDg.datagrid('clearChecked');
+                $scalesDg.datagrid('clearSelections');
+                $scalesDg.datagrid('reload');
+                selectedScaless = null;
+                //关闭编辑窗口
+                $('#scalesLotAddWin').window('close');
+            } else {
+                //关闭遮罩
+                $.messager.progress('close');
+                showMsg("提示", rsp.msg);
+            }
+        }, "JSON").error(function() {
+                    showMsg("提示", "保存失败！");
+                });
+
+    }
+
+</script>

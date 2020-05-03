@@ -1,0 +1,217 @@
+<div style="width: 100%">
+    <div id="tb" style="width: 100%">
+        <table style="width: 100%;background: #F4F4F4">
+            <tr>
+                <td style="text-align: right">
+                    <label for="batchNo">批次号</label>
+                </td>
+                <td style="text-align: left">
+                    <input class="easyui-textbox" id="batchNo" style="width:145px;"/>
+                </td>
+                <td style="text-align: right">
+                    <label for="laborCode">化验编码</label>
+                </td>
+                <td style="text-align: left">
+                    <input class="easyui-textbox" id="laborCode" style="width:145px;"/>
+                </td>
+                <td style="text-align: right">
+                    <label for="venNo">供应商</label>
+                </td>
+                <td style="text-align: left">
+                    <input id="venNo" class="easyui-combobox" style="width:145px;"
+                           data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/VENDOR_INFO'"/>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: right">
+                    <label for="sampleType">煤样类型</label>
+                </td>
+                <td style="text-align: left">
+                    <select id="sampleType" name="sampleType" class="easyui-combobox" data-options="panelHeight:'auto'"
+                            style="width:145px;">
+                        <option value="">全部</option>
+                        <option value="61">6mm全水样</option>
+                        <option value="62">6mm存查样</option>
+                        <option value="31">3mm化验样</option>
+                        <option value="32">3mm存查样</option>
+                        <option value="21">0.2mm化验样</option>
+                        <option value="22">0.2mm存查样</option>
+                    </select>
+                </td>
+                <td style="text-align: right">
+                    <label for="depositStartTime">存样开始时间</label>
+                </td>
+                <td style="text-align: left">
+                    <input class="easyui-datebox" name="depositStartTime" id="depositStartTime"  style="width:145px;"/>
+                </td>
+                <td style="text-align: right">
+                    <label for="depositEndTime">存样结束时间</label>
+                </td>
+                <td style="text-align: left">
+                    <input class="easyui-datebox" name="depositEndTime" id="depositEndTime"  style="width:145px;"/>
+                    <a href="javascript:void(0)"  class="easyui-linkbutton" iconCls="icon-search" onclick="qryForGetSample();">查询</a>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <hr style="height:1px;border:none;border-top:1px dashed #0066CC;" />
+                </td>
+            </tr>
+            <tr>
+                <td id="td1" style="text-align: right">
+                    <label for="destination">目的地</label>
+                </td>
+                <td id="td2" style="text-align: left">
+                    <select id="destination" name="destination" class="easyui-combobox" data-options="panelHeight:'auto'" style="width:145px;">
+                        <option value="1">化验室取样工作站</option>
+                        <option value="3">存查样间弃样工作站</option>
+                    </select></td>
+                <td style="text-align: right">
+                    <label for="remark">原因</label>
+                </td>
+                <td colspan="3" style="text-align: left">
+                    <input class="easyui-textbox" id="remark" name="remark" style="width:308px;"/><a href="javascript:void(0)"
+                                                                                                     class="easyui-linkbutton"
+                                                                                                     iconCls="icon-ok"
+                                                                                                     onclick="submitToAppr();">提交审批</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div data-options="region:'center',title:'制样明细',noheader:false;">
+        <table id="autoSampleDg"></table>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $autoSampleDg = $("#autoSampleDg");
+
+    //如果是弃样，则不需要目的站
+    if (dealTag == "2") {
+        document.getElementById("td1").style.display = "none";
+        document.getElementById("td2").style.display = "none";
+    }
+
+    $(function () {
+        var paramO = {};
+
+        var currCab = $("#changedCab").combobox("getValue");
+        var currCabArr = currCab.split("-");
+        paramO.search_sampleStatus = qrySampleStatus;
+        paramO.search_ggName = currCabArr[0];
+        paramO.search_ccLikeName = currCabArr[1];
+
+        $autoSampleDg.datagrid({
+            url: "${base}/business/monitor/qryCabinetSampleList",
+            fitColumns: true,
+            animate: true,
+            border: true,
+            height: 400,
+            idField: 'cabinetRecId',
+            rownumbers: true,
+            toolbar: '#tb',
+            queryParams:paramO,
+            columns: [
+                [
+                    {field: 'cabinetRecId', title: 'ID', align: 'center', width: 10, checkbox: true},
+                    {field: 'batchNo', title: '样品批次号', align: 'center', width: 30},
+                    {field: 'packCode', title: '封装码', align: 'center', width: 25},
+//                    {field: 'ggName', title: '柜名', align: 'center', width: 10},
+//                    {field: 'ccName', title: '层名', align: 'center', width: 10},
+//                    {field: 'wwName', title: '位名', align: 'center', width: 10},
+
+//                    {field: 'makeSampleTime', title: '制样时间', align: 'center', width: 30},
+                    {field: 'depositTime', title: '存样时间', align: 'center', width: 30},
+                    {field: 'isEnabledName', title: '是否可用', align: 'center', width: 15},
+                    {field: 'sampleTypeName', title: '煤样类型', align: 'center', width : 20},
+                    {field: 'sampleStatusName', title: '样瓶状态', align: 'center', width: 15}
+//                    {field: 'opName', title: '操作人', align: 'center', width: 15},
+//                    {field: 'insertTime', title: '操作时间', align: 'center', width: 30}
+                ]
+            ]
+        });
+    });
+
+
+    function qryForGetSample() {
+        var paramO = {};
+        var batchNo = $("#batchNo").textbox("getValue");
+        var laborCode = $("#laborCode").textbox("getValue");
+        var venNo = $("#venNo").combobox("getValue");
+        var sampleType = $("#sampleType").combobox("getValue");
+        var depositStartTime = $("#depositStartTime").combobox("getValue");
+        var depositEndTime = $("#depositEndTime").combobox("getValue");
+
+        if (batchNo != null && batchNo.length > 0) {
+            paramO.search_batchNo = batchNo;
+        }
+        if (laborCode != null && laborCode.length > 0) {
+            paramO.search_laborCode = laborCode;
+        }
+        if (venNo != null && venNo.length > 0) {
+            paramO.search_venNo = venNo;
+        }
+        if (sampleType != null && sampleType.length > 0) {
+            paramO.search_sampleType = sampleType;
+        }
+        if (depositStartTime != null && depositStartTime.length > 0) {
+            paramO.search_depositStartTime = depositStartTime;
+        }
+        if (depositEndTime != null && depositEndTime.length > 0) {
+            paramO.search_depositEndTime = depositEndTime;
+        }
+        paramO.search_sampleStatus = qrySampleStatus;
+
+        //确定是查哪个面
+        var currCab = $("#changedCab").combobox("getValue");
+        var currCabArr = currCab.split("-");
+
+        paramO.search_ggName = currCabArr[0];
+        paramO.search_ccLikeName = currCabArr[1];
+        $autoSampleDg.datagrid("load", paramO);
+    }
+
+    //提交审批
+    function submitToAppr() {
+        var selRows = $autoSampleDg.datagrid('getChecked');
+        var recIdArr = [];
+        if (selRows != null && selRows.length > 0) {
+            for (var i = 0; i < selRows.length; i++) {
+                recIdArr[i] = selRows[i].cabinetRecId;
+            }
+        } else {
+            showMsg("提示", "请先选择请求审批的记录！");
+            return false;
+        }
+
+
+        var destination = $("#destination").combobox("getValue");
+        var remark = $("#remark").textbox("getValue");
+
+        var jsonStr = JSON.stringify(recIdArr);
+        var params = {}
+
+        //取样才要目的站
+        if (dealTag == "1") {
+            params.search_destination = destination;
+        }
+
+        params.search_dealType = dealTag;
+        params.search_remark = remark;
+        params.search_jsonStr = jsonStr;
+
+        var postUrl = "${base}/business/approve/submitToApprove";
+
+        $.post(postUrl, params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示", rsp.msg);
+                $autoSampleDg.datagrid('clearChecked');//必须要清理下，否则会被记录下上一次审批的id
+                $autoSampleDg.datagrid('clearSelections');
+            } else {
+                showMsg("提示", rsp.msg);
+            }
+        })
+    }
+
+</script>

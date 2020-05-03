@@ -1,0 +1,217 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>全厂总览</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="${base}/htmlresource/commonImgJS.js"></script>
+    <#include "/include/common.html"/>
+
+    <!--<style type="text/css">-->
+        <!--iframe{transform: scale(0.8);}-->
+    <!--</style>-->
+    <style>
+        html,body{height:100%;}
+    </style>
+
+</head>
+
+<body>
+
+<div id="cc" class="easyui-layout" style="width:100%;height:1030px;">
+
+    <!--北部区域暂时没用-->
+    <!--<div data-options="region:'north',title:'North Title',split:true" style="height:100px;"></div>-->
+
+    <div data-options="region:'east',title:'',noheader:'true',split:true" style="width:19%;">
+
+        <div id="" class="easyui-panel" title="关键指标信息" style="width:100%;height:256px;padding:0px;" data-options="fit:false" >
+            <table id="mcmzxx" class="easyui-datagrid"  data-options="method:'get',border:true,singleSelect:true,fitColumns:true,showHeader:true">
+                <thead>
+                <tr>
+                    <th data-options="field:'key',width:70,align:'center'">指标</th>
+                    <th data-options="field:'dayVal',width:40,align:'center'">今日</th>
+                    <th data-options="field:'monthVal',width:40,align:'center'">本月</th>
+                    <th data-options="field:'yearVal',width:40,align:'center'">本年</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+
+        <div id="p" class="easyui-panel" title="故障报警信息 (双击查看详情)" data-options="fit:false"  style="width:100%;height:270px;padding:0px;noheader:true">
+            <table id="deviceErrDg" class="easyui-datagrid"
+                   data-options="idField:'errorRecId',method:'get',border:true,singleSelect:true,fitColumns:true,url:'${base}/business/monitor/deviceErrList',showHeader:false">
+                <thead>
+                <tr>
+                    <th data-options="field:'errorTime',width:55,align:'left'">时间</th>
+                    <th data-options="field:'errorDec',width:45,align:'left'">信息</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+
+        <div id="p12" class="easyui-panel" title="动态信息" data-options="fit:false"  style="width:100%;height:390px;padding:0px;noheader:true">
+            <div class="easyui-panel" style="width:420px;height:400px"  data-options="fit:false,border:false">
+                <table id="dynamicInfoDg" class="easyui-datagrid"
+                       data-options="method:'get',border:true,singleSelect:true,fitColumns:false,url:'${base}/business/monitor/deviceBroadList/1',showHeader:false">
+                    <thead>
+                    <tr>
+                        <th data-options="field:'broadTime',width:140,align:'left'">时间</th>
+                        <th data-options="field:'broadDec',width:280,align:'left'">信息</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <!--插入动画区域-->
+    <div data-options="region:'center',title:'',noheader:'true'" style="padding:5px;text-align: center">
+        <iframe src="${base}/business/htmlView/kcIndex" width="1800"  height="930"></iframe>
+    </div>
+
+    <div data-options="region:'south',title:'',noheader:'true',split:true" style="width:100%;height:250px;">
+            <table style="width:100%" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td style="width:100%;vertical-align:top" >
+                        <table id="arrivedCoalDg" class="easyui-datagrid" title="今日来煤情况"
+                               data-options="method:'get',border:true,singleSelect:true,fitColumns:true,url:'${base}/business/monitor/todayArrivedCoalList'">
+                            <thead>
+                            <tr>
+                                <th data-options="field:'coalNam',width:50,align:'center'">煤种</th>
+                                <th data-options="field:'venNam',width:60,align:'center'">供应商</th>
+                                <th data-options="field:'colryNam',width:60,align:'center'">矿点</th>
+                                <th data-options="field:'totalEntryCnt',width:40,align:'center'">车数</th>
+                                <th data-options="field:'totalMzQty',width:45,align:'center'">毛重</th>
+                                <th data-options="field:'totalNetQty',width:45,align:'center'">净重</th>
+                                <th data-options="field:'totalTickQty',width:45,align:'center'">票重</th>
+                                <th data-options="field:'totalKdQty',width:45,align:'center'">扣吨</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </td>
+  <!--                  <td style="width:47%;vertical-align:top">
+                        <table id="carDynamicDg" class="easyui-datagrid" title="汽车动态信息"
+                               data-options="method:'get',border:true,singleSelect:true,fitColumns:true,url:'${base}/business/monitor/carDynamicList'">
+                            <thead>
+                            <tr>
+                                <th data-options="field:'carId',width:25,align:'center'">车号</th>
+                                <th data-options="field:'carrierNam',width:45,align:'center'">运输单位</th>
+                                <th data-options="field:'coalNam',width:22,align:'center'">煤种</th>
+                                <th data-options="field:'recordDtm',width:45,align:'center'">进厂时间</th>
+                                <th data-options="field:'curPos',width:26,align:'center'">当前位置</th>
+                                <th data-options="field:'nextPos',width:26,align:'center'">下一位置</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </td>
+                    <td style="width:24%;vertical-align:top">
+                        <table id="dynamicInfoDg" class="easyui-datagrid" title="动态信息"
+                               data-options="method:'get',border:true,singleSelect:true,fitColumns:true,url:'${base}/business/monitor/deviceBroadList',showHeader:false">
+                            <thead>
+                            <tr>
+                                <th data-options="field:'broadTime',width:45,align:'left'">时间</th>
+                                <th data-options="field:'broadDec',width:55,align:'left'">信息</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </td>-->
+
+                </tr>
+            </table>
+    </div>
+
+</div>
+<!--告警信息处理窗口-->
+<div id="deviceErrDetailWin" ></div>
+</body>
+</html>
+<script type="text/javascript">
+    /////////////////此代码每个页面固定写法 xieyt-begin//////////////
+    function init(){
+        listen(new WebSocket(wsUri));
+    }
+    window.addEventListener("load", init, false);
+    /////////////////此代码每个页面固定写法 xieyt-end////////////////
+
+
+    //每个页面实现该方法来进行图片切换的半动画效果
+    function businessProcess(event) {
+        var o = JSON.parse(event.data);
+        var deviceTag = o.DEVICE;
+        switch (deviceTag.toUpperCase()){
+            //关键指标信息
+            case "CRI_KPI_INFO":
+                var deviceValue = o.VALUE;
+                $('#mcmzxx').datagrid({
+                    data: deviceValue
+                });
+                break;
+            default:
+        }
+    }
+
+    var deviceIp ;
+    var machineCode;
+    var flowId;
+//    $('#mcmzxx').datagrid({
+//        data: [
+//            {key:'入厂热值', dayVal:"1260", monthVal:"1260", yearVal:"1260"},
+//            {key:'入炉热值', dayVal:"1260", monthVal:"1260", yearVal:"1260"},
+//            {key:'热值差', dayVal:"1260", monthVal:"1260", yearVal:"1260"},
+//            {key:'入厂标单', dayVal:"1260", monthVal:"1260", yearVal:"1260"},
+//            {key:'来煤量', dayVal:"1260", monthVal:"1260", yearVal:"1260"},
+//            {key:'耗用量', dayVal:"1260", monthVal:"1260", yearVal:"1260"},
+//            {key:'库存量', dayVal:"1260", monthVal:"1260", yearVal:"1260"},
+//            {key:'来煤车数', dayVal:"1260", monthVal:"1260", yearVal:"1260"}
+//        ]
+//    });
+
+    //绑定双击事件
+    $('#deviceErrDg').datagrid({
+        rowStyler: function(index,row){
+                return 'background-color:#fff;color:red;';
+        },
+        onDblClickRow: function(rowIndex, rowData){
+            deviceIp = rowData.deviceIp;
+            machineCode = rowData.machineCode;
+            flowId = rowData.flowId;
+            viewDeviceErrDetail(rowData.errorRecId);
+        }
+    });
+
+
+    function viewDeviceErrDetail(recId) {
+        var win = $('#deviceErrDetailWin').window({
+            modal : true,
+            title : '故障详情',
+            width : 1000,
+            height : 600    ,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/monitor/deviceErrDetail/'+recId,
+            onClose : function() {
+                $("#deviceErrDg").datagrid('load');
+            }
+        });
+    }
+
+
+    //每过60秒刷新一次今日来煤信息信息
+    window.setInterval(function() {$("#arrivedCoalDg").datagrid('load');}, 60*1000);
+
+    //每过45秒刷新汽车动态信息
+   // window.setInterval(function() {$("#carDynamicDg").datagrid('load'); }, 45*1000);
+
+    //每过35秒刷新设备动态信息
+    window.setInterval(function() {$("#dynamicInfoDg").datagrid('load'); }, 35*1000);
+
+    //每过30秒刷新设备故障报警信息
+    window.setInterval(function() {$("#deviceErrDg").datagrid('load'); }, 30*1000);
+
+</script>

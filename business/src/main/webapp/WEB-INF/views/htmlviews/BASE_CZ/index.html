@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>汽车称重示意图</title>
+    <#include "/include/common.html"/>
+    <script type="text/javascript" src="${base}/styles/js/commonFlash.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="${base}/styles/css/commonFlash.css">
+</head>
+<script type="text/javascript">
+    fileNo = "${heavyNo}";
+    wsUri = "${wsUri}";
+</script>
+<body onload="startLoadFlash('BASE_CZ');">
+<div id="submitDeviceCommandWin"></div>
+<input type="hidden" id="hideMachineType"/>
+<input type="hidden" id="hideMachineCode"/>
+<input type="hidden" id="hideCommandCode"/>
+<div id="flashContent">
+    <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="1024" height="600" id="index" name="index"
+            align="middle">
+        <param name="movie" value="${base}/htmlresource/BASE_CZ/index.swf"/>
+        <param name="quality" value="high"/>
+        <param name="bgcolor" value="#000000"/>
+        <param name="play" value="true"/>
+        <param name="loop" value="true"/>
+        <param name="wmode" value="window"/>
+        <param name="scale" value="showall"/>
+        <param name="menu" value="true"/>
+        <param name="devicefont" value="false"/>
+        <param name="salign" value=""/>
+        <param name="allowScriptAccess" value="sameDomain"/>
+        <!--[if !IE]>-->
+        <object type="application/x-shockwave-flash" data="${base}/htmlresource/BASE_CZ/index.swf" width="1024" height="600"
+                id="index" name="index">
+            <param name="movie" value="${base}/htmlresource/BASE_CZ/index.swf"/>
+            <param name="quality" value="high"/>
+            <param name="bgcolor" value="#000000"/>
+            <param name="play" value="true"/>
+            <param name="loop" value="true"/>
+            <param name="wmode" value="window"/>
+            <param name="scale" value="showall"/>
+            <param name="menu" value="true"/>
+            <param name="devicefont" value="false"/>
+            <param name="salign" value=""/>
+            <param name="allowScriptAccess" value="sameDomain"/>
+            <!--<![endif]-->
+            <a href="http://www.adobe.com/go/getflash">
+                <img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif"
+                     alt="获得 Adobe Flash Player"/>
+            </a>
+            <!--[if !IE]>-->
+        </object>
+        <!--<![endif]-->
+    </object>
+</div>
+</body>
+</html>
+

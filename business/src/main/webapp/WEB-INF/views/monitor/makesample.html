@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>制样监控</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <#include "/include/common.html"/>
+
+</head>
+
+<body>
+
+<div id="cc" class="easyui-layout" style="height:830px;">
+    <div data-options="region:'east',title:'',noheader:'true',split:true" style="width:15%;">
+
+        <div id="pa" class="easyui-panel" title="控制制样" style="width:100%;height:340px;padding:0px;" data-options="fit:false" >
+            <table id="qk" cellpadding="0" cellspacing="0" border="0" width="100%" style="border: 1px;">
+                <tbody>
+                <tr>
+                    <td style="width:45%;height:40px;text-align:right;">急停</td>
+                    <td style="width:55%;height:40px;text-align:left;"><input type="radio" id="ctrlZYJ2" name="ctrlZYJ" value="2" /></td>
+                </tr>
+                <tr>
+                    <td style="width:45%;height:40px;text-align:right;">复位</td>
+                    <td style="width:55%;height:40px;text-align:left;"><input type="radio" id="ctrlZYJ3" name="ctrlZYJ" value="3" /></td>
+                </tr>
+                <tr>
+                    <td style="width:45%;height:40px;text-align:right;">启动</td>
+                    <td style="width:55%;height:40px;text-align:left;"><input type="radio" id="ctrlZYJ1" name="ctrlZYJ" value="1" /></td>
+                </tr>
+                <tr>
+                    <td style="width:45%;height:40px;text-align:right;">采样编码</td>
+                    <td style="width:55%;height:40px;text-align:left;">
+                        <input id="sampleCode" style="width:120px;"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="width:55%;height:40px;text-align:center;">
+                        <input type="button" onclick="commitCtrlCmd()" value="      确   定      "/>
+                    </td>
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+
+    <!--插入动画区域-->
+    <div data-options="region:'center',title:'',noheader:'true'" style="padding:5px;align:center;">
+<!--        <iframe src="${base}/htmlresource/KC_ZY/index.html" width="1500" height="820"></iframe>-->
+        <iframe src="${base}/business/htmlView/kcZY" width="1500" height="820"></iframe>
+    </div>
+
+
+    <div data-options="region:'south',title:'',noheader:'true',split:true" style="width:100%; height:175px;">
+        <table id="samplingDg" class="easyui-datagrid" title="制样信息"
+               data-options="method:'get',border:true,singleSelect:true,fitColumns:true,url:'${base}/business/monitor/samplingList'">
+            <thead>
+            <tr>
+                <th data-options="field:'samplingCode',width:30,align:'center'">制样编码</th>
+                <th data-options="field:'batchNo',width:30,align:'center'">批次号</th>
+                <th data-options="field:'sampleCode',width:30,align:'center'">采样编码</th>
+                <th data-options="field:'zyWeight',width:30,align:'center'">来样重量</th>
+                <th data-options="field:'zyType',width:30,align:'center'">制样方式</th>
+                <th data-options="field:'packCode3',width:30,align:'center'">3mm封装码</th>
+                <th data-options="field:'packCode21',width:30,align:'center'">0.2mm备查样封装码</th>
+                <th data-options="field:'packCode22',width:30,align:'center'">0.2mm化验样封装码</th>
+                <th data-options="field:'packCode6',width:30,align:'center'">6mm全水样封装码</th>
+                <th data-options="field:'startTime',width:30,align:'center'">开始时间</th>
+                <th data-options="field:'endTime',width:30,align:'center'">结束时间</th>
+                <th data-options="field:'sampleUserName',width:30,align:'center'">制样人</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+
+</div>
+</body>
+</html>
+<script type="text/javascript">
+    //每过30秒刷新一次制样记录信息
+    window.setInterval(function() {$("#samplingDg").datagrid('load');}, 30*1000);
+
+    //初始化取采样编码
+    $('#sampleCode').combobox({
+        url: '${base}/business/tool/getComboboxOpt/SAMPLE_CODES',
+        panelHeight:'auto',
+        valueField:'id',
+        textField:'name'
+    });
+
+    //提交设备控制命令
+    function commitCtrlCmd(){
+        var commandCode = $('input:radio:checked').val();
+        var sampleCode = $("#sampleCode").combobox("getValue");
+
+        if (commandCode == undefined || commandCode == null || commandCode == "" || commandCode.length == 0) {
+            showMsg("提示", "请选择要执行的命令");
+            return false;
+        }
+
+        //制样机时采样编码必填
+        if (sampleCode == "" || sampleCode == null || sampleCode.length == 0){
+            showMsg("提示", "请选择采样编码");
+            return false;
+        }
+
+        $.messager.confirm('', '确定提交执行该命令?', function(sure){
+            if(sure){
+                var paramObj = new Object();
+                paramObj.search_commandCode = commandCode;//命令代码
+                paramObj.search_machineCode = "ZY01";//设备编码
+                paramObj.search_machineType = "2";//1:采样机 2.制样机 3.翻车机
+                paramObj.search_sampleCode = sampleCode;//采样编码
+
+                $.post("${base}/business/monitor/commitCtrlCmd", paramObj, function (rsp) {
+                    if (rsp) {
+                        showMsg("提示", rsp.msg);
+                    } else {
+                        showMsg("提示", "控制制样机命令提交失败!");
+                    }
+                }).error(function () {
+                    showMsg("提示", "控制制样机命令提交异常!");
+                });
+            }
+        });
+    }
+
+</script>

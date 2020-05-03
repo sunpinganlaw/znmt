@@ -1,0 +1,101 @@
+    <div class="form-div">
+        <form id="violaDetailForm" method="post">
+                <table >
+                    <tr>
+                        <td hidden="true"><input class="easyui-textbox"  name="violaRecId" style="width:126px;" id="violaRecId" readonly data-options="required:true"/></td>
+                        <td >入厂流水</td>
+                        <td><input class="easyui-textbox"  name="recordNo" style="width:126px;" id="recordNo" readonly data-options="required:true"/></td>
+                        <td >卡号</td>
+                        <td><input class="easyui-textbox"  name="cardId" style="width:126px;" id="cardId" readonly data-options="required:true"/></td>
+                        <td >车牌号</td>
+                        <td><input class="easyui-textbox"  name="carId" style="width:126px;" id="carId" readonly data-options="required:true"/></td>
+                    </tr>
+                    <tr>
+                        <td hidden="true" >违规类型</td>
+                        <td hidden="true"><input class="easyui-textbox"  name="violaType" style="width:126px;" id="violaType" hidden="true" data-options="required:true"/></td>
+                        <td >违规等级</td>
+                        <td><select id="violaLevel" name="violaLevel" class="easyui-combobox" disabled  data-options="required:true,panelHeight:'auto'" style="width:126px;" >
+                            <option value="1">普通违规</option>
+                            <option value="2">中级违规</option>
+                            <option value="3">严重违规</option>
+                        </select></td>
+                        <td >违规时间</td>
+                        <td><input class="easyui-datebox" style="width:126px;" id="violaTime" name="violaTime" readonly data-options="required:true"/></td>
+                    <tr>
+                        <td >违规内容</td>
+                        <td colspan="3"><input class="easyui-textbox"  name="violaDesc" readonly style="width:300px;height:100px" id="violaDesc" data-options="required:true,multiline:true"/></td>
+                    </tr>
+                    <tr>
+                        <td >处理措施</td>
+                        <td colspan="3"><input class="easyui-textbox"  name="opDesc" style="width:300px;height:100px" id="opDesc" data-options="required:true,multiline:true"/></td>
+                    </tr>
+                </table>
+        </form>
+        <div class="submit-div" id="buttonTD">
+            <a href="javascript:void(0)" id="addButton" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm()">提交</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="clearFrom();">重置</a>
+        </div>
+    </div>
+
+<script type="text/javascript">
+
+
+    var doActionTag = document.getElementById("doAction").value
+
+    //查看需要禁用编辑
+    if (doActionTag == "view") {
+        document.getElementById("buttonTD").innerHTML = "";
+        $("input").attr("readonly", "readonly");
+        $("select").attr("readonly", "readonly");
+    } else if(doActionTag == "mod") {
+    }
+
+
+    //加载读取的详情信息
+    var respEntity = JSON.parse(JSON.stringify(${violaEntity}));
+
+    if(respEntity != undefined && respEntity != null && respEntity != "") {
+        $('#violaDetailForm').form('load', respEntity);
+    }
+
+    //重置表单
+    function clearFrom(){
+        $.messager.confirm('提示', '确定需要重置输入表单?', function (r) {
+            if (r) {
+                $('#opDesc').textbox("setValue","");
+            }
+        });
+    }
+
+
+    //提交表单
+    function submitForm(){
+        if (! $("#violaDetailForm").form('validate')) {
+            showMsg("提示", "有必填项未输入值!");
+            return false;
+        }
+
+        $.messager.confirm('提示', '确定保存?', function (r) {
+            if (r) {
+                save();
+            }
+        });
+    }
+
+    //保存
+    function save(){
+        var params = $("#violaDetailForm").serialize();
+
+        $.post("${base}/business/monitor/editViolaDetail", params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示",rsp.msg);
+                $violaDg.datagrid('reload');
+                $('#violaRptWin').window('close');
+            } else {
+                showMsg("提示", rsp.msg);
+            }
+        }).error(function () {
+            showMsg("提示", "新增失败!");
+        });
+    }
+</script>

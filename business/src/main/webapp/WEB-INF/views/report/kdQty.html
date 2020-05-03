@@ -1,0 +1,103 @@
+<div class="form-div">
+    <form id="ff" method="post" commandName="kdQty">
+        <input type="hidden" name="recordNo"  id="recordNo" />
+        <table >
+<!--
+                <input type="hidden" name="kdQty"  id="kdQty" />
+                 <tr>
+                <td >扣水:</td>
+                <td>
+                    <input class="easyui-numberbox" name="ksQty" id="ksQty"  data-options="required:true,min:0,precision:3"/>
+                </td>
+                <td >扣矸:</td>
+                <td><input class="easyui-numberbox" name="kgQty" id="kgQty"  data-options="required:true,min:0,precision:3"/></td>
+            </tr>-->
+            <tr>
+                <td >毛重:</td>
+                <td>
+                    <input class="easyui-numberbox" name="mzQty" id="mzQty"  data-options="required:true,min:0,precision:3"/>
+                </td>
+                <td >皮重:</td>
+                <td><input class="easyui-numberbox" name="pzQty" id="pzQty"  data-options="required:true,min:0,precision:3"/></td>
+            </tr>
+            <tr>
+                <td >票重:</td>
+                <td><input class="easyui-numberbox" name="tickQty" id="tickQty"  data-options="min:0,precision:3"/></td>
+
+                <td >扣吨:</td>
+                <td>
+                    <input class="easyui-numberbox" name="kdQty" id="kdQty"  data-options="required:true,min:0,precision:3"/>
+                </td>
+            <tr>
+                <td >备注:</td>
+                <td colspan="3">
+                    <textarea  name="kdBak" id="kdBak" cols="55" rows="5"></textarea>
+                </td>
+            </tr>
+        </table>
+    </form>
+    <div class="submit-div">
+        <a href="javascript:void(0)" id="add" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm()">提交</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="formReset();">重置</a>
+    </div>
+</div>
+<script type="text/javascript">
+    var truckFuelUnloadEntity = JSON.parse(JSON.stringify(${.globals.truckFuelUnloadEntity}));
+    if (truckFuelUnloadEntity != null) {
+        if (truckFuelUnloadEntity.kdQty != null) {
+            $('#kdQty').val(truckFuelUnloadEntity.kdQty);
+        }
+/*        if (truckFuelUnloadEntity.kgQty != null) {
+            $('#kgQty').val(truckFuelUnloadEntity.kgQty);
+        }*/
+        if (truckFuelUnloadEntity.mzQty != null) {
+            $('#mzQty').val(truckFuelUnloadEntity.mzQty);
+        }
+        if (truckFuelUnloadEntity.pzQty != null) {
+            $('#pzQty').val(truckFuelUnloadEntity.pzQty);
+        }
+        if (truckFuelUnloadEntity.tickQty != null) {
+            $('#tickQty').val(truckFuelUnloadEntity.tickQty);
+        }
+        if (truckFuelUnloadEntity.kdBak != null) {
+            $('#kdBak').val(truckFuelUnloadEntity.kdBak);
+        }
+    }
+    //重置表单
+    function formReset(){
+        $.messager.confirm('提示', '确定需要重置输入表单?', function (r) {
+            if (r) {
+                $('#ff').form('clear');
+            }
+        });
+    }
+
+    //提交表单
+    function submitForm(){
+/*        if (! $("#ff").form('validate')) {
+            showMsg("提示", "有必填项未输入值!");
+            return false;
+        }*/
+        $.messager.confirm('提示', '确定计量数据修改并保存吗?', function (r) {
+            if (r) {
+                $("#recordNo").val($("#h_eventId").val());
+                save();
+            }
+        });
+    }
+    //保存
+    function save(){
+        var params = $("#ff").serialize();
+        var postUrl = "${base}/business/report/measureData/mod";
+        $.post(postUrl, params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示",rsp.msg);
+                $('#kdQtyWin').window('close');
+            } else {
+                showMsg("提示", rsp.msg);
+            }
+        }).error(function () {
+            showMsg("提示", "保存失败!");
+        });
+    }
+</script>

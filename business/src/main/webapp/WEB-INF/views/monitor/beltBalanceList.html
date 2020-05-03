@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>入炉煤皮带秤数据展示</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <#include "/include/common.html"/>
+
+</head>
+
+<body>
+<div id="tbs">
+    <label for="sBeginDate">称量时间：</label>
+    <input class="easyui-datebox" id="sBeginDate" style="width:120px">&nbsp;—&nbsp;
+    <input class="easyui-datebox" id="sEndDate"  style="width:120px">
+    <label for="dayBatchNum">班组：</label>
+    <td><select id="dayBatchNum" name="dayBatchNum" style="width:126px;" class="easyui-combobox" data-options="required:true,panelHeight:'auto'" style="width:126px;" >
+        <option value="">全部</option>
+        <option value="3">白班</option>
+        <option value="1">中班</option>
+        <option value="2">夜班</option>
+    </select></td>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qrySData();">查询</a>
+
+</div>
+
+<div>
+    <table id="BeltBalanceQryDg" ></table>
+</div>
+</body>
+</html>
+
+<script type="text/javascript">
+//查询数据表格准备
+$BeltBalanceQryDg = $("#BeltBalanceQryDg");
+
+var thisDate = new Date();
+var startTime = thisDate.getFullYear()+"-"+(parseInt(thisDate.getMonth())+1)+"-"+thisDate.getDate();
+var endTime =  thisDate.getFullYear()+"-"+(parseInt(thisDate.getMonth())+1)+"-"+thisDate.getDate();
+
+//天平
+$(function(){
+    $BeltBalanceQryDg.datagrid({
+        url: "${base}/business/monitor/qryBeltBalanceInfo",
+        fitColumns: true,
+        animate: true,
+        border:true,
+        height: $(this).height() - 50,
+        width: $(this).width() - 2,
+        idField:'labReportId',
+        queryParams: {
+            search_beginDate:startTime,
+            search_endDate:endTime
+        },
+        columns: [
+            [
+                {field: 'batchNo', title: '批次号',align:'center', width: 120,hidden:true},
+                {field: 'dayBatchNum', title: '班组',align:'center', width: 100},
+                {field: 'allNetQty', title: '总重量',align:'center', width: 100} ,
+                {field: 'batchTime', title: '称重时间',align:'center', width: 120}
+            ]
+        ],
+        toolbar: '#tbs'
+    })
+});
+
+//查询
+function qrySData() {
+    var qryBeginDate = $("#sBeginDate").datebox("getValue");
+    var qryEndDate =  $("#sEndDate").datebox("getValue");
+    var qryDayBatchNum =  $("#dayBatchNum").datebox("getValue");
+    var paramObj = new Object();
+
+    if (qryBeginDate != null && qryBeginDate != undefined && qryBeginDate != "") {
+        paramObj.search_startTime = qryBeginDate;
+    }
+    if (qryEndDate != null && qryEndDate != undefined && qryEndDate != "") {
+        paramObj.search_endTime = qryEndDate;
+    }
+    if (qryDayBatchNum != null && qryDayBatchNum != undefined && qryDayBatchNum != "") {
+        paramObj.search_dayBatchNum = qryDayBatchNum;
+    }
+    //加载数据
+    $BeltBalanceQryDg.datagrid("load",paramObj);
+}
+
+</script>

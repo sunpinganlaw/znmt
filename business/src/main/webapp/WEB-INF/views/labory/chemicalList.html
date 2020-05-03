@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>元素修改界面</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+<body>
+<div id="layoutDiv" class="easyui-layout" style="height:100%">
+    <div id="tb">
+        <label for="coalNo">煤种：</label>
+        <input id="coalNo" name="coalNo" class="easyui-combobox" style="width:120px;"
+               data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/COAL_TYPE'" />
+        <label for="chemicalTypeQry">元素类型：</label>
+        <input id="chemicalTypeQry" name="chemicalTypeQry" style="width:120px;"/>
+        <label for="status">状态：</label>
+        <select id="status" name="status" class="easyui-combobox" data-options="required:true,panelHeight:'auto'"  style="width:145px;" >
+            <option value="0">有效</option>
+            <option value="1">失效</option>
+        </select>
+
+        <span style="margin-left: 0;">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qrySData();">查询</a>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="addChemical('-1');">新增 </a>
+        </span>
+    </div>
+    <table id="chemicalListDg"></table>
+</div>
+
+<div id="chemicalEditWin" ></div>
+</body>
+</html>
+<script type="text/javascript">
+    $chemicalListDg = $("#chemicalListDg");
+    $(function () {
+        $('#chemicalTypeQry').combobox({
+            url:'${base}/business/tool/getDictionaryByType/CHEMICAL_TYPE',
+            valueField:'id',
+            textField:'name',
+            panelHeight:'auto'
+        });
+        $chemicalListDg.datagrid({
+            url: "${base}/business/labory/qryChemicalAnalyListNew",
+            fitColumns: true,
+            height: $(this).height() - 2,
+            width: $(this).width() - 2,
+            idField:'mineChemicalLogId',
+            singleSelect:true,
+            //rownumbers:true,
+            pagination: true,
+            pagenumber:true,
+            pageSize:15,
+            pageList: [15, 30, 45],
+            queryParams: {
+                search_status:"0"
+            },
+            columns: [
+                [
+                    {field: 'coalName', title: '煤种',align:'center', width: 50},
+                    {field: 'chemicalTypeName', title: '元素类型',align:'center', width: 40},
+                    {field: 'chemicalValue', title: '元素值',align:'center', width: 40},
+                    {field: 'statusName', title: '当前状态',align:'center', width: 40},
+                    {field: 'startTime', title: '生效时间',align:'center', width: 60},
+                    {field: 'endTime', title: '失效时间',align:'center', width: 60},
+                    {field: 'opCode', title: '操作人',align:'center', width: 50},
+                    {field: 'opTime', title: '操作时间',align:'center', width: 80},
+                    {field: 'remark', title: '备注',align:'center', width: 150}
+                ]
+            ],
+            toolbar: '#tb'
+        })
+    });
+    //查询
+    function qrySData() {
+        var coalNo = $("#coalNo").combobox("getValue");
+        var status = $("#status").combobox("getValue");
+        var chemicalType = $("#chemicalTypeQry").combobox("getValue");
+        var paramObj = new Object();
+        if (coalNo != null && coalNo != undefined && coalNo != "") {
+            paramObj.search_coalNo = coalNo;
+        }
+
+        if (status != null && status != undefined && status != "") {
+            paramObj.search_status = status;
+        }
+
+        if (chemicalType != null && chemicalType != undefined && chemicalType != "") {
+            paramObj.search_chemicalType = chemicalType;
+        }
+
+        //加载数据
+        $chemicalListDg.datagrid("load",paramObj);
+    }
+
+    //删除一行
+    function deleteChemical() {
+        var selectedRow = $chemicalListDg.datagrid('getSelected');
+        var nowDate = dateToNumber(new Date().format("yyyy-MM-dd"));
+        if (selectedRow) {
+            $.messager.confirm('提示', '数据将删除，确定继续操作?', function (r) {
+                if (r) {
+                    $.post("${base}/business/labory/qryChemicalAnaly/" + selectedRow.mineNo + "/" + selectedRow.chemicalType, function (rsp) {
+                        var oracleStartTime = dateToNumber(rsp.startTime);
+                        var oracleEndTime = dateToNumber(rsp.endTime);
+                        if (oracleStartTime <= nowDate) {
+                            showMsg("提示", "该记录已经生效，请进行新增/修改操作！");
+                        } else {
+                            //提交数据
+                            var mineChemicalId = selectedRow.mineChemicalId;
+                            $.post("${base}/business/labory/delChemicalAnaly/" + mineChemicalId, function (rsp) {
+                                if (rsp.successful) {
+                                    showMsg("提示", rsp.msg);
+                                    $chemicalListDg.datagrid("reload");
+                                } else {
+                                    showMsg("提示", rsp.msg);
+                                }
+                            }, "JSON").error(function () {
+                                        showMsg("提示", "删除数据失败！");
+                                    });
+                        }
+                    }).error(function () {
+                                showMsg("提示", "查询数据失败,请重新登陆!");
+                            });
+                }
+            });
+        } else {
+            showMsg("提示", "请先选择要删除的信息！");
+            return false;
+        }
+    }
+
+    function addChemical(mineChemicalId) {
+        $('#chemicalEditWin').window({
+            modal : true,
+            title : '元素值录入',
+            width : 550,
+            height : 190,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/labory/chemicalAnalyEdit/'+mineChemicalId,
+            onClose : function() {
+                $chemicalListDg.datagrid('load');
+            }
+        });
+    }
+
+    function closeWin()
+    {
+        $('#chemicalEditWin').window('close',true);
+    }
+    function dateToNumber(v_date){
+        var dateString = v_date;
+        var dateYear_s = "";
+        var dateMonth_s = "";
+        var dateDate_s = "";
+        var dateDateString_s = "";
+        var dateDateInt_s = 0;
+        dateYear_s=dateString.substr(0,4);
+        dateMonth_s=dateString.substr(5,2);
+        dateDate_s=dateString.substr(8,2);
+        dateDateString_s=dateYear_s+dateMonth_s+dateDate_s;//判断隔天的依据
+        dateDateInt_s = Number(dateDateString_s);
+        return dateDateInt_s;
+    }
+</script>

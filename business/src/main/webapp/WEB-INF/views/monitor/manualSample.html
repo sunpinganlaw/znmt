@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>人工采样管理</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <#include "/include/common.html"/>
+
+</head>
+
+<body>
+    <div id="mansampleTB">
+        <label for="beginDate">入厂日期</label>
+        <input class="easyui-datebox" id="beginDate" style="width:120px">&nbsp;~&nbsp;
+        <input class="easyui-datebox" id="endDate"  style="width:120px">
+
+        <label for="batchNoType">批次类型</label>
+        <select id="batchNoType" name="batchNoType" class="easyui-combobox" data-options="panelHeight:'auto'" style="width:145px;">
+            <option selected value="">全部</option>
+            <option value="0">汽车煤批次</option>
+            <option value="1">火车煤批次</option>
+            <option value="2">轮船煤批次</option>
+            <option value="7">火车抽检批次</option>
+            <option value="8">汽车抽检批次</option>
+            <option value="9">入炉煤批次</option>
+        </select>
+        <label for="sampleCode">采样编码</label>
+        <input class="easyui-textbox" id="sampleCode" style="width:250px;" value=""/>
+        <input type="hidden" id="hideSampleCode">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qryManSampleInfo();">查询</a>
+        <br>
+        <label for="printType">打印方式</label>
+        <select id="printType" name="printType" class="easyui-combobox" data-options="panelHeight:'auto'"
+                style="width:145px;">
+            <option value="1" selected>一维码</option>
+            <option value="2">二维码</option>
+        </select>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-print"  onclick="printSample();">打印</a>
+        <span style="color: #0099FF">请选择一行和打印方式打印采样码</span>
+    </div>
+
+    <div style="margin: 5px;width: 98%">
+        <table id="manSampleDataDg" ></table>
+    </div>
+
+    <div id="printWin"></div>
+</body>
+</html>
+
+<script type="text/javascript">
+    //查询数据表格准备
+    $manSampleDataDg = $("#manSampleDataDg");
+    $(function(){
+
+        var thisDate = new Date();
+        var beginDate = thisDate.getFullYear()+"-"+(parseInt(thisDate.getMonth())+1)+"-"+thisDate.getDate();
+        var endDate =  thisDate.getFullYear()+"-"+(parseInt(thisDate.getMonth())+1)+"-"+thisDate.getDate();
+
+        $manSampleDataDg.datagrid({
+            url: "${base}/business/monitor/qryManSampleInfo",
+            height: $(this).height() - 2,
+            width: $(this).width() - 2,
+            idField:'id',
+            singleSelect:true,
+            queryParams: {
+                search_beginDate:beginDate,
+                search_endDate:endDate
+            },
+            frozenColumns: [
+                [   {field: 'batchNo', title: '批次号',align:'center', width: 120},
+                    {field: 'trainNo', title: '车次号',align:'center', width: 100},
+                    {field: 'sampleCode', title: '采样编码',align:'center', width: 100}
+//                    {field: 'manSampleCode', title: '人工采样编码',align:'center', width: 100}
+                ]
+            ],
+            columns: [
+                [
+                    {field: 'carIds', title: '车(船)号',align:'left', width: 2000},
+                    {field: 'xhNums', title: '车厢序号',align:'left', width: 1000}
+                ]
+            ],
+            toolbar: '#mansampleTB'
+        })
+    });
+
+    //查询
+    function qryManSampleInfo() {
+
+        var batchNoType = $("#batchNoType").combobox("getValue");
+        var qryBeginDate = $("#beginDate").datebox("getValue");
+        var qryEndDate =  $("#endDate").datebox("getValue");
+        var sampleCode =  $("#sampleCode").textbox("getValue");
+
+        var paramObj = new Object();
+        if (qryBeginDate != null && qryBeginDate != undefined && qryBeginDate != "") {
+            paramObj.search_beginDate = qryBeginDate;
+        }
+        if (qryEndDate != null && qryEndDate != undefined && qryEndDate != "") {
+            paramObj.search_endDate = qryEndDate;
+        }
+        if (batchNoType != null && batchNoType != undefined && batchNoType != "") {
+            paramObj.search_batchNoType = batchNoType;
+        }
+        if (sampleCode != null && sampleCode != undefined && sampleCode != "") {
+            paramObj.search_sampleCode = sampleCode;
+        }
+
+        $manSampleDataDg.datagrid({
+            url: "${base}/business/monitor/qryManSampleInfo",
+            height: $(this).height() - 2,
+            width: $(this).width() - 2,
+            idField:'id',
+            singleSelect:true,
+            queryParams: paramObj,
+            frozenColumns: [
+                [   {field: 'batchNo', title: '批次号',align:'center', width: 120},
+                    {field: 'trainNo', title: '车次号',align:'center', width: 100},
+                    {field: 'sampleCode', title: '采样编码',align:'center', width: 100}
+//                    {field: 'manSampleCode', title: '人工采样编码',align:'center', width: 100}
+                ]
+            ],
+            columns: [
+                [
+                    {field: 'carIds', title: '车(船)号',align:'left', width: 2000},
+                    {field: 'xhNums', title: '车厢序号',align:'left', width: 1000}
+                ]
+            ],
+            toolbar: '#mansampleTB'
+        });
+    }
+
+    function operLink(val,row,index){
+        var sc = row.sampleCode;
+        return '<a href="javascript:void(0)" onclick="printSampleCode('+sc+')">打印</a>';
+    }
+
+    function printSample(){
+        var selectedRow = $manSampleDataDg.datagrid('getSelected');
+        if (selectedRow) {
+            $.messager.confirm('提示', '打印采样码，确定继续操作?', function (r) {
+                if (r) {
+                     printSampleCode(selectedRow.sampleCode);
+                }
+            });
+        }else {
+            showMsg("提示", "请先选择要打印条码的信息！");
+        }
+    }
+    function printSampleCode(sampleCode){
+        var printType = $("#printType").combobox("getValue");
+        if(printType=="1"){
+            window.open('${base}/business/monitor/barcodePrintWin/'+sampleCode,
+                    'newwindow',
+                    'height=500,width=800,top=0,left=0,toolbar=no,menubar=no,scrollbars=no, resizable=no,location=no, status=no');
+        }else if(printType=="2"){
+            window.open('${base}/business/monitor/qrcodePrintWin/'+sampleCode,
+                    'newwindow',
+                    'height=500,width=800,top=0,left=0,toolbar=no,menubar=no,scrollbars=no, resizable=no,location=no, status=no');
+        }else{
+            showMsg("提示", "打印条码出错！");
+        }
+    }
+
+</script>

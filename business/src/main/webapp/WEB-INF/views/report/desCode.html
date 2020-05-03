@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>采制化解码查询</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+<body>
+<div id="layoutDiv" class="easyui-layout" style="height:100%">
+    <div id="tb">
+
+       <label for="sampleCode">采样编码</label>
+        <input class="easyui-textbox" id="sampleCode" style="width:145px;" value=""/>
+        <label for="samplingCode">制样编码</label>
+        <input class="easyui-textbox" id="samplingCode" style="width:145px;" value=""/>
+        <label for="samplingCode">化验编码</label>
+        <input class="easyui-textbox" id="laborCode" style="width:145px;" value=""/>
+        <label for="startDate">开始时间</label>
+        <input class="easyui-datebox" name="startDate" id="startDate"  style="width:145px;"/>
+        <label for="endDate">结束时间</label>
+        <input class="easyui-datebox" name="endDate" id="endDate"  style="width:145px;"/>
+        <span style="margin-left: 0;">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>
+        </span>
+
+        <input type="hidden" id="doAction" />
+        <input type="hidden" id="samplingCodeHidden" />
+        <input type="hidden" id="sampleCodeHidden" />
+    </div>
+
+    <div data-options="region:'center',title:'解码信息',noheader:false;">
+        <table id="sampleCodeDg"></table>
+    </div>
+</div>
+
+<!--预报查看编辑窗口-->
+<div id="samplingRptWin" ></div>
+<div id="editSamplingResRecordWin" ></div>
+<div id="printSamplingResRecordWin" ></div>
+</body>
+</html>
+<script type="text/javascript">
+    $sampleCodeDg = $("#sampleCodeDg");
+    var rowObject ;
+
+    $(function () {
+        var myDate = new Date();
+        var defaultBeginTime = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+        var defaultEndTime =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+
+        $sampleCodeDg.datagrid({
+            url:  '${base}/business/report/qrySamplingRptList',
+            animate: true,
+            border:true,
+            height: $(this).height() - 2,
+            width: $(this).width() - 2,
+            idField:'batchNo',
+            singleSelect:true,
+            rownumbers:true,
+            pagination: true,
+            pagenumber:true,
+            pageSize:20,
+            pageList: [20, 40, 60],
+            queryParams: {//默认进来查当天
+                search_startTime:defaultBeginTime,
+                search_endTime:defaultEndTime
+            },
+            frozenColumns:[[
+                {field: 'batchNo', title: '批次编号',align:'center', width:"130px"},
+                {field: 'batchTypeName', title: '批次类型',align:'center', width:"100px"},
+                {field: 'sampleCode', title: '采样编码',align:'center', width: "100px"},
+                {field: 'samplingCode', title: '制样编码',align:'center', width: "100px"},
+                {field: 'laborCode', title: '化验码',align:'center', width:"100px"},
+                {field: 'mineName', title: '矿点',align:'center', width:"120px"},
+                {field: 'coalName', title: '煤种',align:'center', width:"80px"},
+                {field: 'carCnt', title: '采样车数',align:'center', width:"80px"},
+                {field: 'allNetQty', title: '总吨数',align:'center', width:"80px"}
+            ]],
+            columns: [
+                [
+                    {field: 'packCode6', title: '6mm全水样封装码',align:'center', width:"220px"},
+                    {field: 'packCode3', title: '3mm存查样封装码',align:'center', width:"220px"},
+                    {field: 'packCode21', title: '0.2mm化验样封装码',align:'center', width:"220px"},
+                    {field: 'packCode22', title: '0.2mm存查样封装码',align:'center', width:"220px"},
+                    {field: 'carIds', title: '车号',align:'left', width:"450px"}
+                ]
+            ],
+            toolbar: '#tb'
+        })
+    });
+
+    function qry(){
+        var paramO = new Object();
+        var sampleCode = $("#sampleCode").textbox("getValue");
+        var samplingCode = $("#samplingCode").textbox("getValue");
+        var laborCode = $("#laborCode").textbox("getValue");
+        var startTime = $("#startDate").datebox("getValue");
+        var endTime = $("#endDate").datebox("getValue");
+
+        if (sampleCode != null && sampleCode != "" && sampleCode.length > 0) {
+            paramO.search_sampleCode = sampleCode;
+        }
+        if (samplingCode != null && samplingCode != "" && samplingCode.length > 0) {
+            paramO.search_samplingCode = samplingCode;
+        }
+        if (laborCode != null && laborCode != "" && laborCode.length > 0) {
+            paramO.search_laborCode = laborCode;
+        }
+        if (startTime != null && startTime != "" && startTime.length > 0) {
+            paramO.search_startTime = startTime;
+        }
+        if (endTime != null && endTime != "" && endTime.length > 0) {
+            paramO.search_endTime = endTime;
+        }
+        $sampleCodeDg.datagrid("load",paramO);
+    }
+
+</script>

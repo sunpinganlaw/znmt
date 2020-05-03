@@ -1,0 +1,113 @@
+<div id="cc" class="easyui-layout" style="height:100%;">
+        <div class="easyui-accordion" style="width:98%;height:250px;">
+            <div title="处理确认" data-options="iconCls:'icon-ok',selected:true" style="padding:0px;">
+                <div class="form-div" style="margin-left: 25%;">
+                    <form id="deviceerrform" method="post" commandName="user">
+                        <table >
+                            <input type="hidden" name="errorRecId"  id="errorRecId" />
+                            <tr>
+                                <td >设备编码:</td>
+                                <td><input class="easyui-textbox"  name="machineCode" id="machineCode" readonly="true"/></td>
+                                <td >流程名称:</td>
+                                <td><input class="easyui-textbox"  name="flowName" id="flowName" readonly="true"/></td>
+                            </tr>
+                            <tr>
+                                <td >故障时间</td>
+                                <td><input class="easyui-textbox" name="errorTime" id="errorTime" readonly="true"/></td>
+                                <td >故障优先级</td>
+                                <td><input class="easyui-textbox" id="errorPri" name="errorPri" readonly="true"/></td>
+                            </tr>
+<!--                            <tr>
+                                <td >确认人员</td>
+                                <td><input class="easyui-textbox" id="errorConfirmOp" name="errorConfirmOp" readonly="true"/></td>
+                                <td >确认状态</td>
+                                <td><input class="easyui-textbox"  name="errorConfirmStatus" id="errorConfirmStatus" readonly="true"/></td>
+                            </tr>
+                            <tr>
+                                <td >确认时间</td>
+                                <td><input class="easyui-textbox" name="errorConfirmTime" id="errorConfirmTime" readonly="true"/></td>
+                                <td >创建人</td>
+                                <td><input class="easyui-textbox"  name="createOp" id="createOp" readonly="true"/></td>
+                            </tr>-->
+                            <tr>
+                                <td >故障描述</td>
+                                <td colspan="3"><input class="easyui-textbox" name="errorDec" id="errorDec" style="width: 346px;" readonly="true"/></td>
+                            </tr>
+                            <tr>
+                                <td >处理信息</td>
+                                <td colspan="3"><input class="easyui-textbox" name="bak" id="bak" style="width: 346px;"/></td>
+                            </tr>
+
+                            <tr>
+                                <td ></td>
+                                <td ></td>
+                                <td >
+                                    <a href="javascript:void(0)" id="deal" class="easyui-linkbutton" iconCls="icon-save"  onclick="dealConfirm()">处理确认</a>
+                                </td>
+                                <td ></td>
+                            </tr>
+
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+</div>
+
+<script type="text/javascript">
+
+    //加载读取的详情信息
+    $(function(){
+        var deviceEntity = JSON.parse(JSON.stringify(${deviceEntity}));
+        if(deviceEntity != undefined && deviceEntity != null && deviceEntity != "") {
+            $('#deviceerrform').form('load', deviceEntity);
+
+
+            $.ajax({
+                async: false,
+                cache: false,
+                type: 'POST',
+                url: WEB_GLOBAL_CTX + '/business/config/qryErrorSpecList/'+machineCode+'/'+flowId,
+                error: function () {// 请求失败处理函数
+                    showMsg("提示", "查询数据失败,数据库中无此数据!");
+                },
+                success: function (json) {
+                    if(JSON.parse(JSON.stringify(json)).length > 0){
+                        $("#channelNo").val(json[0].channelNo);
+                        $("#dealMethodContent").html(JSON.parse(JSON.stringify(json))[0].dealMethod);
+                    }else{
+                        $("#dealMethodContent").html("请维护故障定义信息后将自动显示");
+                    }
+                }
+            });
+        }
+    });
+
+
+    //提交报警信息处理
+    function dealConfirm(){
+        $.messager.confirm('', '确定处理?', function(sure){
+            if(sure){
+                var params = {};
+                params.search_errorRecId = document.getElementById("errorRecId").value;
+                params.search_bak = document.getElementById("bak").value;
+                //提交请求
+                $.post("${base}/business/monitor/deviceErrDeal", params, function (rsp) {
+                    if (rsp) {
+                        showMsg("提示", rsp.msg);
+                        if(rsp.successful == true){
+                            $('#deviceErrDetailWin').window('close');
+                        }
+                    } else {
+                        showMsg("提示", "处理失败!");
+                    }
+                }).error(function () {
+                    showMsg("提示", "处理异常!");
+                });
+
+            } else {
+                showCamera();
+            }
+        });
+    }
+</script>

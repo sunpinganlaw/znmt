@@ -1,0 +1,253 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>化验报告</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <#include "/include/common.html"/>
+
+</head>
+
+<body>
+    <div id="tbs">
+        <label for="sBeginDate">化验日期：</label>
+        <input class="easyui-datebox" id="sBeginDate" style="width:120px">&nbsp;—&nbsp;
+        <input class="easyui-datebox" id="sEndDate"  style="width:120px">
+        <label for="sLaborVen">供煤单位：</label>
+        <input id="sLaborVen" style="width:120px;"/>
+        <label for="sLaborMine">煤种：</label>
+        <input id="sLaborMine" style="width:120px;"/>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qrySData();">查询</a>
+
+        <@shiro.hasPermission name="LabReport:control1">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="previewRpt();">化验报告预览</a>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-ok" onclick="createLabBook();">生成化验台账</a>
+        </@shiro.hasPermission>
+
+    </div>
+
+    <div>
+        <table id="labReportQryDg" ></table>
+    </div>
+</body>
+</html>
+
+<script type="text/javascript">
+    //查询数据表格准备
+    $reportQryDg = $("#labReportQryDg");
+
+    //下拉框获取化验编码
+    $('#sLaborMine').combobox({
+        url: '${base}/business/tool/getComboboxOpt/COAL_TYPE',
+        panelHeight:'auto',
+        valueField:'id',
+        textField:'name'
+    });
+
+    //下拉框获取化验编码
+    $('#sLaborVen').combobox({
+        url: '${base}/business/tool/getComboboxOpt/VENDOR_INFO',
+        panelHeight:'auto',
+        valueField:'id',
+        textField:'name'
+    });
+
+    //天平
+    $(function(){
+        $reportQryDg.datagrid({
+            url: "${base}/business/labory/qryReportData",
+            fitColumns: false,
+            animate: true,
+            border:true,
+            height: $(this).height() - 50,
+            width: $(this).width() - 2,
+            idField:'labReportId',
+            queryParams: {
+                search_laborCode:'-1'
+            },
+            frozenColumns: [
+                [   {field: 'labReportId', title: '-',align:'center', width:10,checkbox:true},
+                    {field: 'laborCode', title: '化验编码',align:'center', width:100},
+//                    {field: 'venName', title: '煤矿单位',align:'center', width:100},
+                    {field: 'coalName', title: '煤种',align:'center', width: 80},
+                    {field: 'insertTime', title: '化验时间',align:'center', width: 100},
+                    {field: 'apprStatus', title: '审批状态',align:'center', width: 80},
+                    {field: 'batchType', title: '化验批次类型',align:'center', width: 80,hidden:true}
+//                    {field: 'standard', title: '车数',align:'center', width: 160}
+                ]
+            ],
+            columns: [
+                [
+                    {field: 'mt', title: 'Mar',align:'center', width: 100 ,formatter: roundNum1},
+                    {field: 'mad', title: 'Mad',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'aad', title: 'Aad',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'ad', title: 'Ad',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'aar', title: 'Aar',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'vad', title: 'Vad',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'vd', title: 'Vd',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'vdaf', title: 'Vdaf',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'stad', title: 'St,ad',align:'center', width: 100,formatter: roundNum2},
+//                    {field: 'std', title: '干基硫分',align:'center', width: 100},
+//                    {field: 'hd', title: '干基氢',align:'center', width: 100},
+                    {field: 'had', title: 'Had',align:'center', width: 100,formatter: roundNum2},
+                    {field: 'fcad', title: 'FCad',align:'center', width: 100,formatter: roundNum2},
+//                    {field: 'had', title: '空干基碳',align:'center', width: 100},
+//                    {field: 'had', title: '空干基氮',align:'center', width: 100},
+                    {field: 'qbad', title: 'Qb,ad（Mj/kg）',align:'center', width: 100,formatter: roundNum2},
+//                    {field: 'qbar', title: '收到基弹筒发热量',align:'center', width: 100},
+//                    {field: 'qbd', title: '干燥基弹筒发热量',align:'center', width: 100},
+//                    {field: 'qbdaf', title: '干燥无灰基弹筒发热量',align:'center', width: 100},
+//                    {field: 'qgrad', title: 'Qgr,ad（Mj/kg）',align:'center', width: 100,formatter: roundNum2},
+//                    {field: 'qgrar', title: '收到基高位发热量',align:'center', width: 100},
+                    {field: 'qgrd', title: 'Qgr,d（Mj/kg）',align:'center', width: 100,formatter: roundNum2},
+//                    {field: 'qgrdaf', title: '干燥无灰基高位发热量',align:'center', width: 100},
+//                    {field: 'qnetad', title: '空干基低位发热量',align:'center', width: 100}
+                    {field: 'qnetarj', title: 'Qnet,ar（Mj/kg）',align:'center', width: 100,formatter: roundNum2}
+//                    {field: 'qnetark', title: '干燥基低位发热量(kj)',align:'center', width: 100},
+//                    {field: 'qnetdaf', title: '干燥基低位发热量',align:'center', width: 100},
+                ]
+            ],
+            toolbar: '#tbs'
+        })
+    });
+
+    function roundNum1 (values,row){
+        if(values ==null){
+            return "";
+        }
+        var num = 1;
+        var Str = values.split(".");
+        if(Str[0]==null||Str[0]==""){
+            Str[0]="0"
+        }
+        var i = 0;
+        if(Str[1] != null && Str[1] != undefined){
+            i = Str[1].length;
+        }
+        var tmp = "";
+        for(var i ;i < num;i++){
+            tmp += "0";
+        }
+        if(Str[1]==null || Str[1]==undefined){
+            Str[1]=tmp;
+        }else{
+            Str[1] += tmp;
+        }
+        return Str[0]+"."+Str[1];
+    }
+    function roundNum2 (values,row){
+        if(values ==null){
+            return "";
+        }
+        var num = 2;
+        var Str = values.split(".");
+        if(Str[0]==null||Str[0]==""){
+            Str[0]="0"
+        }
+        var i = 0;
+        if(Str[1] != null && Str[1] != undefined){
+            i = Str[1].length;
+        }
+        var tmp = "";
+        for(var i ;i < num;i++){
+            tmp += "0";
+        }
+        if(Str[1]==null || Str[1]==undefined){
+            Str[1]=tmp;
+        }else{
+            Str[1] += tmp;
+        }
+        return Str[0]+"."+Str[1];
+    }
+
+
+
+    //查询
+    function qrySData() {
+        var qryBeginDate = $("#sBeginDate").datebox("getValue");
+        var qryEndDate =  $("#sEndDate").datebox("getValue");
+        var qryLaborVen = $("#sLaborVen").textbox("getValue");
+        var qryLaborMine = $("#sLaborMine").textbox("getValue");
+        var paramObj = new Object();
+
+        if (qryBeginDate != null && qryBeginDate != undefined && qryBeginDate != "") {
+            paramObj.search_beginDate = qryBeginDate;
+        }
+        if (qryEndDate != null && qryEndDate != undefined && qryEndDate != "") {
+            paramObj.search_endDate = qryEndDate;
+        }
+        if (qryLaborVen != null && qryLaborVen != undefined && qryLaborVen != "") {
+            paramObj.search_venName = qryLaborVen;
+        }
+        if (qryLaborMine != null && qryLaborMine != undefined && qryLaborMine != "") {
+            paramObj.search_coalName = qryLaborMine;
+        }
+        //加载数据
+        $reportQryDg.datagrid("load",paramObj);
+    }
+
+
+    function createLabBook() {
+        //处理选择的数据
+        var reportIdArr = [];
+        var rows =  $reportQryDg.datagrid('getSelections');
+        if (rows.length == 0) {
+            showMsg("提示", "选择要提交的化验数据记录");
+            return false;
+        } else {
+            for ( var i = 0; i < rows.length; i++) {
+                if (rows[i].apprStatusCode != '2'){
+                    showMsg("提示", "存在未审批通过的化验报告，无法提交生成台账");
+                    return false;
+                } else {
+                    reportIdArr.push(rows[i].labReportId);
+                }
+            }
+        }
+
+        //取值
+        var paramObj = new Object();
+        paramObj.search_reportIds = JSON.stringify(reportIdArr);
+        paramObj.search_apprEventTypeCd = '6';//生成台账审批
+        $.messager.confirm('提示', '台账将在审批通过之后生效，确定继续?', function (r) {
+            if (r) {
+                $.post("${base}/business/labory/submitLabBook", paramObj, function(rsp) {
+                    if(rsp.successful){
+                        showMsg("提示", rsp.msg);
+                        $reportQryDg.datagrid('reload');
+                    } else {
+                        showMsg("提示", rsp.msg);
+                    }
+                }, "JSON").error(function() {
+                            showMsg("提示", "提交失败！");
+                        });
+            }
+        });
+
+    }
+
+
+    //化验报告预览
+    function previewRpt(){
+        //处理选择的数据
+        var reportIdArr = [];
+        var rows =  $reportQryDg.datagrid('getSelections');
+        if (rows.length == 0) {
+            showMsg("提示", "请选择一条记录查看预览");
+            return false;
+        } else if (rows.length > 1){
+            showMsg("提示", "只能选择一条记录查看预览");
+            return false;
+        }
+
+        window.open('${base}/business/labory/qryLabReportData/'+rows[0].laborCode+'/'+rows[0].apprStatusCode+'/'+rows[0].batchType,
+                'newwindow',
+                'height=820,width=1200,top=0,left=0,toolbar=no,menubar=no,scrollbars=no, resizable=no,location=no, status=no');
+
+    }
+
+</script>

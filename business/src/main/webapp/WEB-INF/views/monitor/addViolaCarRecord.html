@@ -1,0 +1,93 @@
+    <div class="form-div">
+
+        <form id="carViolaRecordForm" method="post">
+                <table>
+                    <tr>
+                        <td>入厂流水</td>
+                        <td><input class="easyui-textbox"   id="recordNo" name="recordNo"  readonly="readonly" style="width:145px;"/></td>
+                        <td>卡号</td>
+                        <td><input class="easyui-textbox"   id="cardId" name="cardId"  readonly="readonly" style="width:210px;"/></td>
+                    </tr>
+                    <tr>
+                        <td>车牌号</td>
+                        <td><input class="easyui-textbox"   id="carId" name="carId" readonly="readonly"  style="width:145px;"/></td>
+                        <td>入厂时间</td>
+                        <td><input class="easyui-textbox"   id="recordDtm" name="recordDtm"  readonly="readonly" style="width:210px;"/></td>
+                    </tr>
+                </table>
+
+                <hr>
+
+                <table>
+                    <tr>
+                        <td>违规类型</td>
+                        <td><select id="violaType" name="violaType" class="easyui-combobox" data-options="required:true,panelHeight:'auto'"  style="width:145px;" >
+                            <option value="0">入厂违规</option>
+                            <option value="1">厂内违规</option>
+                            <option value="2">出厂违规</option>
+                        </select></td>
+                        <!--<td><input id="violateTyp" name="violateTyp" class="easyui-combobox" style="width:145px;"-->
+                                   <!--data-options="required:true,valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/VENDOR_INFO'" /></td>-->
+                        <td>违规等级</td>
+                        <td><select id="violaLevel" name="violaLevel" class="easyui-combobox" data-options="required:true,panelHeight:'auto'"  style="width:210px;" >
+                            <option value="1">普通违规</option>
+                            <option value="2">中级违规</option>
+                            <option value="3">高级违规</option>
+                        </select></td>
+                    </tr>
+                    <tr>
+                        <td>违规时间</td>
+                        <td><input class="easyui-datetimebox"   id="violaTime" name="violaTime" style="width:145px;"/></td>
+                        <td>违规内容</td>
+                        <td><input class="easyui-textbox"   id="violaDesc" name="violaDesc" style="width:210px;"/></td>
+                    </tr>
+                    <tr>
+                    <td  colspan="4" style="text-align: center">
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save"  onclick="save();">保存</a></td>
+                    </tr>
+                </table>
+        </form>
+    </div>
+
+<script type="text/javascript">
+
+   $("#carViolaRecordForm").form('load',selectedRowObj);
+        // 保存数据
+        function save(){
+
+            var selViolaTime = $("#violaTime").datetimebox('getValue');
+            var selViolaType = $("#violaType").combobox('getValue');
+            var selViolaLevel = $("#violaLevel").combobox('getValue');
+            var selViolaDesc = $("#violaDesc").textbox('getValue');
+
+            if (selViolaTime == null || selViolaTime == ""){
+                showMsg("提示","请填写违规时间");
+                return false;
+            }
+            if (selViolaType == null || selViolaType == ""){
+                showMsg("提示","请选择违规类型");
+                return false;
+            }
+            if (selViolaLevel == null || selViolaLevel == ""){
+                showMsg("提示","请选择违规等级");
+                return false;
+            }
+            if (selViolaDesc == null || selViolaDesc == ""){
+                showMsg("提示","请填写违规内容");
+                return false;
+            }
+            var params = $("#carViolaRecordForm").serialize();
+            //alert(params);
+            var postUrl ="${base}/business/monitor/addViolateRec";
+                $.post(postUrl, params, function (rsp) {
+                if (rsp.successful) {
+                    showMsg("提示",rsp.msg);
+                    $('#addViolaDataWin').window('close');
+                } else {
+                    showMsg("提示", rsp.msg);
+                }
+            }).error(function () {
+                showMsg("提示", "新增失败!");
+            });
+        }
+</script>

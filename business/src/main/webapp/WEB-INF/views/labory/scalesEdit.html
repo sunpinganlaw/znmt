@@ -1,0 +1,285 @@
+<div class="form-div">
+    <form id="ff" method="post" commandName="scalesEntity">
+        <input type="hidden" id="scalesResId" name="scalesResId">
+        <input type="hidden" id="relScalesResId" name="relScalesResId">
+            <div title="天平数据录入"style="overflow:auto;padding:0px;">
+                <table >
+                    <tr>
+                        <td >录入类型:</td>
+                        <td>
+                            <input id="scalesType" name="scalesType" style="width:145px;"/>
+                        </td>
+                        <td id="scalesTypeTd"></td>
+                        <td id="scalesTypeContent">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td >测量设备:</td>
+                        <td>
+                            <input id="deviceNo" name="deviceNo" class="easyui-combobox" style="width:145px;"
+                                   data-options="required:true,valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/LABOR_DEVICE'" />
+                        </td>
+                        <td >化验编码:</td>
+                        <td>
+                            <input id="laborCode" name="laborCode" class="easyui-combobox" style="width:145px;"
+                                   data-options="required:true,valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/LABOR_CODE'" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td >坩埚号:</td>
+                        <td>
+                            <input class="easyui-textbox" id="ggNo" name="ggNo" style="width:145px" data-options="required:true,min:0,precision:3">
+                        </td>
+                        <td >煤样瓶重量:</td>
+                        <td>
+                            <input class="easyui-numberbox" id="mypQty" name="mypQty"  style="width:145px" data-options="required:true,min:0,precision:3">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td >样品重量:</td>
+                        <td>
+                            <input class="easyui-numberbox" id="samplingQty" name="samplingQty" style="width:145px" data-options="required:true,min:0,precision:3">
+                        </td>
+                        <td >总重量（煤&瓶）:</td>
+                        <td>
+                            <input class="easyui-numberbox" id="totalQty" name="totalQty"  style="width:145px" data-options="required:true,min:0,precision:3">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td >总重量（煤干燥）:</td>
+                        <td>
+                            <input class="easyui-numberbox" id="afterDryQty" name="afterDryQty" style="width:145px" data-options="required:true,min:0,precision:3">
+                        </td>
+                        <td >干燥后重量:</td>
+                        <td>
+                            <input class="easyui-numberbox" id="testQty" name="testQty"  style="width:145px" data-options="required:true,min:0,precision:3">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td >质量损失:</td>
+                        <td>
+                            <input class="easyui-numberbox" id="qtyLoss" name="qtyLoss" style="width:145px" data-options="required:true,min:0,precision:3">
+                        </td>
+                        <td id="lossStyleTd"></td>
+                        <td id="lossStyleTdContent">
+                        </td>
+                    </tr>
+                    <tr id="adTr">
+                    </tr>
+                </table>
+            </div>
+    </form>
+    <div class="submit-div">
+        <a href="javascript:void(0)" id="addButton" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm()">提交</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="clearFrom();">重置</a>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+//        $("input[id!='scalesType']").attr("disabled", true);
+        $('#scalesType').combobox({
+            url:'${base}/business/tool/getDictionaryByType/LAB_SCALES_TYPE',
+            valueField:'id',
+            textField:'name',
+            panelHeight:'auto',
+            required:true,
+            onLoadSuccess: function () { //加载完成后,设置选中第一项
+                var val = $(this).combobox("getData");
+                for (var item in val[0]) {
+                    if (item == "id") {
+                        $(this).combobox("select", val[0][item]);
+                    }
+                }
+            },
+            onSelect:function () {
+                if ($(this).combobox("getValue") == "1") {
+                    $("#scalesTypeTd").text("全水分:");
+                    $("#scalesTypeContent").html("").append('<input style="display: none" type="text" id="mt" name="mt"/>');
+                    $("#mt").css({display: "block",width:"145px"}).numberbox({
+                        min:0,
+                        precision:3,
+                        required:true
+                    });
+                    $("#ggNo").textbox({
+                        required:false
+                    });
+                    $("#mypQty").numberbox({
+                        required:false
+                    });
+                    $("#samplingQty").numberbox({
+                        required:false
+                    });
+                    $("#totalQty").numberbox({
+                        required:false
+                    });
+                    $("#afterDryQty").numberbox({
+                        required:false
+                    });
+                    $("#testQty").numberbox({
+                        required:false
+                    });
+                    $("#qtyLoss").numberbox({
+                        required:false
+                    });
+                    $("#adTr").html("");
+                    $("#lossStyleTd").text("");
+                    $("#lossStyleTdContent").html("");
+                } else if ($(this).combobox("getValue") == "2") {
+                    $("#scalesTypeTd").text("水分:");
+                    $("#scalesTypeContent").html("").append('<input style="display: none" type="text" id="mad" name="mad"/>');
+                    $("#mad").css({display: "block",width:"145px"}).numberbox({
+                        min:0,
+                        precision:3,
+                        required:true
+                    });
+                    $("#ggNo").textbox({
+                        required:true
+                    });
+                    $("#mypQty").numberbox({
+                        required:true
+                    });
+                    $("#samplingQty").numberbox({
+                        required:true
+                    });
+                    $("#totalQty").numberbox({
+                        required:true
+                    });
+                    $("#afterDryQty").numberbox({
+                        required:true
+                    });
+                    $("#testQty").numberbox({
+                        required:true
+                    });
+                    $("#qtyLoss").numberbox({
+                        required:true
+                    });
+                    $("#adTr").html("");
+                    $("#lossStyleTd").text("");
+                    $("#lossStyleTdContent").html("");
+                } else if ($(this).combobox("getValue") == "3") {
+                    //$("#adStyle");  $("#ad");
+                    $("#scalesTypeTd").text("空干基灰分:");
+                    $("#scalesTypeContent").html("").append('<input style="display: none" type="text" id="add" name="add"/>');
+                    $("#add").css({display: "block",width:"145px"}).numberbox({
+                        min:0,
+                        precision:3,
+                        required:true
+                    });
+                    $("#adTr").html("").append('<td >灰分化验方式:</td><td><input style="display: none" type="text" id="adStyle" name="adStyle"/></td>' +
+                                                 '<td >干基灰分:</td><td><input style="display: none" type="text" id="ad" name="ad"/></td>');
+                    $("#ad").css({display: "block",width:"145px"}).numberbox({
+                        min:0,
+                        precision:3
+                    });
+                    $('#adStyle').combobox({
+                        url:'${base}/business/tool/getDictionaryByType/AD_STYLE',
+                        valueField:'id',
+                        textField:'name',
+                        panelHeight:'auto'
+                    });
+                    $("#ggNo").textbox({
+                        required:true
+                    });
+                    $("#mypQty").numberbox({
+                        required:true
+                    });
+                    $("#samplingQty").numberbox({
+                        required:true
+                    });
+                    $("#totalQty").numberbox({
+                        required:true
+                    });
+                    $("#afterDryQty").numberbox({
+                        required:true
+                    });
+                    $("#testQty").numberbox({
+                        required:true
+                    });
+                    $("#qtyLoss").numberbox({
+                        required:true
+                    });
+                    $("#lossStyleTd").text("");
+                    $("#lossStyleTdContent").html("");
+                } else if ($(this).combobox("getValue") == "4") {
+                    $("#scalesTypeTd").text("挥发分:");
+                    $("#scalesTypeContent").html("").append('<input style="display: none" type="text" id="vad" name="vad"/>');
+                    $("#vad").css({display: "block",width:"145px"}).numberbox({
+                        min:0,
+                        precision:3,
+                        required:true
+                    });
+                    $("#ggNo").textbox({
+                        required:true
+                    });
+                    $("#mypQty").numberbox({
+                        required:true
+                    });
+                    $("#samplingQty").numberbox({
+                        required:true
+                    });
+                    $("#totalQty").numberbox({
+                        required:true
+                    });
+                    $("#afterDryQty").numberbox({
+                        required:true
+                    });
+                    $("#testQty").numberbox({
+                        required:true
+                    });
+                    $("#qtyLoss").numberbox({
+                        required:true
+                    });
+                    $("#adTr").html("");
+                    $("#lossStyleTd").text("焦渣特性:");
+                    $("#lossStyleTdContent").html('<input style="display: none" type="text" id="lossStyle" name="lossStyle"/>');
+                    $('#lossStyle').combobox({
+                        url:'${base}/business/tool/getDictionaryByType/LOSS_STYLE',
+                        valueField:'id',
+                        textField:'name',
+                        panelHeight:'auto',
+                        required:true
+                    });
+                }
+                //$("input:gt(0)").attr("disabled", false);
+            }
+        });
+    });
+
+    function clearFrom() {
+            $('#ff').form('clear');
+    }
+    function save() {
+        var params = $("#ff").serialize();
+        var postUrl = "${base}/business/labory/addScales";
+        $.post(postUrl, params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示",rsp.msg);
+                $('#scalesEditWin').window('close');
+            } else {
+                showMsg("提示", rsp.msg);
+                $('#addButton').linkbutton({disabled:false});
+            }
+        }).error(function () {
+            showMsg("提示", "保存失败!");
+            $('#addButton').linkbutton({disabled:false});
+        });
+    }
+
+    $('#ff').find('input').on('keyup',function(event){
+        if(event.keyCode == '13'){
+            submitForm();
+        }
+    });
+    function submitForm(){
+        if (! $("#ff").form('validate'))  return false;
+        $('#addButton').linkbutton({disabled:true});
+        save();
+    }
+    function showMsg(title,msg)
+    {
+        $.messager.show({
+            title:title,
+            msg:msg
+        });
+    }
+</script>

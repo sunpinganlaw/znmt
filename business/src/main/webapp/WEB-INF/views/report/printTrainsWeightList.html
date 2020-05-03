@@ -1,0 +1,144 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <#include "/include/common_min.html"/>
+<title>打印火车计量单</title>
+<style type="text/css">
+    body{ background-color:#fff; color:#000; font-size:1.1em; width:1000px; margin:0 auto;}
+    h1{ font-size:1.7em; text-align:center; line-height:2em;}
+    table.table01{border-left:1px solid #000;border-top:1px solid #000;border-bottom:1px solid #000;}
+    table.table01 td{ border-right:1px solid #000;border-bottom:1px solid #000; padding:5px; line-height: 1.8em;}
+    table.table01 th{text-align:center;font-size:1.3em; border-right:1px solid #000;border-bottom:1px solid #000; font-weight: normal;line-height: 1.8em;}
+
+    table.table02{ border-left:1px solid #000;}
+    table.table02 td{ border-right:1px solid #000;border-bottom:1px solid #000; padding:5px;}
+
+    .styip01 input{ margin-right:12px;}
+    input[type=checkbox]{ vertical-align:middle;}
+    .stymr01{ margin-right:100px;}
+    .stymr02{ margin-right:40px;}
+</style>
+</head>
+
+<body>
+<!--startprint-->
+<h1>哈尔滨热电有限公司轨道衡计量单</h1>
+
+<div style=" width: 98%">
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;批次号：<span id="batchNoPrnt">&nbsp;</span>
+    &nbsp;&nbsp;&nbsp;称重时间：<span id="czDtmPrnt">&nbsp;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;重量单位：<span>吨</span>
+</div>
+<div style=" width: 10%">&nbsp;</div>
+
+<table id="printTable" width="98%" border="0" cellspacing="0" cellpadding="0" class="table01">
+    <tr>
+        <th  width="8%">序号</th>
+        <th  width="8%">车号</th>
+        <th  width="8%">毛重</th>
+        <th  width="8%">皮重</th>
+        <th  width="8%">净重</th>
+        <th  width="8%">票重</th>
+        <th  width="8%">盈亏</th>
+        <th  width="8%">煤种</th>
+        <th  width="20%">发货单位</th>
+        <th  width="8%">车型</th>
+        <th  width="8%">轨道号</th>
+    </tr>
+</table>
+
+<div style=" width: 10%">&nbsp;</div>
+<div style=" width: 98%">
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;制表：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;审核：
+</div>
+
+<!--endprint-->
+
+<div>&nbsp;</div>
+<div id="printButton2" style="text-align: right; width: 90%">
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-print" onclick="printJLD();">打印</a>
+</div>
+
+</body>
+</html>
+
+<script type="text/javascript">
+    $(function(){
+        var batchNo = JSON.stringify("${batchNo}").replaceAll("\"","");
+        var paramsObj = {};
+        paramsObj.search_batchNo = batchNo;
+
+        var czDtm = " ";
+        var totalMz = 0;
+        var totalPz = 0;
+        var totalNet = 0;
+        var totalTick = 0;
+        var totalYd = 0;
+
+        $.post("${base}/business/monitor/trainDetailList", paramsObj, function(rsp) {
+            var arr = rsp.rows;
+            var table1 = $('#printTable');
+            for (var i=0; i<arr.length; i++) {
+                var row = $("<tr></tr>");
+                var td = $("<td style='text-align:center;'>"+
+                        (arr[i].xhNum==null?"&nbsp;":arr[i].xhNum)+"</td><td style='text-align:center;'>"+
+                        (arr[i].carId==null?"&nbsp;":arr[i].carId)+"</td><td style='text-align:center;'>"+
+                        (arr[i].mzQty==null?"&nbsp;":arr[i].mzQty)+"</td><td style='text-align:center;'>"+
+                        (arr[i].pzQty==null?"&nbsp;":arr[i].pzQty)+"</td><td style='text-align:center;'>"+
+                        (arr[i].netQty==null?"&nbsp;":arr[i].netQty)+"</td><td style='text-align:center;'>"+
+                        (arr[i].tickQty==null?"&nbsp;":arr[i].tickQty)+"</td><td style='text-align:center;'>"+
+                        (arr[i].ydQty==null?"&nbsp;":arr[i].ydQty)+"</td><td style='text-align:center;'>"+
+                        (arr[i].coalName==null?"&nbsp;":arr[i].coalName)+"</td><td style='text-align:center;'>"+
+                        (arr[i].venName==null?"&nbsp;":arr[i].venName)+"</td><td style='text-align:center;'>"+
+                        (arr[i].carTyp==null?"&nbsp;":arr[i].carTyp)+"</td><td style='text-align:center;'>"+
+                        (arr[i].trackNo==null?"&nbsp;":arr[i].trackNo)+"</td>");
+                row.append(td);
+                table1.append(row);
+
+                totalMz = totalMz + parseFloat(arr[i].mzQty==null?"0":arr[i].mzQty);
+                totalPz = totalPz + parseFloat(arr[i].pzQty==null?"0":arr[i].pzQty);
+                totalNet = totalNet + parseFloat(arr[i].netQty==null?"0":arr[i].netQty);
+                totalTick = totalTick + parseFloat(arr[i].tickQty==null?"0":arr[i].tickQty);
+                totalYd = totalYd + parseFloat(arr[i].ydQty==null?"0":arr[i].ydQty);
+
+                czDtm = arr[i].czDtm==null?"-":arr[i].czDtm;
+            }
+
+
+            var row = $("<tr></tr>");
+            var td = $("<td style='text-align:center;font-size:1.5em;'>合计</td>"+
+                    "<td style='text-align:center;'>&nbsp;</td>"+
+                    "<td style='text-align:center;font-size:1.5em;'>"+totalMz.toFixed(2)+"</td>"+
+                    "<td style='text-align:center;font-size:1.5em;'>"+totalPz.toFixed(2)+"</td>"+
+                    "<td style='text-align:center;font-size:1.5em;'>"+totalNet.toFixed(2)+"</td>"+
+                    "<td style='text-align:center;font-size:1.5em;'>"+totalTick.toFixed(2)+"</td>"+
+                    "<td style='text-align:center;font-size:1.5em;'>"+totalYd.toFixed(2)+"</td>"+
+                    "<td style='text-align:center;'>&nbsp;</td>"+
+                    "<td style='text-align:center;'>&nbsp;</td>"+
+                    "<td style='text-align:center;'>&nbsp;</td>"+
+                    "<td style='text-align:center;'>&nbsp;</td>");
+            row.append(td);
+            table1.append(row);
+
+            document.getElementById("batchNoPrnt").innerText =  batchNo;
+            document.getElementById("czDtmPrnt").innerText =  czDtm;
+        });
+    });
+
+    function printJLD() {
+        var bdhtml = window.document.body.innerHTML;
+        var sprnstr = "<!--startprint-->";
+        var eprnstr = "<!--endprint-->";
+        var prnhtml = bdhtml.substr(bdhtml.indexOf(sprnstr)+17);
+        prnhtml = prnhtml.substring(0,prnhtml.indexOf(eprnstr));
+        window.document.body.innerHTML=prnhtml;
+        window.print();
+    }
+</script>

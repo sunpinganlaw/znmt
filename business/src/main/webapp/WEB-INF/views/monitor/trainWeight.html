@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>火车称重监控</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+    <style>
+        html,body{height:100%;}
+    </style>
+</head>
+
+<body>
+
+<div id="cc" class="easyui-layout" style="height:100%;">
+
+    <!--北部区域暂时没用-->
+    <!--<div data-options="region:'north',title:'North Title',split:true" style="height:100px;"></div>-->
+
+    <div data-options="region:'west',title:'',noheader:'true',split:true" style="width:19%;">
+
+        <div id="p123" class="easyui-panel" title="今日过磅信息" style="width:100%;height:157px;padding:0px;" data-options="fit:false" >
+            <table id="qk" class="easyui-datagrid"  data-options="method:'get',border:true,singleSelect:true,fitColumns:true,showHeader:false">
+                <thead>
+                <tr>
+                    <th data-options="field:'weightKey',width:70,align:'center'">过磅信息</th>
+                    <th data-options="field:'weightVal',width:40,align:'center'">值</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+
+        <div id="p" class="easyui-panel" title="今日动态信息" data-options="fit:false"  style="width:100%;height:155px;padding:0px;">
+            <p>动态信息1</p>
+            <p>动态信息2</p>
+            <p>动态信息3</p>
+        </div>
+    </div>
+
+
+    <div data-options="region:'center',title:'工作状况',noheader:'true'" style="padding:5px;align:center;">
+        <iframe src="${base}/cocosresource/KLMY_QCCZ/index.html" width="1000" height="500"></iframe>
+    </div>
+
+    <!--视频区域暂时屏蔽-->
+    <!--<div data-options="region:'east',iconCls:'icon-reload',title:'视频监控',split:true" style="width:350px;"></div>-->
+    <div data-options="region:'south',title:'称重信息明细',split:true" style="height:200px;">
+        <table id="tt" class="easyui-datagrid"  data-options="method:'get',border:false,singleSelect:true,fit:true,fitColumns:true">
+            <thead>
+            <tr>
+                <th data-options="field:'recordNo',width:30,align:'center'">流水号</th>
+                <th data-options="field:'carId',width:40,align:'center'">车牌号</th>
+                <th data-options="field:'colryName',width:60,align:'center'">煤矿</th>
+                <th data-options="field:'coalName',width:40,align:'center'">煤种</th>
+                <th data-options="field:'carrierName',width:50,align:'center'">运输单位</th>
+                <th data-options="field:'mzQty',width:20,align:'center'">毛重</th>
+                <th data-options="field:'pzQty',width:20,align:'center'">皮重</th>
+                <th data-options="field:'netQty',width:20,align:'center'">净重</th>
+                <th data-options="field:'czTime',width:50,align:'center'">称重时间</th>
+                <th data-options="field:'jqTime',width:50,align:'center'">称轻时间</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+    //查询今日过磅信息
+    function qrySummryWeightCnt(){
+        var paramObj = new Object();
+        //查询日期默认取当前日的
+        var myDate = new Date();
+        var beginTime = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate()+" 00:00:00";
+        var endTime =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate()+" 23:59:59";
+        paramObj.search_beginTime = beginTime;
+        paramObj.search_endTime = endTime;
+
+        $.post("${base}/business/trainReport/weightSummaryRpt", paramObj, function (rsp) {
+            if (rsp) {
+                $('#qk').datagrid({
+                    data: [
+                        {weightKey:'重磅过磅车数', weightVal:rsp.totalCZCnt},
+                        {weightKey:'重磅称重总量', weightVal:rsp.totalMzQty},
+                        {weightKey:'轻磅过磅车数', weightVal:rsp.totalJQCnt},
+                        {weightKey:'轻磅称重总量', weightVal:rsp.totalPzQty},
+                        {weightKey:'总净重', weightVal:rsp.totalNetQty}
+                    ]
+                });
+            } else {
+                showMsg("提示", "查询今日过磅信息失败!");
+            }
+        }).error(function () {
+            showMsg("提示", "查询今日过磅信息异常!");
+        });
+    }
+
+    //刚进入页面的时候初始执行查询汇总报表
+    qrySummryWeightCnt();
+
+    //每过30秒刷新一次称重信息
+    window.setInterval(qrySummryWeightCnt, 30*1000);
+
+
+    ///////////////////////////////////////加载明细数据
+    $dg = $("#tt");
+    var url = '${base}/business/trainMonitor/weightList';
+    $(function(){
+        $dg.datagrid({
+            iconCls: 'icon-edit',
+            height: $(this).height() - 46,
+            width: $(this).width() - 10,
+            singleSelect: true,
+            animate: true,
+            fitColumns: true,
+            idField: 'recordNo',
+            url: url,
+            pagination: true,
+            rownumbers: true
+        });
+    });
+
+</script>

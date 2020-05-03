@@ -1,0 +1,2008 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>化验数据查询和确认</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <#include "/include/common.html"/>
+
+</head>
+
+<body>
+<div id="scalesEditWin" ></div>
+<div id="scalesLotAddWin" ></div>
+<div class="easyui-tabs" style="width:100%;height:490px">
+    <div title="化验天平" style="padding:10px">
+        <div id="tb">
+            <label for="laborCode">化验编码：</label>
+            <input id="laborCode" style="width:120px;"/>
+            <label for="scalesBeginDate">化验日期：</label>
+            <input class="easyui-datebox" id="scalesBeginDate" style="width:120px">&nbsp;—&nbsp;
+            <input class="easyui-datebox" id="scalesEndDate"  style="width:120px">
+
+            <label for="scalesBatchType">化验批次类型：</label>
+            <input id="scalesBatchType" style="width:120px;"/>
+            <label for="scalesStatus">确认状态：</label>
+            <input id="scalesStatus" style="width:120px;"/>
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qryScalesData();">查询</a>
+
+            <@shiro.hasPermission name="LabOrgDataMgr:control1">
+            <!--<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-ok" onclick="saveScalesRows();">确认提交</a>-->
+            <!--<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-cancel" onclick="deleteScalesRows()">确认无效</a>-->
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-ok" onclick="addLotScalesRows();">确认提交</a>
+            </@shiro.hasPermission>
+
+            <@shiro.hasPermission name="LabOrgDataMgr:save">
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="addScalesRows('-1');">新增</a>
+            </@shiro.hasPermission>
+        </div>
+
+        <table id="labScalesDataDg" ></table>
+    </div>
+
+
+    <div title="定硫仪" style="padding:10px">
+        <div id="tbs">
+            <label for="sLaborCode">化验编码：</label>
+            <input id="sLaborCode" style="width:120px;"/>
+            <label for="sBeginDate">化验日期：</label>
+            <input class="easyui-datebox" id="sBeginDate" style="width:120px">&nbsp;—&nbsp;
+            <input class="easyui-datebox" id="sEndDate"  style="width:120px">
+
+            <label for="sBatchType">化验批次类型：</label>
+            <input id="sBatchType" style="width:120px;"/>
+            <label for="sStatus">确认状态：</label>
+            <input id="sStatus" style="width:120px;"/>
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qrySData();">查询</a>
+            <@shiro.hasPermission name="LabOrgDataMgr:control1">
+			<!--<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-ok" onclick="saveSRows();">确认提交</a>-->
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-cancel" onclick="deleteSRows()">确认无效</a>
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-ok" onclick="addLotSRows();">批量确认</a>
+            <!--<span style="color: #0099FF">双击记录可编辑输入</span>-->
+            </@shiro.hasPermission>
+        </div>
+
+        <table id="labSDataDg" ></table>
+    </div>
+
+    <div title="工业分析仪" style="padding:10px">
+        <div id="tbindst">
+            <label for="iLaborCode">化验编码：</label>
+            <input id="iLaborCode" style="width:120px;"/>
+            <label for="iBeginDate">化验日期：</label>
+            <input class="easyui-datebox" id="iBeginDate" style="width:120px">&nbsp;—&nbsp;
+            <input class="easyui-datebox" id="iEndDate"  style="width:120px">
+
+            <label for="iBatchType">化验批次类型：</label>
+            <input id="iBatchType" style="width:120px;"/>
+            <label for="iStatus">确认状态：</label>
+            <input id="iStatus" style="width:120px;"/>
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qryIData();">查询</a>
+
+            <@shiro.hasPermission name="LabOrgDataMgr:control1">
+			<!--<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-ok" onclick="saveIRows();">确认提交</a>-->
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-cancel" onclick="deleteIRows()">确认无效</a>
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-ok" onclick="addLotIRows();">批量确认</a>
+            <!--<span style="color: #0099FF">双击记录可编辑输入</span>-->
+			</@shiro.hasPermission>
+        </div>
+
+        <table id="labIDataDg" ></table>
+    </div>
+
+    <div title="量热仪" style="padding:10px">
+        <div id="tbhot">
+            <label for="hLaborCode">化验编码：</label>
+            <input id="hLaborCode" style="width:120px;"/>
+            <label for="hBeginDate">化验日期：</label>
+            <input class="easyui-datebox" id="hBeginDate" style="width:120px">&nbsp;—&nbsp;
+            <input class="easyui-datebox" id="hEndDate"  style="width:120px">
+
+            <label for="hBatchType">化验批次类型：</label>
+            <input id="hBatchType" style="width:120px;"/>
+            <label for="hStatus">确认状态：</label>
+            <input id="hStatus" style="width:120px;"/>
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qryHotData();">查询</a>
+
+            <@shiro.hasPermission name="LabOrgDataMgr:control1">
+            <!--<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-ok" onclick="saveHotRows();">确认提交</a>-->
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-cancel" onclick="deleteHotRows()">确认无效</a>
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-ok" onclick="addLotHotRows();">批量确认</a>
+            <!--<span style="color: #0099FF">双击记录可编辑输入</span>-->
+            </@shiro.hasPermission>
+        </div>
+
+        <table id="labHotDataDg" ></table>
+    </div>
+
+    <div title="光波分析仪" style="padding:10px">
+        <div id="tbla">
+            <label for="laLaborCode">化验编码：</label>
+            <input id="laLaborCode" style="width:120px;"/>
+            <label for="laBeginDate">化验日期：</label>
+            <input class="easyui-datebox" id="laBeginDate" style="width:120px">&nbsp;—&nbsp;
+            <input class="easyui-datebox" id="laEndDate"  style="width:120px">
+
+            <label for="laBatchType">化验批次类型：</label>
+            <input id="laBatchType" style="width:120px;"/>
+            <label for="laStatus">确认状态：</label>
+            <input id="laStatus" style="width:120px;"/>
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qryLaData();">查询</a>
+            <@shiro.hasPermission name="LabOrgDataMgr:control1">
+            <!--<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-ok" onclick="saveLaRows();">确认提交</a>-->
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-cancel" onclick="deleteLaRows()">确认无效</a>
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-ok" onclick="addLotLaRows();">批量确认</a>
+            <!--<span style="color: #0099FF">双击记录可编辑输入</span>-->
+            </@shiro.hasPermission>
+        </div>
+
+        <table id="labLaDataDg" ></table>
+       </div>
+        <div title="红外测氢仪" style="padding:10px">
+            <div id="tbhw">
+                <label for="hwLaborCode">化验编码：</label>
+                <input id="hwLaborCode" style="width:120px;"/>
+                <label for="hwBeginDate">化验日期：</label>
+                <input class="easyui-datebox" id="hwBeginDate" style="width:120px">&nbsp;—&nbsp;
+                <input class="easyui-datebox" id="hwEndDate"  style="width:120px">
+
+                <label for="hwBatchType">化验批次类型：</label>
+                <input id="hwBatchType" style="width:120px;"/>
+                <label for="hwStatus">确认状态：</label>
+                <input id="hwStatus" style="width:120px;"/>
+                <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qryhwData();">查询</a>
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-cancel" onclick="deletehwRows()">确认无效</a>
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-ok" onclick="addLothwRows();">批量确认</a>
+                <!--<span style="color: #0099FF">双击记录可编辑输入</span>-->
+            </div>
+            <table id="labHwDataDg" ></table>
+    </div>
+</div>
+
+
+</body>
+</html>
+
+<script type="text/javascript">
+    //公共部分信息
+    var selectedScaless;//天平选择行
+    var selectedS;//硫分选择行
+    var selectedI;//工业分析选择行
+    var selectedHot;//量热仪选择行
+    var selectedLa;//量热仪选择行
+    var selectedHw;//量热仪选择行
+    var dataType;
+    var thisDate = new Date();
+    var beginDate = thisDate.getFullYear()+"-"+(parseInt(thisDate.getMonth())+1)+"-"+thisDate.getDate();
+    var endDate =  thisDate.getFullYear()+"-"+(parseInt(thisDate.getMonth())+1)+"-"+thisDate.getDate();
+    var lossStyleList = [{"value":"1","text":"焦渣特性一"},{"value":"2","text":"焦渣特性二"},
+        {"value":"3","text":"焦渣特性三"},{"value":"4","text":"焦渣特性四"},
+        {"value":"5","text":"焦渣特性五"},{"value":"6","text":"焦渣特性六"},
+        {"value":"7","text":"焦渣特性七"},{"value":"8","text":"焦渣特性八"}];
+
+    //计算日期差
+    function diffDate(date1, date2){
+        Date.prototype.diff = function(date){
+            return (this.getTime() - date.getTime())/(24 * 60 * 60 * 1000);
+        }
+        // 构造两个日期，分别是系统时间和2013/04/08 12:43:45
+        var beginDate = new Date(date1);
+        var endDate = new Date(date2);
+        // 调用日期差方法，求得参数日期与系统时间相差的天数
+        var diff = endDate.diff(beginDate);
+        return diff;
+    }
+    //////////////////////////////////////////////////天平 begin/////////////////////////////////////////////////////////////
+    $scalesDg = $("#labScalesDataDg");
+    $(function () {
+        $("#scalesStatus").combobox({
+            panelHeight:'auto',
+            valueField:'id',
+            textField:'name',
+            data: [
+                {id: '', name: '全部'},
+                {id: '0', name: '未确认', selected: true},
+                {id: '1',name: '已确认'}
+            ]
+        });
+
+
+        $('#scalesBatchType').combobox({
+            panelHeight:'auto',
+            valueField:'id',
+            textField:'name',
+            data: [
+                {id: '', name: '全部', selected: true},
+                {id: '1', name: '第1次化验'},
+                {id: '2', name: '第2次化验'},
+                {id: '3',name: '第3次化验'},
+                {id: '4',name: '第4次化验'}
+            ]
+        });
+    });
+
+    //下拉框获取化验编码
+    $('#laborCode').combobox({
+        url: '${base}/business/tool/getComboboxOpt/LABOR_CODE',
+        panelHeight:'auto',
+        valueField:'id',
+        textField:'name'
+    });
+
+    function lossStyleFormatter(values,row){
+        for(var i=0; !(i >= lossStyleList.length); i++){
+            if (lossStyleList[i].value == values) return lossStyleList[i].text;
+        }
+        return values;
+    }
+
+    $(function () {
+        $scalesDg.datagrid({
+            url: "${base}/business/labory/qryScalesResOrgData",
+            fitColumns: true,//此处一定不要自适应
+            height: 430,
+            width: $(this).width() - 25,
+            idField:'id',
+            queryParams: {//默认查询是当天
+                search_status:'0',
+                search_beginDate:beginDate,
+                search_endDate:endDate
+            },
+            rowStyler: function(index,row){
+                if (row.ccVal >=1){
+                    return 'background-color:red;font-weight:bold;';
+                }
+            },
+            frozenColumns: [
+                [   {field: 'id', title: 'ID', width: 10, align:'center',checkbox:true},
+                    {field: 'laborCode', title: '化验编码',align:'center', width:100},
+                    {field: 'statusName', title: '确认状态',align:'center', width: 70},
+                    {field: 'batchType', title: '化验批次类型',align:'center', width: 100},
+                    {field: 'opTime', title: '化验时间',align:'center', width: 130},
+                    {field: 'opName', title: '化验人',align:'center', width: 70}
+                ]
+            ],
+            columns: [
+                [
+                    {field: 'lossStyle', title: '焦渣特性',align:'center', width: 100,hidden:true, editor: {type: "combobox",  options: {data:[{"value":"1","text":"焦渣特性一"},{"value":"2","text":"焦渣特性二"},
+                        {"value":"3","text":"焦渣特性三"},{"value":"4","text":"焦渣特性四"},
+                        {"value":"5","text":"焦渣特性五"},{"value":"6","text":"焦渣特性六"},
+                        {"value":"7","text":"焦渣特性七"},{"value":"8","text":"焦渣特性八"}],
+                        required: true,
+                        valueField:'value',
+                        textField:'text' }},formatter:lossStyleFormatter},
+                    {field: 'standard', title: '执行标准',align:'center', width: 100 ,hidden:true,editor: {type: "combobox",  options: {url:'${base}/business/tool/getComboboxOpt/SCALES_STANDARD',
+                        required: true,
+                        valueField:'id',
+                        textField:'name',
+                        panelHeight:'auto' }},formatter:scStandardFormatter},
+                    {field: 'temperature', title: '温度',align:'center', width: 70,editor: {type: "numberbox", options: {min:0, precision:1}},hidden:true},
+                    {field: 'humidity', title: '湿度',align:'center', width: 70,editor: {type: "numberbox", options: {min:0, precision:1}},hidden:true},
+                    {field: 'ggNo', title: '坩埚号',align:'center', width: 70,hidden:true},
+                    {field: 'mt', title: '全水分',align:'center', width: 70},
+                    {field: 'mad', title: '水分',align:'center', width: 70},
+                    {field: 'adStyle', title: '灰分化验方式',align:'center', width: 70,hidden:true},
+                    {field: 'ccVal', title: '超差',align:'center', width: 70,hidden:true},
+                    {field: 'aad', title: '空干基灰分',align:'center', width: 70},
+                    {field: 'ad', title: '干基灰分',align:'center', width: 70,hidden:true},
+                    {field: 'vad', title: '挥发分',align:'center', width: 70},
+//                    {field: 'lossStyle', title: '焦渣特性',align:'center', width: 100,formatter: lossStyleFormatter},
+                    {field: 'deviceName', title: '化验设备',align:'center', width: 70},
+                    {field: 'mypQty', title: '煤样瓶重量',align:'center', width: 70},
+                    {field: 'samplingQty', title: '样品重量',align:'center', width: 70},
+                    {field: 'totalQty', title: '总重量',align:'center', width: 70},
+                    {field: 'afterDryQty', title: '干燥后总重量',align:'center', width: 70},
+                    {field: 'testQty', title: '检查后干燥重量',align:'center', width: 70},
+                    {field: 'qtyLoss', title: '重量损失',align:'center', width: 70}
+                ]
+            ],
+            toolbar: '#tb',
+            onBeforeEdit:function(index,row){
+                $scalesDg.datagrid('refreshRow', index);
+            },
+            onAfterEdit:function(index,row){
+            },
+            onCancelEdit:function(index,row){
+            },
+            onDblClickRow:function(rowIndex){
+                $scalesDg.datagrid('beginEdit', rowIndex);
+            },
+            onClickRow:function(rowIndex){
+                var rows =  $scalesDg.datagrid('getRows');
+                for ( var i = 0; !(i >= rows.length); i++) {
+                    $scalesDg.datagrid('endEdit', i);
+                }
+            }
+        })
+    });
+
+    function scStandardFormatter(val,row,index) {
+        var returnval = '';
+
+        $.ajax({
+            async: false,
+            cache: false,
+            type: 'POST',
+            url: "${base}/business/tool/getComboboxOpt/SCALES_STANDARD",
+            error: function () {// 请求失败处理函数
+                showMsg("提示", "查询数据失败,数据库中无此数据!");
+            },
+            success: function (rsp) {
+                var len = rsp.length;
+                for(var i =0;i < len;i++){
+                    if(row.standard==rsp[i].id){
+                        returnval =  rsp[i].name;
+                    }
+                }
+            }
+        });
+        return returnval;
+    }
+
+    function qryScalesData() {
+        var qryBeginDate = $("#scalesBeginDate").datebox("getValue");
+        var qryEndDate =  $("#scalesEndDate").datebox("getValue");
+        var qryStatus = $("#scalesStatus").combobox("getValue");
+        var qryBatchType = $("#scalesBatchType").combobox("getValue");
+        var qryLaborCode = $("#laborCode").textbox("getValue");
+
+        if (qryLaborCode == null || qryLaborCode ==""){
+            if ((qryBeginDate ==null || qryBeginDate =="" || qryBeginDate.length==0)
+                    ||(qryEndDate ==null || qryEndDate =="" || qryEndDate.length==0)){
+                showMsg("提示", "请选择化验编码或化验日期（如果选择化验编码，会加快查询速度）!");
+                return false;
+            } else {
+                if (diffDate(qryBeginDate, qryEndDate) > 10){
+                    showMsg("提示", "查询日期跨度不能超过10天!");
+                    return false;
+                }
+            }
+        }
+
+        var paramObj = new Object();
+
+        if (qryBeginDate != undefined && qryBeginDate != null && qryBeginDate != "") {
+            paramObj.search_beginDate = qryBeginDate;
+        }
+
+        if (qryEndDate != undefined && qryEndDate != null && qryEndDate != "") {
+            paramObj.search_endDate = qryEndDate;
+        }
+
+        if (qryStatus != null && qryStatus != undefined && qryStatus != "") {
+            paramObj.search_status = qryStatus;
+        }
+
+        if (qryBatchType != null && qryBatchType != undefined && qryBatchType != "") {
+            paramObj.search_batchType = qryBatchType;
+        }
+
+        if (qryLaborCode != null && qryLaborCode != undefined && qryLaborCode != "") {
+            paramObj.search_laborCode = qryLaborCode;
+        }
+        $scalesDg.datagrid("load",paramObj);
+    }
+
+
+    //保存天平修改数据
+    function deleteScalesRows() {
+
+        //处理选择的数据
+        var rows =  $scalesDg.datagrid('getSelections');
+        if (rows.length == 0) {
+            showMsg("提示", "选择要提交的化验数据记录");
+            return false;
+        }
+        var effectRow = new Object();
+        effectRow["updated"] = JSON.stringify(rows);
+
+        $.messager.confirm('提示', '相关化验批次的数据失效，确定继续?', function (r) {
+            if (r) {
+                //提交数据   scales表示天平
+                $.post("${base}/business/labory/deleteLabData/SCALES", effectRow, function(rsp) {
+                    if(rsp.successful){
+                        showMsg("提示", rsp.msg+"  当前数据已失效。");
+                        $scalesDg.datagrid('reload');
+                        $scalesDg.datagrid('clearChecked');
+                        $scalesDg.datagrid('clearSelections');
+                    } else {
+                        showMsg("提示", rsp.msg);
+                    }
+                }, "JSON").error(function() {
+                            showMsg("提示", "保存失败！");
+                        });
+            }
+        });
+
+    }
+
+
+        function saveScalesRows() {
+            //先结束编辑
+            var allRows =  $scalesDg.datagrid('getRows');
+            for ( var i = 0; !(i >= allRows.length); i++) {
+                $scalesDg.datagrid('endEdit', i);
+            }
+
+            //处理选择的数据
+            var rows =  $scalesDg.datagrid('getSelections');
+            if (rows.length == 0) {
+                showMsg("提示", "选择要提交的化验数据记录");
+                return false;
+            }
+
+            for ( var i = 0; !(i >= rows.length); i++) {
+                if (rows[i].status != "0"){
+                    showMsg("提示", "“已确认”状态的化验数据不能提交确认！");
+                    return false;
+                }
+
+                //由于easyUI对于选择“全部”的无法区分，则单独增加判断
+                if (rows[i].standard == null || rows[i].standard == "" || rows[i].standard.length == 0){
+                    showMsg("提示", "选择的记录“执行标准”必填");
+                    return false;
+                }
+
+                if (rows[i].temperature == null || rows[i].temperature == "" || rows[i].temperature.length == 0){
+                    showMsg("提示", "选择的记录“温度”必填");
+                    return false;
+                }
+
+                if (rows[i].humidity == null || rows[i].humidity == "" || rows[i].humidity.length == 0){
+                    showMsg("提示", "选择的记录“湿度”必填");
+                    return false;
+                }
+            }
+
+        //取值
+        var effectRow = new Object();
+        effectRow["updated"] = JSON.stringify(rows);
+
+        $.messager.confirm('提示', '相关化验批次的数据只能确认提交一次，确定继续?', function (r) {
+            if (r) {
+                //提交数据   scales表示天平
+                $.post("${base}/business/labory/editLabData/SCALES", effectRow, function(rsp) {
+                    if(rsp.successful){
+                        showMsg("提示", rsp.msg+"  提交后的数据请到“化验结果查询”菜单查看。");
+                        $scalesDg.datagrid('acceptChanges');
+                        $scalesDg.datagrid('reload');
+                        $scalesDg.datagrid('clearChecked');
+                        $scalesDg.datagrid('clearSelections');
+                    } else {
+                        showMsg("提示", rsp.msg);
+                    }
+                }, "JSON").error(function() {
+                            showMsg("提示", "保存失败！");
+                        });
+            }
+        });
+
+    }
+
+    function addLotScalesRows() {
+        selectedScaless = null;
+        dataType = null;
+        var rows =  $scalesDg.datagrid('getSelections');
+        if (rows.length == 0) {
+            showMsg("提示", "选择需要录入温度、湿度、标准、焦渣特性的化验记录！");
+            return false;
+        }else {
+            selectedScaless = rows;
+            dataType = 'Scales';
+        }
+        for ( var i = 0; !(i >= rows.length); i++) {
+            if (rows[i].status != "0"){
+                showMsg("提示", "“已确认”状态的化验数据不能提交确认！");
+                return false;
+            }
+        }
+        $('#scalesLotAddWin').window({
+            modal : true,
+            title : '天平记录批量录入',
+            width : 550,
+            height : 300,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/labory/loteditLabData',
+            onClose : function() {
+                $scalesDg.datagrid('load');
+            }
+        });
+    }
+    //////////////////////////////////////////////////天平 end/////////////////////////////////////////////////////////////
+
+
+    //////////////////////////////////////////////////定硫仪 begin/////////////////////////////////////////////////////////////
+    $sDg = $("#labSDataDg");
+    $(function () {
+        $('#sStatus').combobox({
+            panelHeight:'auto',
+            valueField:'id',
+            textField:'name',
+            data: [
+                {id: '', name: '全部'},
+                {id: '0', name: '未确认', selected: true},
+                {id: '1',name: '已确认'}
+            ]
+        });
+
+        $('#sBatchType').combobox({
+            panelHeight:'auto',
+            valueField:'id',
+            textField:'name',
+            data: [
+                {id: '', name: '全部', selected: true},
+                {id: '1', name: '第1次化验'},
+                {id: '2', name: '第2次化验'},
+                {id: '3',name: '第3次化验'},
+                {id: '4',name: '第4次化验'}
+            ]
+        });
+    });
+
+    //下拉框获取化验编码
+    $('#sLaborCode').combobox({
+        url: '${base}/business/tool/getComboboxOpt/LABOR_CODE',
+        panelHeight:'auto',
+        valueField:'id',
+        textField:'name'
+    });
+
+    $(function () {
+        $sDg.datagrid({
+            url: "${base}/business/labory/qrySResOrgData",
+            fitColumns: true,//此处一定不要自适应
+            height: 430,
+            width: $(this).width() - 25,
+            idField:'id',
+            queryParams: {//默认查询是当天
+                search_status:'0',
+                search_beginDate:beginDate,
+                search_endDate:endDate
+            },
+            rowStyler: function(index,row){
+                if (row.ccVal >=1){
+                    return 'background-color:red;font-weight:bold;';
+                }
+            },
+            frozenColumns: [
+                [   {field: 'id', title: 'ID', width: 10, align:'center',checkbox:true},
+                    {field: 'laborCode', title: '化验编码',align:'center', width:100},
+                    {field: 'statusName', title: '确认状态',align:'center', width: 70},
+                    {field: 'batchType', title: '化验批次类型',align:'center', width: 100},
+                    {field: 'opTime', title: '化验时间',align:'center', width: 130},
+                    {field: 'opName', title: '化验人',align:'center', width: 70}
+
+                ]
+            ],
+            columns: [
+                [
+                    {field: 'standard', title: '执行标准',align:'center', width: 100,editor: {type: "combobox",  options: {url:'${base}/business/tool/getComboboxOpt/S',
+                        required: true,
+                        valueField:'id',
+                        textField:'name',
+                        panelHeight:'auto' }},formatter:sStandardFormatter,hidden:true},
+                    {field: 'temperature', title: '温度',align:'center', width: 70,editor: {type: "numberbox", options: {min:0, precision:1}},hidden:true},
+                    {field: 'humidity', title: '湿度',align:'center', width: 70,editor: {type: "numberbox", options: {min:0, precision:1}},hidden:true},
+                    {field: 'ggNo', title: '坩埚号',align:'center', width: 70,hidden:true},
+                    {field: 'samplingName', title: '试样名称',align:'center', width: 70,hidden:true},
+                    {field: 'samplingWeight', title: '试样重量',align:'center', width: 70},
+                    {field: 'mad', title: '空干基水分水分',align:'center', width: 70,hidden:true},
+                    {field: 'stAd', title: '空干基全硫',align:'center', width: 70},
+                    {field: 'stD', title: '干基全硫',align:'center', width: 70,hidden:true},
+                    {field: 'ccVal', title: '超差',align:'center', width: 70,hidden:true},
+                    {field: 'jzStyle', title: '校正方式',align:'center', width: 70,hidden:true},
+                    {field: 'totalTime', title: '总时间',align:'center', width: 100},
+                    {field: 'deviceName', title: '化验设备',align:'center', width: 70}
+                ]
+            ],
+            toolbar: '#tbs',
+            onBeforeEdit:function(index,row){
+                $sDg.datagrid('refreshRow', index);
+            },
+            onAfterEdit:function(index,row){
+            },
+            onCancelEdit:function(index,row){
+            },
+            onDblClickRow:function(rowIndex){
+                $sDg.datagrid('beginEdit', rowIndex);
+            },
+            onClickRow:function(rowIndex){
+                var rows =  $sDg.datagrid('getRows');
+                for ( var i = 0; !(i >= rows.length); i++) {
+                    $sDg.datagrid('endEdit', i);
+                }
+            }
+        })
+    });
+
+    function sStandardFormatter(val,row,index) {
+        var returnval = '';
+
+        $.ajax({
+            async: false,
+            cache: false,
+            type: 'POST',
+            url: "${base}/business/tool/getComboboxOpt/S",
+            error: function () {// 请求失败处理函数
+                showMsg("提示", "查询数据失败,数据库中无此数据!");
+            },
+            success: function (rsp) {
+                var len = rsp.length;
+                for(var i =0;i < len;i++){
+                    if(row.standard==rsp[i].id){
+                        returnval =  rsp[i].name;
+                    }
+                }
+            }
+        });
+        return returnval;
+    }
+
+    function qrySData() {
+        var qryBeginDate = $("#sBeginDate").datebox("getValue");
+        var qryEndDate =  $("#sEndDate").datebox("getValue");
+        var qryStatus = $("#sStatus").combobox("getValue");
+        var qryBatchType = $("#sBatchType").combobox("getValue");
+        var qryLaborCode = $("#sLaborCode").textbox("getValue");
+
+        if (qryLaborCode == null || qryLaborCode ==""){
+            if ((qryBeginDate ==null || qryBeginDate =="" || qryBeginDate.length==0)
+                    ||(qryEndDate ==null || qryEndDate =="" || qryEndDate.length==0)){
+                showMsg("提示", "请选择化验编码或化验日期（如果选择化验编码，会加快查询速度）!");
+                return false;
+            } else {
+                if (diffDate(qryBeginDate, qryEndDate) > 10){
+                    showMsg("提示", "查询日期跨度不能超过10天!");
+                    return false;
+                }
+            }
+        }
+
+        var paramObj = new Object();
+
+        if (qryBeginDate != undefined && qryBeginDate != null && qryBeginDate != "") {
+            paramObj.search_beginDate = qryBeginDate;
+        }
+
+        if (qryEndDate != undefined && qryEndDate != null && qryEndDate != "") {
+            paramObj.search_endDate = qryEndDate;
+        }
+
+        if (qryStatus != null && qryStatus != undefined && qryStatus != "") {
+            paramObj.search_status = qryStatus;
+        }
+
+        if (qryBatchType != null && qryBatchType != undefined && qryBatchType != "") {
+            paramObj.search_batchType = qryBatchType;
+        }
+
+        if (qryLaborCode != null && qryLaborCode != undefined && qryLaborCode != "") {
+            paramObj.search_laborCode = qryLaborCode;
+        }
+        $sDg.datagrid("load",paramObj);
+    }
+
+
+    //保存定硫仪修改数据
+    function saveSRows() {
+        //先结束编辑
+        var allRows =  $sDg.datagrid('getRows');
+        for ( var i = 0; !(i >= allRows.length); i++) {
+            $sDg.datagrid('endEdit', i);
+        }
+
+        //处理选择的数据
+        var rows =  $sDg.datagrid('getSelections');
+        if (rows.length == 0) {
+            showMsg("提示", "选择要提交的化验数据记录");
+            return false;
+        }
+        for ( var i = 0; !(i >= rows.length); i++) {
+            if (rows[i].status != "0"){
+                showMsg("提示", "“已确认”状态的化验数据不能提交确认！");
+                return false;
+            }
+
+            //由于easyUI对于选择“全部”的无法区分，则单独增加判断
+            if (rows[i].standard == null || rows[i].standard == "" || rows[i].standard.length == 0){
+                showMsg("提示", "选择的记录“执行标准”必填");
+                return false;
+            }
+
+            if (rows[i].temperature == null || rows[i].temperature == "" || rows[i].temperature.length == 0){
+                showMsg("提示", "选择的记录“温度”必填");
+                return false;
+            }
+
+            if (rows[i].humidity == null || rows[i].humidity == "" || rows[i].humidity.length == 0){
+                showMsg("提示", "选择的记录“湿度”必填");
+                return false;
+            }
+        }
+
+        //取值
+        var effectRow = new Object();
+        effectRow["updated"] = JSON.stringify(rows);
+        $.messager.confirm('提示', '相关化验批次的数据只能确认提交一次，确定继续?', function (r) {
+            if (r) {
+                //提交数据   s表示定硫仪
+                $.post("${base}/business/labory/editLabData/S", effectRow, function(rsp) {
+                    if(rsp.successful){
+                        showMsg("提示", rsp.msg+"  提交后的数据请到“化验数据查询”菜单查看。");
+                        $sDg.datagrid('acceptChanges');
+                        $sDg.datagrid('reload');
+                        $sDg.datagrid('clearChecked');
+                        $sDg.datagrid('clearSelections');
+                    } else {
+                        showMsg("提示", rsp.msg);
+                    }
+                }, "JSON").error(function() {
+                            showMsg("提示", "保存失败！");
+                        });
+            }
+        });
+
+    }
+    function deleteSRows() {
+        var rows =  $sDg.datagrid('getSelections');
+        if (rows.length == 0) {
+            showMsg("提示", "选择要提交的化验数据记录");
+            return false;
+        }
+        //取值
+        var effectRow = new Object();
+        effectRow["updated"] = JSON.stringify(rows);
+        $.messager.confirm('提示', '相关化验批次的数据失效，确定继续?', function (r) {
+            if (r) {
+                //提交数据   s表示定硫仪
+                $.post("${base}/business/labory/deleteLabData/S", effectRow, function(rsp) {
+                    if(rsp.successful){
+                        showMsg("提示", rsp.msg+"  当前数据已失效。");
+                        $sDg.datagrid('reload');
+                        $sDg.datagrid('clearChecked');
+                        $sDg.datagrid('clearSelections');
+                    } else {
+                        showMsg("提示", rsp.msg);
+                    }
+                }, "JSON").error(function() {
+                            showMsg("提示", "保存失败！");
+                        });
+            }
+        });
+
+    }
+    function addLotSRows() {
+        selectedS = null;
+        dataType = null;
+        var rows =  $sDg.datagrid('getSelections');
+        if (rows.length == 0) {
+            showMsg("提示", "选择需要录入温度、湿度、标准的化验记录！");
+            return false;
+        }else {
+            selectedS = rows;
+            dataType = 'S';
+        }
+        for ( var i = 0; !(i >= rows.length); i++) {
+            if (rows[i].status != "0"){
+                showMsg("提示", "“已确认”状态的化验数据不能提交确认！");
+                return false;
+            }
+        }
+        $('#scalesLotAddWin').window({
+            modal : true,
+            title : '定硫仪记录批量录入',
+            width : 550,
+            height : 300,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/labory/loteditLabData',
+            onClose : function() {
+                $sDg.datagrid('load');
+            }
+        });
+    }
+    //////////////////////////////////////////////////定硫仪 end/////////////////////////////////////////////////////////////
+
+
+    //////////////////////////////////////////////////工业分析仪 begin/////////////////////////////////////////////////////////////
+    $iDg = $("#labIDataDg");
+    $(function () {
+        $('#iStatus').combobox({
+            panelHeight:'auto',
+            valueField:'id',
+            textField:'name',
+            data: [
+                {id: '', name: '全部'},
+                {id: '0', name: '未确认', selected: true},
+                {id: '1',name: '已确认'}
+            ]
+        });
+
+        $('#iBatchType').combobox({
+            panelHeight:'auto',
+            valueField:'id',
+            textField:'name',
+            data: [
+                {id: '', name: '全部', selected: true},
+                {id: '1', name: '第1次化验'},
+                {id: '2', name: '第2次化验'},
+                {id: '3',name: '第3次化验'},
+                {id: '4',name: '第4次化验'}
+            ]
+        });
+    });
+
+    //下拉框获取化验编码
+    $('#iLaborCode').combobox({
+        url: '${base}/business/tool/getComboboxOpt/LABOR_CODE',
+        panelHeight:'auto',
+        valueField:'id',
+        textField:'name'
+    });
+
+    $(function () {
+        $iDg.datagrid({
+            url: "${base}/business/labory/qryIAResOrgData",
+            fitColumns: true,//此处一定不要自适应
+            height: 430,
+            width: $(this).width() - 25,
+            idField:'id',
+            queryParams: {//默认查询是当天
+                search_status:'0',
+                search_beginDate:beginDate,
+                search_endDate:endDate
+            },
+            rowStyler: function(index,row){
+                if (row.ccVal >=1){
+                    return 'background-color:red;font-weight:bold;';
+                }
+            },
+            frozenColumns: [
+                [   {field: 'id', title: 'ID', width: 10, align:'center',checkbox:true},
+                    {field: 'laborCode', title: '化验编码',align:'center', width:100},
+                    {field: 'statusName', title: '确认状态',align:'center', width: 70},
+                    {field: 'batchType', title: '化验批次类型',align:'center', width: 100},
+                    {field: 'opTime', title: '化验时间',align:'center', width: 130},
+                    {field: 'opName', title: '化验人',align:'center', width: 70}
+                ]
+            ],
+            columns: [
+                [
+                    {field: 'lossStyle', title: '焦渣特性',align:'center', width: 100,editor: {type: "combobox",  options: {data:[{"value":"1","text":"焦渣特性一"},{"value":"2","text":"焦渣特性二"},
+                        {"value":"3","text":"焦渣特性三"},{"value":"4","text":"焦渣特性四"},
+                        {"value":"5","text":"焦渣特性五"},{"value":"6","text":"焦渣特性六"},
+                        {"value":"7","text":"焦渣特性七"},{"value":"8","text":"焦渣特性八"}],
+                        required: true,
+                        valueField:'value',
+                        textField:'text' }},formatter:lossStyleFormatter,hidden:true},
+                    {field: 'standard', title: '执行标准',align:'center', width: 100,editor: {type: "combobox",  options: {url:'${base}/business/tool/getComboboxOpt/IA',
+                        required: true,
+                        valueField:'id',
+                        textField:'name',
+                        panelHeight:'auto' }},formatter:iaStandardFormatter,hidden:true},
+                    {field: 'temperature', title: '温度',align:'center', width: 70,editor: {type: "numberbox", options: {min:0, precision:1}},hidden:true},
+                    {field: 'humidity', title: '湿度',align:'center', width: 70,editor: {type: "numberbox", options: {min:0, precision:1}},hidden:true},
+                    {field: 'mad', title: '空干基水分',align:'center', width: 70},
+                    {field: 'aad', title: '空干基灰分',align:'center', width: 70},
+                    {field: 'vad', title: '空干基挥发分',align:'center', width: 80},
+                    {field: 'samplingName', title: '试样名称',align:'center', width: 80,hidden:true},
+                    {field: 'ggNo', title: '坩埚号',align:'center', width: 80,hidden:true},
+                    {field: 'shKggWeight', title: '水灰空坩埚重',align:'center', width: 80},
+                    {field: 'shSamplingWeight', title: '水灰煤样重',align:'center', width: 80},
+                    {field: 'ad', title: '干基灰分',align:'center', width: 80,hidden:true},
+                    {field: 'hkTotalWeight', title: '挥空坩埚加样重',align:'center', width: 80},
+                    {field: 'hkSamplingWeight', title: '挥空煤样重量',align:'center', width: 80},
+                    {field: 'vdaf', title: '收到基挥发分',align:'center', width: 80,hidden:true},
+                    {field: 'ccVal', title: '超差',align:'center', width: 80,hidden:true},
+                    {field: 'deviceName', title: '化验设备',align:'center', width: 80}
+                ]
+            ],
+            toolbar: '#tbindst',
+            onBeforeEdit:function(index,row){
+                $iDg.datagrid('refreshRow', index);
+            },
+            onAfterEdit:function(index,row){
+            },
+            onCancelEdit:function(index,row){
+            },
+            onDblClickRow:function(rowIndex){
+                $iDg.datagrid('beginEdit', rowIndex);
+            },
+            onClickRow:function(rowIndex){
+                var rows =  $iDg.datagrid('getRows');
+                for ( var i = 0; !(i >= rows.length); i++) {
+                    $iDg.datagrid('endEdit', i);
+                }
+            }
+        })
+    });
+
+    function lossStyleFormatter(val,row,index) {
+        if(row.lossStyle==1){
+           return '焦渣特性一';
+        }
+        if(row.lossStyle==2){
+            return '焦渣特性二';
+        }
+        if(row.lossStyle==3){
+            return '焦渣特性三';
+        }
+        if(row.lossStyle==4){
+            return '焦渣特性四';
+        }
+        if(row.lossStyle==5){
+            return '焦渣特性五';
+        }
+        if(row.lossStyle==6){
+            return '焦渣特性六';
+        }
+        if(row.lossStyle==7){
+            return '焦渣特性七';
+        }
+        if(row.lossStyle==8){
+            return '焦渣特性八';
+        }
+
+    }
+    function iaStandardFormatter(val,row,index) {
+        var returnval = '';
+
+        $.ajax({
+            async: false,
+            cache: false,
+            type: 'POST',
+            url: "${base}/business/tool/getComboboxOpt/IA",
+            error: function () {// 请求失败处理函数
+                showMsg("提示", "查询数据失败,数据库中无此数据!");
+            },
+            success: function (rsp) {
+                var len = rsp.length;
+                for(var i =0;i < len;i++){
+                    if(row.standard==rsp[i].id){
+                        returnval =  rsp[i].name;
+                    }
+                }
+            }
+        });
+        return returnval;
+    }
+
+
+    function qryIData() {
+        var qryBeginDate = $("#iBeginDate").datebox("getValue");
+        var qryEndDate =  $("#iEndDate").datebox("getValue");
+        var qryStatus = $("#iStatus").combobox("getValue");
+        var qryBatchType = $("#iBatchType").combobox("getValue");
+        var qryLaborCode = $("#iLaborCode").textbox("getValue");
+
+        if (qryLaborCode == null || qryLaborCode ==""){
+            if ((qryBeginDate ==null || qryBeginDate =="" || qryBeginDate.length==0)
+                    ||(qryEndDate ==null || qryEndDate =="" || qryEndDate.length==0)){
+                showMsg("提示", "请选择化验编码或化验日期（如果选择化验编码，会加快查询速度）!");
+                return false;
+            } else {
+                if (diffDate(qryBeginDate, qryEndDate) > 10){
+                    showMsg("提示", "查询日期跨度不能超过10天!");
+                    return false;
+                }
+            }
+        }
+
+        var paramObj = new Object();
+
+        if (qryBeginDate != undefined && qryBeginDate != null && qryBeginDate != "") {
+            paramObj.search_beginDate = qryBeginDate;
+        }
+
+        if (qryEndDate != undefined && qryEndDate != null && qryEndDate != "") {
+            paramObj.search_endDate = qryEndDate;
+        }
+
+        if (qryStatus != null && qryStatus != undefined && qryStatus != "") {
+            paramObj.search_status = qryStatus;
+        }
+
+        if (qryBatchType != null && qryBatchType != undefined && qryBatchType != "") {
+            paramObj.search_batchType = qryBatchType;
+        }
+
+        if (qryLaborCode != null && qryLaborCode != undefined && qryLaborCode != "") {
+            paramObj.search_laborCode = qryLaborCode;
+        }
+        $iDg.datagrid("load",paramObj);
+    }
+
+
+    //保存定硫仪修改数据
+    function saveIRows() {
+        //先结束编辑
+        var allRows =  $iDg.datagrid('getRows');
+        for ( var i = 0; !(i >= allRows.length); i++) {
+            $iDg.datagrid('endEdit', i);
+        }
+
+        //处理选择的数据
+        var rows =  $iDg.datagrid('getSelections');
+        if (rows.length == 0) {
+            showMsg("提示", "选择要提交的化验数据记录");
+            return false;
+        }
+
+        for ( var i = 0; !(i >= rows.length); i++) {
+            if (rows[i].status != "0"){
+                showMsg("提示", "“已确认”状态的化验数据不能提交确认！");
+                return false;
+            }
+
+            //由于easyUI对于选择“全部”的无法区分，则单独增加判断
+            if (rows[i].standard == null || rows[i].standard == "" || rows[i].standard.length == 0){
+                showMsg("提示", "选择的记录“执行标准”必填");
+                return false;
+            }
+
+            if (rows[i].temperature == null || rows[i].temperature == "" || rows[i].temperature.length == 0){
+                showMsg("提示", "选择的记录“温度”必填");
+                return false;
+            }
+
+            if (rows[i].humidity == null || rows[i].humidity == "" || rows[i].humidity.length == 0){
+                showMsg("提示", "选择的记录“湿度”必填");
+                return false;
+            }
+            //由于easyUI对于选择“全部”的无法区分，则单独增加判断
+            if (rows[i].lossStyle == null || rows[i].lossStyle == "" || rows[i].lossStyle.length == 0){
+                showMsg("提示", "选择的记录“焦渣特性”必填");
+                return false;
+            }
+        }
+
+        //取值
+        var effectRow = new Object();
+        effectRow["updated"] = JSON.stringify(rows);
+        $.messager.confirm('提示', '相关化验批次的数据只能确认提交一次，确定继续?', function (r) {
+            if (r) {
+                //提交数据   s表示定硫仪
+                $.post("${base}/business/labory/editLabData/IA", effectRow, function(rsp) {
+                    if(rsp.successful){
+                        showMsg("提示", rsp.msg+"  提交后的数据请到“化验数据查询”菜单查看。");
+                        $iDg.datagrid('acceptChanges');
+                        $iDg.datagrid('reload');
+                        $iDg.datagrid('clearChecked');
+                        $iDg.datagrid('clearSelections');
+                    } else {
+                        showMsg("提示", rsp.msg);
+                    }
+                }, "JSON").error(function() {
+                            showMsg("提示", "保存失败！");
+                        });
+            }
+        });
+
+    }
+    //保存定硫仪修改数据
+    function deleteIRows() {
+        //处理选择的数据
+        var rows =  $iDg.datagrid('getSelections');
+        if (rows.length == 0) {
+            showMsg("提示", "选择要提交的化验数据记录");
+            return false;
+        }
+        //取值
+        var effectRow = new Object();
+        effectRow["updated"] = JSON.stringify(rows);
+        $.messager.confirm('提示', '相关化验批次的数据失效，确定继续?', function (r) {
+            if (r) {
+                //提交数据   s表示定硫仪
+                $.post("${base}/business/labory/deleteLabData/IA", effectRow, function(rsp) {
+                    if(rsp.successful){
+                        showMsg("提示", rsp.msg+"  当前数据已失效。");
+                        $iDg.datagrid('acceptChanges');
+                        $iDg.datagrid('reload');
+                        $iDg.datagrid('clearChecked');
+                        $iDg.datagrid('clearSelections');
+                    } else {
+                        showMsg("提示", rsp.msg);
+                    }
+                }, "JSON").error(function() {
+                            showMsg("提示", "保存失败！");
+                        });
+            }
+        });
+
+    }
+    function addLotIRows() {
+        selectedI = null;
+        dataType = null;
+        var rows =  $iDg.datagrid('getSelections');
+        if (rows.length == 0) {
+            showMsg("提示", "选择需要录入温度、湿度、标准的化验记录！");
+            return false;
+        }else {
+            selectedI = rows;
+            dataType = 'I';
+        }
+        for ( var i = 0; !(i >= rows.length); i++) {
+            if (rows[i].status != "0"){
+                showMsg("提示", "“已确认”状态的化验数据不能提交确认！");
+                return false;
+            }
+        }
+        $('#scalesLotAddWin').window({
+            modal : true,
+            title : '工业分析仪记录批量录入',
+            width : 550,
+            height : 300,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/labory/loteditLabData',
+            onClose : function() {
+                $iDg.datagrid('load');
+            }
+        });
+    }
+    //////////////////////////////////////////////////工业分析仪 end/////////////////////////////////////////////////////////////
+
+
+    //////////////////////////////////////////////////量热仪 begin/////////////////////////////////////////////////////////////
+    $hotDg = $("#labHotDataDg");
+    $(function () {
+        $('#hStatus').combobox({
+            panelHeight:'auto',
+            valueField:'id',
+            textField:'name',
+            data: [
+                {id: '', name: '全部'},
+                {id: '0', name: '未确认', selected: true},
+                {id: '1',name: '已确认'}
+            ]
+        });
+
+
+        $('#hBatchType').combobox({
+            panelHeight:'auto',
+            valueField:'id',
+            textField:'name',
+            data: [
+                {id: '', name: '全部', selected: true},
+                {id: '1', name: '初次化验'},
+                {id: '2', name: '抽样第1次'},
+                {id: '3',name: '抽样第2次'},
+                {id: '4',name: '抽样第3次'}
+            ]
+        });
+    });
+
+    //下拉框获取化验编码
+    $('#hLaborCode').combobox({
+        url: '${base}/business/tool/getComboboxOpt/LABOR_CODE',
+        panelHeight:'auto',
+        valueField:'id',
+        textField:'name'
+    });
+
+    $(function () {
+        $hotDg.datagrid({
+            url: "${base}/business/labory/qryHotResOrgData",
+            fitColumns: true,//此处一定不要自适应
+            height: 430,
+            width: $(this).width() - 25,
+            idField:'id',
+            queryParams: {//默认查询是当天
+                search_status:'0',
+                search_beginDate:beginDate,
+                search_endDate:endDate
+            },
+            rowStyler: function(index,row){
+                if (row.ccVal >=1){
+                    return 'background-color:red;font-weight:bold;';
+                }
+            },
+            frozenColumns: [
+                [   {field: 'id', title: 'ID', width: 10, align:'center',checkbox:true},
+                    {field: 'laborCode', title: '化验编码',align:'center', width:100},
+                    {field: 'statusName', title: '确认状态',align:'center', width: 70},
+                    {field: 'batchType', title: '化验批次类型',align:'center', width: 100},
+                    {field: 'opTime', title: '化验时间',align:'center', width: 130},
+                    {field: 'opName', title: '化验人',align:'center', width: 70}
+                ]
+            ],
+            columns: [
+                [
+                    {field: 'standard', title: '执行标准',align:'center', width: 100,editor: {type: "combobox",  options: {url:'${base}/business/tool/getComboboxOpt/HOT',
+                        required: true,
+                        valueField:'id',
+                        textField:'name',
+                        panelHeight:'auto' }},formatter:hotStandardFormatter,hidden:true},
+                    {field: 'temperature', title: '温度',align:'center', width: 70,editor: {type: "numberbox", options: {min:0, precision:1}},hidden:true},
+                    {field: 'humidity', title: '湿度',align:'center', width: 70,editor: {type: "numberbox", options: {min:0, precision:1}},hidden:true},
+                    {field: 'samplingName', title: '试样名称',align:'center', width: 70,hidden:true},
+                    {field: 'samplingWeight', title: '试样重量',align:'center', width: 70},
+                    {field: 'ggNo', title: '坩埚号',align:'center', width: 70,hidden:true},
+                    {field: 'tempIncrease', title: '主期升温',align:'center', width: 70,hidden:true},
+                    {field: 'jzValue', title: '校正值',align:'center', width: 70},
+                    {field: 'jqTemp', title: '机器热熔温',align:'center', width: 70,hidden:true},
+                    {field: 'qbAd', title: '弹筒热',align:'center', width: 70},
+                    {field: 'ccVal', title: '超差',align:'center', width: 70,hidden:true},
+                    {field: 'deviceName', title: '化验设备',align:'center', width: 70}
+                ]
+            ],
+            toolbar: '#tbhot',
+            onBeforeEdit:function(index,row){
+                $hotDg.datagrid('refreshRow', index);
+            },
+            onAfterEdit:function(index,row){
+            },
+            onCancelEdit:function(index,row){
+            },
+            onDblClickRow:function(rowIndex){
+                $hotDg.datagrid('beginEdit', rowIndex);
+            },
+            onClickRow:function(rowIndex){
+                var rows =  $hotDg.datagrid('getRows');
+                for ( var i = 0; !(i >= rows.length); i++) {
+                    $hotDg.datagrid('endEdit', i);
+                }
+            }
+        })
+    });
+
+    function hotStandardFormatter(val,row,index) {
+        var returnval = '';
+
+        $.ajax({
+            async: false,
+            cache: false,
+            type: 'POST',
+            url: "${base}/business/tool/getComboboxOpt/HOT",
+            error: function () {// 请求失败处理函数
+                showMsg("提示", "查询数据失败,数据库中无此数据!");
+            },
+            success: function (rsp) {
+                var len = rsp.length;
+                for(var i =0;i < len;i++){
+                    if(row.standard==rsp[i].id){
+                        returnval =  rsp[i].name;
+                    }
+                }
+            }
+        });
+        return returnval;
+    }
+
+    function qryHotData() {
+        var qryBeginDate = $("#hBeginDate").datebox("getValue");
+        var qryEndDate =  $("#hEndDate").datebox("getValue");
+        var qryStatus = $("#hStatus").combobox("getValue");
+        var qryBatchType = $("#hBatchType").combobox("getValue");
+        var qryLaborCode = $("#hLaborCode").textbox("getValue");
+
+        if (qryLaborCode == null || qryLaborCode ==""){
+            if ((qryBeginDate ==null || qryBeginDate =="" || qryBeginDate.length==0)
+                    ||(qryEndDate ==null || qryEndDate =="" || qryEndDate.length==0)){
+                showMsg("提示", "请选择化验编码或化验日期（如果选择化验编码，会加快查询速度）!");
+                return false;
+            } else {
+                if (diffDate(qryBeginDate, qryEndDate) > 10){
+                    showMsg("提示", "查询日期跨度不能超过10天!");
+                    return false;
+                }
+            }
+        }
+
+        var paramObj = new Object();
+
+        if (qryBeginDate != undefined && qryBeginDate != null && qryBeginDate != "") {
+            paramObj.search_beginDate = qryBeginDate;
+        }
+
+        if (qryEndDate != undefined && qryEndDate != null && qryEndDate != "") {
+            paramObj.search_endDate = qryEndDate;
+        }
+
+        if (qryStatus != null && qryStatus != undefined && qryStatus != "") {
+            paramObj.search_status = qryStatus;
+        }
+
+        if (qryBatchType != null && qryBatchType != undefined && qryBatchType != "") {
+            paramObj.search_batchType = qryBatchType;
+        }
+
+        if (qryLaborCode != null && qryLaborCode != undefined && qryLaborCode != "") {
+            paramObj.search_laborCode = qryLaborCode;
+        }
+        $hotDg.datagrid("load",paramObj);
+    }
+
+
+    //保存定硫仪修改数据
+    function saveHotRows() {
+        //先结束编辑
+        var allRows =  $hotDg.datagrid('getRows');
+        for ( var i = 0; !(i >= allRows.length); i++) {
+            $hotDg.datagrid('endEdit', i);
+        }
+
+        //处理选择的数据
+        var rows =  $hotDg.datagrid('getSelections');
+        if (rows.length == 0) {
+            showMsg("提示", "选择要提交的化验数据记录");
+            return false;
+        }
+        for ( var i = 0; !(i >= rows.length); i++) {
+            if (rows[i].status != "0"){
+                showMsg("提示", "“已确认”状态的化验数据不能提交确认！");
+                return false;
+            }
+
+            //由于easyUI对于选择“全部”的无法区分，则单独增加判断
+            if (rows[i].standard == null || rows[i].standard == "" || rows[i].standard.length == 0){
+                showMsg("提示", "选择的记录“执行标准”必填");
+                return false;
+            }
+
+            if (rows[i].temperature == null || rows[i].temperature == "" || rows[i].temperature.length == 0){
+                showMsg("提示", "选择的记录“温度”必填");
+                return false;
+            }
+
+            if (rows[i].humidity == null || rows[i].humidity == "" || rows[i].humidity.length == 0){
+                showMsg("提示", "选择的记录“湿度”必填");
+                return false;
+            }
+        }
+
+        //取值
+        var effectRow = new Object();
+        effectRow["updated"] = JSON.stringify(rows);
+        $.messager.confirm('提示', '相关化验批次的数据只能确认提交一次，确定继续?', function (r) {
+            if (r) {
+                //提交数据   s表示定硫仪
+                $.post("${base}/business/labory/editLabData/HOT", effectRow, function(rsp) {
+                    if(rsp.successful){
+                        showMsg("提示", rsp.msg+"  提交后的数据请到“化验数据查询”菜单查看。");
+                        $hotDg.datagrid('acceptChanges');
+                        $hotDg.datagrid('reload');
+                        $hotDg.datagrid('clearChecked');
+                        $hotDg.datagrid('clearSelections');
+                    } else {
+                        showMsg("提示", rsp.msg);
+                    }
+                }, "JSON").error(function() {
+                            showMsg("提示", "保存失败！");
+                        });
+            }
+        });
+
+    }
+
+    //保存定硫仪修改数据
+    function deleteHotRows() {
+
+        //处理选择的数据
+        var rows =  $hotDg.datagrid('getSelections');
+        if (rows.length == 0) {
+            showMsg("提示", "选择要提交的化验数据记录");
+            return false;
+        }
+
+        //取值
+        var effectRow = new Object();
+        effectRow["updated"] = JSON.stringify(rows);
+        $.messager.confirm('提示', '相关化验批次的数据失效，确定继续?', function (r) {
+            if (r) {
+                //提交数据   s表示定硫仪
+                $.post("${base}/business/labory/deleteLabData/HOT", effectRow, function(rsp) {
+                    if(rsp.successful){
+                        showMsg("提示", rsp.msg+"  当前数据已失效。");
+                        $hotDg.datagrid('acceptChanges');
+                        $hotDg.datagrid('reload');
+                        $hotDg.datagrid('clearChecked');
+                        $hotDg.datagrid('clearSelections');
+                    } else {
+                        showMsg("提示", rsp.msg);
+                    }
+                }, "JSON").error(function() {
+                            showMsg("提示", "保存失败！");
+                        });
+            }
+        });
+
+    }
+
+
+    function addScalesRows(scalesResId) {
+        $('#scalesEditWin').window({
+            modal : true,
+            title : '天平记录录入',
+            width : 550,
+            height : 300,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/labory/scalesEdit/'+scalesResId,
+            onClose : function() {
+                $scalesDg.datagrid('load');
+            }
+        });
+    }
+    function addLotHotRows() {
+        selectedHot = null;
+        dataType = null;
+        var rows =  $hotDg.datagrid('getSelections');
+        if (rows.length == 0) {
+            showMsg("提示", "选择需要录入温度、湿度、标准的化验记录！");
+            return false;
+        }else {
+            selectedHot = rows;
+            dataType = 'Hot';
+        }
+        for ( var i = 0; !(i >= rows.length); i++) {
+            if (rows[i].status != "0"){
+                showMsg("提示", "“已确认”状态的化验数据不能提交确认！");
+                return false;
+            }
+        }
+        $('#scalesLotAddWin').window({
+            modal : true,
+            title : '量热仪记录批量录入',
+            width : 550,
+            height : 300,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/labory/loteditLabData',
+            onClose : function() {
+                $hotDg.datagrid('load');
+            }
+        });
+    }
+    //////////////////////////////////////////////////量热仪 end/////////////////////////////////////////////////////////////
+
+
+    //////////////////////////////////////////////////光波分析仪 begin/////////////////////////////////////////////////////////////
+    $laDg = $("#labLaDataDg");
+    $(function () {
+        $('#laStatus').combobox({
+            panelHeight:'auto',
+            valueField:'id',
+            textField:'name',
+            data: [
+                {id: '', name: '全部'},
+                {id: '0', name: '未确认', selected: true},
+                {id: '1',name: '已确认'}
+            ]
+        });
+
+
+        $('#laBatchType').combobox({
+            panelHeight:'auto',
+            valueField:'id',
+            textField:'name',
+            data: [
+                {id: '', name: '全部', selected: true},
+                {id: '1', name: '第1次化验'},
+                {id: '2', name: '第2次化验'},
+                {id: '3',name: '第3次化验'},
+                {id: '4',name: '第4次化验'}
+            ]
+        });
+    });
+
+    //下拉框获取化验编码
+    $('#laLaborCode').combobox({
+        url: '${base}/business/tool/getComboboxOpt/LABOR_CODE',
+        panelHeight:'auto',
+        valueField:'id',
+        textField:'name'
+    });
+
+    $(function () {
+        $laDg.datagrid({
+            url: "${base}/business/labory/qryLaResOrgData",
+            fitColumns: true,//此处一定不要自适应
+            height: 430,
+            width: $(this).width() - 25,
+            idField:'id',
+            queryParams: {//默认查询是当天
+                search_status:'0',
+                search_beginDate:beginDate,
+                search_endDate:endDate
+            },
+            rowStyler: function(index,row){
+                if (row.ccVal >=1){
+                    return 'background-color:red;font-weight:bold;';
+                }
+            },
+            frozenColumns: [
+                [   {field: 'id', title: 'ID', width: 10, align:'center',checkbox:true},
+                    {field: 'laborCode', title: '化验编码',align:'center', width:100},
+                    {field: 'statusName', title: '确认状态',align:'center', width: 70},
+                    {field: 'batchType', title: '化验批次类型',align:'center', width: 100},
+                    {field: 'opTime', title: '化验时间',align:'center', width: 130},
+                    {field: 'opName', title: '化验人',align:'center', width: 70}
+                ]
+            ],
+            columns: [
+                [
+                    {field: 'standard', title: '执行标准',align:'center', width: 100,editor: {type: "combobox",  options: {url:'${base}/business/tool/getComboboxOpt/LA',
+                    required: true,
+                    valueField:'id',
+                    textField:'name',
+                    panelHeight:'auto' }},formatter:laStandardFormatter,hidden:true},
+                    {field: 'temperature', title: '温度',align:'center', width: 70,editor: {type: "numberbox", options: {min:0, precision:1}},hidden:true},
+                    {field: 'humidity', title: '湿度',align:'center', width: 70,editor: {type: "numberbox", options: {min:0, precision:1}},hidden:true},
+                    {field: 'samplingName', title: '试样名称',align:'center', width: 70,hidden:true},
+                    {field: 'mt', title: '全水分',align:'center', width: 70},
+                    {field: 'samplingWeight', title: '试样重量',align:'center', width: 70},
+                    {field: 'ggNo', title: '坩埚号',align:'center', width: 70,hidden:true},
+                    {field: 'mypWeight', title: '煤样瓶重量',align:'center', width: 70},
+                    {field: 'weightLoss', title: '残重',align:'center', width: 70},
+                    {field: 'tempPower', title: '温度/功率',align:'center', width: 70,hidden:true},
+                    {field: 'keepTime', title: '恒温时间',align:'center', width: 70,hidden:true},
+                    {field: 'ccVal', title: '超差',align:'center', width: 70,hidden:true},
+                    {field: 'deviceName', title: '化验设备',align:'center', width: 70}
+                ]
+            ],
+            toolbar: '#tbla',
+            onBeforeEdit:function(index,row){
+                $laDg.datagrid('refreshRow', index);
+            },
+            onAfterEdit:function(index,row){
+            },
+            onCancelEdit:function(index,row){
+            },
+            onDblClickRow:function(rowIndex){
+                $laDg.datagrid('beginEdit', rowIndex);
+            },
+            onClickRow:function(rowIndex){
+                var rows =  $laDg.datagrid('getRows');
+                for ( var i = 0; !(i >= rows.length); i++) {
+                    $laDg.datagrid('endEdit', i);
+                }
+            }
+        })
+    });
+
+    function laStandardFormatter(val,row,index) {
+        var returnval = '';
+
+        $.ajax({
+            async: false,
+            cache: false,
+            type: 'POST',
+            url: "${base}/business/tool/getComboboxOpt/LA",
+            error: function () {// 请求失败处理函数
+                showMsg("提示", "查询数据失败,数据库中无此数据!");
+            },
+            success: function (rsp) {
+                var len = rsp.length;
+                for(var i =0;i < len;i++){
+                    if(row.standard==rsp[i].id){
+                        returnval =  rsp[i].name;
+                    }
+                }
+            }
+        });
+        return returnval;
+    }
+
+
+    function qryLaData() {
+        var qryBeginDate = $("#laBeginDate").datebox("getValue");
+        var qryEndDate =  $("#laEndDate").datebox("getValue");
+        var qryStatus = $("#laStatus").combobox("getValue");
+        var qryBatchType = $("#laBatchType").combobox("getValue");
+        var qryLaborCode = $("#laLaborCode").textbox("getValue");
+
+        if (qryLaborCode == null || qryLaborCode ==""){
+            if ((qryBeginDate ==null || qryBeginDate =="" || qryBeginDate.length==0)
+                    ||(qryEndDate ==null || qryEndDate =="" || qryEndDate.length==0)){
+                showMsg("提示", "请选择化验编码或化验日期（如果选择化验编码，会加快查询速度）!");
+                return false;
+            } else {
+                if (diffDate(qryBeginDate, qryEndDate) > 10){
+                    showMsg("提示", "查询日期跨度不能超过10天!");
+                    return false;
+                }
+            }
+        }
+
+        var paramObj = new Object();
+
+        if (qryBeginDate != undefined && qryBeginDate != null && qryBeginDate != "") {
+            paramObj.search_beginDate = qryBeginDate;
+        }
+
+        if (qryEndDate != undefined && qryEndDate != null && qryEndDate != "") {
+            paramObj.search_endDate = qryEndDate;
+        }
+
+        if (qryStatus != null && qryStatus != undefined && qryStatus != "") {
+            paramObj.search_status = qryStatus;
+        }
+
+        if (qryBatchType != null && qryBatchType != undefined && qryBatchType != "") {
+            paramObj.search_batchType = qryBatchType;
+        }
+
+        if (qryLaborCode != null && qryLaborCode != undefined && qryLaborCode != "") {
+            paramObj.search_laborCode = qryLaborCode;
+        }
+        $laDg.datagrid("load",paramObj);
+    }
+
+
+    //保存定硫仪修改数据
+    function saveLaRows() {
+        //先结束编辑
+        var allRows =  $laDg.datagrid('getRows');
+        for ( var i = 0; !(i >= allRows.length); i++) {
+            $laDg.datagrid('endEdit', i);
+        }
+
+        //处理选择的数据
+        var rows =  $laDg.datagrid('getSelections');
+        if (rows.length == 0) {
+            showMsg("提示", "选择要提交的化验数据记录");
+            return false;
+        }
+        for ( var i = 0; !(i >= rows.length); i++) {
+            if (rows[i].status != "0"){
+                showMsg("提示", "“已确认”状态的化验数据不能提交确认！");
+                return false;
+            }
+
+            //由于easyUI对于选择“全部”的无法区分，则单独增加判断
+            if (rows[i].standard == null || rows[i].standard == "" || rows[i].standard.length == 0){
+                showMsg("提示", "选择的记录“执行标准”必填");
+                return false;
+            }
+
+            if (rows[i].temperature == null || rows[i].temperature == "" || rows[i].temperature.length == 0){
+                showMsg("提示", "选择的记录“温度”必填");
+                return false;
+            }
+
+            if (rows[i].humidity == null || rows[i].humidity == "" || rows[i].humidity.length == 0){
+                showMsg("提示", "选择的记录“湿度”必填");
+                return false;
+            }
+        }
+
+        //取值
+        var effectRow = new Object();
+        effectRow["updated"] = JSON.stringify(rows);
+        $.messager.confirm('提示', '相关化验批次的数据只能确认提交一次，确定继续?', function (r) {
+            if (r) {
+                //提交数据   s表示定硫仪
+                $.post("${base}/business/labory/editLabData/LA", effectRow, function(rsp) {
+                    if(rsp.successful){
+                        showMsg("提示", rsp.msg+"  提交后的数据请到“化验数据查询”菜单查看。");
+                        $laDg.datagrid('acceptChanges');
+                        $laDg.datagrid('reload');
+                        $laDg.datagrid('clearChecked');
+                        $laDg.datagrid('clearSelections');
+                    } else {
+                        showMsg("提示", rsp.msg);
+                    }
+                }, "JSON").error(function() {
+                            showMsg("提示", "保存失败！");
+                        });
+            }
+        });
+
+    }
+    //保存定硫仪修改数据
+    function deleteLaRows() {
+
+        //处理选择的数据
+        var rows =  $laDg.datagrid('getSelections');
+        if (rows.length == 0) {
+            showMsg("提示", "选择要提交的化验数据记录");
+            return false;
+        }
+
+        //取值
+        var effectRow = new Object();
+        effectRow["updated"] = JSON.stringify(rows);
+        $.messager.confirm('提示', '相关化验批次的数据失效，确定继续?', function (r) {
+            if (r) {
+                //提交数据   s表示定硫仪
+                $.post("${base}/business/labory/deleteLabData/LA", effectRow, function(rsp) {
+                    if(rsp.successful){
+                        showMsg("提示", rsp.msg+"  当前数据已失效。");
+                        $laDg.datagrid('acceptChanges');
+                        $laDg.datagrid('reload');
+                        $laDg.datagrid('clearChecked');
+                        $laDg.datagrid('clearSelections');
+                    } else {
+                        showMsg("提示", rsp.msg);
+                    }
+                }, "JSON").error(function() {
+                            showMsg("提示", "保存失败！");
+                        });
+            }
+        });
+
+    }
+    function addLotLaRows() {
+        selectedLa = null;
+        dataType = null;
+        var rows =  $laDg.datagrid('getSelections');
+        if (rows.length == 0) {
+            showMsg("提示", "选择需要录入温度、湿度、标准的化验记录！");
+            return false;
+        }else {
+            selectedLa = rows;
+            dataType = 'La';
+        }
+        for ( var i = 0; !(i >= rows.length); i++) {
+            if (rows[i].status != "0"){
+                showMsg("提示", "“已确认”状态的化验数据不能提交确认！");
+                return false;
+            }
+        }
+        $('#scalesLotAddWin').window({
+            modal : true,
+            title : '量热仪记录批量录入',
+            width : 550,
+            height : 300,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/labory/loteditLabData',
+            onClose : function() {
+                $laDg.datagrid('load');
+            }
+        });
+    }
+    //////////////////////////////////////////////////光波分析仪 end/////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////红外测氢仪 begin/////////////////////////////////////////////////////////////
+    $hwDg = $("#labHwDataDg");
+    $(function () {
+        $('#hwStatus').combobox({
+            panelHeight:'auto',
+            valueField:'id',
+            textField:'name',
+            data: [
+                {id: '', name: '全部'},
+                {id: '0', name: '未确认', selected: true},
+                {id: '1',name: '已确认'}
+            ]
+        });
+
+
+        $('#hwBatchType').combobox({
+            panelHeight:'auto',
+            valueField:'id',
+            textField:'name',
+            data: [
+                {id: '', name: '全部', selected: true},
+                {id: '1', name: '第1次化验'},
+                {id: '2', name: '第2次化验'},
+                {id: '3',name: '第3次化验'},
+                {id: '4',name: '第4次化验'}
+            ]
+        });
+    });
+
+    //下拉框获取化验编码
+    $('#hwLaborCode').combobox({
+        url: '${base}/business/tool/getComboboxOpt/LABOR_CODE',
+        panelHeight:'auto',
+        valueField:'id',
+        textField:'name'
+    });
+
+
+    $(function () {
+        $hwDg.datagrid({
+            url: "${base}/business/labory/qryHwResOrgData",
+            fitColumns: true,//此处一定不要自适应
+            height: 430,
+            width: $(this).width() - 25,
+            idField:'id',
+            queryParams: {//默认查询是当天
+                search_status:'0',
+                search_beginDate:beginDate,
+                search_endDate:endDate
+            },
+            rowStyler: function(index,row){
+                if (row.ccVal >=1){
+                    return 'background-color:red;font-weight:bold;';
+                }
+            },
+            frozenColumns: [
+                [   {field: 'id', title: 'ID', width: 10, align:'center',checkbox:true},
+                    {field: 'laborCode', title: '化验编码',align:'center', width:100},
+                    {field: 'statusName', title: '确认状态',align:'center', width: 70},
+                    {field: 'batchType', title: '化验批次类型',align:'center', width: 100},
+                    {field: 'opTime', title: '化验时间',align:'center', width: 130},
+                    {field: 'opName', title: '化验人',align:'center', width: 70}
+                ]
+            ],
+            columns: [
+                [
+                    {field: 'standard', title: '执行标准',align:'center', width: 100,editor: {type: "combobox",  options: {url:'${base}/business/tool/getComboboxOpt/LA',
+                        required: true,
+                        valueField:'id',
+                        textField:'name',
+                        panelHeight:'auto' }},formatter:laStandardFormatter,hidden:true},
+                    {field: 'temperature', title: '温度',align:'center', width: 70,editor: {type: "numberbox", options: {min:0, precision:1}},hidden:true},
+                    {field: 'humidity', title: '湿度',align:'center', width: 70,editor: {type: "numberbox", options: {min:0, precision:1}},hidden:true},
+                    {field: 'samplingName', title: '试样名称',align:'center', width: 70,hidden:true},
+                    {field: 'had', title: '空干基氢',align:'center', width: 70},
+                    {field: 'hd', title: '干基氢',align:'center', width: 70},
+                    {field: 'samplingWeight', title: '试样重量',align:'center', width: 70},
+//                    {field: 'ggNo', title: '坩埚号',align:'center', width: 70,hidden:true},
+                    {field: 'cad', title: '空干基碳',align:'center', width: 70},
+                    {field: 'cd', title: '空干基碳',align:'center', width: 70},
+                    {field: 'mad', title: '水分',align:'center', width: 70,hidden:true},
+                    {field: 'method', title: '方法',align:'center', width: 70,hidden:true},
+                    {field: 'ccVal', title: '超差',align:'center', width: 70,hidden:true},
+                    {field: 'deviceName', title: '化验设备',align:'center', width: 70}
+                ]
+            ],
+            toolbar: '#tbhw',
+            onBeforeEdit:function(index,row){
+                $hwDg.datagrid('refreshRow', index);
+            },
+            onAfterEdit:function(index,row){
+            },
+            onCancelEdit:function(index,row){
+            },
+            onDblClickRow:function(rowIndex){
+                $hwDg.datagrid('beginEdit', rowIndex);
+            },
+            onClickRow:function(rowIndex){
+                var rows =  $hwDg.datagrid('getRows');
+                for ( var i = 0; !(i >= rows.length); i++) {
+                    $hwDg.datagrid('endEdit', i);
+                }
+            }
+        })
+    });
+
+    function laStandardFormatter(val,row,index) {
+        var returnval = '';
+
+        $.ajax({
+            async: false,
+            cache: false,
+            type: 'POST',
+            url: "${base}/business/tool/getComboboxOpt/LA",
+            error: function () {// 请求失败处理函数
+                showMsg("提示", "查询数据失败,数据库中无此数据!");
+            },
+            success: function (rsp) {
+                var len = rsp.length;
+                for(var i =0;i < len;i++){
+                    if(row.standard==rsp[i].id){
+                        returnval =  rsp[i].name;
+                    }
+                }
+            }
+        });
+        return returnval;
+    }
+
+
+    function qryhwData() {
+        var qryBeginDate = $("#hwBeginDate").datebox("getValue");
+        var qryEndDate =  $("#hwEndDate").datebox("getValue");
+        var qryStatus = $("#hwStatus").combobox("getValue");
+        var qryBatchType = $("#hwBatchType").combobox("getValue");
+        var qryLaborCode = $("#hwLaborCode").textbox("getValue");
+
+        if (qryLaborCode == null || qryLaborCode ==""){
+            if ((qryBeginDate ==null || qryBeginDate =="" || qryBeginDate.length==0)
+                    ||(qryEndDate ==null || qryEndDate =="" || qryEndDate.length==0)){
+                showMsg("提示", "请选择化验编码或化验日期（如果选择化验编码，会加快查询速度）!");
+                return false;
+            } else {
+                if (diffDate(qryBeginDate, qryEndDate) > 10){
+                    showMsg("提示", "查询日期跨度不能超过10天!");
+                    return false;
+                }
+            }
+        }
+
+        var paramObj = new Object();
+
+        if (qryBeginDate != undefined && qryBeginDate != null && qryBeginDate != "") {
+            paramObj.search_beginDate = qryBeginDate;
+        }
+
+        if (qryEndDate != undefined && qryEndDate != null && qryEndDate != "") {
+            paramObj.search_endDate = qryEndDate;
+        }
+
+        if (qryStatus != null && qryStatus != undefined && qryStatus != "") {
+            paramObj.search_status = qryStatus;
+        }
+
+        if (qryBatchType != null && qryBatchType != undefined && qryBatchType != "") {
+            paramObj.search_batchType = qryBatchType;
+        }
+
+        if (qryLaborCode != null && qryLaborCode != undefined && qryLaborCode != "") {
+            paramObj.search_laborCode = qryLaborCode;
+        }
+        $hwDg.datagrid("load",paramObj);
+    }
+
+    //保存定硫仪修改数据
+    function deletehwRows() {
+
+        //处理选择的数据
+        var rows =  $hwDg.datagrid('getSelections');
+        if (rows.length == 0) {
+            showMsg("提示", "选择要提交的化验数据记录");
+            return false;
+        }
+
+        //取值
+        var effectRow = new Object();
+        effectRow["updated"] = JSON.stringify(rows);
+        $.messager.confirm('提示', '相关化验批次的数据失效，确定继续?', function (r) {
+            if (r) {
+                //提交数据   s表示定硫仪
+                $.post("${base}/business/labory/deleteLabData/HW", effectRow, function(rsp) {
+                    if(rsp.successful){
+                        showMsg("提示", rsp.msg+"  当前数据已失效。");
+                        $hwDg.datagrid('acceptChanges');
+                        $hwDg.datagrid('reload');
+                        $hwDg.datagrid('clearChecked');
+                        $hwDg.datagrid('clearSelections');
+                    } else {
+                        showMsg("提示", rsp.msg);
+                    }
+                }, "JSON").error(function() {
+                            showMsg("提示", "保存失败！");
+                        });
+            }
+        });
+
+    }
+    function addLothwRows() {
+        selectedHw = null;
+        dataType = null;
+        var rows =  $hwDg.datagrid('getSelections');
+        if (rows.length == 0) {
+            showMsg("提示", "选择需要录入温度、湿度、标准的化验记录！");
+            return false;
+        }else {
+            selectedHw = rows;
+            dataType = 'Hw';
+        }
+        for ( var i = 0; !(i >= rows.length); i++) {
+            if (rows[i].status != "0"){
+                showMsg("提示", "“已确认”状态的化验数据不能提交确认！");
+                return false;
+            }
+        }
+        $('#scalesLotAddWin').window({
+            modal : true,
+            title : '量热仪记录批量录入',
+            width : 550,
+            height : 300,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/labory/loteditLabData',
+            onClose : function() {
+                $hwDg.datagrid('load');
+            }
+        });
+    }
+    //////////////////////////////////////////////////红外测氢仪 end///////////////////////////////////////////////////////////////
+</script>

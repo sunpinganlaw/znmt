@@ -1,0 +1,270 @@
+    <div id="editTb">
+        <table>
+            <tr>
+                <td colspan="6">
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="addRows();">添加一行</a>
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="delRows();">删除</a>
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-save" onclick="saveRows();">保存</a>
+                </td>
+            </tr>
+            <tr>
+                <td>车次：</td>
+                <td><input class="easyui-textbox" id="trainNo" style="width: 120px;" readonly="true"/>
+                    <input type="button" value="生成车次" onclick="generateNewTrainNo()"/></td>
+                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;入厂时间：</td>
+                <td><input class="easyui-datetimebox" id="recordDtm" style="width:145px"></td>
+                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;备注：</td>
+                <td><input class="easyui-textbox" id="remark" style="width: 350px;"/></td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="txx" style="margin: 5px;width: 99%">
+        <table id="trainEditDg" ></table>
+    </div>
+
+<script type="text/javascript">
+//全局变量
+$dg = $("#trainEditDg");
+var lastIndex;
+
+function generateNewTrainNo(){
+    var tn = $("#trainNo").textbox('getValue');
+
+    if (tn != null && tn != "" && tn.length > 0) {
+        showMsg("提示", "已分配车次号，请勿再生成!");
+        return false;
+    }
+
+    $.post("${base}/business/tool/generateNewTrainNo", function (rsp) {
+        if (rsp) {
+            $("#trainNo").textbox('setValue',rsp);
+        } else {
+            showMsg("提示", "获取新的车次失败!");
+        }
+    }).error(function () {
+        showMsg("提示", "获取新的车次异常!");
+    });
+}
+
+
+//获取父页面传过来的trainNo
+var gottenTrainNo = document.getElementById("hideTrainNo").value;
+
+//初始化查询
+$(function () {
+    $dg.datagrid({
+        url: "${base}/business/monitor/trainDetailList",
+        fitColumns: true,
+        height: $(this).height() - 46,
+        width: $(this).width() - 65,
+        idField:'recordNo',
+        singleSelect:true,
+        rownumbers:true,
+        queryParams: {
+            search_trainNo:gottenTrainNo
+        },
+        columns: [
+            [
+                {field: 'recordNo', title: '流水号',align:'center', width:18},
+                {field: 'batchNo', title: '批次号',align:'center', width: 35},
+                {field: 'carId', title: '车号',align:'center', width:18, editor: {type: "validatebox", options: {required: true}}},
+                {field: 'xhNum', title: '车厢序号',align:'center', width:18, editor: {type: "validatebox", options: {required: true}}},
+                {field: 'colryNo', title: '矿点',align:'center', width:35, editor: {type: "combobox",  options: {url:'${base}/business/tool/getComboboxOpt/COAL_MINE',
+                                                                                                                            required: true,
+                                                                                                                            valueField:'id',
+                                                                                                                            textField:'name',
+                                                                                                                            panelHeight:'300' }}},
+                {field: 'coalNo', title: '煤种',align:'center', width: 20,editor: {type: "combobox",  options: {url:'${base}/business/tool/getComboboxOpt/COAL_TYPE',
+                                                                                                                              required: true,
+                                                                                                                              valueField:'id',
+                                                                                                                              textField:'name',
+                                                                                                                              panelHeight:'auto' }}},
+                {field: 'venNo', title: '供应商',align:'center', width:35, editor: {type: "combobox",  options: {url:'${base}/business/tool/getComboboxOpt/VENDOR_INFO',
+                                                                                                                            required: true,
+                                                                                                                            valueField:'id',
+                                                                                                                            textField:'name',
+                                                                                                                            panelHeight:'auto' }}},
+                {field: 'sampleTyp', title: '采样方式',align:'center', width:20, editor:{type: "combobox", options: {valueField:'id',textField:'text', required:true, panelHeight:'auto',
+                                                                                                                            data:[{"id":"0","text":"皮带采样"},
+                                                                                                                                   {"id":"1","text":"皮带大水分旁路"},
+                                                                                                                                   {"id":"2","text":"人工采样"},
+                                                                                                                                   {"id":"3","text":"车厢采样"},
+                                                                                                                                   {"id":"4","text":"车厢大水分旁路"}
+                                                                                                                            ]}}},
+                {field: 'emptyFlg', title: '是否空车',align:'center', width:18, editor:{type: "combobox", options: {valueField:'id',textField:'text', required:true, panelHeight:'auto',
+                                                                                                                            data:[{"id":"1","text":"否"},
+                                                                                                                                  {"id":"0","text":"是"}]}}},
+                {field: 'tickQty', title: '票重',align:'center', width:18, editor: {type: "numberbox", options: {min:0, precision:3}}},
+                {field: 'mzQty', title: '毛重',align:'center', width:18, editor: {type: "numberbox", options: {min:0, precision:3}}},
+                {field: 'pzQty', title: '皮重',align:'center', width:18, editor: {type: "numberbox", options: {min:0, precision:3}}},
+                {field: 'netQty', title: '净重',align:'center', width:18, editor: {type: "numberbox", options: {min:0, precision:3}}},
+                {field: 'ydQty', title: '盈亏',align:'center', width:18, editor: {type: "numberbox", options: {precision:3}}},
+                {field: 'lossQty', title: '运损',align:'center', width:18, editor: {type: "numberbox", options: {precision:3}}},
+                {field: 'fcTime', title: '翻车时间',align:'center', width:45},
+                {field: 'trackNo', title: '铁道线',align:'center', width:18, editor: {type: "combobox", options: {url:'${base}/business/tool/getDictionaryByType/TRACK_NO',
+                                                                                                                                required: true,
+                                                                                                                                valueField:'id',
+                                                                                                                                textField:'name',
+                                                                                                                                panelHeight:'auto' }}},
+//                {field: 'trackNo', title: '铁道线',align:'center', width:18, editor: {type: "combobox", options: {valueField:'id',textField:'text', required:true, panelHeight:'auto',
+//                                                                                                                            data:[{"id":"3#","text":"3#"},
+//                                                                                                                                  {"id":"5#","text":"5#"}]}}},
+                {field: 'carTyp', title: '车型',align:'center', width:18, editor:{type: "combobox", options: {valueField:'id',textField:'text', required:true, panelHeight:'auto',
+                                                                                                                            data:[{"id":"TC70H","text":"TC70H"},
+                                                                                                                                   {"id":"TC70EH","text":"TC70EH"},
+                                                                                                                                   {"id":"TC70E","text":"TC70E"},
+                                                                                                                                   {"id":"TC64K","text":"TC64K"},
+                                                                                                                                    {"id":"TC64T","text":"TC64T"},
+                                                                                                                                    {"id":"TC64H","text":"TC64H"},
+                                                                                                                                    {"id":"TC62BK","text":"TC62BK"},
+                                                                                                                                    {"id":"TC62BT","text":"TC62BT"},
+                                                                                                                                    {"id":"TC62AK","text":"TC62AK"},
+                                                                                                                                    {"id":"TC62A","text":"TC62A"},
+                                                                                                                                    {"id":"C70","text":"C70"}
+
+                                                                                                                            ]}}}
+            ]
+        ],
+        toolbar: '#editTb',
+        onDblClickRow:function(rowIndex){
+         },
+         onBeforeEdit:function(index,row){
+             $dg.datagrid('refreshRow', index);
+         },
+         onAfterEdit:function(index,row){
+             $dg.datagrid('refreshRow', index);
+         },
+         onCancelEdit:function(index,row){
+             $dg.datagrid('refreshRow', index);
+         },
+        onLoadSuccess:function(data){
+            var rows = $dg.datagrid('getRows');
+            $("#trainNo").textbox('setValue',rows[0].trainNo);
+            $("#recordDtm").datetimebox('setValue',rows[0].recordDtm);
+            $("#remark").textbox('setValue',rows[0].remark);
+
+            for ( var i = 0; !(i >= rows.length); i++) {
+                $dg.datagrid('beginEdit', i);
+            }
+        }
+    });
+
+});
+
+//添加一行
+function addRows() {
+    $dg.datagrid('appendRow',{});
+    var rowcnt = $dg.datagrid('getRows').length;
+    $dg.datagrid('beginEdit', rowcnt-1);
+}
+
+//删除一行
+function delRows() {
+    var row = $dg.datagrid('getSelected');
+    if (row) {
+        $.messager.confirm('提示', '删除操作保存后，数据将被删除，确定继续操作?', function (r) {
+            if (r) {
+                var index = $dg.datagrid('getRowIndex', row);
+                $dg.datagrid('deleteRow', index);
+            }
+        });
+    }
+}
+
+//保存
+function saveRows() {
+    //获取公共部分值
+    var commonObj = new Object();
+    commonObj.trainNo = $("#trainNo").textbox("getValue");
+    commonObj.recordDtm = $("#recordDtm").datetimebox("getValue");
+    commonObj.remark = $("#remark").textbox("getValue");
+    commonObj.operTag = "REC";
+
+    if (commonObj.trainNo == null || commonObj.trainNo == "" || commonObj.trainNo.length == 0) {
+        showMsg("提示", "请获取输入车次!");
+        return false;
+    }
+
+    if (commonObj.recordDtm == null || commonObj.recordDtm == "" || commonObj.recordDtm.length == 0) {
+        showMsg("提示", "请输入入厂时间车次!");
+        return false;
+    }
+
+    var rows = $dg.datagrid('getRows');
+    var validateRes;
+
+    if (rows == null || rows.length == 0) {
+        showMsg("提示", "火车记录明细不能为空");
+        return false;
+    }
+
+    for ( var i = 0; !(i >= rows.length); i++) {
+        rows[i].editing = false;
+        $dg.datagrid('endEdit', i);
+        //校验
+        validateRes = $dg.datagrid('validateRow', i);
+        if (!validateRes) {
+            showMsg("提示", "第"+(i+1)+"行有必填值未输入或有非法输入值");
+            return false;
+        }
+
+        //由于easyUI对于选择“全部”的无法区分，则单独增加判断
+        if (rows[i].colryNo == null || rows[i].colryNo == "" || rows[i].colryNo.length == 0){
+            showMsg("提示", "矿点信息必选(第"+(i+1)+"行)");
+            return false;
+        }
+
+        if (rows[i].coalNo == null || rows[i].coalNo == "" || rows[i].coalNo.length == 0){
+            showMsg("提示", "煤种信息必选(第"+(i+1)+"行)");
+            return false;
+        }
+
+        if (rows[i].venNo == null || rows[i].venNo == "" || rows[i].venNo.length == 0){
+            showMsg("提示", "供应商信息必选(第"+(i+1)+"行)");
+            return false;
+        }
+
+    }
+
+    var effectRow = new Object();
+    effectRow["publicInfo"] = JSON.stringify(commonObj);
+
+    //取值
+    if ($dg.datagrid('getChanges').length) {
+        var inserted = $dg.datagrid('getChanges', "inserted");
+        var deleted = $dg.datagrid('getChanges', "deleted");
+        var updated = $dg.datagrid('getChanges', "updated");
+
+        if (inserted.length) {
+            effectRow["inserted"] = JSON.stringify(inserted);
+        }
+        if (deleted.length) {
+            effectRow["deleted"] = JSON.stringify(deleted);
+        }
+        if (updated.length) {
+            effectRow["updated"] = JSON.stringify(updated);
+        }
+    }
+
+    //提交数据
+    $.post("${base}/business/monitor/trainRegister", effectRow, function(rsp) {
+        if(rsp.successful){
+            showMsg("提示", rsp.msg);
+            $dg.datagrid('acceptChanges');
+            $dg.datagrid("reload");
+            //刷新父页面的信息
+            $basicdg.datagrid('reload');
+            $detaildg.datagrid('reload');
+            //关闭编辑窗口
+            $('#editTrainWin').window('close');
+        } else {
+            showMsg("提示", rsp.msg);
+        }
+    }, "JSON").error(function() {
+        showMsg("提示", "保存失败！");
+    });
+
+}
+
+</script>

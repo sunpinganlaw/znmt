@@ -1,0 +1,142 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>前台日志</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+<body>
+<div id="layoutDiv" class="easyui-layout" style="height:100%">
+    <div id="tb" style="width: 100%">
+        <table style="width: 100%;background: #F4F4F4">
+            <tr>
+                <td style="text-align: left">
+                    <label for="operateCode">操作人员工号</label>
+                    <input class="easyui-textbox" name="opCode" id="operateCode"  style="width:145px;"/>
+                    <label for="operateName">操作人员姓名</label>
+                    <input name="operateName" id="operateName"  style="width:145px;"/>
+                    <label for="opStartTime">操作时间</label>
+                    <input class="easyui-datebox" name="opStartTime" id="opStartTime"  style="width:145px;"/> &nbsp;~&nbsp;
+                    <input class="easyui-datebox" name="opEndTime" id="opEndTime"  style="width:145px;"/>
+                    <a href="javascript:void(0)"  class="easyui-linkbutton" iconCls="icon-search" onclick="qry();">查询</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div data-options="region:'center',title:'管控系统操作记录查询',noheader:false;" style="overflow:auto;">
+        <table id="OpLogRecDg"></table>
+    </div>
+</div>
+
+
+
+</body>
+</html>
+
+<script type="text/javascript">
+    $OpLogRec = $("#OpLogRecDg");
+
+    $(function(){
+
+        $('#operateName').combobox({
+            url:'${base}/business/tool/getComboboxOpt/USER_NAME',
+            valueField:'name',
+            textField:'name',
+            panelHeight:'auto'
+        });
+
+        var myDate = new Date();
+        var defaultBeginTime = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+        var defaultEndTime =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+
+        $OpLogRec.datagrid({
+            url:  '${base}/business/monitor/qryOpLogInfoXW',
+            fitColumns: true,
+            animate: true,
+            border:true,
+            height: $(this).height() - 2,
+            width: $(this).width() - 2,
+            idField:'logId',
+            singleSelect:true,
+            rownumbers:true,
+            pagination: true,
+            pagenumber:true,
+            pageSize:70,
+            pageList: [70, 100],
+            queryParams: {//默认进来查当天
+                search_opStartTime:defaultBeginTime,
+                search_opEndTime:defaultEndTime
+            },
+            columns: [
+                [
+                    //{field: 'logId', title: '序号', align: 'center', width: 10},
+                    //{field: 'logOpCode', title: '工号', align: 'center', width: 10},
+                    {field: 'logOpName', title: '姓名', align: 'center', width: 10},
+                    {field: 'logTime', title: '操作时间', align: 'center', width: 25},
+                    {field: 'hostIp', title: '操作ip', align: 'center', width: 20},
+                    {field: 'operMenu', title: '操作目录', align: 'center', width: 20},
+                    {field: 'operButton', title: '操作按钮', align: 'center', width: 20}
+                    //{field: 'requestParams', title: '前台入参', align: 'center', width: 100}
+                ]
+            ],
+            toolbar: '#tb'
+        })
+
+    });
+
+    function qry(){
+        var paramO = {};
+        var opCode = $("#operateCode").textbox("getValue");
+        var opName = $("#operateName").textbox("getValue");
+        var opStartTime = $("#opStartTime").datebox("getValue");
+        var opEndTime = $("#opEndTime").datebox("getValue");
+
+        var myDate = new Date();
+        if (opStartTime != null && opStartTime != "" && opStartTime.length > 0) {
+            paramO.search_opStartTime = opStartTime;
+        }else{
+            paramO.search_opStartTime  = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+        }
+
+        if (opEndTime != null && opEndTime != "" && opEndTime.length > 0) {
+            paramO.search_opEndTime = opEndTime;
+        }else{
+            paramO.search_opEndTime =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+        }
+
+        var start1  = new Date(paramO.search_opStartTime.replace(/-/g,"/")).getTime();
+        var end1 = new Date( paramO.search_opEndTime.replace(/-/g,"/")).getTime();
+        var diffdate = end1 - start1;
+        var days = Math.floor(diffdate/(24*3600*1000));
+        if(days > 30)
+        {
+            showMsg("操作日志","查询时间跨度不能超过30天");
+            return false;
+        }
+       /* if (opCode.length == 0 && opName.length == 0)
+        {
+            showMsg("操作日志","工号和姓名不能同时为空");
+            return false;
+        }*/
+
+        if (opCode != null && opCode.length > 0) {
+            paramO.search_logOpCode = opCode;
+        }
+        if (opName != null && opName.length > 0) {
+            paramO.search_logOpName = opName;
+        }
+        $OpLogRec.datagrid("load", paramO);
+    }
+
+    function showMsg(title,msg) {
+        $.messager.show({
+            title: title,
+            msg: msg
+        });
+    }
+ </script>

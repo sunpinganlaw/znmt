@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>采样结果查询</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+<body>
+<div id="layoutDiv" class="easyui-layout" style="height:100%">
+    <div id="tb">
+        <label for="batchNo">批次号</label>
+        <input class="easyui-textbox" id="batchNo" style="width:145px;" value=""/>
+        <label for="beginTime">批次时间</label>
+        <input class="easyui-datebox" name="startTime" id="beginTime"  style="width:145px;"/>&nbsp;~&nbsp;
+        <input class="easyui-datebox" name="endTime" id="endTime"  style="width:145px;"/>
+
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>
+        </span>
+    </div>
+
+    <div data-options="region:'center',title:'投运率',noheader:false;">
+        <table id="sampleCodeDg"></table>
+    </div>
+</div>
+
+<!--预报查看编辑窗口-->
+<div id="carPlanEditWin" ></div>
+</body>
+</html>
+<script type="text/javascript">
+
+    var myDate = new Date();
+    var defaultBeginTime = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+(parseInt(myDate.getDate())-2);
+    var defaultEndTime =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+
+    $sampleCodeDg = $("#sampleCodeDg");
+    $(function () {
+        $sampleCodeDg.datagrid({
+            url:  '${base}/business/report/qryUploadRateRptList',
+            //fitColumns: true,
+            animate: true,
+            border:true,
+            queryParams: {//默认进来查近2天
+                search_beginTime:defaultBeginTime,
+            },
+            height: $(this).height() - 2,
+            width: $(this).width() - 2,
+            idField:'recId',
+            singleSelect:true,
+            rownumbers:true,
+            pagination: true,
+            pagenumber:true,
+            pageSize:70,
+            pageList: [70, 100],
+            frozenColumns:[
+                [
+                    {field: 'batchNo', title: '批次号',align:'center', width:"200"},
+                    {field: 'sampleTypeName', title: '采样类型',align:'center', width:"200px"},
+                    {field: 'zyTypeName', title: '制样类型',align:'center', width:"200px"},
+                    {field: 'insertTime', title: '上传时间',align:'center', width:"200px"},
+                    {field: 'remark', title: '备注',align:'center', width:"400px"}
+                ]
+            ],
+            toolbar: '#tb'
+        })
+    });
+
+    function qry(){
+        var paramO = new Object();
+        var batchNo = $("#batchNo").textbox("getValue");
+        var beginTime = $("#beginTime").datebox("getValue");
+        var endTime = $("#endTime").datebox("getValue");
+
+        if (batchNo != null && batchNo != "" && batchNo.length > 0) {
+            paramO.search_batchNo = batchNo;
+        }
+        if (beginTime != null && beginTime != "" && beginTime.length > 0) {
+            paramO.search_beginTime = beginTime;
+        }
+        if (endTime != null && endTime != "" && endTime.length > 0) {
+            paramO.search_endTime = endTime;
+        }
+
+
+        $sampleCodeDg.datagrid("load",paramO);
+    }
+</script>

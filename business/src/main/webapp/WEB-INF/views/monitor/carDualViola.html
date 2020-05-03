@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>汽车违规管理</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+<body>
+<div id="layoutDiv" class="easyui-layout" style="height:100%">
+    <div id="tb">
+        <input type="hidden" id="doAction" /><!--动作隐藏按钮-->
+
+        <label for="sBeginDate">违规日期：</label>
+        <input class="easyui-datebox" id="sBeginDate" style="width:120px">&nbsp;—&nbsp;
+        <input class="easyui-datebox" id="sEndDate"  style="width:120px">
+        <label for="carId">车牌号：</label>
+        <input id="carId" class="easyui-textbox" style="width:120px;"/>
+        <label for="violaLevel">违规等级：</label>
+        <input id="violaLevel" style="width:120px;"/>
+        <label for="isDual">处理状态：</label>
+        <input id="isDual" style="width:120px;"/>
+        <span style="margin-left: 0;">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qryViolaData();">查询</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="viewDetail()">详情</a>
+
+        <@shiro.hasPermission name="CARTransRec:control1">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok"  onclick="viewViolaData();">处理</a>
+        </@shiro.hasPermission>
+        </span>
+    </div>
+
+    <div data-options="region:'center',title:'违规明细',noheader:false;">
+        <table id="violaDg"></table>
+    </div>
+</div>
+
+<!--预报查看编辑窗口-->
+<div id="violaRptWin" ></div>
+</body>
+</html>
+<script type="text/javascript">
+
+    var violaLevel = [{"value":"1","text":"普通违规"},{"value":"2","text":"中级违规"},
+        {"value":"3","text":"高级违规"}];
+    var isDeal = [{"value":"0","text":"未处理"},{"value":"1","text":"已处理"}];
+    $violaDg = $("#violaDg");
+    var rowObject ;
+    $(function () {
+        $violaDg.datagrid({
+            url: "${base}/business/monitor/qryViolaData",
+            fitColumns: true,
+            height: $(this).height() - 2,
+            width: $(this).width() - 2,
+            idField:'violaRecId',
+            singleSelect:true,
+            rownumbers:true,
+            columns: [
+                [
+                    {field: 'violaRecId', title: '违规记录',align:'center', width:10,hidden:true},
+                    //{field: 'laborCode', title: '化验编码',align:'center', width:100},
+                    {field: 'recordNo', title: '入厂流水',align:'center', width: 100},
+                    {field: 'cardId', title: '卡号',align:'center', width: 80},
+                    {field: 'carId', title: '车牌号',align:'center', width: 80},
+                    {field: 'violaType', title: '违规类型',align:'center', width: 100,hidden:true},
+                    {field: 'violaLevel', title: '违规等级',align:'center', width: 60,formatter:violaLevelFormatter},
+                    {field: 'violaTime', title: '违规时间',align:'center', width: 100},
+                    {field: 'violaDesc', title: '违规内容',align:'center', width: 160},
+                    {field: 'isDeal', title: '处理状态',align:'center', width: 60,formatter:isDealFormatter},
+                    {field: 'opCode', title: '处理人',align:'center', width: 60},
+                    {field: 'opDesc', title: '处理措施',align:'center', width: 100},
+                    {field: 'dealTime', title: '处理时间',align:'center', width:100}
+                ]
+            ],
+            toolbar: '#tb'
+        })
+    });
+
+    function violaLevelFormatter(values,row){
+        for(var i=0; !(i >= violaLevel.length); i++){
+            if (violaLevel[i].value == values) return violaLevel[i].text;
+        }
+        return values;
+    }
+    function isDealFormatter(values,row){
+        for(var i=0; !(i >= isDeal.length); i++){
+            if (isDeal[i].value == values) return isDeal[i].text;
+        }
+        return values;
+    }
+
+    $('#violaLevel').combobox({
+        panelHeight:'auto',
+        valueField:'id',
+        textField:'name',
+        data: [
+            {id: '', name: '全部', selected: true},
+            {id: '1',name: '普通违规'},
+            {id: '2',name: '中级违规'},
+            {id: '3',name: '高级违规'}
+        ]
+    });
+    $('#isDual').combobox({
+        panelHeight:'auto',
+        valueField:'id',
+        textField:'name',
+        data: [
+            {id: '', name: '全部', selected: true},
+            {id: '0',name: '未处理'},
+            {id: '1',name: '已处理'}
+        ]
+    });
+    //查询
+    function qryViolaData() {
+        var qryBeginDate = $("#sBeginDate").datebox("getValue");
+        var qryEndDate =  $("#sEndDate").datebox("getValue");
+        var violaLevel = $("#violaLevel").combobox("getValue");
+        var isDual = $("#isDual").combobox("getValue");
+        var carId =  $("#carId").textbox("getValue");
+        var paramObj = new Object();
+
+        if (qryBeginDate != null && qryBeginDate != undefined && qryBeginDate != "") {
+            paramObj.search_sbeginDate = qryBeginDate;
+        }
+        if (qryEndDate != null && qryEndDate != undefined && qryEndDate != "") {
+            paramObj.search_sendDate = qryEndDate;
+        }
+        if (violaLevel != null && violaLevel != undefined && violaLevel != "") {
+            paramObj.search_violaLevel = violaLevel;
+        }
+        if (isDual != null && isDual != undefined && isDual != "") {
+            paramObj.search_isDeal = isDual;
+        }
+        if (carId != null && carId != undefined && carId != "") {
+            paramObj.search_carId = carId;
+        }
+        //加载数据
+        $violaDg.datagrid("load",paramObj);
+
+    }
+
+    //双击查询
+    function viewViolaData() {
+        document.getElementById("doAction").value = "mod";
+        var selectedRow = $violaDg.datagrid('getSelected');
+        if(selectedRow.isDeal=="0"){
+            if (selectedRow) {
+                var win = $('#violaRptWin').window({
+                    modal : true,
+                    title : '汽车违规明细确认',
+                    width : 650,
+                    height :400,
+                    collapsible : false,
+                    minimizable : false,
+                    maximizable : true,
+                    href : '${base}/business/monitor/viewViolaDetail/'+selectedRow.violaRecId
+                });
+            }
+        }else{
+            showMsg("提示", "已处理的汽车违规信息不能重复处理");
+        }
+    }
+    //双击查询
+    function viewDetail() {
+        document.getElementById("doAction").value = "view";
+        var selectedRow = $violaDg.datagrid('getSelected');
+            if (selectedRow) {
+                var win = $('#violaRptWin').window({
+                    modal : true,
+                    title : '汽车违规明细确认',
+                    width : 650,
+                    height :400,
+                    collapsible : false,
+                    minimizable : false,
+                    maximizable : true,
+                    href : '${base}/business/monitor/viewViolaDetail/'+selectedRow.violaRecId
+                });
+            }
+    }
+</script>

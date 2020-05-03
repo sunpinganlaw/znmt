@@ -1,0 +1,148 @@
+<div class="form-div">
+    <div>&nbsp;&nbsp;&nbsp;</div>
+    <div style="text-align: left">
+        <span style="color: #ff081e;">&nbsp;&nbsp;&nbsp;<strong>功能说明：</strong></span>
+    </div>
+    <div style="text-align: left">
+        <span style="color: #0099FF;">&nbsp;&nbsp;&nbsp;1. 该功能主要用于调整火车车厢顺序、火车所在轨道及对位时间。</span>
+    </div>
+    <div style="text-align: left">
+        <span style="color: #0099FF;">&nbsp;&nbsp;&nbsp;2. 默认为原序号，系统将按输入车厢顺序值大小排序(可用2位小数进行插队)。</span>
+    </div>
+    <div style="text-align: left">
+        <span style="color: #0099FF;">&nbsp;&nbsp;&nbsp;3. 保存后即对整个车次同一条轨道的车厢进行重新排序并更新数据。</span>
+    </div>
+    <div style="text-align: left">
+        <span style="color: #0099FF;">&nbsp;&nbsp;&nbsp;4. 例：把原第3节车厢插入1和2之间，只需把原 3 改成 1.1 并保存。</span>
+    </div>
+
+    <hr style="height:1px;border:none;border-top:1px dashed #0066CC;" />
+
+    <div style="text-align: center">
+        <label for="aimTime">对位时间：</label>
+        <input class="easyui-datetimebox" id="aimTime" style="width:145px">
+
+        <label for="trackNo1">&nbsp;&nbsp;&nbsp;轨道：</label>
+        <input id="trackNo1" style="width:70px;"/>
+    </div>
+
+    <br>
+
+    <div id = "dynamicDiv1"></div>
+
+    <div>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-save" onclick="saveOrders();">保存</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(function () {
+        for ( var i = 0; i<selectedTrains.length; i++) {
+            var divObj = document.getElementById("dynamicDiv1");
+            divObj.innerHTML = divObj.innerHTML+'<div>'+'[车号:'+selectedTrains[i].carId+'] &nbsp;&nbsp; 车厢序号：<input class="easyui-numberbox" value="'+selectedTrains[i].xhNum+'" data-options="precision:2" id="xhnum'+i+'" style="width:140px;"/></div>';
+        }
+        //加载轨道
+        $('#trackNo1').combobox({
+            url:'${base}/business/tool/getDictionaryByType/TRACK_NO',
+            valueField:'id',
+            textField:'name',
+            panelHeight:'auto'
+        });
+
+        //取默认时间
+        var myDate = new Date();
+        myDate.getHours();       //获取当前小时数(0-23)
+        myDate.getMinutes();     //获取当前分钟数(0-59)
+        var mytime=myDate.getHours()+":"+myDate.getMinutes();
+            $('#aimTime').datetimebox({
+            value: mytime,
+            required: true,
+            showSeconds: false
+        });
+        //取默认轨道号
+        var rowsBasic =  $detaildg.datagrid('getSelections');
+        var sameTrackNo = true;
+        var trackNo;
+        if (rowsBasic.length == 1) {
+            trackNo = rowsBasic[0].trackNo;
+        } else {
+            for (var i = 0; i < rowsBasic.length; i++) {
+                if (i < rowsBasic.length - 1) {
+                    if (rowsBasic[i].trackNo != rowsBasic[i + 1].trackNo) {
+                        sameTrackNo = sameTrackNo && false;
+                        break;
+                    }
+                }
+            }
+            if (sameTrackNo) {
+                trackNo = rowsBasic[0].trackNo;
+            }
+        }
+        $('#trackNo1').combobox('setValue', trackNo);
+
+    });
+
+
+    //保存
+    function saveOrders() {
+        //获取公共部分值
+        var commonObj = new Object();
+        var paramObj = new Object();
+        commonObj.trainNo = document.getElementById("hideTrainNo").value;
+        commonObj.trackNo = $("#trackNo1").combobox('getValue');
+        commonObj.aimTime = $("#aimTime").datetimebox("getValue");
+
+        if (commonObj.aimTime == null||commonObj.aimTime == undefined || commonObj.aimTime == "") {
+            showMsg("提示", "请填写对位时间！");
+            return false;
+        }
+
+        if (commonObj.trackNo == null||commonObj.trackNo == undefined || commonObj.trackNo == "") {
+            showMsg("提示", "请选择车厢所在的轨道！");
+            return false;
+        }
+
+        //放入参数对象
+        paramObj["publicInfo"] = JSON.stringify(commonObj);
+
+        var arrayXhnum = [];
+        for ( var i = 0; i<selectedTrains.length; i++) {
+            var o = {};
+            o.recordNo = selectedTrains[i].recordNo;
+            o.xhnum = $("#xhnum"+i).numberbox("getValue");
+            arrayXhnum[i] = o;
+        }
+
+        //放入票重数据
+        paramObj["updateInfo"] = JSON.stringify(arrayXhnum);
+
+        //打开遮罩
+        $.messager.progress({ msg: '正在处理，请稍候...' });
+
+        //提交数据
+        $.post("${base}/business/monitor/doAdjustTrainOrder", paramObj, function(rsp) {
+            if(rsp.successful){
+                showMsg("提示", rsp.msg);
+                $detaildg.datagrid('clearChecked');
+                $detaildg.datagrid('clearSelections');
+                $detaildg.datagrid('reload');
+                //关闭遮罩
+                $.messager.progress('close');
+                selectedTrains = null;
+                //关闭编辑窗口
+                $('#adjustTrainOrderWin').window('close');
+            } else {
+                //关闭遮罩
+                $.messager.progress('close');
+                selectedTrains = null;
+                showMsg("提示", rsp.msg);
+            }
+        }, "JSON").error(function() {
+                    $.messager.progress('close');
+                    selectedTrains = null;
+                    showMsg("提示", "保存失败！");
+                });
+
+    }
+</script>

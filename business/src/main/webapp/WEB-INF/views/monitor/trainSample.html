@@ -1,0 +1,274 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>火车采样监控</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+    <style>
+        html,body{height:100%;}
+    </style>
+</head>
+
+<body>
+<div id="cc" class="easyui-layout" style="height:100%;">
+    <div data-options="region:'center',title:'工作状况',noheader:'true'" style="width:100%;padding:5px;text-align: center">
+<!--        <iframe src="${base}/htmlresource/HF_CY/index.html" width="1500" style="text-align: center"
+                height="810"></iframe>-->
+        <iframe src="${base}/business/htmlView/hfCY" width="1500" style="text-align: center"
+                height="810"></iframe>
+    </div>
+
+    <@shiro.hasPermission name="trainSample:control1">
+    <div data-options="region:'east',title:'控制采样机',split:true" style="width:15%;">
+        <div id="p123" class="easyui-panel" title="1#采样机" style="width:100%;height:280px;padding:0px;" data-options="fit:false" >
+            <table id="qk" cellpadding="0" cellspacing="0" border="0" width="100%" style="border: 1px;">
+                <tbody>
+                <tr>
+                    <td style="width:50%;height:30px;text-align:right;">启动</td><!--小普说 0急停 1继续运行 4复位-->
+                    <td style="width:40%;height:30px;text-align:left;"><input type="radio" id="ctrlCYJ11" name="ctrlCYJ1" onclick="changeSampleCode1('ctrlCYJ1');" value="1" /></td>
+                </tr>
+                <tr>
+                    <td style="width:50%;height:30px;text-align:right;">停止</td>
+                    <td style="width:40%;height:30px;text-align:left;"><input type="radio" id="ctrlCYJ12" name="ctrlCYJ1" onclick="changeSampleCode1('ctrlCYJ1');" value="2" /></td>
+                </tr>
+                <tr>
+                    <td style="width:50%;height:30px;text-align:right;">急停</td>
+                    <td style="width:40%;height:30px;text-align:left;"><input type="radio" id="ctrlCYJ13" name="ctrlCYJ1" onclick="changeSampleCode1('ctrlCYJ1');" value="3" /></td>
+                </tr>
+                <tr>
+                    <td style="width:50%;height:30px;text-align:right;">卸样</td>
+                    <td style="width:40%;height:30px;text-align:left;"><input type="radio" id="ctrlCYJ14" name="ctrlCYJ1" onclick="changeSampleCode1('ctrlCYJ1');" value="4" /></td>
+                </tr>
+                <tr>
+                    <td style="width:50%;height:30px;text-align:right;">复位</td>
+                    <td style="width:40%;height:30px;text-align:left;"><input type="radio" id="ctrlCYJ16" name="ctrlCYJ1" onclick="changeSampleCode1('ctrlCYJ1');" value="6" /></td>
+                </tr>
+                <tr>
+                    <td style="width:45%;height:40px;text-align:right;">采样编码</td>
+                    <td style="width:55%;height:40px;text-align:left;"><input id="sampleCode1" style="width:120px;"/></td>
+                </tr>
+                <tr>
+                    <td style="width:90%;height:30px;text-align:center;" colspan="2">
+                        <input type="button" onclick="commitCtrlCyj('ctrlCYJ1', 'CY01', '1')" value="      确   定      "/>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="p123" class="easyui-panel" title="2#采样机" style="width:100%;height:280px;padding:0px;" data-options="fit:false" >
+            <table id="qk" cellpadding="0" cellspacing="0" border="0" width="100%" style="border: 1px;">
+                <tbody>
+                <tr>
+                    <td style="width:50%;height:30px;text-align:right;">启动</td>
+                    <td style="width:40%;height:30px;text-align:left;"><input type="radio" id="ctrlCYJ21" name="ctrlCYJ2" onclick="changeSampleCode2('ctrlCYJ2');" value="1" /></td>
+                </tr>
+                <tr>
+                    <td style="width:50%;height:30px;text-align:right;">停止</td>
+                    <td style="width:40%;height:30px;text-align:left;"><input type="radio" id="ctrlCYJ22" name="ctrlCYJ2" onclick="changeSampleCode2('ctrlCYJ2');" value="2" /></td>
+                </tr>
+                <tr>
+                    <td style="width:50%;height:30px;text-align:right;">急停</td><!--小普说 0急停 1继续运行 4复位-->
+                    <td style="width:40%;height:30px;text-align:left;"><input type="radio" id="ctrlCYJ23" name="ctrlCYJ2" onclick="changeSampleCode2('ctrlCYJ2');" value="3" /></td>
+                </tr>
+                <tr>
+                    <td style="width:50%;height:30px;text-align:right;">卸样</td>
+                    <td style="width:40%;height:30px;text-align:left;"><input type="radio" id="ctrlCYJ24" name="ctrlCYJ2" onclick="changeSampleCode2('ctrlCYJ2');" value="4" /></td>
+                </tr>
+                <tr>
+                    <td style="width:50%;height:30px;text-align:right;">复位</td>
+                    <td style="width:40%;height:30px;text-align:left;"><input type="radio" id="ctrlCYJ26" name="ctrlCYJ2" onclick="changeSampleCode2('ctrlCYJ2');" value="6" /></td>
+                </tr>
+                <tr>
+                    <td style="width:45%;height:40px;text-align:right;">采样编码</td>
+                    <td style="width:55%;height:40px;text-align:left;"><input id="sampleCode2" style="width:120px;"/></td>
+                </tr>
+                <tr>
+                    <td style="width:90%;height:30px;text-align:center;" colspan="2">
+                        <input type="button" onclick="commitCtrlCyj('ctrlCYJ2', 'CY02', '2')" value="      确   定      "/>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <!--<div id="p123" class="easyui-panel" title="" style="width:100%;height:267px;padding:0px;"
+             data-options="fit:false">
+            <table id="qk" cellpadding="0" cellspacing="0" border="0" width="100%" style="border: 1px;">
+                <tbody>
+                <tr>
+                    <td style="width:50%;height:30px;text-align:right;">急停</td>
+                    小普说 0急停 1继续运行 4复位
+                    <td style="width:40%;height:30px;text-align:left;"><input type="radio" id="ctrlCYJ0" name="ctrlCYJ"
+                                                                              value="0"/></td>
+                </tr>
+                <tr>
+                    <td style="width:50%;height:30px;text-align:right;">继续运行</td>
+                    <td style="width:40%;height:30px;text-align:left;"><input type="radio" id="ctrlCYJ1" name="ctrlCYJ"
+                                                                              value="1"/></td>
+                </tr>
+                <tr>
+                    <td style="width:50%;height:30px;text-align:right;">复位</td>
+                    <td style="width:40%;height:30px;text-align:left;"><input type="radio" id="ctrlCYJ4" name="ctrlCYJ"
+                                                                              value="4"/></td>
+                </tr>
+                <tr>
+                    <td style="width:90%;height:30px;text-align:center;" colspan="2">
+                        <a href="javascript:void(0)" id="surecommit" class="easyui-linkbutton" iconCls="icon-save"
+                           onclick="commitCtrlCyj()">确定</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        -->
+    </div>
+    </@shiro.hasPermission>
+<!--    <div data-options="region:'south',title:'采样信息',split:true" style="height:420px;">
+        <table id="tt" class="easyui-datagrid"
+               data-options="method:'get',border:false,singleSelect:true,fit:true,fitColumns:true">
+            <thead>
+            <tr>
+                <th data-options="field:'takeSampleRecId',width:40,align:'center'">序号</th>
+                <th data-options="field:'sampleTyp',width:50,align:'center'">采样方式</th>
+                <th data-options="field:'sampleCode',width:40,align:'center'">采样编码</th>
+                <th data-options="field:'packCode',width:40,align:'center'">封装码</th>
+                <th data-options="field:'smplStartTime',width:50,align:'center'">开始时间</th>
+                <th data-options="field:'smplEndTime',width:50,align:'center'">结束时间</th>
+                <th data-options="field:'batchNo',width:50,align:'center'">批次号</th>
+            </tr>
+            </thead>
+        </table>
+    </div>-->
+</div>
+</body>
+</html>
+<script type="text/javascript">
+    //联动修改取采样编码的方式，卸样需要关联罐子
+    function changeSampleCode1(radioName){
+        var cmdCode = $("input[name="+radioName+"]:checked").val();
+        var optUrl;
+        if (cmdCode == "4"){//卸样
+            //optUrl = '${base}/business/tool/getComboboxOpt/SAMPLE_CODES4XY';
+            optUrl = '${base}/business/tool/getComboboxOpt/SAMPLE_CODES4TRAIN';
+        } else {
+            optUrl = '${base}/business/tool/getComboboxOpt/SAMPLE_CODES4TRAIN';
+        }
+
+        $('#sampleCode1').combobox({
+            url:optUrl,
+            panelHeight:'auto',
+            valueField:'id',
+            textField:'name'
+        });
+    }
+
+    //联动修改取采样编码的方式，卸样需要关联罐子
+    function changeSampleCode2(radioName){
+        var cmdCode = $("input[name="+radioName+"]:checked").val();
+        var optUrl;
+        if (cmdCode == "4"){//卸样
+            optUrl = '${base}/business/tool/getComboboxOpt/SAMPLE_CODES4TRAIN';
+        } else {
+            optUrl = '${base}/business/tool/getComboboxOpt/SAMPLE_CODES4TRAIN';
+        }
+
+        $('#sampleCode2').combobox({
+            url:optUrl,
+            panelHeight:'auto',
+            valueField:'id',
+            textField:'name'
+        });
+    }
+
+
+    //提交采样机控制命令
+    function commitCtrlCyj(radioName, machineCode, mNo){
+        var commandCode = $("input[name="+radioName+"]:checked").val();
+        var sampleCode;
+
+        if (commandCode == undefined || commandCode == null || commandCode == "" || commandCode.length == 0) {
+            showMsg("提示", "请选择要执行的命令");
+            return false;
+        }
+
+        //启动、卸样、打包需要输入采样编码
+        if (commandCode == "1" || commandCode == "4" || commandCode == "5") {
+            sampleCode = $("#sampleCode"+mNo).combobox("getValue");
+
+            if (sampleCode == null || sampleCode == "" || sampleCode.length == 0) {
+                showMsg("提示", "执行该命令需要选择采样编码");
+                return false;
+            }
+        }
+
+
+        $.messager.confirm('', '确定提交执行该命令?', function(sure){
+            if(sure){
+                var paramObj = new Object();
+                paramObj.search_commandCode = commandCode;//命令代码
+                paramObj.search_machineCode = machineCode;//设备编码 CY01 CY02
+                paramObj.search_machineType = "7";//1:采样机 2.制样机 3.翻车机
+
+                if (sampleCode != undefined && sampleCode != null && sampleCode != "" && sampleCode.length > 0) {
+                    paramObj.search_sampleCode = sampleCode
+                }
+
+                $.post("${base}/business/monitor/commitCtrlCmd", paramObj, function (rsp) {
+                    if (rsp) {
+                        showMsg("提示", rsp.msg);
+                    } else {
+                        showMsg("提示", "控制采样机命令提交失败!");
+                    }
+                }).error(function () {
+                    showMsg("提示", "控制采样机命令提交异常!");
+                });
+            }
+        });
+    }
+
+/*    $dg = $("#tt");
+    var url = '${base}/business/trainMonitor/sampleList';
+    $(function () {
+        $dg.datagrid({
+            iconCls: 'icon-edit',
+            height: $(this).height() - 46,
+            width: $(this).width() - 10,
+            singleSelect: true,
+            animate: true,
+            fitColumns: true,
+            idField: 'recordNo',
+            url: url,
+            pagination: true,
+            rownumbers: true
+        });
+    });
+
+    //提交采样机控制命令
+    function commitCtrlCyj() {
+        $.messager.confirm('', '确定提交执行该命令?', function (sure) {
+            if (sure) {
+                var paramObj = new Object();
+                var commandCode = $('input:radio:checked').val();
+                paramObj.search_commandCode = commandCode;//命令代码
+                paramObj.search_machineCode = "1";//设备编码 小普说目前就是1
+                paramObj.search_machineType = "1";//1:采样机 2.制样机 3.翻车机
+
+                $.post("${base}/business/trainMonitor/commitCtrlCmd", paramObj, function (rsp) {
+                    if (rsp) {
+                        showMsg("提示", rsp.msg);
+                    } else {
+                        showMsg("提示", "控制采样机命令提交失败!");
+                    }
+                }).error(function () {
+                    showMsg("提示", "控制采样机命令提交异常!");
+                });
+            }
+        });
+    }*/
+
+</script>

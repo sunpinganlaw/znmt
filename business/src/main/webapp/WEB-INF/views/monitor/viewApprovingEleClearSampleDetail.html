@@ -1,0 +1,36 @@
+<div style="margin: 4px;width: 96%;">
+    <table id="approvingEleSampleDetailDg"></table>
+</div>
+
+<script type="text/javascript">
+    $approvingEleSampleDetailDg = $("#approvingEleSampleDetailDg");
+
+    $(function () {
+        $approvingEleSampleDetailDg.datagrid({
+            url: "${base}/business/monitor/qrySample4GetList",
+            fitColumns: true,
+            height: 350,
+            width: $(this).width() - 50,
+            idField:'bagId',
+            rownumbers:true,
+            queryParams: {
+                search_apprEventId:document.getElementById("h_apprEventId").value // 通过审批关键事件ID来获取提交的审批数据
+            },
+            columns: [
+                [
+                    {field: 'bagId', title: '样包编码',align:'center', width:18},
+                    {field: 'grain', title: '颗粒度',align:'center', width:20},
+                    {field: 'boxNo', title: '存样柜编号',align:'center', width: 20},
+                    {field: 'bagStatus', title: '存样包状态',align:'center', width:20},
+                    {field: 'samTime', title: '存样时间',align:'center', width: 28},
+                    {field: 'keeper', title: '存样人',align:'center', width:18},
+                    {field: 'cleanSampleStatus', title: '清样包状态',align:'center', width:20},
+                    {field: 'cleanSampleTime', title: '清样时间',align:'center', width:28},
+                    {field: 'cleaner', title: '清样人',align:'center', width:18},
+                    {field: 'reCheckClean', title: '清样复查',align:'center', width:20}
+                ]
+            ]
+        });
+    });
+
+</script>

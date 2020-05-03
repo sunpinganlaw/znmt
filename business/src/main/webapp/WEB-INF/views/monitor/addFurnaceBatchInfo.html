@@ -1,0 +1,182 @@
+<div class="form-div">
+    <form id="furnaceBatchInfoRecordForm" method="post">
+        <input type="hidden" id="batchNo" name="batchNo"/>
+        <input type="hidden" id="sampleCode" name="sampleCode"/>
+        <input type="hidden" id="samplingCode" name="samplingCode"/>
+        <input type="hidden" id="laborCode" name="laborCode"/>
+        <table>
+            <tr style="display: none">
+                <td>煤矿</td>
+                <td><input id="mineNo" name="mineNo"/>
+                </td>
+                <td>煤种</td>
+                <td><input id="coalNo" name="coalNo"/>
+                </td>
+            </tr>
+            <tr style="display: none">
+                <td>供应商</td>
+                <td><input id="venNo" name="venNo"/>
+                </td>
+                <td>运输单位</td>
+                <td><input id="carrierNo" name="carrierNo"/>
+                </td>
+            </tr>
+            <tr>
+                <td>班组</td>
+                <td><input id="sampleTeamNo" name="sampleTeamNo"/>
+                </td>
+                <td>上料重量</td>
+                <td><input class="easyui-numberbox" data-options="min:0, precision:2,required:true"  name="allNetQty" id="allNetQty" style="width:145px;"/>
+                </td>
+            </tr>
+        </table>
+    </form>
+
+    <div class="submit-div">
+        <a href="javascript:void(0)" id="add" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm()">提交</a>
+        <!--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="$('#furnaceBatchInfoRecordForm').form('clear');">重置</a>-->
+    </div>
+</div>
+
+<script type="text/javascript">
+    var doActionTag = document.getElementById("doActionTag").value;
+
+    //修改时加载数据到控件
+    if (doActionTag == 'MOD') {
+        $("#furnaceBatchInfoRecordForm").form('load', selectedRowObj);
+        $("#sampleTeamNo").attr("readOnly",true);
+    }
+
+    $(function () {
+        //煤矿
+        createCoalMineCombobox("#mineNo",'${base}/business/tool/getComboboxOpt/COAL_MINE_LIST');
+        //煤种
+        createCoalCombobox("#coalNo",'${base}/business/tool/getComboboxOpt/COAL_TYPE_LIST');
+        //供应商
+        createCombobox("#venNo",'${base}/business/tool/getComboboxOpt/VENDOR_INFO_LIST');
+        //运输单位
+        createCombobox("#carrierNo",'${base}/business/tool/getComboboxOpt/CARRIER_INFO_LIST');
+
+        $('#sampleTeamNo').combobox({
+            url:'${base}/business/tool/getDictionaryByType/SAMPLE_TEAM_NO',
+            valueField:'id',
+            textField:'name',
+            panelHeight:'auto',
+            required:true
+        });
+    });
+
+
+    function createCoalCombobox(id,url) {
+        $(id).combobox({
+            valueField:'id',
+            textField:'name',
+            panelHeight:'auto',
+            required:true,
+            url:url,
+            width:145,
+            readonly:true,
+            onLoadSuccess: function () { //加载完成后,设置选中第一项
+                var vals = $(this).combobox("getData");
+                for (var i = 0;i<vals.length;i++) {
+                    if (vals[i].name == "混煤") {
+                        for (var item in vals[i]) {
+                            if (item == "id") {
+                                $(this).combobox("select", vals[i][item]);
+                            }
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+    function createCoalMineCombobox(id,url) {
+        $(id).combobox({
+            valueField:'id',
+            textField:'name',
+            panelHeight:'auto',
+            required:true,
+            url:url,
+            width:145,
+            readonly:true,
+            onLoadSuccess: function () { //加载完成后,设置选中第一项
+                var vals = $(this).combobox("getData");
+                for (var i = 0;i<vals.length;i++) {
+                    if (vals[i].name == "入炉") {
+                        for (var item in vals[i]) {
+                            if (item == "id") {
+                                $(this).combobox("select", vals[i][item]);
+                            }
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+    function createCombobox(id,url) {
+        $(id).combobox({
+            valueField:'id',
+            textField:'name',
+            panelHeight:'auto',
+            required:true,
+            url:url,
+            width:145,
+            readonly:true,
+            onLoadSuccess: function () { //加载完成后,设置选中第一项
+                var vals = $(this).combobox("getData");
+                for (var i = 0;i<vals.length;i++) {
+                    if (vals[i].name == "默认") {
+                        for (var item in vals[i]) {
+                            if (item == "id") {
+                                $(this).combobox("select", vals[i][item]);
+                            }
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+
+    //提交表单
+    function submitForm() {
+        if (!$("#furnaceBatchInfoRecordForm").form('validate')) {
+            showMsg("提示", "系统中煤矿、煤种、供应商、运输单位名称未配置‘默认’，请配置后再录入!");
+            return false;
+        }
+        var selVenNo = $("#venNo").combobox('getValue');
+
+        $.messager.confirm('提示', '确定保存?', function (r) {
+            if (r) {
+                //提交保存
+                save();
+            }
+        });
+    }
+
+    //保存
+    function save() {
+        var params = $("#furnaceBatchInfoRecordForm").serialize();
+        var postUrl = "";
+        if (doActionTag == "ADD") {
+            postUrl = "${base}/business/monitor/furnaceBatchInfo/add";
+        } else if (doActionTag == "MOD") {
+            postUrl = "${base}/business/monitor/furnaceBatchInfo/mod";
+        } else {
+        }
+
+        $.post(postUrl, params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示", rsp.msg);
+                $('#furnaceBatchInfoWin').window('close');
+            } else {
+                showMsg("提示", rsp.msg);
+            }
+        }).error(function () {
+            showMsg("提示", "新增失败!");
+        });
+    }
+
+</script>

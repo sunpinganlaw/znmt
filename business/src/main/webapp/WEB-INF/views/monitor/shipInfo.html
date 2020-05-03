@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>轮船资料维护</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+
+<body>
+
+    <div id="tb">
+        <table>
+            <tr>
+                <td>
+                    <label for="shipNameQry">船名：</label>
+                    <input id="shipNameQry" class="easyui-textbox" style="width:145px;"  />
+                    <label for="shipCodeQry">船号：</label>
+                    <input id="shipCodeQry" class="easyui-textbox" style="width:145px;"  />
+                    <label for="fixShipNoQry">固有班次：</label>
+                    <input id="fixShipNoQry" class="easyui-textbox" style="width:145px;"  />
+                    <a href="javascript:void(0)" id="qryBtn" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="editShipInfo('ADD');">新增</a>
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit" onclick="editShipInfo('MOD');">修改</a>
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="delShipInfo();">删除</a>
+                    <input type="hidden" id="shipInfoActionTag">
+                    <input type="hidden" id="shipIdHidden">
+                </td>
+            </tr>
+        </table>
+    </div>
+
+
+    <div id="tx" style="margin: 5px;width: 90%">
+        <table id="shipInfoDg"></table>
+    </div>
+
+    <div id="editShipInfoWin" ></div>
+
+</body>
+<script type="text/javascript">
+//全局变量
+$shipInfoDg = $("#shipInfoDg");
+
+$(function () {
+    $shipInfoDg.datagrid({
+        url: "${base}/business/monitor/qryShipInfo",
+        fitColumns: true,
+        height: $(this).height()-15,
+        width: $(this).width()-20,
+        idField:'shipId',
+        singleSelect:true,
+        rownumbers:true,
+        queryParams: {},
+        columns: [
+            [
+                {field: 'shipName', title: '船名',align:'center', width:20},
+                {field: 'shipEngName', title: '船英文名',align:'center', width:15},
+                {field: 'shipCode', title: '船号',align:'center', width: 15},
+                {field: 'fixShipNo', title: '班次',align:'center', width: 15},
+                {field: 'cabinCnt', title: '舱位数',align:'center', width: 15},
+                {field: 'statusName', title: '状态',align:'center', width: 15},
+                {field: 'loadTun', title: '额定吨位',align:'center', width: 15},
+                {field: 'totalTun', title: '总排水量',align:'center', width: 15},
+                {field: 'width', title: '宽度',align:'center', width: 15},
+                {field: 'length', title: '长度',align:'center', width: 15},
+                {field: 'nationCd', title: '国籍缩写',align:'center', width: 15},
+                {field: 'companyName', title: '公司',align:'center', width: 25}
+            ]
+        ],
+        toolbar: '#tb'
+    })
+});
+
+//查询
+function qry(){
+    var shipName = $("#shipNameQry").textbox("getValue");
+    var shipCode = $("#shipCodeQry").textbox("getValue");
+    var fixShipNo = $("#fixShipNoQry").textbox("getValue");
+
+    var qryObj = {};
+    if (shipName != null && shipName != "" && shipName.length > 0) {
+        qryObj.search_shipName = "%"+shipName+"%";
+    }
+
+    if (shipCode != null && shipCode != "" && shipCode.length > 0) {
+        qryObj.search_shipCode = shipCode;
+    }
+
+    if (fixShipNo != null && fixShipNo != "" && fixShipNo.length > 0) {
+        qryObj.search_fixShipNo = fixShipNo;
+    }
+
+    $shipInfoDg.datagrid('load', qryObj);
+}
+
+
+function editShipInfo(shipInfoActionTag){
+    document.getElementById("shipInfoActionTag").value = shipInfoActionTag;
+    var winTitle;
+
+    if (shipInfoActionTag == "ADD") {
+        winTitle = '新增船资料';
+    } else if (shipInfoActionTag == "MOD") {
+        winTitle = '修改船资料';
+        var selectedRow = $shipInfoDg.datagrid('getSelected');
+        if (selectedRow) {
+            document.getElementById("shipIdHidden").value = selectedRow.shipId;
+        } else {
+            showMsg("提示", "请先选择要修改的船运记录");
+            return false;
+        }
+    }
+
+    $('#editShipInfoWin').window({
+        modal : true,
+        title : winTitle,
+        width : 470,
+        height : 290,
+        collapsible : false,
+        minimizable : false,
+        maximizable : true,
+        href : '${base}/business/monitor/editShipInfo'
+    });
+}
+
+function delShipInfo(){
+    var selectedRow = $shipInfoDg.datagrid('getSelected');
+    if (selectedRow) {
+        $.messager.confirm('提示', '确定要删除所选船资料?', function (r) {
+            if (r) {
+                var params = "shipId=" + selectedRow.shipId;
+                $.post("${base}/business/monitor/submitEditShipInfo/DEL", params, function (rsp) {
+                    if (rsp.successful) {
+                        showMsg("提示",rsp.msg);
+                        $shipInfoDg.datagrid('reload');
+                    } else {
+                        showMsg("提示", rsp.msg);
+                    }
+                });
+            }
+        });
+    } else {
+        showMsg("提示", "请先选择一行要删除的船资料");
+        return false;
+    }
+}
+
+</script>
+</html>

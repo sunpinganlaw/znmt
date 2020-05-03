@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>存查样历史查询</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+<body id="layoutDiv" class="easyui-layout" style="height:100%">
+    <div id="tb" style="width: 100%">
+        <table style="width: 100%;background: #F4F4F4">
+            <tr>
+                <td style="text-align: left">
+                    <label for="depositStartTime">操作时间</label>
+                    <input class="easyui-datebox" name="depositStartTime" id="depositStartTime"  style="width:145px;"/> &nbsp;~&nbsp;
+                    <input class="easyui-datebox" name="depositEndTime" id="depositEndTime"  style="width:145px;"/>
+                    <label for="sampleType">煤样类型</label>
+                    <select id="sampleType" name="sampleType" class="easyui-combobox" data-options="panelHeight:'auto'"
+                            style="width:145px;">
+                        <option value="">全部</option>
+                        <option value="61">6mm全水样</option>
+                        <!--<option value="62">6mm存查样</option>-->
+                        <option value="32">3mm存查样</option>
+                        <option value="21">0.2mm化验样</option>
+                        <option value="22">0.2mm存查样</option>
+                    </select>
+                    <a href="javascript:void(0)"  class="easyui-linkbutton" iconCls="icon-search" onclick="qry();">查询</a>
+                    <a href="javascript:void(0)"  class="easyui-linkbutton" iconCls="icon-excel" onclick="excel_export();">导出</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div data-options="region:'center',title:'存查样历史清单'">
+        <table id="cabinetOpRecDg"></table>
+    </div>
+
+</body>
+</html>
+<script type="text/javascript">
+    $cabinetOpRecDg = $("#cabinetOpRecDg");
+    $(function () {
+        var myDate = new Date();
+        var defaultBeginTime = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+        var defaultEndTime =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+
+        $cabinetOpRecDg.datagrid({
+            url:  '${base}/business/monitor/qryCabinetOpRecList',
+            fitColumns: true,
+            animate: true,
+            border:true,
+            height: $(this).height() - 2,
+            width: $(this).width() - 2,
+            idField:'recId',
+            singleSelect:true,
+            rownumbers:true,
+            pagination: true,
+            pagenumber:true,
+            pageSize:70,
+            pageList: [70, 100],
+            queryParams: {//默认进来查当天
+                search_depositStartTime:defaultBeginTime,
+                search_depositEndTime:defaultEndTime
+            },
+            columns: [
+                [
+//                    {field: 'ggName', title: '柜名', align: 'center', width: 10},
+//                    {field: 'ccName', title: '层名', align: 'center', width: 10},
+//                    {field: 'wwName', title: '位名', align: 'center', width: 10},
+                    {field: 'batchNo', title: '样品批次号', align: 'center', width: 30},
+                    {field: 'samplingCode', title: '制样编码', align: 'center', width: 30},
+                    {field: 'opTime', title: '操作时间', align: 'center', width: 30},
+//                    {field: 'isEnabledName', title: '是否可用', align: 'center', width: 15},
+//                    {field: 'makeSampleTime', title: '制样时间', align: 'center', width: 30},
+//                    {field: 'depositTime', title: '存样时间', align: 'center', width: 30},
+                    {field: 'sampleTypeName', title: '煤样类型', align: 'center', width : 20},
+                    {field: 'packCode', title: '封装码', align: 'center', width: 30},
+//                    {field: 'sampleStatusName', title: '样瓶状态', align: 'center', width: 15},
+                    {field: 'opType', title: '操作类型', align: 'center', width: 15},
+                    {field: 'opDest', title: '目的站', align: 'center', width: 25},
+                    {field: 'opResult', title: '操作状态', align: 'center', width: 15},
+//                    {field: 'dataStatus', title: '数据状态', align: 'center', width: 15},
+                    {field: 'opName', title: '操作人', align: 'center', width: 15}
+                ]
+            ],
+            toolbar: '#tb'
+        })
+    });
+
+    function qry(){
+        var paramO = {};
+        var sampleType = $("#sampleType").combobox("getValue");
+        var depositStartTime = $("#depositStartTime").combobox("getValue");
+        var depositEndTime = $("#depositEndTime").combobox("getValue");
+
+        if (sampleType != null && sampleType.length > 0) {
+            paramO.search_sampleType = sampleType;
+        }
+        if (depositStartTime != null && depositStartTime.length > 0) {
+            paramO.search_depositStartTime = depositStartTime;
+        }
+        if (depositEndTime != null && depositEndTime.length > 0) {
+            paramO.search_depositEndTime = depositEndTime;
+        }
+
+        $cabinetOpRecDg.datagrid("load", paramO);
+    }
+
+    function excel_export(){
+        var header = $("#cabinetOpRecDg").prev().find("div.datagrid-header tbody");
+        var body = $("#cabinetOpRecDg").prev().find("div.datagrid-body tbody");
+        var uri = 'data:application/vnd.ms-excel;base64,';
+        var template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><?xml version="1.0" encoding="UTF-8" standalone="yes"?><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table border="1" style="vnd.ms-excel.numberformat:@">{table}</table></body></html>';
+        var base64 = function (s) {
+            return window.btoa(unescape(encodeURIComponent(s)));
+        };
+        var format = function (s, c) {
+            return s.replace(/{(\w+)}/g, function (m, p){return c[p];});
+        };
+        var ctx = {worksheet: '', table: header.html()+body.html()};
+        window.location.href = uri + base64(format(template, ctx));
+    }
+</script>

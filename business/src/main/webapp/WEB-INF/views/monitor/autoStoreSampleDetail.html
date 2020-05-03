@@ -1,0 +1,58 @@
+    <div class="form-div">
+        <form id="sampleDetailform" method="post" commandName="user">
+            <table >
+                <tr>
+                    <td >柜名</td>
+                    <td><input class="easyui-textbox"  name="ggName" id="ggName" readonly="true"/></td>
+                    <td >层名</td>
+                    <td><input class="easyui-textbox"  name="ccName" id="ccName" readonly="true"/></td>
+                </tr>
+                <tr>
+                    <td >位名</td>
+                    <td><input class="easyui-textbox"  name="wwName" id="wwName" readonly="true"/></td>
+                    <td >是否可用</td>
+                    <td><input class="easyui-textbox"   id="isEnabledName" name="isEnabledName" readonly="true"/></td>
+                </tr>
+                <tr>
+                    <td >制样时间</td>
+                    <td><input class="easyui-textbox"   id="makeSampleTime" name="makeSampleTime" readonly="true"/></td>
+                    <td >存样时间</td>
+                    <td><input class="easyui-textbox"  name="depositTime" id="depositTime" readonly="true"/></td>
+                </tr>
+                <tr>
+                    <td >煤样类型</td>
+                    <td><input class="easyui-textbox"  name="sampleTypeName" id="sampleTypeName" readonly="true"/></td>
+                    <td >封装码</td>
+                    <td><input class="easyui-textbox"  name="packCode" id="packCode" readonly="true"/></td>
+                </tr>
+                <tr>
+                    <td >样瓶状态</td>
+                    <td><input class="easyui-textbox"  name="sampleStatusName" id="sampleStatusName" readonly="true"/></td>
+                    <td >操作人</td>
+                    <td><input class="easyui-textbox"  name="opName" id="opName" readonly="true"/></td>
+                </tr>
+                <!--<tr>-->
+                    <!--<td >操作时间</td>-->
+                    <!--<td><input class="easyui-textbox"  name="insertTime" id="insertTime" readonly="true"/></td>-->
+                    <!--<td >&nbsp;</td>-->
+                    <!--<td>&nbsp;</td>-->
+                <!--</tr>-->
+            </table>
+        </form>
+        <div class="submit-div">
+            <a href="javascript:void(0)" id="deal" class="easyui-linkbutton" iconCls="icon-cancel"  onclick="closeWin()">关闭</a>
+        </div>
+    </div>
+
+<script type="text/javascript">
+    //加载读取的详情信息
+    var sampleDetail = JSON.parse(JSON.stringify(${autoSampleDetail}));
+    if(sampleDetail != undefined && sampleDetail != null && sampleDetail != "") {
+        $('#sampleDetailform').form('load', sampleDetail);
+    }
+
+    function closeWin(){
+        $('#sampleDetailInfoWin').window("close");
+    }
+
+</script>

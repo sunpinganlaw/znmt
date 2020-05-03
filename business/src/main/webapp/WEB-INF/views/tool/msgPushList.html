@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>采样报表</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+<body>
+<div id="layoutDiv" class="easyui-layout" style="height:100%">
+    <!--<div id="tb">-->
+        <!--<label for="startTime">消息时间</label>-->
+        <!--<input class="easyui-datebox" name="startTime" id="startTime"  style="width:145px;"/>&nbsp;~&nbsp;-->
+        <!--<input class="easyui-datebox" name="endTime" id="endTime"  style="width:145px;"/>-->
+        <!--<label for="msgTypeId">消息类型</label>-->
+        <!--<input id="msgTypeId" name="msgTypeId" style="width:145px;"/>-->
+        <!--<label for="status">处理状态</label>-->
+        <!--<select id="status" name="status" class="easyui-combobox" data-options="required:true,panelHeight:'auto'"  style="width:145px;" >-->
+            <!--<option selected value="">&nbsp;</option>-->
+            <!--<option value="0">未处理</option>-->
+            <!--<option value="1">已处理</option>-->
+        <!--</select>-->
+        <!--<span style="margin-left: 0;">-->
+        <!--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>-->
+        <!--</span>-->
+    <!--</div>-->
+
+    <div data-options="region:'center',title:'采样报表清单',noheader:false;">
+        <table id="pushMsgDg"></table>
+    </div>
+</div>
+
+<!--预报查看编辑窗口-->
+<div id="carPlanEditWin" ></div>
+</body>
+</html>
+<script type="text/javascript">
+    $pushMsgDg = $("#pushMsgDg");
+    $(function () {
+        $pushMsgDg.datagrid({
+            data: ${msgList},
+            fitColumns: true,
+            height: $(this).height() - 2,
+            width: $(this).width() - 2,
+            idField:'msgId',
+            singleSelect:true,
+            rownumbers:true,
+            columns:[
+                [
+                    {field: 'msgTypeName', title: '消息类型',align:'center', width: 50},
+                    {field: 'effTime', title: '消息时间',align:'center', width:60},
+                    {field: 'msgLevel', title: '重要级别',align:'center', width:50},
+                    {field: 'msgDescr', title: '消息描述',align:'left', width:400, formatter:operLink}
+                ]
+            ],
+            toolbar: '#tb'
+        });
+    });
+
+    var msgRedirectUrl;
+    var msgParams;//params预留备用，以后可能有需要用的着的地方
+    var msgDescr;
+    var needDeal;
+    var pageName;
+    function operLink(val,row,index){
+        msgRedirectUrl = row.msgRedirectUrl;
+        msgParams = row.msgParams;//params预留备用，以后可能有需要用的着的地方
+        msgDescr = row.msgDescr;
+        needDeal = row.needDeal;
+        pageName =  row.pageName;
+
+        if (needDeal != null && needDeal == "1" && msgRedirectUrl != null && msgRedirectUrl.length > 0) {
+            //通过里面的传递参数有问题，就通过外面的变量传
+            return ('<a href="javascript:void(0)" onclick="openNewPage()">'+msgDescr+'</a>');
+        } else {
+            return msgDescr;
+        }
+    }
+
+    function openNewPage(){
+        var title = pageName+"||icon-sys||${base}";
+        parent.parent.addTab(title + msgRedirectUrl);
+    }
+
+//    function qry(){
+//        var paramO = new Object();
+//        var startTime = $("#startTime").datebox("getValue");
+//        var endTime = $("#endTime").datebox("getValue");
+//        var msgTypeId = $("#msgTypeId").combobox("getValue");
+//        var status = $("#status").combobox("getValue");
+//
+//        if (startTime != null && startTime != "" && startTime.length > 0) {
+//            paramO.search_startTime = startTime;
+//        }
+//        if (endTime != null && endTime != "" && endTime.length > 0) {
+//            paramO.search_endTime = endTime;
+//        }
+//        if (msgTypeId != null && msgTypeId != "" && msgTypeId.length > 0) {
+//            paramO.search_msgTypeId = msgTypeId;
+//        }
+//        if (status != null && status != "" && status.length > 0) {
+//            paramO.search_status = status;
+//        }
+//
+//        $pushMsgDg.datagrid({
+//            url:  '${base}/business/monitor/registeredCarList',
+//            fitColumns: true,
+//            height: $(this).height() - 2,
+//            width: $(this).width() - 2,
+//            idField:'msgId',
+//            singleSelect:true,
+//            rownumbers:true,
+//            queryParams: paramO,
+//            columns:[
+//                [
+//                    {field: 'msgTypeName', title: '消息类型',align:'center', width: 50},
+//                    {field: 'effTime', title: '消息时间',align:'center', width:60},
+//                    {field: 'msgLevel', title: '重要级别',align:'center', width:50},
+//                    {field: 'msgDescr', title: '消息描述',align:'left', width:400, formatter:operLink}
+//                ]
+//            ],
+//            toolbar: '#tb'
+//        });
+//    }
+</script>

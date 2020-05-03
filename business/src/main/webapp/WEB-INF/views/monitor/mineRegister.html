@@ -1,0 +1,214 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>汽车矿卡注册</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <#include "/include/common.html"/>
+
+</head>
+
+<body>
+
+<div id="layoutDiv" class="easyui-layout" style="height:100%;">
+    <div id="tb">
+        <input type="hidden" id="doAction" /><!--动作隐藏按钮-->
+
+        <label for="beginDate">注册日期：</label>
+        <input class="easyui-datebox" id="beginDate" style="width:120px">&nbsp;—&nbsp;
+        <input class="easyui-datebox" id="endDate"  style="width:120px">
+        <label for="mineCardIdQry">矿卡卡号：</label>
+        <input class="easyui-textbox" id="mineCardIdQry" style="width:130px;" value=""/>
+        <label for="viewCardIdQry">可视卡号：</label>
+        <input class="easyui-textbox" id="viewCardIdQry" style="width:130px;" value=""/>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="viewDetail()">详情</a>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit" onclick="modify();">修改</a>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="deleteCarRegInfo();">删除</a>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="add('-1');">新注册发卡</a>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <span style="color: #0099FF">今日发卡总数:&nbsp;<strong id="strongChar"></strong>&nbsp;张</span>
+    </div>
+
+    <div data-options="region:'center',title:'注册矿卡记录',noheader:false;">
+        <table id="mineRegDg"></table>
+    </div>
+</div>
+
+<!--注册查看编辑窗口-->
+<div id="mineRegEditWin" ></div>
+</body>
+</html>
+<script type="text/javascript">
+    $mineRegDg = $("#mineRegDg");
+
+    function qry(){
+        var paramO = new Object();
+        var beginDate = $("#beginDate").datebox("getValue");
+        var endDate = $("#endDate").datebox("getValue");
+        var mineCardIdQry = $("#mineCardIdQry").textbox("getValue");
+        var viewCardIdQry = $("#viewCardIdQry").textbox("getValue");
+
+        //查询条件的，都必须带上 search_ 这个前缀，才能让后台的beanUtil里捕获到这个参数并映射到entity条件里。。 xieyt
+        if (beginDate != null && beginDate != "" && beginDate.length > 0) {
+            paramO.search_beginDate = beginDate;
+        }
+        if (endDate != null && endDate != "" && endDate.length > 0) {
+            paramO.search_endDate = endDate;
+        }
+        if (mineCardIdQry != null && mineCardIdQry != "" && mineCardIdQry.length > 0) {
+            paramO.search_mineCardId = mineCardIdQry;
+        }
+        if (viewCardIdQry != null && viewCardIdQry != "" && viewCardIdQry.length > 0) {
+            paramO.search_viewCardId = viewCardIdQry;
+        }
+
+        $mineRegDg.datagrid("load",paramO);
+    }
+
+    //查看车辆信息详情
+    function viewDetail(){
+        document.getElementById("doAction").value = "VIEW";
+        var selectedRow = $mineRegDg.datagrid('getSelected');
+        if (selectedRow) {
+            $('#mineRegEditWin').window({
+                modal : true,
+                title : '矿卡详情',
+                width : 500,
+                height : 250,
+                collapsible : false,
+                minimizable : false,
+                maximizable : true,
+                href : '${base}/business/monitor/mineCardDetail/'+selectedRow.cardRecId,
+                onClose : function() {
+                    $("input").attr("readonly", false);
+                    $("select").attr("readonly", false);
+                }
+
+            });
+        }else{
+            showMsg("提示", "请先选择需要查看的信息!");
+            return false;
+        }
+
+    }
+
+    //修改车辆详情
+    function modify() {
+        document.getElementById("doAction").value = "MOD";
+        var selectedRow = $mineRegDg.datagrid('getSelected');
+        if (selectedRow) {
+            $('#mineRegEditWin').window({
+                modal : true,
+                title : '矿卡详情',
+                width : 500,
+                height : 250,
+                collapsible : false,
+                minimizable : false,
+                maximizable : true,
+                href : '${base}/business/monitor/mineCardDetail/'+selectedRow.cardRecId,
+                onClose : function() {
+                    $mineRegDg.datagrid('reload');
+                }
+            });
+        }else{
+            showMsg("提示", "请先选择需要修改的信息!");
+            return false;
+        }
+    }
+
+    $(function () {
+        $mineRegDg.datagrid({
+            url:  '${base}/business/monitor/registerMineList',
+            fitColumns: true,
+            animate: true,
+            border:true,
+            height: $(this).height() - 2,
+            width: $(this).width() - 2,
+            idField:'cardRecId',
+            singleSelect:true,
+            rownumbers:true,
+            pagination: true,
+            pagenumber:true,
+            pageSize:15,
+            pageList: [15, 30, 45],
+            columns: [
+                [
+                    {field: 'mineCardId', title: '卡号',align:'center', width:60},
+                    {field: 'viewCardId', title: '可视卡号',align:'center', width:30},
+                    {field: 'venNo', title: '供货商',align:'center', width:30},
+                    {field: 'carrierNo', title: '承运商',align:'center', width: 30},
+                    {field: 'mineNo', title: '煤矿',align:'center', width:30},
+                    {field: 'coalNo', title: '煤种',align:'center', width:30},
+                    {field: 'effTime', title: '生效时间',align:'center', width:45},
+                    {field: 'expTime', title: '失效时间',align:'center', width: 30},
+                    {field: 'validSta', title: '状态',align:'center', width:20},
+                    {field: 'insertTime', title: '注册时间',align:'center', width:50}
+                ]
+            ],
+            toolbar: '#tb',
+            onLoadSuccess:function(data){
+                qryTodayRegCarCnt();
+            }
+        })
+    });
+
+    function add(cardRecId) {
+        document.getElementById("doAction").value = "ADD";
+        $('#mineRegEditWin').window({
+            modal : true,
+            title : '矿卡注册',
+            width : 550,
+            height : 220,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/monitor/mineCardDetail/'+cardRecId,
+            onClose : function() {
+                $mineRegDg.datagrid('load');
+            }
+        });
+    }
+
+
+    //删除一行
+    function deleteCarRegInfo() {
+        var selectedRow = $mineRegDg.datagrid('getSelected');
+        if (selectedRow) {
+            $.messager.confirm('提示', '数据将删除，确定继续操作?', function (r) {
+                if (r) {
+                    //提交数据
+                    var cardRecId = selectedRow.cardRecId;
+                    $.post("${base}/business/monitor/deleteMineRegInfo/"+cardRecId, function(rsp) {
+                        if(rsp.successful){
+                            showMsg("提示", rsp.msg);
+                            $mineRegDg.datagrid("reload");
+                        } else {
+                            showMsg("提示", rsp.msg);
+                        }
+                    }, "JSON").error(function() {
+                        showMsg("提示", "删除数据失败！");
+                    });
+                }
+            });
+        } else {
+            showMsg("提示", "请先选择要删除的信息！");
+            return false;
+        }
+    }
+
+
+    function qryTodayRegCarCnt(){
+        $.post("${base}/business/monitor/qryTodayRegisterMineCnt", function (rsp) {
+            document.getElementById("strongChar").innerHTML=rsp;
+        }).error(function () {
+            showMsg("提示", "查询今天新注册车辆数据异常！");
+        });
+    }
+
+
+</script>

@@ -1,0 +1,105 @@
+<div class="form-div">
+    <form id="userDetailForm" method="post">
+        <input type="hidden" name="userId"  id="userId" />
+        <table >
+            <tr>
+                <td >账号:</td>
+                <td >
+                    <input class="easyui-textbox" name="userName" id="userName" readonly="readonly" data-options="required:true"/>
+                </td>
+                <td >姓名:</td>
+                <td>
+                    <input class="easyui-textbox" name="userRealName" id="userRealName" readonly="readonly" data-options="required:true"/>
+                </td>
+            </tr>
+            <tr>
+                <td >启用时间(小时):</td>
+                <td >
+                    <input class="easyui-numberbox" name="hours" id="hours" data-options="required:true,min:1,max:24"/>
+                </td>
+            </tr>
+            <tr>
+                <td >备注:</td>
+                <td colspan="3">
+                    <textarea  name="remark" id="remark" cols="55" rows="5"></textarea>
+                </td>
+            </tr>
+        </table>
+    </form>
+    <div class="submit-div" id="controlArea">
+        <a href="javascript:void(0)" id="addButton" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm(12)">提交审批</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+debugger;
+    //加载读取的详情信息
+    var respEntity = JSON.parse(JSON.stringify(${ApproveEntity}));
+    var mUserId = document.getElementById("h_eventId").value;
+
+    //viewApproveDetail 如果是审批详情预览  所有都禁用
+    if(mUserId == "viewApproveDetail"){
+        setAllReadOnly();
+    }else{
+        $('#userId').val(mUserId);
+    }
+
+    if (respEntity != null) {
+        if (respEntity.userName != null) {
+            $('#userName').val(respEntity.userName);
+        }
+        if (respEntity.userRealName != null) {
+            $('#userRealName').val(respEntity.userRealName);
+        }
+        if (respEntity.remark != null) {
+            $('#hours').val(respEntity.hours);
+        }
+        if (respEntity.remark != null) {
+            $('#remark').val(respEntity.remark);
+        }
+    }
+
+    function setAllReadOnly(){
+        document.getElementById("controlArea").style.display = "none";
+        $("#userName").attr("readonly","readonly");
+        $("#userRealName").attr("readonly","readonly");
+        $("#hours").attr("readonly","readonly");
+        $("#remark").attr("readonly","readonly");
+    }
+
+    //提交表单
+    function submitForm(apprEventTypeCd){
+        if ( $("#ff").form('validate')) {
+
+            var params = new Object();
+            params.userId  =  $('#userId').val();
+            params.userName  =  $('#userName').val();
+            params.userRealName = $('#userRealName').val();
+            params.hours = $('#hours').val();
+            params.remark  = $('#remark').val();
+
+            var jsonStr = JSON.stringify(params);
+            var apprData = {};
+            apprData.search_dealType = apprEventTypeCd;
+            apprData.search_jsonStr = jsonStr;
+
+            $.messager.confirm('提示', '确定【申请管理员账号】提交审批?', function (r) {
+                if (r) {
+                    var postUrl = "${base}/business/approve/submitSysUserToApprove";
+                    $.post(postUrl, apprData, function (rsp) {
+                        if (rsp.successful) {
+                            showMsg("提示", rsp.msg);
+                            $('#sysUserApprEditWin').window('close');
+                        } else {
+                            showMsg("提示", rsp.msg);
+                        }
+                    })
+                }
+            });
+        }else{
+            showMsg("提示", "有必填项未输入值!");
+            return false;
+        }
+    }
+
+</script>

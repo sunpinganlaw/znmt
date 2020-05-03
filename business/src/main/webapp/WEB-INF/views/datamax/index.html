@@ -1,0 +1,1876 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>北仑智慧燃料大数据分析展示平台</title>
+    <base href="${base}/">
+    <link rel="stylesheet" href="${base}/styles/css/swiper.min.css">
+    <link rel="stylesheet" href="${base}/styles/css/style.css">
+    <link rel="stylesheet" href="${base}/styles/js/three_js/autocomplete.css">
+    <style type="text/css">
+        fieldset {
+            width: calc(100% - 560px);
+        }
+
+        .coalInfoContainer {
+            width: 480px;
+            position: absolute;
+            top: 100px;
+            right: 0px;
+        }
+
+        .coalInfoContainer > div {
+            width: 420px;
+        }
+
+        .coalInfo {
+            /*width: 545px;*/
+            text-align: justify;
+            text-align-last: justify;
+            font-size: 0px;
+            padding: 0px;
+            margin: 0px;
+            margin-left: 40px;
+            margin-right: 15px;
+        }
+
+        .coalInfo > div {
+            display: inline-block;
+            font-size: 0px;
+            width: 79px;
+        }
+
+        .coalInfo > .arrow:first-child {
+            margin-left: 90px;
+        }
+
+        hr {
+            background-color: #EEE;
+            height: 2px;
+            border: none;
+            margin: 4px 0px;
+            position: relative;
+            overflow: visible;
+        }
+
+        .arrow {
+            position: relative;
+            height: 10px;
+            line-height: 10px;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .arrow:before {
+            border-right: 2px solid green;
+            border-bottom: 2px solid green;
+            width: 5px;
+            height: 5px;;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            content: ' ';
+            transform: translate(-50%, -50%) rotate(-45deg);
+        }
+
+        .arrow.red:before {
+            border-right: 2px solid red;
+            border-bottom: 2px solid red;
+        }
+
+        .arrow.yellow:before {
+            border-right: 2px solid yellow;
+            border-bottom: 2px solid yellow;
+        }
+
+        .coalInfo .info {
+            text-align: center;
+            text-align-last: center;
+            border: 1px solid #CCCCCC;
+            border-radius: 3px;
+            position: relative;
+            display: inline-block;
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .coalsilo {
+            display: inline-block;
+            background-image: url("styles/images/businessImg/meicang.png");
+            background-size: 100% 100%;
+            position: relative;
+            width: 40px;
+            height: 74px;
+        }
+
+        .coalsilo > div {
+            opacity: 0.5;
+            width: 100%;
+            height: 0%;
+            padding: 0;
+            background-color: #111;
+            position: absolute;
+            bottom: 0;
+            -webkit-mask-position: bottom;
+            -webkit-mask-image: url("styles/images/businessImg/meicang.png");
+            -webkit-mask-size: 40px 74px;
+            mask-position: bottom;
+            mask-image: url("styles/images/businessImg/meicang.png");
+            mask-size: 40px 74px;
+        }
+
+        .data {
+            width: 100%;
+            font-size: 8px;
+        }
+
+        .data > div {
+            text-align: center;
+            text-align-last: center;
+            height: 12px;
+            line-height: 12px;
+            font-size: 12px;
+            margin: 6px 0px;
+        }
+
+        table {
+            width: 420px;
+            border-collapse: collapse;
+            margin-bottom: 6px;
+        }
+
+        table, th {
+            border: 1px solid black;
+        }
+
+        .coalInfoContainer td {
+            text-align: center;
+            border: 1px solid black;
+        }
+
+        table th {
+            padding: 1px 0px;
+            background-color: #DDFAFF;
+            color: #000000;
+        }
+
+        table tr.alt td {
+            color: #000000;
+            background-color: #EAF2D3;
+        }
+
+        hr:before {
+            position: absolute;
+            content: '';
+            left: -42px;
+            top: -6px;
+            width: 40px;
+            height: 12px;
+            font-size: 12px;
+            line-height: 12px;
+        }
+
+        .unit {
+            position: relative;
+        }
+
+        .unit:before {
+            position: absolute;
+            left: -28px;
+            top: 50%;
+            margin-top: -36px;
+            width: 18px;
+            font-size: 18px;
+            font-weight: bold;
+            line-height: 18px;;
+            writing-mode: lr-tb;
+            text-align: center;
+        }
+
+        #unit_1:before {
+            content: '1#机组';
+            color: #3076f0;
+        }
+
+        #unit_2:before {
+            content: '2#机组';
+            color: #ff80a8;
+        }
+
+        #C11A:before {
+            content: 'C-11A';
+        }
+
+        #C11B:before {
+            content: 'C-11B';
+        }
+
+        #C11C:before {
+            content: 'C-11C';
+        }
+
+        #C11D:before {
+            content: 'C-11D';
+        }
+
+        #C11A {
+            width: 450px;
+        }
+
+        #monitor_right {
+            float: left;
+            width: 30px;
+            height: 350px;
+        }
+
+        #C10B {
+            width: 3px;
+            height: 100%;
+            background-color: #EEE;
+            margin-top: -4px;
+            margin-left: 2px;
+            float: left;
+        }
+
+        #C10A {
+            width: 3px;
+            height: 100%;
+            background-color: #EEE;
+            margin: 0px;
+            margin-top: -4px;
+            float: right;
+        }
+
+        #arrow_container {
+            float: left;
+            width: 10px;
+            height: 200px;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        #arrow_container .arrow {
+            width: 100%;
+        }
+
+        #arrow_container .arrow:nth-child(1) {
+            position: absolute;
+            margin-bottom: 55px;
+            bottom: 0px;
+        }
+
+        #arrow_container .arrow:nth-child(2) {
+            position: absolute;
+            bottom: 0px;
+        }
+
+        #chart8 tr {
+            height: 30px;
+        }
+
+        #chart8 td {
+            border: solid 1px;
+            text-align: center;
+        }
+
+        #chart8 th, td {
+            background-color: transparent;
+            border-color: white;
+            font-size: 16px;
+            color: rgb(251, 251, 251);
+            font-weight: normal;
+            overflow: visible;
+            transform: translate3d(0.1px, 0.001px, 0.001px);
+            transition: transform 0s linear 0s;
+        }
+    </style>
+</head>
+
+<body style="overflow-x:hidden;overflow-y:hidden;">
+<div id="app" class="app">
+    <div class="home">
+        <div class="title">北仑智慧燃料大数据分析展示平台</div>
+        <div style="width: 735px;height: 738px;top: 76px;left: 583px;">
+            <div class="tap-head" id="changeMap">
+                <span class="active">煤场3D图</span>
+                <!--<span>车源分布</span>-->
+            </div>
+            <div class="tap-body">
+                <!--<div class="top-total">-->
+                <!--累计运输量-->
+                <!--<span>13,526</span>-->
+                <!--</div>-->
+                <div id="chart0" style="height: 630px;background-color: #696f8259">
+                </div>
+                <div id="wait">
+                    <span class="progress">
+                        <span class="bar"></span>
+                    </span>
+                    <br/>
+                    (行走视角:W, A, S, D = 移动,左键 = 环视;鸟瞰视角:左键 = 环视，中键 = 拖动，滚轮 = 缩放)
+                </div>
+            </div>
+        </div>
+        <div class="borderImg" style="width: 549px;height: 250px;top: 67px;left: 25px;"></div>
+        <div class="borderImg" style="width: 549px;height: 348px;top: 330px; left: 23px;"></div>
+        <div class="borderImg" style="width: 549px;height: 370px;top: 686px;left: 23px;"></div>
+        <div class="borderImg" style="width: 557px;height: 502px;top: 73px;right: 24px;"></div>
+        <div class="borderImg" style="width: 557px;height: 475px;top: 581px;right: 24px;"></div>
+        <div class="borderImg" style="width: 753px;height: 305px;top: 750px;left: 575px;"></div>
+        <div
+                style="width: 202px;height: 193px;top: 10px;left: 85px;background-size:contain;background-image:url('${base}/styles/images/xz.png')">
+        </div>
+        <div class="text" style="width:125px;height: 30px;top: 109px;left: 122px;">本月发电量</div>
+        <div class="count" style="width: 134px;top: 141px;left: 113px;text-align:center">8,238</div>
+        <div
+                style="width:202px;height:193px;top:10px;left:297px;background-size:contain;background-image:url('${base}/styles/images/xz1.png')">
+        </div>
+        <div class="text" style="width: 125px;height: 30px;top: 109px;left: 334px;">千度电成本</div>
+        <div class="count" style="width: 134px;top: 141px;left: 327px;text-align:center">224</div>
+        <div id="chart1" style="width: 500px;height: 106px;top: 202px;left: 30px;"></div>
+        <div class="cart-title" style="width: 325px;height: 30px;top: 348px;left: -50px;">煤场存煤量</div>
+        <div class="swiper-container" style="width: 549px;height: 311px;top: 388px;left: 24px;">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div id="chart21" style="width: 100%;height: 100%"></div>
+                </div>
+                <div class="swiper-slide">
+                    <div id="chart22" style="width: 100%;height: 100%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cart-title" style="width: 228px;height: 30px;top: 710px;left: 5px;">场存煤质信息</div>
+        <div class="swiper-container" style="width: 510px;height: 357px;top: 723px;left: 45px;">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div id="chart33" style="width: 100%;height: 100%"></div>
+                </div>
+                <div class="swiper-slide">
+                    <div id="chart31" style="width: 100%;height: 100%"></div>
+                </div>
+            </div>
+        </div>
+        <div class="date" style="width: 296px;height: 30px;top: 22px;left: 1619px;">
+            <span class="text" id="date">2019-11-10</span>
+            <span class="text" id="time" style="margin-left: 16px;">15:36:27</span>
+            <span class="text" id="week" style="margin-left: 16px;">星期日</span>
+        </div>
+        <div id="chartio" style="width: 557px;height: 252px;top: 73px;right: 24px;">
+        </div>
+        <div id="chartDashboard" style="width: 557px;height: 252px;top: 310px;right: 24px;">
+        </div>
+        <div class="cart-title" style="width: 125px; height: 30px; top: 605px; left: 1361px;">实时煤耗信息</div>
+
+        <div id="chart8" style="width:545px; height: 350px; top: 648px; left: 1345px;">
+            <table style="width:490px;font-size: 16px;border-color: white;margin-left:40px;">
+                <tr>
+                    <th>皮带秤</th>
+                    <th>瞬时</th>
+                    <th>累计</th>
+                </tr>
+                <tr>
+                    <td>C36A</td>
+                    <td>234</td>
+                    <td>9987653.3</td>
+                </tr>
+                <tr>
+                    <td>C36B</td>
+                    <td>122</td>
+                    <td>3377662.1</td>
+                </tr>
+            </table>
+
+            <div class="coalInfo unit" id="unit_1">
+                <div class="info">
+                    <div>A仓</div>
+                    <div class="coalsilo">
+                        <div id="A1"></div>
+                    </div>
+                    <div class="data">
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+                <div class="info">
+                    <div>B仓</div>
+                    <div class="coalsilo">
+                        <div id="B1"></div>
+                    </div>
+                    <div class="data">
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+                <div class="info">
+                    <div>C仓</div>
+                    <div class="coalsilo">
+                        <div id="C1"></div>
+                    </div>
+                    <div class="data">
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+                <div class="info">
+                    <div>D仓</div>
+                    <div class="coalsilo">
+                        <div id="D1"></div>
+                    </div>
+                    <div class="data">
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+                <div class="info">
+                    <div>E仓</div>
+                    <div class="coalsilo">
+                        <div id="E1"></div>
+                    </div>
+                    <div class="data">
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+                <div class="info">
+                    <div>F仓</div>
+                    <div class="coalsilo">
+                        <div id="F1"></div>
+                    </div>
+                    <div class="data">
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="coalInfo unit" id="unit_2">
+                <div class="info">
+                    <div>A仓</div>
+                    <div class="coalsilo">
+                        <div id="A2"></div>
+                    </div>
+                    <div class="data">
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+                <div class="info">
+                    <div>B仓</div>
+                    <div class="coalsilo">
+                        <div id="B2"></div>
+                    </div>
+                    <div class="data">
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+                <div class="info">
+                    <div>C仓</div>
+                    <div class="coalsilo">
+                        <div id="C2"></div>
+                    </div>
+                    <div class="data">
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+                <div class="info">
+                    <div>D仓</div>
+                    <div class="coalsilo">
+                        <div id="D2"></div>
+                    </div>
+                    <div class="data">
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+                <div class="info">
+                    <div>E仓</div>
+                    <div class="coalsilo">
+                        <div id="E2"></div>
+                    </div>
+                    <div class="data">
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+                <div class="info">
+                    <div>F仓</div>
+                    <div class="coalsilo">
+                        <div id="F2"></div>
+                    </div>
+                    <div class="data">
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cart-title" style="width: 272px; height: 30px; top: 760px;left: 510px;">负荷曲线</div>
+        <div id="chart9" style="width: 723px;height: 272px;top: 779px;left: 582px;"></div>
+    </div>
+
+</div>
+<script type="text/javascript" src="${base}/styles/js/echarts.min.js"></script>
+<script src="${base}/styles/js/china.js"></script>
+<script type="text/javascript" src="${base}/styles/js/echarts-wordcloud.min.js"></script>
+<script src="${base}/styles/js/swiper.min.js"></script>
+<!-- 3d相关 -->
+<script src="${base}/styles/js/jquery/jquery-1.6.2.min.js"></script>
+<script src="${base}/styles/js/three_js/builder/three.js"></script>
+<script src="${base}/styles/js/three_js/Detector.js"></script>
+<script src="${base}/styles/js/three_js/loaders/FBXLoader.js"></script>
+<script src="${base}/styles/js/three_js/controls/CameraControls.js"></script>
+<script src="${base}/styles/js/three_js/controls/OrbitControls.js"></script>
+<script src="${base}/styles/js/three_js/controls/CanvasRenderer.js"></script>
+<script src="${base}/styles/js/three_js/controller.js"></script>
+<script>
+    var index = {
+        createDate() {
+            weekObj = {
+                1: '星期一',
+                2: '星期二',
+                3: '星期三',
+                4: '星期四',
+                5: '星期五',
+                6: '星期六',
+                0: '星期日'
+            }
+            var date = new Date();
+            var dateStr = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+            var timeStr = date.getHours() + ':' + date.getMinutes() + ':' + (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds());
+            $("#date").html(dateStr);
+            $("#time").html(timeStr);
+            $("#week").html(weekObj[date.getDay()]);
+        },
+        scaleView() {
+            var app = document.getElementById('app'), scale = Math.min(
+                window.innerWidth / 1920,
+                window.innerHeight / 1080
+            );
+            app.style.transform = 'scale(' + scale + ')';
+            var scaleLeft = (window.innerWidth - app.getBoundingClientRect().width) / 2,
+                scaleTop = (window.innerHeight - app.getBoundingClientRect().height) / 2;
+            app.style.left = scaleLeft + 'px';
+            app.style.top = scaleTop + 'px';
+        },
+        createline1() {
+            let myChart = echarts.init(document.getElementById('chart1'));
+            var option = {
+                backgroundColor: 'transparent',
+                tooltip: {
+                    trigger: 'axis'
+                },
+
+                grid: {
+                    top: '10px',
+                    left: 0,
+                    right: 0,
+                    bottom: 0
+                },
+                xAxis: {
+                    show: false,
+                    data: ['2018-01', '2018-02', '2018-03', '2018-04', '2018-05', '2018-06', '2018-07', '2018-08', '2018-09', '2018-10', '2018-11', '2018-12'],
+                },
+                yAxis: {
+                    show: false,
+
+                },
+                series: [{
+                    name: 'new_members',
+                    type: 'line',
+                    color: '#4186F9',
+                    smooth: true,
+                    areaStyle: {
+                        normal: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                offset: 0,
+                                color: 'rgba(65,134,249, 0.9)'
+                            }, {
+                                offset: 0.8,
+                                color: 'rgba(65,134,249, 0)'
+                            }], false),
+                            shadowBlur: 10
+                        }
+                    },
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    data: [10000, 8000, 10000, 8000, 10000, 8000, 10000, 8000, 10000, 8000, 10000, 8000]
+                }, {
+                    name: 'active_members',
+                    type: 'line',
+                    color: '#14C491',
+                    smooth: true,
+                    symbol: 'emptyCircle',
+                    symbolSize: 8,
+                    itemStyle: {
+                        borderColor: '#058023',
+                        borderWidth: 1,
+                    },
+                    data: [5000, 4500, 5000, 4500, 5000, 4500, 5000, 4500, 5000, 4500, 5000, 4500]
+                }]
+            }
+            myChart.setOption(option);
+        },
+        createChart3() {
+            var myChart31 = echarts.init(document.getElementById('chart31'));
+            var myChart33 = echarts.init(document.getElementById('chart33'));
+            var option = {
+                color: ['#4eeed4', '#827C5D', '#3076f0', '#ffe76a', '#ff80a8',],
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross',
+                        crossStyle: {
+                            color: '#999'
+                        }
+                    }
+                },
+                legend: {
+                    top: 15,
+                    data: [{name: '水分', textStyle: {color: '#4eeed4'}}, {
+                        name: '灰分',
+                        textStyle: {color: '#827C5D'}
+                    }, {name: '挥发分', textStyle: {color: '#3076F0'}}, {
+                        name: '硫分',
+                        textStyle: {color: '#ffe76a'}
+                    }, {name: '发热量', textStyle: {color: '#ff80a8'}}]
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                        axisPointer: {
+                            type: 'shadow'
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                color: '#efeff2'
+                            }
+                        }
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: '%',
+                        min: 0,
+                        max: 250,
+                        interval: 50,
+                        axisLabel: {
+                            formatter: '{value} ml'
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                color: '#efeff2'
+                            }
+                        }
+                    },
+                    {
+                        type: 'value',
+                        name: 'kcal/kg',
+                        min: 0,
+                        max: 25,
+                        interval: 5,
+                        axisLabel: {
+                            formatter: '{value} °C'
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                color: '#efeff2'
+                            }
+                        }
+                    }
+                ],
+                series: [
+                    {
+                        name: '水分',
+                        type: 'bar',
+                        data: [2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
+                    },
+                    {
+                        name: '灰分',
+                        type: 'bar',
+                        data: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3]
+                    },
+                    {
+                        name: '挥发分',
+                        type: 'bar',
+                        data: [2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
+                    },
+                    {
+                        name: '硫分',
+                        type: 'bar',
+                        data: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3]
+                    },
+                    {
+                        name: '发热量',
+                        type: 'line',
+                        yAxisIndex: 1,
+                        data: [2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2]
+                    }
+                ]
+            }
+            myChart31.setOption(option);
+            myChart33.setOption(option);
+        },
+        createChartio() {
+            var myChart = echarts.init(document.getElementById('chartio'));
+            var option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                        type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                    }
+                },
+                legend: {
+                    data: [{name: '进煤量', textStyle: {color: '#3076f0'}}, {
+                        name: '耗煤量',
+                        textStyle: {color: '#3bffce'}
+                    }]
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '0%',
+                    top: '10%',
+                    containLabel: true
+                },
+                xAxis: [
+                    {
+                        show: false
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'category',
+                        axisTick: {show: false},
+                        data: weekDays,
+                        axisLabel: {
+                            color: '#fff'
+                        }
+                    }
+                ],
+                series: [
+                    {
+                        name: '进煤量',
+                        type: 'bar',
+                        stack: '总量',
+                        label: {
+                            normal: {
+                                show: true
+                            }
+                        },
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(
+                                1, 0, 0, 1,
+                                [
+                                    {offset: 1, color: '#3bffce'},
+                                    {offset: 0, color: 'rgba(59,255,206,.3)'}
+                                ]
+                            )
+                        },
+                        barWidth: 12,
+                        data: [320, 302, 341, 374, 390, 450, 420]
+                    },
+                    {
+                        name: '耗煤量',
+                        type: 'bar',
+                        stack: '总量',
+                        label: {
+                            normal: {
+                                show: true
+                            }
+                        },
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(
+                                1, 0, 0, 1,
+                                [
+                                    {offset: 1, color: '#155de9'},
+                                    {offset: 0, color: 'rgba(39,94,200,.3)'}
+                                ]
+                            )
+                        },
+                        barWidth: 12,
+                        data: [-120, -132, -101, -134, -190, -230, -210]
+                    }
+                ]
+            }
+            myChart.setOption(option);
+        },
+        createDashBoard() {
+            var myChart = echarts.init(document.getElementById('chartDashboard'));
+            var option = {
+                tooltip: {
+                    formatter: "{a} <br/>{c} {b}"
+                },
+                series: [
+                    {
+                        name: 'C2皮带',
+                        type: 'gauge',
+                        center: ['25%', '60%'],    // 默认全局居中
+                        min: 0,
+                        max: 500,
+                        splitNumber: 10,
+                        radius: '100%',
+                        axisLine: {            // 坐标轴线
+                            lineStyle: {       // 属性lineStyle控制线条样式
+                                color: [[0.09, 'lime'], [0.82, '#1e90ff'], [1, '#ff4500']],
+                                width: 3,
+                                shadowColor: '#fff', //默认透明
+                                shadowBlur: 10
+                            }
+                        },
+                        axisLabel: {            // 坐标轴小标记
+                            textStyle: {       // 属性lineStyle控制线条样式
+                                fontWeight: 'bolder',
+                                color: '#fff',
+                                shadowColor: '#fff', //默认透明
+                                shadowBlur: 10
+                            }
+                        },
+                        axisTick: {            // 坐标轴小标记
+                            length: 15,        // 属性length控制线长
+                            lineStyle: {       // 属性lineStyle控制线条样式
+                                color: 'auto',
+                                shadowColor: '#fff', //默认透明
+                                shadowBlur: 10
+                            }
+                        },
+                        splitLine: {           // 分隔线
+                            length: 25,         // 属性length控制线长
+                            lineStyle: {       // 属性lineStyle（详见lineStyle）控制线条样式
+                                width: 3,
+                                color: '#fff',
+                                shadowColor: '#fff', //默认透明
+                                shadowBlur: 10
+                            }
+                        },
+                        pointer: {           // 分隔线
+                            shadowColor: '#fff', //默认透明
+                            shadowBlur: 5
+                        },
+                        title: {
+                            textStyle: {       // 其余属性默认使用全局文本样式，详见TEXTSTYLE
+                                fontWeight: 'bolder',
+                                fontSize: 20,
+                                fontStyle: 'italic',
+                                color: '#fff',
+                                shadowColor: '#fff', //默认透明
+                                shadowBlur: 10
+                            }
+                        },
+                        detail: {
+                            backgroundColor: 'rgba(30,144,255,0.8)',
+                            borderWidth: 1,
+                            borderColor: '#fff',
+                            shadowColor: '#fff', //默认透明
+                            shadowBlur: 5,
+                            offsetCenter: [0, '50%'],       // x, y，单位px
+                            textStyle: {       // 其余属性默认使用全局文本样式，详见TEXTSTYLE
+                                fontWeight: 'bolder',
+                                color: '#fff'
+                            }
+                        },
+                        data: [{value: 40, name: 'C2'}]
+                    },
+                    {
+                        name: 'C30皮带',
+                        type: 'gauge',
+                        center: ['75%', '60%'],    // 默认全局居中
+                        min: 0,
+                        max: 500,
+                        splitNumber: 10,
+                        radius: '100%',
+                        axisLine: {            // 坐标轴线
+                            lineStyle: {       // 属性lineStyle控制线条样式
+                                color: [[0.09, 'lime'], [0.82, '#1e90ff'], [1, '#ff4500']],
+                                width: 3,
+                                shadowColor: '#fff', //默认透明
+                                shadowBlur: 10
+                            }
+                        },
+                        axisLabel: {            // 坐标轴小标记
+                            textStyle: {       // 属性lineStyle控制线条样式
+                                fontWeight: 'bolder',
+                                color: '#fff',
+                                shadowColor: '#fff', //默认透明
+                                shadowBlur: 10
+                            }
+                        },
+                        axisTick: {            // 坐标轴小标记
+                            length: 15,        // 属性length控制线长
+                            lineStyle: {       // 属性lineStyle控制线条样式
+                                color: 'auto',
+                                shadowColor: '#fff', //默认透明
+                                shadowBlur: 10
+                            }
+                        },
+                        splitLine: {           // 分隔线
+                            length: 25,         // 属性length控制线长
+                            lineStyle: {       // 属性lineStyle（详见lineStyle）控制线条样式
+                                width: 3,
+                                color: '#fff',
+                                shadowColor: '#fff', //默认透明
+                                shadowBlur: 10
+                            }
+                        },
+                        pointer: {           // 分隔线
+                            shadowColor: '#fff', //默认透明
+                            shadowBlur: 5
+                        },
+                        title: {
+                            textStyle: {       // 其余属性默认使用全局文本样式，详见TEXTSTYLE
+                                fontWeight: 'bolder',
+                                fontSize: 20,
+                                fontStyle: 'italic',
+                                color: '#fff',
+                                shadowColor: '#fff', //默认透明
+                                shadowBlur: 10
+                            }
+                        },
+                        detail: {
+                            backgroundColor: 'rgba(30,144,255,0.8)',
+                            borderWidth: 1,
+                            borderColor: '#fff',
+                            shadowColor: '#fff', //默认透明
+                            shadowBlur: 5,
+                            offsetCenter: [0, '50%'],       // x, y，单位px
+                            textStyle: {       // 其余属性默认使用全局文本样式，详见TEXTSTYLE
+                                fontWeight: 'bolder',
+                                color: '#fff'
+                            }
+                        },
+                        data: [{value: 40, name: 'C30'}]
+                    }
+                ]
+            };
+            myChart.setOption(option);
+        },
+        createPie() {
+            // ETC卡年金额消费区间车辆分布图
+            var myPie21 = echarts.init(document.getElementById('chart21'));
+            var myPie22 = echarts.init(document.getElementById('chart22'));
+            // 设置饼图的数据以及数据名称
+            var data = [
+                {
+                    value: 7167, name: '神混', itemStyle: {
+                        color: {
+                            type: 'linear',
+                            x: 1,
+                            y: 1,
+                            x2: 0,
+                            y2: 0,
+                            colorStops: [{
+                                offset: 0, color: 'rgba(37,94,204,1)' // 0% 处的颜色
+                            }, {
+                                offset: 1, color: 'rgba(37,94,204,.5)' // 100% 处的颜色
+                            }],
+                            global: false // 缺省为 false
+                        },
+                        borderColor: '#3b7fff'
+                    }
+                },
+                {
+                    value: 2911, name: '神混5200', itemStyle: {
+                        color: {
+                            type: 'linear',
+                            x: 1,
+                            y: 1,
+                            x2: 0,
+                            y2: 0,
+                            colorStops: [{
+                                offset: 0, color: 'rgba(35,190,166,1)' // 0% 处的颜色
+                            }, {
+                                offset: 1, color: 'rgba(35,190,166,.5)' // 100% 处的颜色
+                            }],
+                            global: false // 缺省为 false
+                        },
+                        borderColor: '#4eeed4'
+                    }
+                },
+                {
+                    value: 3777, name: '建优1',
+                    itemStyle: {
+                        color: {
+                            type: 'linear',
+                            x: 1,
+                            y: 0,
+                            x2: 0,
+                            y2: 1,
+                            colorStops: [{
+                                offset: 0, color: 'rgba(255,230,110,.5)' // 0% 处的颜色
+                            }, {
+                                offset: 1, color: 'rgba(255,230,110,1)' // 100% 处的颜色
+                            }],
+                            global: false // 缺省为 false
+                        },
+                        borderColor: '#ffe76a'
+                    }
+                },
+                {
+                    value: 2110, name: '建优2',
+                    itemStyle: {
+                        color: {
+                            type: 'linear',
+                            x: 0.5,
+                            y: 0,
+                            x2: 0.5,
+                            y2: 1,
+                            colorStops: [{
+                                offset: 0, color: 'rgba(225,60,122,.5)' // 0% 处的颜色
+                            }, {
+                                offset: 1, color: 'rgba(230,32,94,1)' // 100% 处的颜色
+                            }],
+                            global: false // 缺省为 false
+                        },
+                        borderColor: '#ff80a8'
+                    }
+                },
+                {
+                    value: 1280, name: '神混2',
+                    itemStyle: {
+                        color: {
+                            type: 'linear',
+                            x: 0.5,
+                            y: 0,
+                            x2: 0.5,
+                            y2: 1,
+                            colorStops: [{
+                                offset: 0, color: '#D53A35' // 0% 处的颜色
+                            }, {
+                                offset: 1, color: '#D53A35' // 100% 处的颜色
+                            }],
+                            global: false // 缺省为 false
+                        },
+                        borderColor: '#D53A35'
+                    }
+                },
+                {
+                    value: 2298, name: '建优3',
+                    itemStyle: {
+                        color: {
+                            type: 'linear',
+                            x: 0.5,
+                            y: 0,
+                            x2: 0.5,
+                            y2: 1,
+                            colorStops: [{
+                                offset: 0, color: '#54ff08' // 0% 处的颜色
+                            }, {
+                                offset: 1, color: '#54ff08' // 100% 处的颜色
+                            }],
+                            global: false // 缺省为 false
+                        },
+                        borderColor: '#54ff08'
+                    }
+                }
+            ]
+            // 饼图的配置对象
+            var option_pie = {
+                grid: {
+                    bottom: 200
+                },
+                // 瞬时间饼图颜色
+                color: ['#1f4692', '#117363', '#827c5d', '#b5355d', '#d53a35'],
+                calculable: true,
+                series: [{
+                    name: '存煤量占比',
+                    type: 'pie',
+                    radius: 100,
+                    roseType: 'radius',
+                    label: {
+                        formatter: [
+                            '{b|{b}{d}%}',
+                            '{c|{c}吨}'
+                        ].join('\n'),
+                        // 标签文本的颜色
+                        rich: {
+                            b: {
+                                color: '#5c5c63',
+                                fontSize: 17
+                            },
+                            c: {
+                                color: '#c9cad0',
+                                fontSize: 16
+                            }
+                        },
+
+                    },
+                    labelLine: {
+                        lineStyle: {
+                            color: '#fff'
+                        }
+                    },
+                    itemStyle: {
+                        borderWidth: 2
+                    },
+                    data
+                }]
+            }
+            myPie21.setOption(option_pie)
+            myPie22.setOption(option_pie)
+            // 设置默认选中高亮部分
+            // 当前高亮部分的索引
+            var currentIndex = 0
+            // 循环搞定的间隔时间（毫秒）
+            var timeout = 1500
+
+            setInterval(function () {
+                var len = data.length
+                myPie21.dispatchAction({
+                    type: 'downplay',
+                    dataIndex: currentIndex
+                })
+
+                currentIndex = currentIndex > len - 1 ? 0 : currentIndex + 1
+                myPie21.dispatchAction({
+                    type: 'highlight',
+                    dataIndex: currentIndex
+                })
+            }, timeout)
+        },
+        createMap() {
+            //var myChart = echarts.init(document.getElementById('chart0'));
+
+        },
+        creataBar() {
+            // 线路运单情况
+            var myLeftBar = echarts.init(document.getElementById("chart6"));
+            var myRightBar = echarts.init(document.getElementById("chart7"));
+
+            // 左侧柱状图的配置项
+            var option_left = {
+                // 悬浮提示框的配置选项
+                tooltip: {
+                    trigger: "axis",
+                    formatter: '{b}：{c}',
+                    backgroundColor: 'rgba(155,55,155,1)',
+                    borderColor: '#fff',
+                    borderWidth: 2,
+                    axisPointer: {
+                        // 坐标轴指示器，坐标轴触发有效
+                        type: "shadow" // 默认为直线，可选为：'line' | 'shadow'
+                    }
+                },
+                grid: {
+                    left: "30px",
+                    right: "4%",
+                    bottom: "3%",
+                    containLabel: true
+                },
+                xAxis: {
+                    show: false
+                },
+                yAxis: [
+                    {
+                        type: "category",
+                        axisTick: {show: false},
+                        boundaryGap: false,
+                        axisLine: {
+                            lineStyle: {
+                                color: '#1c9ead'
+                            }
+                        },
+                        axisLabel: {
+                            color: '#fff',
+                            fontSize: 16
+                        },
+                        axisTick: {
+                            show: true
+                        },
+                        data: ["玉林->湖北", "玉林->西安", "北京->湖北", "上海->西安", "西安->湖北", "广州->西安"]
+                    }
+                ],
+                series: [
+                    {
+                        name: "利润",
+                        type: "bar",
+                        label: {
+                            normal: {
+                                show: true,
+                                position: "right",
+                                color: '#fff',
+                            }
+                        },
+                        data: [354, 1543, 395, 2521, 393, 2021]
+                    }
+                ]
+            };
+
+            // 右侧柱状图的配置项
+            var option_right = {
+                // 悬浮提示框的配置选项
+                tooltip: {
+                    trigger: "axis",
+                    formatter: '{b}：{c}',
+                    backgroundColor: 'rgba(155,55,155,1)',
+                    borderColor: '#fff',
+                    borderWidth: 2,
+                    axisPointer: {
+                        // 坐标轴指示器，坐标轴触发有效
+                        type: "shadow" // 默认为直线，可选为：'line' | 'shadow'
+                    }
+                },
+                grid: {
+                    left: "3%",
+                    right: "15px",
+                    bottom: "3%",
+                    containLabel: true
+                },
+                xAxis: {
+                    show: false
+                },
+                yAxis: [
+                    {
+                        type: "category",
+                        axisTick: {show: false},
+                        boundaryGap: false,
+                        axisLine: {
+                            show: false
+                        },
+                        axisLabel: {
+                            show: false
+                        },
+                        axisTick: {
+                            show: false
+                        },
+                        data: ["玉林->湖北", "玉林->西安", "北京->湖北", "上海->西安", "西安->湖北", "广州->西安"]
+                    }
+                ],
+                series: [
+                    {
+                        name: "利润",
+                        type: "bar",
+                        label: {
+                            normal: {
+                                show: true,
+                                position: "right",
+                                color: '#fff'
+                            }
+                        },
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(
+                                1, 0, 0, 1,
+                                [
+                                    {offset: 1, color: '#3bffce'},
+                                    {offset: 0, color: 'rgba(59,255,206,.3)'}
+                                ]
+                            )
+                        },
+                        barWidth: 16,
+                        data: [35, 15, 39, 25, 39, 20]
+                    }
+                ]
+            }
+            myLeftBar.setOption(option_left);
+            myRightBar.setOption(option_right);
+        },
+        // 实时煤耗信息
+        createBarrel() {
+            var barrelData1 = ['50#20#平煤', '20#12#烟煤', '50#20#平煤', '20#12#烟煤', '50#20#平煤', '20#12#烟煤'];
+            for (var i in barrelData1) {
+                var value = barrelData1[i].split("#");
+                $("#unit_1>div>.coalsilo>div").eq(i).css({"height": value[0] + "%"});
+                $("#unit_1>div>.coalsilo>div").eq(i).parent().next().find(":first").text((parseFloat(value[1]) < 0 ? 0 : value[1]) + "米");
+                $("#unit_1>div>.coalsilo>div").eq(i).parent().next().find(":last").text(value[2]);
+            }
+            var barrelData2 = ['50#20#平煤', '20#12#烟煤', '50#20#平煤', '20#12#烟煤', '50#20#平煤', '20#12#烟煤'];
+            for (var i in barrelData2) {
+                var value = barrelData2[i].split("#");
+                $("#unit_2>div>.coalsilo>div").eq(i).css({"height": value[0] + "%"});
+                $("#unit_2>div>.coalsilo>div").eq(i).parent().next().find(":first").text((parseFloat(value[1]) < 0 ? 0 : value[1]) + "米");
+                $("#unit_2>div>.coalsilo>div").eq(i).parent().next().find(":last").text(value[2]);
+            }
+        },
+        // createWordCloud() {
+        //     var wordChart = echarts.init(document.getElementById('chart8'))
+        //     var data = [
+        //         {name: '小型普通货车', value: 98},
+        //         {name: '中型厢式货车', value: 140},
+        //         {name: '重型半挂牵引车', value: 302},
+        //         {name: '重型厢式货车', value: 230},
+        //         {name: '大型普通客车', value: 125},
+        //         {name: '挂车', value: 45},
+        //     ]
+        //     wordChart.setOption({
+        //         series: [
+        //             {
+        //                 type: "wordCloud",
+        //                 sizeRange: [12, 40], //最小文字——最大文字
+        //                 rotationRange: [0, 90], //旋转角度区间
+        //                 rotationStep: 90, //旋转角度间隔
+        //                 // maskImage: maskImage, //遮罩图片
+        //                 width: 500, //遮罩图片宽度
+        //                 height: 250, //遮罩图片高度
+        //                 left: "center",
+        //                 top: "center",
+        //                 data: data,
+        //                 gridSize: 10, //字符间距
+        //                 textStyle: {
+        //                     normal: {
+        //                         color: function () {
+        //                             return (
+        //                                 "rgb(" +
+        //                                 [
+        //                                     Math.round(Math.random() * 255),
+        //                                     Math.round(Math.random() * 255),
+        //                                     Math.round(Math.random() * 255)
+        //                                 ].join(",") +
+        //                                 ")"
+        //                             );
+        //                         }
+        //                     },
+        //                     emphasis: {
+        //                         shadowBlur: 10,
+        //                         shadowColor: "#333"
+        //                     }
+        //                 }
+        //             }
+        //         ]
+        //     });
+        // },
+        createline9() {
+            // 负荷曲线
+            var lineChart = echarts.init(document.getElementById("chart9"));
+            var option_line = {
+                grid: {
+                    left: "0",
+                    right: "0",
+                    top: '20px',
+                    bottom: 0,
+                    containLabel: true
+                },
+                legend: {
+                    top: -5,
+                    data: [{name: '1#机组', textStyle: {color: '#3076f0'}}, {
+                        name: '2#机组',
+                        textStyle: {color: '#ff80a8'}
+                    }, {name: '6#机组', textStyle: {color: '#ffe76a'}}, {name: '7#机组', textStyle: {color: '#4eeed4'}}]
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                xAxis: {
+                    type: "category",
+                    axisPointer: {
+                        show: true
+                    },
+                    axisTick: {
+                        //去掉坐标轴刻线
+                        show: false
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: "#22bde3" //X轴的颜色
+                        }
+                    },
+                    axisLabel: {
+                        color: "#ccc",
+                        boundaryGap: false
+                    },
+                    data: xAixData
+                },
+                yAxis: {
+                    type: "value",
+                    nameTextStyle: {
+                        color: "#ccc"
+                    },
+                    axisTick: {
+                        //去掉坐标轴刻线
+                        show: false
+                    },
+                    axisLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        color: "#ccc"
+                    },
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: 'rgba(225,225,225,.5)'
+                        }
+
+                    }
+                },
+                series: [
+                    {
+                        type: "line",
+                        name: "1#机组",
+                        smooth: true, //平滑曲线
+                        color: '#3076f0',
+                        data: data1,
+                        markLine: {
+                            symbol: 'none',
+                            data: [
+                                {
+                                    lineStyle: {
+                                        type: 'solid',
+                                        color: 'red'
+                                    },
+                                    label: {
+                                        color: '#a30636',
+                                        position: 'start',
+                                        formatter: [
+                                            '{a|{c}}'
+                                        ].join(''),
+                                        rich: {
+                                            a: {
+                                                padding: [3, 6, 6, 3],
+                                                backgroundColor: '#a30636',
+                                                borderRadius: 4,
+                                                color: '#fff'
+                                            }
+                                        }
+                                    },
+                                    name: '标线1起点',
+                                    value: 400,
+                                    symbol: 'none',
+                                    xAxis: 1,
+                                    yAxis: 3000
+                                }
+                            ]
+                        },
+                        // 设置折线区域的背景色
+                        areaStyle: {
+                            normal: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                    {offset: 0, color: "#1f3a7f"},
+                                    {offset: 0.5, color: "#182d66"},
+                                    {offset: 1, color: "#0e1c4c"}
+                                ])
+                            }
+                        }
+                    },
+                    {
+                        type: "line",
+                        name: "2#机组",
+                        smooth: true, //平滑曲线
+                        color: '#ff80a8',
+                        data: data2,
+                        markLine: {
+                            symbol: 'none',
+                            data: [
+                                {
+                                    lineStyle: {
+                                        type: 'solid',
+                                        color: 'red'
+                                    },
+                                    label: {
+                                        color: '#a30636',
+                                        position: 'start',
+                                        formatter: [
+                                            '{a|{c}}'
+                                        ].join(''),
+                                        rich: {
+                                            a: {
+                                                padding: [3, 6, 6, 3],
+                                                backgroundColor: '#a30636',
+                                                borderRadius: 4,
+                                                color: '#fff'
+                                            }
+                                        }
+                                    },
+                                    name: '标线1起点',
+                                    value: 400,
+                                    symbol: 'none',
+                                    xAxis: 1,
+                                    yAxis: 3000
+                                }
+                            ]
+                        },
+                        // 设置折线区域的背景色
+                        areaStyle: {
+                            normal: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                    {offset: 0, color: "#1f3a7f"},
+                                    {offset: 0.5, color: "#182d66"},
+                                    {offset: 1, color: "#0e1c4c"}
+                                ])
+                            }
+                        }
+                    },
+                    {
+                        type: "line",
+                        name: "6#机组",
+                        smooth: true, //平滑曲线
+                        color: '#ffe76a',
+                        data: data6,
+                        markLine: {
+                            symbol: 'none',
+                            data: [
+                                {
+                                    lineStyle: {
+                                        type: 'solid',
+                                        color: 'red'
+                                    },
+                                    label: {
+                                        color: '#a30636',
+                                        position: 'start',
+                                        formatter: [
+                                            '{a|{c}}'
+                                        ].join(''),
+                                        rich: {
+                                            a: {
+                                                padding: [3, 6, 6, 3],
+                                                backgroundColor: '#a30636',
+                                                borderRadius: 4,
+                                                color: '#fff'
+                                            }
+                                        }
+                                    },
+                                    name: '标线1起点',
+                                    value: 400,
+                                    symbol: 'none',
+                                    xAxis: 1,
+                                    yAxis: 3000
+                                }
+                            ]
+                        },
+                        // 设置折线区域的背景色
+                        areaStyle: {
+                            normal: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                    {offset: 0, color: "#1f3a7f"},
+                                    {offset: 0.5, color: "#182d66"},
+                                    {offset: 1, color: "#0e1c4c"}
+                                ])
+                            }
+                        }
+                    },
+                    {
+                        type: "line",
+                        name: "7#机组",
+                        smooth: true, //平滑曲线
+                        color: '#4eeed4',
+                        data: data7,
+                        markLine: {
+                            symbol: 'none',
+                            data: [
+                                {
+                                    lineStyle: {
+                                        type: 'solid',
+                                        color: 'red'
+                                    },
+                                    label: {
+                                        color: '#a30636',
+                                        position: 'start',
+                                        formatter: [
+                                            '{a|{c}}'
+                                        ].join(''),
+                                        rich: {
+                                            a: {
+                                                padding: [3, 6, 6, 3],
+                                                backgroundColor: '#a30636',
+                                                borderRadius: 4,
+                                                color: '#fff'
+                                            }
+                                        }
+                                    },
+                                    name: '标线1起点',
+                                    value: 400,
+                                    symbol: 'none',
+                                    xAxis: 1,
+                                    yAxis: 3000
+                                }
+                            ]
+                        },
+                        // 设置折线区域的背景色
+                        areaStyle: {
+                            normal: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                    {offset: 0, color: "#1f3a7f"},
+                                    {offset: 0.5, color: "#182d66"},
+                                    {offset: 1, color: "#0e1c4c"}
+                                ])
+                            }
+                        }
+                    }
+                ]
+            };
+            lineChart.setOption(option_line);
+        },
+        createline90() {
+            // 负荷曲线
+            var lineChart = echarts.init(document.getElementById("chart9"));
+            var option_line = {
+                grid: {
+                    left: "0",
+                    right: "0",
+                    top: '20px',
+                    bottom: 0,
+                    containLabel: true
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                xAxis: {
+                    type: "category",
+                    axisPointer: {
+                        show: true
+                    },
+                    axisTick: {
+                        //去掉坐标轴刻线
+                        show: false
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: "#22bde3" //X轴的颜色
+                        }
+                    },
+                    axisLabel: {
+                        color: "#ccc",
+                        boundaryGap: false
+                    },
+                    data: [
+                        "0:00", "2:00", "4:00", "6:00", "8:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00"
+                    ]
+                },
+                yAxis: {
+                    type: "value",
+                    nameTextStyle: {
+                        color: "#ccc"
+                    },
+                    axisTick: {
+                        //去掉坐标轴刻线
+                        show: false
+                    },
+                    axisLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        color: "#ccc"
+                    },
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: 'rgba(225,225,225,.5)'
+                        }
+
+                    }
+                },
+                series: [
+                    {
+                        type: "line",
+                        smooth: true, //平滑曲线
+                        color: '#3076f0',
+                        data: [
+                            20000,
+                            8723,
+                            20000,
+                            20000,
+                            20000,
+                            10000,
+                            10000,
+                            9948,
+                            7284,
+                            6628,
+                            7210,
+                            5035,
+                            3321,
+                            1895,
+                            3942,
+                            4521,
+                            4441,
+                            4103,
+                            4269
+                        ],
+                        markLine: {
+                            symbol: 'none',
+                            data: [
+                                {
+                                    lineStyle: {
+                                        type: 'solid',
+                                        color: 'red'
+                                    },
+                                    label: {
+                                        color: '#a30636',
+                                        position: 'start',
+                                        formatter: [
+                                            '{a|{c}}'
+                                        ].join(''),
+                                        rich: {
+                                            a: {
+                                                padding: [3, 6, 6, 3],
+                                                backgroundColor: '#a30636',
+                                                borderRadius: 4,
+                                                color: '#fff'
+                                            }
+                                        }
+                                    },
+                                    name: '标线1起点',
+                                    value: 400,
+                                    symbol: 'none',
+                                    xAxis: 1,
+                                    yAxis: 3000
+                                }
+                            ]
+                        },
+                        // 设置折线区域的背景色
+                        areaStyle: {
+                            normal: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                    {offset: 0, color: "#1f3a7f"},
+                                    {offset: 0.5, color: "#182d66"},
+                                    {offset: 1, color: "#0e1c4c"}
+                                ])
+                            }
+                        }
+                    }
+                ]
+            };
+            lineChart.setOption(option_line);
+        }
+    }
+    index.createDate();
+    index.scaleView();
+    index.createline1();
+    index.createChart3();
+    var mySwiper = new Swiper('.swiper-container', {
+        autoplay: true,
+    })
+    var now = new Date();
+    var oneDay = 24 * 3600 * 1000;
+    var weekDays = [getMonthDay(now - oneDay * 6), getMonthDay(now - oneDay * 5), getMonthDay(now - oneDay * 4), getMonthDay(now - oneDay * 3), getMonthDay(now - oneDay * 2), getMonthDay(now - oneDay * 1), getMonthDay(now)];
+
+    function getMonthDay(dt) {
+        return new Date(dt).getMonth() + 1 + '-' + new Date(dt).getDate();
+    }
+
+    index.createChartio();
+
+    index.createDashBoard();
+    setInterval(function () {
+        var chartDashBoard = echarts.init(document.getElementById('chartDashboard'));
+        // data: [{value: 40, name: 'C2'}]
+        chartDashBoard.setOption({
+            series: [{
+                data: [{
+                    value: (Math.random() * 80).toFixed(2) - 0,
+                    name: 'C2'
+                }]
+            }, {data: [{value: (Math.random() * 90).toFixed(2) - 0, name: 'C30'}]}]
+        });
+    }, 2000);
+    index.createMap();
+    index.createPie();
+    // index.creataBar();
+    index.createBarrel();
+    // 调用生成负荷曲线图
+    var data1 = [359, 342, 329, 330, 337, 351, 420, 505, 545, 561, 566, 564, 560, 558, 548, 526, 515, 534, 524, 498, 475, 478, 449, 400];
+    var data2 = [139, 128, 119, 120, 125, 134, 180, 237, 263, 274, 277, 276, 274, 272, 265, 250, 243, 256, 249, 232, 217, 219, 199, 166];
+    var data6 = [507, 530, 519, 561, 543, 554, 606, 841, 905, 930, 938, 935, 929, 926, 909, 874, 857, 887, 871, 829, 793, 799, 752, 672];
+    var data7 = [622, 592, 570, 572, 584, 608, 729, 876, 945, 972, 980, 978, 971, 967, 949, 911, 892, 925, 908, 863, 823, 829, 778, 692];
+    var xAixData = [];
+    for (var cnt = 0; cnt < 24; cnt++) {
+        xAixData.push((cnt < 10 ? ('0' + cnt) : cnt) + ':00');
+    }
+    index.createline9();
+    // 页面自适应
+    window.onresize = index.scaleView;
+    // 刷新时间
+    setInterval(function () {
+        index.createDate()
+    }, 1000)
+    /**
+     * 生成随机数
+     * @returns {{name: string, value: *[]}}
+     */
+    function randomData(i, unit) {
+        var now = new Date();
+        var value;
+        if (unit == 1 || unit == 2) {
+            value = Math.random() * 400;
+        } else if (unit == 6 || unit == 7) {
+            value = Math.random() * 800;
+        }
+
+        if (i) {
+            return {
+                name: new Date(now - fiveMin + i * 1000),
+                value: [
+                    new Date(now - fiveMin + i * 1000),
+                    Math.round(value)
+                ]
+            }
+        } else {
+            return {
+                name: now,
+                value: [
+                    now,
+                    Math.round(value)
+                ]
+            }
+        }
+    }
+
+    $(function () {
+        document.oncontextmenu = nocontextmenu;
+        document.onmousedown = norightclick;
+
+        if (!Detector.webgl) {
+            Detector.addGetWebGLMessage();
+        }
+
+        control = new THREE.Create({
+            domElement: $("#chart0"),
+            //场景加载完毕后回调方法见complete方法，不加载记得关闭等待提示框
+            loadercomplete: function () {
+                complete();
+            },
+            //鼠标双击物品回调，主要用于展示物品的属性信息
+            mousedbclick: function (item) {
+
+            },
+            mouserclick: function (item) {
+
+            },
+            pointrclick: function (item) {
+
+            },
+            exhibitionData: function (value) {
+
+            },
+            errorDispose: function (message) {
+
+            },
+            cameraprojection: THREE.CameraProjection.PerspectiveCamera
+        });
+
+        $("#chart0").focus();
+    })
+
+    function complete() {
+        //关闭等待提示页面
+        $("#wait").css("display", "none");
+    }
+
+    var control;
+
+    /*
+     * 禁止右键*/
+    function nocontextmenu() {
+        event.cancelBubble = true
+        event.returnValue = false;
+        return false;
+    }
+
+    function norightclick(e) {
+        if (window.Event) {
+            if (e.which == 2 || e.which == 3)
+                return false;
+        } else if (event.button == 2 || event.button == 3) {
+            event.cancelBubble = true
+            event.returnValue = false;
+            return false;
+        }
+    }
+</script>
+</body>
+
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>自动化工作量统计报表</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+    <link rel="stylesheet" type="text/css" href="${base}/styles/css/statistics.css">
+    <script type="text/javascript" src="${base}/styles/js/echarts-all.js"></script>
+    <script type="text/javascript" src="${base}/styles/js/statistics/statistics.js"></script>
+    <script type="text/javascript" src="${base}/styles/js/statistics/autoWorkLoadStatistics.js"></script>
+</head>
+<body>
+<div id="layoutDiv" class="easyui-layout" style="height:100%;margin-top: 20px;margin-left: 10px">
+    <div id="tb">
+        <table>
+            <tbody>
+            <tr>
+                <td>
+                    <label for="statLatType">报表类型</label>
+                    <input id="statLatType" name="statLatType"/>
+                </td>
+                <td id="qryDate">
+                    <label>时间范围</label> &nbsp;&nbsp;
+                    <input class="easyui-datebox" name="beginDate" id="beginDate" style="width:145px;"/>~
+                    <input class="easyui-datebox" name="endDate" id="endDate" style="width:145px;"/>
+                </td>
+                <td id="qryDateOnlyMonth">
+                    <label>时间范围</label> &nbsp;&nbsp;
+                    <input id="beginDateOnlyMonth" style="width:145px;"/>
+                    <input id="endDateOnlyMonth" style="width:145px;"/>
+                </td>
+                <td>
+                    <span style="margin-left: 0%;">
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" onclick="qry()">查询</a>
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" onclick="exportExcel()">导出Excel</a>
+                    </span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="main" style="height:400px;margin-top: 10px;clear: right"></div>
+    <div title="数据明细" id="tableMain" style="height:300px;width:800px;margin-top: 10px;margin: 0 auto;">
+    </div>
+</div>
+</body>
+</html>
+
+<script type="text/javascript">
+    var reportTypeCd ='AUTO_WORK';
+
+    $(function () {
+        initHeaderTool();
+        changeDBOX("beginDateOnlyMonth");
+        changeDBOX("endDateOnlyMonth");
+        showDataAutoWork([],'main',true);
+    });
+
+    function qry(){
+        $.messager.progress();
+        $.ajax({
+            async: true,
+            cache: false,
+            type: 'POST',
+            data: getParam(reportTypeCd),//调用公共函数中的方法，获取请求参数
+            url: '${base}/business/statistics/qryStatisticsData',
+            error: function () {// 请求失败处理函数
+                $.messager.progress('close');
+                showDataAutoWork([],'main',true);
+                showMsg("提示", "查询数据失败!");
+            },
+            success: function (json) {
+                if(json.length == 0){
+                    showDataAutoWork([],'main',true);
+                    showMsg("提示", "未查询到数据!");
+                    return;
+                }else{
+                    showDataAutoWork(json,'main',true);
+                }
+            }
+        });
+    }
+
+    //加载table，显示详情数据
+    function loadTable(json){
+        $("#tableMain").empty();
+        var tableArray = new Array();
+        tableArray.push('<table id="dataTb" class = "dataShowT"  width="70%"><tobody>');
+        tableArray.push('<th height="30">');tableArray.push('月份');tableArray.push('</th>');
+        tableArray.push('<th height="30">');tableArray.push('计量吨位');tableArray.push('</th>');
+        tableArray.push('<th height="30">');tableArray.push('采样吨位');tableArray.push('</th>');
+        tableArray.push('<th height="30">');tableArray.push('制样吨位');tableArray.push('</th>');
+
+        if(json.length > 0){
+            for (var i = 0; i < json.length; i++) {
+                tableArray.push('<tr height="30">');
+                tableArray.push('<td>');tableArray.push(json[i].statLat);tableArray.push('</td>');
+                tableArray.push('<td>');tableArray.push(json[i].statResult1);tableArray.push('</td>');
+                tableArray.push('<td>');tableArray.push(json[i].statResult2);tableArray.push('</td>');
+                tableArray.push('<td>');tableArray.push(json[i].statResult3);tableArray.push('</td>');
+                tableArray.push('</tr>');
+            }
+        }else{
+            for (var i = 0; i < initTrNums; i++) {
+                tableArray.push('<tr height="30">');
+                tableArray.push('<td>');tableArray.push("");tableArray.push('</td>');
+                tableArray.push('<td>');tableArray.push("");tableArray.push('</td>');
+                tableArray.push('<td>');tableArray.push("");tableArray.push('</td>');
+                tableArray.push('<td>');tableArray.push("");tableArray.push('</td>');
+                tableArray.push('</tr>');
+            }
+        }
+        tableArray.push('</tobody></table>');
+        $('#tableMain').append(tableArray.join(""));
+        renderTable('dataTb');
+    }
+
+</script>

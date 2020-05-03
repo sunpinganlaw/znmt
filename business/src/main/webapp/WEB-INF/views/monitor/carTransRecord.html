@@ -1,0 +1,283 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>汽车来煤</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+
+<body>
+
+    <div id="tb">
+        <table>
+            <tr>
+                <td>
+
+                    <label for="beginDate">入厂日期：</label>
+                    <input class="easyui-datebox" id="beginDate" style="width:120px">&nbsp;—&nbsp;
+                    <input class="easyui-datebox" id="endDate"  style="width:120px">
+                    <label for="cardIdQry">卡号：</label>
+                    <input class="easyui-textbox" id="cardIdQry" style="width:130px;" value=""/>
+                    <label for="carIdQry">车牌号：</label>
+                    <input class="easyui-textbox" id="carIdQry" style="width:130px;" value=""/>
+
+                    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>
+
+                    <@shiro.hasPermission name="CARTransRec:edit">
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit" onclick="modifyRec();">修改</a>
+                    </@shiro.hasPermission>
+
+                    <@shiro.hasPermission name="CARTransRec:save">
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="addRec();">新增</a>
+                    </@shiro.hasPermission>
+
+                    <@shiro.hasPermission name="CARTransRec:delete">
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="deleteRec();">删除</a>
+                    </@shiro.hasPermission>
+
+                    <@shiro.hasPermission name="CARTransRec:control1">
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-check" onclick="checkRec();">人工抽样</a>
+                    </@shiro.hasPermission>
+                    <input type="hidden" id="doActionTag"/>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div  style="width: 100%">
+        <table id="carTransRecordDg" ></table>
+    </div>
+
+    <!--新增窗口-->
+    <div id="addCarTransRecordWin" ></div>
+
+</body>
+</html>
+<script type="text/javascript">
+    var selectedRowObj;
+
+/*    function refreshDg(){
+        $("#carTransRecordDg").datagrid("reload");
+    }*/
+
+    // 获取窗口尺寸
+/*    function getWindowSize() {
+        var nWidth = $(this).width() + $(this).scrollLeft(),
+                nHeight = $(this).height() + $(this).scrollTop();
+
+        return {width: nWidth, height: nHeight};
+    }*/
+
+    function qry(){
+        var paramO = new Object();
+        var beginDate = $("#beginDate").datebox("getValue");
+        var endDate = $("#endDate").datebox("getValue");
+        var cardIdQry = $("#cardIdQry").textbox("getValue");
+        var carIdQry = $("#carIdQry").textbox("getValue");
+
+        //查询条件的，都必须带上 search_ 这个前缀，才能让后台的beanUtil里捕获到这个参数并映射到entity条件里。。 xieyt
+        if (beginDate != null && beginDate != "" && beginDate.length > 0) {
+            paramO.search_beginDate = beginDate;
+        }
+        if (endDate != null && endDate != "" && endDate.length > 0) {
+            paramO.search_endDate = endDate;
+        }
+        if (cardIdQry != null && cardIdQry != "" && cardIdQry.length > 0) {
+            paramO.search_cardId = '%'+cardIdQry+'%';
+        }
+        if (carIdQry != null && carIdQry != "" && carIdQry.length > 0) {
+            paramO.search_carId = '%'+carIdQry+'%';
+        }
+
+        $("#carTransRecordDg").datagrid("load",paramO);
+    }
+
+    $(function () {
+        $("#carTransRecordDg").datagrid({
+            url:  '${base}/business/monitor/carTransRecordList',
+            fitColumns: true,
+            animate: true,
+            border:true,
+            height: $(this).height() - 5,
+            width: $(this).width() - 5,
+            idField:'recordNo',
+//            singleSelect:true,//增加批量人工底样，顾注释掉 20151126 by zhangf
+            rownumbers:true,
+            pagination: true,
+            pagenumber:true,
+            pageSize:100,
+            pageList: [100, 200, 300],
+            columns: [
+                [
+                    //{field: 'recordNo', title: '记录编号',align:'center', width:40},
+                    {field: 'recordNo', title: '流水号',align:'center', width:25, checkbox:true},
+                    {field: 'cardId', title: '卡号',align:'center', width:40},
+                    {field: 'batchNo', title: '批次号',align:'center', width:40},
+                    {field: 'attachBatchNo', title: '抽检批次号',align:'center', width:40},
+                    //{field: 'cardTyp', title: '卡类型',align:'center', width:25},
+                    {field: 'carId', title: '车牌号',align:'center', width: 25},
+                    //{field: 'carTypeName', title: '车型',align:'center', width:20},
+                    //{field: 'carrierName', title: '运输单位',align:'center', width:40},
+                    {field: 'venName', title: '供应商',align:'center', width: 40},
+                    //{field: 'colryName', title: '煤矿',align:'center', width:40},
+                    {field: 'coalName', title: '煤种',align:'center', width:20},
+                    {field: 'tickQty', title: '票重',align:'center', width:20},
+                    {field: 'tickNo', title: '票单号',align:'center', width:25},
+                    {field: 'recordDtm', title: '入厂时间',align:'center', width:30}
+                ]
+            ],
+            toolbar: '#tb',
+            onLoadSuccess:function(data){
+            }
+        })
+    });
+
+
+    //新增
+    function addRec(){
+        document.getElementById("doActionTag").value = "ADD";
+        $('#addCarTransRecordWin').window({
+            modal : true,
+            title : '来煤信息录入',
+            width : 530,
+            height : 330,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/monitor/record/addCarTransRec',
+            onClose : function() {
+                refreshDg();
+            }
+        });
+    }
+
+    //修改记录
+    function modifyRec(){
+        if ($("#carTransRecordDg").datagrid('getSelections').length > 1) {
+            showMsg("提示", "请先选择一条要修改的汽车来煤信息进行修改！");
+            return false;
+        }
+        var selectedRow = $("#carTransRecordDg").datagrid('getSelected');
+        if (selectedRow) {
+            document.getElementById("doActionTag").value = "MOD";
+            selectedRowObj = selectedRow;
+
+            $('#addCarTransRecordWin').window({
+                modal : true,
+                title : '来煤信息修改',
+                width : 530,
+                height : 330,
+                collapsible : false,
+                minimizable : false,
+                maximizable : true,
+                href : '${base}/business/monitor/record/addCarTransRec',
+                onClose : function() {
+                    refreshDg();
+                }
+            });
+        } else {
+            showMsg("提示", "请先选择要修改的汽车来煤信息！");
+        }
+    }
+
+    //删除一行
+    function deleteRec() {
+        if ($("#carTransRecordDg").datagrid('getSelections').length > 1) {
+            showMsg("提示", "请先选择一条要修改的汽车来煤信息进行删除！");
+            return false;
+        }
+        var selectedRow = $("#carTransRecordDg").datagrid('getSelected');
+        if (selectedRow) {
+            $.messager.confirm('提示', '数据将删除，确定继续操作?', function (r) {
+                if (r) {
+                    //提交数据
+                    var recordNo = selectedRow.recordNo;
+                    $.post("${base}/business/monitor/deleteCarTransRec/"+recordNo, function(rsp) {
+                        if(rsp.successful){
+                            showMsg("提示", rsp.msg);
+                            refreshDg();
+                        } else {
+                            showMsg("提示", rsp.msg);
+                        }
+                    }, "JSON").error(function() {
+                                showMsg("提示", "删除数据失败！");
+                            });
+                }
+            });
+        } else {
+            showMsg("提示", "请先选择要删除的汽车来煤信息！");
+        }
+    }
+
+    function checkRec() {
+
+        var paramObj = new Object();
+        var commonObj = new Object();
+        var obj = $("#carTransRecordDg").datagrid('getSelections');
+
+        if (obj.length < 1) {
+            showMsg("提示", "请至少选择一条数据信息底样分批！");
+            return false;
+        }
+
+        var arrayTickQtys = [];
+        for ( var i = 0; i < obj.length; i++) {
+            var o = {};
+            if ((i+1) !=  obj.length) {
+                if (obj[i].batchNo != obj[i+1].batchNo) {
+                    showMsg("提示", "请选择同一批次的数据信息进行操作！");
+                    return false;
+                }
+            }
+            if (i == 0) {
+                commonObj.batchNo = obj[i].batchNo;
+            }
+            o.recordNo = obj[i].recordNo;
+            arrayTickQtys[i] = o;
+        }
+
+        //放入公用参数
+        paramObj["publicInfo"] = JSON.stringify(commonObj);
+        //放入批量信息
+        paramObj["updateInfo"] = JSON.stringify(arrayTickQtys);
+
+        if (obj) {
+            $.messager.confirm('提示', '将进行底样批次操作，确定继续操作?', function (r) {
+                if (r) {
+                    var url = "${base}/business/monitor/carAttachBatchForBat";
+                    //提交数据
+                    $.post(url, paramObj, function(rsp) {
+                        if(rsp.successful){
+                            showMsg("提示", rsp.msg);
+                            refreshDg();
+                        } else {
+                            showMsg("提示", rsp.msg);
+                        }
+                    }, "JSON").error(function() {
+                        showMsg("提示", "保存失败！");
+                    });
+                }
+            });
+        } else {
+            showMsg("提示", "请先选择要删除的汽车来煤信息！");
+        }
+    }
+
+    function showMsg(title,msg)
+    {
+        $.messager.show({
+            title:title,
+            msg:msg
+        });
+    }
+
+    function refreshDg(){
+        $("#carTransRecordDg").datagrid("reload");
+        $("#carTransRecordDg").datagrid('getSelections').length=0;
+    }
+
+</script>

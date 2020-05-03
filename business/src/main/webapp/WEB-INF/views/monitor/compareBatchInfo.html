@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>抽查批次</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+<body>
+<div id="layoutDiv" class="easyui-layout" style="height:100%">
+    <div id="tb">
+
+        <label for="startDate">开始时间</label>
+        <input class="easyui-datebox" name="startDate" id="startDate"  style="width:145px;"/>
+        <label for="endDate">结束时间</label>
+        <input class="easyui-datebox" name="endDate" id="endDate"  style="width:145px;"/>
+        <label for="batchNo">批次</label>
+        <input class="easyui-textbox" name="batchNo" id="batchNo"  style="width:145px;"/>
+        <span style="margin-left: 0;">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>
+
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add"  onclick="addRCPC()">新增入厂抽查批次</a>
+
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add"  onclick="addHYPC()">新增存查样抽查批次</a>
+
+         <input type="hidden" id="doActionTag"/>
+        </span>
+
+        <input type="hidden" id="doAction" />
+        <input type="hidden" id="samplingCodeHidden" />
+        <input type="hidden" id="sampleCodeHidden" />
+    </div>
+
+    <div data-options="region:'center',title:'虚拟批次信息',noheader:false;">
+        <table id="sampleCodeDg"></table>
+    </div>
+</div>
+
+<!--预报查看编辑窗口-->
+<div id="virtualBatchInfoWin" ></div>
+</body>
+</html>
+<script type="text/javascript">
+    $sampleCodeDg = $("#sampleCodeDg");
+    var rowObject ;
+    var selectedRowObj;
+
+    $(function () {
+        var myDate = new Date();
+        var defaultBeginTime = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+        var defaultEndTime =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+
+        $sampleCodeDg.datagrid({
+            url:  '${base}/business/report/qryBatchInfoList',
+            fitColumns: true,
+            autoRowHeight: true,
+            animate: true,
+            border:true,
+            height: $(this).height() - 2,
+            width: $(this).width() - 2,
+            idField:'batchNo',
+            singleSelect:true,
+            view: detailview,
+            pagination: true,
+            pagenumber:true,
+            pageSize:70,
+            pageList: [70, 100],
+            queryParams: {//默认进来查当天
+                search_startTime:defaultBeginTime,
+                search_endTime:defaultEndTime,
+                search_batchNoType:"'0','1','2','9'"
+            },
+            columns: [
+                [
+                    {field: 'batchNo', title: '批次编号',align:'center', width:30},
+                    {field: 'sampleCode', title: '采样编码',align:'center', width: 30},
+                    {field: 'samplingCode', title: '制样编码',align:'center', width: 30},
+                    {field: 'laborCode', title: '化验码',align:'center', width:30}
+                ]
+            ],
+            toolbar: '#tb',
+            onLoadSuccess:function(data){
+            },
+            detailFormatter: function(index,row){
+                return '<div style="padding:1px"><table class="ddv"></table></div>';
+            },
+            onExpandRow: function(index,row){
+                var ddv = $(this).datagrid('getRowDetail', index).find('table.ddv');
+                var param = {};
+                param.search_relaBatchNo = row.batchNo;
+                debugger;
+                ddv.datagrid({
+                    url:  '${base}/business/report/qryCompareBatchInfoList',
+                    fitColumns: true,
+                    queryParams:param,
+                    singleSelect: true,
+                    rownumbers: false,
+                    loadMsg: '正在加载...',
+                    emptyMsg: '<span>无记录</span>',
+                    height: 'auto',
+                    columns: [
+                        [
+                            {field: 'relaType', title: '类型',align:'center', width:20},
+                            {field: 'batchNo', title: '抽查批次编号',align:'center', width:30},
+                            {field: 'sampleCode', title: '抽查采样编码',align:'center', width: 30},
+                            {field: 'samplingCode', title: '抽查制样编码',align:'center', width: 30},
+                            {field: 'laborCode', title: '抽查化验码', align: 'center', width: 30},
+                            {field: 'relaSeq', title: '抽查次数',align:'center', width:20},
+                            {field: 'insertTime', title: '抽查时间',align:'center', width:30}
+                        ]
+                    ],
+                    onResize:function(){
+                        $('#sampleCodeDg').datagrid('fixDetailRowHeight', index);
+                    },
+                    onLoadSuccess:function(){
+                        setTimeout(function(){
+                            $('#sampleCodeDg').datagrid('fixDetailRowHeight', index);
+                        }, 0);
+                    }
+                });
+                $('#sampleCodeDg').datagrid('fixDetailRowHeight', index);
+            }
+        })
+    });
+
+    function qry(){
+        var paramO = new Object();
+
+        var startTime = $("#startDate").datebox("getValue");
+        var endTime = $("#endDate").datebox("getValue");
+        var batchNo = $("#batchNo").textbox("getValue");
+
+        if (startTime != null && startTime != "" && startTime.length > 0) {
+            paramO.search_startTime = startTime;
+        }
+        if (endTime != null && endTime != "" && endTime.length > 0) {
+            paramO.search_endTime = endTime;
+        }
+
+        if (batchNo != null && batchNo != "" && batchNo.length > 0) {
+            paramO.search_batchNo = batchNo;
+        }
+
+        paramO.search_batchNoType = "'0','1','2','9'";
+
+        $sampleCodeDg.datagrid("load",paramO);
+    }
+
+    //新增
+    function addRCPC(){
+
+        var batchNo = '';
+        var rows =  $sampleCodeDg.datagrid('getSelections');
+        if (rows.length == 0) {
+            showMsg("提示", "请选择一条记录");
+            return false;
+        } else if (rows.length > 1){
+            showMsg("提示", "只能选择一条");
+            return false;
+        }
+
+        if(rows[0].batchNoType != '0' && rows[0].batchNoType != '1' && rows[0].batchNoType != '2' ){
+            showMsg("提示", "只能为入厂批次新增入厂抽查批次");
+            return false;
+        }
+        var batchType = '';
+        if(rows[0].batchNoType == '0'){
+            batchType = '8';
+        }else if (rows[0].batchNoType == '1'){
+            batchType = '7';
+        }else if (rows[0].batchNoType == '2'){
+            batchType = '6';
+        }
+
+        batchNo = rows[0].batchNo;
+        var postUrl = "${base}/business/monitor/virtualBatchInfo/add";
+        var params ='';
+        params = "&batchNo=" + batchNo;
+        params = params + "&batchNoType=" + batchType;
+
+        $.messager.confirm('提示', '确定为批次: '+batchNo+' 增加入厂抽查批次?', function (r) {
+            if (r) {
+                $.post(postUrl, params, function (rsp) {
+                    if (rsp.successful) {
+                        showMsg("提示", rsp.msg);
+                        $('#virtualBatchInfoWin').window('close');
+                    } else {
+                        showMsg("提示", rsp.msg);
+                    }
+                }).error(function () {
+                        showMsg("提示", "新增失败!");
+                });
+            }
+        });
+    }
+
+    function addHYPC(){
+
+        var batchNo = '';
+        var rows =  $sampleCodeDg.datagrid('getSelections');
+        if (rows.length == 0) {
+            showMsg("提示", "请选择一条记录");
+            return false;
+        } else if (rows.length > 1){
+            showMsg("提示", "只能选择一条记录");
+            return false;
+        }
+
+        if(rows[0].batchNoType != '0' && rows[0].batchNoType != '1' && rows[0].batchNoType != '2' && rows[0].batchNoType != '9'){
+            showMsg("提示", "只能为入厂或入炉批次新增抽查批次");
+            return false;
+        }
+
+        batchNo = rows[0].batchNo;
+        var postUrl = "${base}/business/monitor/virtualBatchInfo/add";
+        var params ='';
+        params = "&batchNo=" + batchNo;
+        params = params + "&batchNoType=" + '15';
+
+        $.messager.confirm('提示', '确定为批次: '+batchNo+' 增加化验抽查批次?', function (r) {
+            if (r) {
+                $.post(postUrl, params, function (rsp) {
+                    if (rsp.successful) {
+                        showMsg("提示", rsp.msg);
+                        $('#virtualBatchInfoWin').window('close');
+                    } else {
+                        showMsg("提示", rsp.msg);
+                    }
+                }).error(function () {
+                    showMsg("提示", "新增失败!");
+                });
+            }
+        });
+    }
+
+
+    function refreshDg(){
+        $("#sampleCodeDg").datagrid("reload");
+    }
+
+</script>

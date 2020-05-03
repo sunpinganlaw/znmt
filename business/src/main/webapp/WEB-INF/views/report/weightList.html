@@ -1,0 +1,221 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>计量数据补录</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+
+<body>
+<input type="hidden" name="h_eventId"  id="h_eventId" />
+    <div id="tb" >
+        <form id="rptFF" method="post">
+            <div class="well">
+                <table style="width:98%;">
+                    <tr>
+                        <td style="text-align: right">
+                            <label for="beginTime">开始时间</label>
+                            <input class="easyui-datebox" id="beginTime"
+                                   data-options="showSeconds:true" style="width:145px">
+                        </td>
+                        <td style="text-align: right">
+                            <label for="endTime">结束时间</label>
+                            <input class="easyui-datebox" id="endTime"
+                                   data-options="showSeconds:true" style="width:145px">
+                        </td>
+                        <td style="text-align: right">
+                            <label for="venNo">供应商</label>
+                            <input id="venNo" class="easyui-combobox" style="width:145px;"
+                                   data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/VENDOR_INFO'" />
+                        </td>
+                        <td style="text-align: right">
+                            <label for="carrierNo">运输单位</label>
+                            <input id="carrierNo" class="easyui-combobox" style="width:145px;"
+                                   data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/CARRIER_INFO'" />
+                        </td>
+                        <td style="text-align: right"><label for="carrierNo">煤矿</label>
+                            <input id="coalMine" class="easyui-combobox" style="width:145px;"
+                                   data-options="valueField:'id',textField:'name',panelHeight:'300',url:'${base}/business/tool/getComboboxOpt/COAL_MINE'" /></td>
+                    </tr>
+
+                    <tr>
+                        <td style="text-align: right">
+                            <label for="status">状态</label>
+                            <select id="status" class="easyui-combobox" data-options="panelHeight:'auto'" style="width:145px;">
+                                <option value="">全部</option>
+                                <option value="1">已采样已称重</option>
+                                <option value="2">已称重未回皮</option>
+                                <option value="3">已称重已回皮</option>
+                                <option value="4">未称重未回皮</option>
+                            </select>
+                        </td>
+                        <td style="text-align: right">
+                            <label for="coalNo">煤种</label>
+                            <input id="coalNo" class="easyui-combobox" style="width:145px;"
+                                   data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/COAL_TYPE'" />
+                        </td>
+                        <td style="text-align: right">
+                            <label for="batchNo">批次号</label>
+                            <input class="easyui-textbox" id="batchNo" style="width:145px;" value=""/>
+                        </td>
+                        <td style="text-align: right">
+                            <label for="carId">车号</label>
+                            <input class="easyui-textbox" id="carId" style="width:145px;" value=""/>
+                        </td>
+                        <td style="text-align: right">
+                            <a href="javascript:void(0)" id="qryBtn" class="easyui-linkbutton" iconCls="icon-search"  onclick="qryWeightRpt()">查询</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+    </div>
+
+    <div id="tx" style="height:100%;">
+        <table id="dg" title="计量数据明细" ></table>
+    </div>
+
+    <div id="kdQtyWin" ></div>
+
+</body>
+<script type="text/javascript">
+    $dg = $("#dg");
+
+    //输入查询条件的参数对象
+    var paramObj = new Object();
+
+    //刚进入页面时，查询日期默认取当前日的
+    var myDate = new Date();
+    var beginTime = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+    var endTime =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+    paramObj.search_beginTime = beginTime;
+    paramObj.search_endTime = endTime;
+
+    function qryWeightRpt(){
+        var paramO = new Object();
+        var beginTime = $("#beginTime").datebox("getValue");
+        var endTime = $("#endTime").datebox("getValue");
+        var venNo = $("#venNo").combobox("getValue");
+        var batchNo = $("#batchNo").textbox("getValue");
+        var carrierNo = $("#carrierNo").combobox("getValue");
+        var carId = $("#carId").textbox("getValue");
+        var coalNo = $("#coalNo").combobox("getValue");
+        var status = $("#status").combobox("getValue");
+        var coalMine = $("#coalMine").combobox("getValue");
+
+        //查询条件的，都必须带上 search_ 这个前缀，才能让后台的beanUtil里捕获到这个参数并映射到entity条件里。。 xieyt
+        if (beginTime != null && beginTime != "" && beginTime.length > 0) {
+            paramO.search_beginTime = beginTime;
+        }else{
+            paramO.search_beginTime  = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+        }
+
+        if (endTime != null && endTime != "" && endTime.length > 0) {
+            paramO.search_endTime = endTime;
+        }else{
+            paramO.search_endTime =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+        }
+
+        if (venNo != null && venNo != "" && venNo.length > 0) {
+            paramO.search_venNo = venNo;
+        }
+
+        if (batchNo != null && batchNo != "" && batchNo.length > 0) {
+            paramO.search_batchNo = batchNo;
+        }
+
+        if (carrierNo != null && carrierNo != "" && carrierNo.length > 0) {
+            paramO.search_carrierNo = carrierNo;
+        }
+
+        if (carId != null && carId != "" && carId.length > 0) {
+            paramO.search_carId = '%'+carId+'%';
+        }
+
+        if (coalNo != null && coalNo != "" && coalNo.length > 0) {
+            paramO.search_coalNo = coalNo;
+        }
+
+        if (status != null && status != "" && status.length > 0) {
+            paramO.search_status = status;
+        }
+
+        if (coalMine != null && coalMine != "" && coalMine.length > 0) {
+            paramO.search_coalMine = coalMine;
+        }
+
+        $dg.datagrid('load',paramO);
+    }
+
+    //初始化查询报表，全量查询
+    $(function () {
+        $dg.datagrid({
+            url: "${base}/business/report/weightLists",
+            pagination: true,
+            pagenumber:true,
+            pageSize:70,
+            pageList: [70, 100, 200],
+            fitColumns: true,
+            height: $(this).height() - 5,
+            width: $(this).width() - 5,
+            idField:'recordNo',
+            singleSelect:true,
+            rownumbers: true,
+            toolbar: '#tb',
+            queryParams: {//默认第一次查询是当天
+                search_beginTime:beginTime,
+                search_endTime:endTime
+            },
+            columns: [
+                [
+                    {field: 'venNam', title: '供应商', width: 80, align:'center'},
+                    {field: 'carrierNam', title: '运输单位', width: 80, align:'center'},
+                    {field: 'coalNam', title: '煤种', width: 70, align:'center'},
+                    {field: 'carId', title: '车号', width: 55, align:'center'},
+                    {field: 'batchNo', title: '批次号', width: 80, align:'center'},
+                    {field: 'doorNo', title: '入厂位置', width: 70, align:'center'},
+                    {field: 'recordDtm', title: '入厂时间', width: 80, align:'center'},
+                    {field: 'czDtm', title: '称重时间', width: 80, align:'center'},
+                    {field: 'jqDtm', title: '称轻时间', width: 80, align:'center'},
+                    {field: 'mzQty', title: '毛重', width: 55, align:'center'},
+                    {field: 'kdQty', title: '扣吨', width: 55, align:'center',formatter:kdFormatter},
+                    {field: 'pzQty', title: '皮重', width: 55, align:'center'},
+                    {field: 'netQty', title: '净重', width: 55, align:'center'},
+                    {field: 'tickQty', title: '票重', width: 55, align:'center'},
+                    {field: 'status', title: '状态', width: 80, align:'center'},
+                    {field: 'xyz', title: '操作', width: 80, align:'center',formatter:operLink}
+                ]
+            ]
+        });
+    });
+    function kdFormatter(val,row,index){
+        return (row.kdQty==null?'&nbsp;&nbsp;&nbsp;&nbsp;0':'&nbsp;&nbsp;&nbsp;&nbsp;'+row.kdQty);
+    }
+    function operLink(val,row,index){
+        var v = row.recordNo;
+        return ('&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:void(0)" onclick="kdHandle('+v+')">数据补录</a>');
+    }
+
+    function kdHandle(v){
+        document.getElementById("h_eventId").value = v;
+        $('#kdQtyWin').window({
+            modal : true,
+            title : "数据补录",
+            width : 500,
+            height : 250,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/report/kdQty/mod/'+v,
+            onClose: function () {
+                $dg.datagrid('reload');
+            }
+        });
+    }
+
+</script>
+</html>

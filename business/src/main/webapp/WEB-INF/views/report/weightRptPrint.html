@@ -1,0 +1,130 @@
+<div id="tbPrint">
+    <div>
+        <label for="beginTimePrint">开始时间</label>
+        <input class="easyui-datebox" id="beginTimePrint"
+               data-options="showSeconds:true" style="width:145px">
+        <label for="endTimePrint">结束时间</label>
+        <input class="easyui-datebox" id="endTimePrint"
+               data-options="showSeconds:true" style="width:145px">
+        <label for="batchNoPrint">批次号</label>
+        <input class="easyui-textbox" id="batchNoPrint" style="width:145px;" value=""/>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qryWeightRpt4Print()">查询</a>
+    </div>
+
+    <div>
+        <table>
+            <tr>
+                <td  id="batchNoTD"></td>
+                <td colspan="6">
+                    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-print"  onclick="printWeightInfo()">打印</a>
+                    <input type="hidden" id="toBatchNo" />
+                </td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+
+
+<div id="tx" style="margin: 4px;width: 99%">
+    <table id="dgPrint"/>
+</div>
+
+<div id="PrintWin"></div>
+
+<script type="text/javascript">
+    $dgPrint = $("#dgPrint");
+    var tempArr = [];
+
+    //输入查询条件的参数对象
+    var paramObj = new Object();
+
+    function qryWeightRpt4Print(){
+        var paramO = new Object();
+        var beginTime = $("#beginTimePrint").datebox("getValue");
+        var endTime = $("#endTimePrint").datebox("getValue");
+        var batchNo = $("#batchNoPrint").textbox("getValue");
+
+        if (beginTime != null && beginTime != "" && beginTime.length > 0) {
+            paramO.search_beginTime = beginTime;
+        }
+
+        if (endTime != null && endTime != "" && endTime.length > 0) {
+            paramO.search_endTime = endTime;
+        }
+
+        if (batchNo != null && batchNo != "" && batchNo.length > 0) {
+            paramO.search_batchNo = batchNo;
+        }
+
+        $dgPrint.datagrid({
+            url: "${base}/business/report/weightRptListNoPageUnlimited",
+            fitColumns: true,
+            height: $(window).height()-75,
+            width: $(window).width()-120,
+            idField:'recordNo',
+            singleSelect:true,
+            rownumbers: true,
+            toolbar: '#tbPrint',
+            queryParams: paramO,
+            columns: [
+                [   {field: 'recordNo', title: '磅单号', width: 60, align:'center'},
+                    {field: 'carId', title: '车号', width: 70, align:'center'},
+                    {field: 'batchNo', title: '批次号', width: 70, align:'center'},
+                    {field: 'tickQty', title: '票重', width: 55, align:'center'},
+                    {field: 'mzQty', title: '毛重', width: 55, align:'center'},
+                    {field: 'pzQty', title: '皮重', width: 55, align:'center'},
+                    {field: 'netQty', title: '净重', width: 55, align:'center'},
+                    {field: 'kdQty', title: '扣重', width: 55, align:'center'},
+                    {field: 'netQty', title: '实重', width: 55, align:'center'},
+                    {field: 'venNam', title: '发货单位', width: 90, align:'center'},
+                    {field: 'coalNam', title: '货名', width: 70, align:'center'},
+                    {field: 'czDtm', title: '称重时间', width: 90, align:'center'},
+                    {field: 'jqDtm', title: '回皮时间', width: 90, align:'center'}
+                ]
+            ],
+            onLoadSuccess:function(data){
+                //加载明细表格的radio
+                document.getElementById("batchNoTD").innerHTML = "";
+                tempArr = [];
+                document.getElementById("toBatchNo").value = "";
+                var rowsArr = data.rows
+                for(var i=0; i<rowsArr.length; i++){
+                    if (rowsArr[i].batchNo != null && rowsArr[i].batchNo != "" && !isExistsInArr(rowsArr[i].batchNo)){
+                        tempArr.push(rowsArr[i].batchNo);
+                        document.getElementById("batchNoTD").innerHTML = document.getElementById("batchNoTD").innerHTML +
+                                '&nbsp;&nbsp;&nbsp;<input name="batchNoPrnt" type="radio" onclick=setHiddenValue("'+rowsArr[i].batchNo+'")/>'+rowsArr[i].batchNo;
+                    }
+                }
+            }
+        });
+    }
+
+    function setHiddenValue(batchNo){
+        document.getElementById("toBatchNo").value = batchNo;
+    }
+
+    function isExistsInArr(batchNo){
+        var res = false;
+        for (var j = 0;j<tempArr.length;j++){
+            if(batchNo == tempArr[j]){
+                res = true;
+            }
+        }
+        return res;
+    }
+
+    //打印
+    function printWeightInfo(){
+        var toBatchNo = document.getElementById("toBatchNo").value;
+        if (toBatchNo) {
+            window.open('${base}/business/report/gotoPrintCarsWeightPage/'+toBatchNo,
+                    'newwindow',
+                    'height=600,width=1000,top=0,left=0,toolbar=no,menubar=no,scrollbars=no, resizable=no,location=no, status=no');
+        } else {
+            showMsg("提示",  "请先选择要打印的批次！");
+            return;
+        }
+    }
+</script>
+</html>

@@ -1,0 +1,180 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+<title>采样报告</title>
+
+<style type="text/css">
+	body{ background-color:#fff; color:#000; font-size:1em;  width:1000px; margin:0 auto;}
+	h1{ font-size:2em; text-align:center; line-height:2em; position:relative;}
+	table.table01{border:3px solid #000; margin:0; padding:0;}
+	table.table01 td{ border-right:1px solid #000;border-bottom:1px solid #000; line-height:25px; padding:15px 5px; text-align:center;}
+	table.table01 td.styrr{ text-align:right;}
+	table.table01 td.letter{ font-size:1.3em; }
+	table.table01 td.letter sub sub{ font-size:0.3em;}
+	.stymr01{ margin-right:300px;}
+	p.textleft{ text-align:left;}
+	.textright{ text-align:right;}
+	.textright02{ text-align:right; padding-right:150px;}
+	p{ margin-top:0;}
+
+    td,p{font-size:16px;}
+</style>
+
+</head>
+
+<body>
+<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-print" onclick="printLabRpt();">打印</a>
+<!--<div id="printButton1" style="text-align: right">&nbsp;</div>-->
+<!--startprint-->
+
+<h1>入厂煤采样报告</h1>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0" class="table01"  >
+  <tr>
+    <td width="18%">采样编码</td>
+    <td id = "sampleCode1" colspan="2" >&nbsp;</td>
+    <td colspan="2">天气</td>
+    <td id = "weather1" colspan="2" >&nbsp;</td>
+  </tr>
+  <tr>
+    <td>煤(品)种</td>
+    <td id = "coaltype1" width="18%" >&nbsp;</td>
+    <td width="18%">采样起始时间</td>
+    <td id = "startTime1" colspan="2" class="styrr" >开始</td>
+    <td id = "endTime1"  colspan="2" class="styrr" >结束</td>
+  </tr>
+  <tr>
+    <td>采样地点</td>
+    <td id = "place1" >&nbsp;</td>
+    <td>采样方式</td>
+    <td id = "sampleType1" colspan="4" >
+     □机采&nbsp;&nbsp;&nbsp;&nbsp;□智能化&nbsp;&nbsp;&nbsp;&nbsp;□人工</td>
+  </tr>
+  <tr>
+    <td width="18%">批煤质量/t</td>
+    <td id = "coalWeight1" width="18%" >&nbsp;</td>
+    <td width="18%">采样单元数</td>
+    <td id = "sampleNum1" colspan="4" >&nbsp;</td>
+  </tr>
+    <tr>
+    <td width="18%">采样单元煤量/t</td>
+    <td id = "sampleWeight1" width="18%" >&nbsp;</td>
+    <td width="18%">最大标称粒度/mm</td>
+    <td id = "size1" width="11%" >&nbsp;</td>
+    <td colspan="2">采样桶总数/桶</td>
+    <td id = "barrelNum1" width="11%" >&nbsp;</td>
+  </tr>
+   <tr>
+    <td width="18%">子样数目/个</td>
+    <td id ="cellNum1" width="18%" >&nbsp;</td>
+    <td width="18%">每个子样质量/kg</td>
+    <td id = "cellWeight1" width="11%" >&nbsp;</td>
+    <td colspan="2">总样质量/kg</td>
+    <td id = "totalWeight1" width="11%" >&nbsp;</td>
+  </tr>
+  <tr>
+    <td  height="120" colspan="7" valign="top" style="text-align:left" >
+        <p>来煤目测情况：</p>
+    <p id = "eyeMeasure1">&nbsp;</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p></td>
+  </tr>
+   <tr>
+    <td  height="120" colspan="7" valign="top" style="text-align:left" >
+        <p>样罐检查情况：</p>
+    <p id = "checkBarrel1" >&nbsp;</p>
+    <p class="textright02">检查人：</p>
+    <p class="textright02" id = "tester1">&nbsp;</p>
+    </td>
+  </tr>
+   <tr>
+    <td  height="120" colspan="7" valign="top" style="text-align:left"  >
+        <p>设备运行情况：</p>
+     <p id = "deviceInfo1">&nbsp;</p>
+     <p>&nbsp;</p>
+     <p>&nbsp;</p></td>
+  </tr>
+  <tr>
+    <td height="120" colspan="7" align="left" valign="top"><p class="textleft" >备注：</p>
+      <p id = "remark1" class="textleft" >&nbsp;</p>
+    <p class="textright02">采样员：</p>
+        <p class="textright02" id = "sampleMan1"></p>
+        <p class="textright02" id = "date"></p>
+    </td>
+  </tr>
+</table>
+<!--endprint-->
+</body>
+
+<script type="text/javascript">
+    $(function() {
+        var sampleReport = ${sampleReportData};
+
+        document.getElementById("sampleCode1").innerHTML = sampleReport.sampleCode1;
+        document.getElementById("weather1").innerHTML = sampleReport.weather1;
+
+        document.getElementById("coaltype1").innerHTML = sampleReport.coaltype1;
+        document.getElementById("startTime1").innerHTML = sampleReport.startTime1 + "  开始";
+        document.getElementById("endTime1").innerHTML = sampleReport.endTime1 + "  结束";
+        document.getElementById("place1").innerHTML = sampleReport.place1;
+        document.getElementById("sampleType1").innerHTML = decode(sampleReport.sampleType1);
+        document.getElementById("coalWeight1").innerHTML = sampleReport.coalWeight1;
+
+        document.getElementById("sampleNum1").innerHTML = sampleReport.sampleNum1;
+        document.getElementById("sampleWeight1").innerHTML = sampleReport.sampleWeight1;
+        document.getElementById("size1").innerHTML = sampleReport.size1;
+        document.getElementById("barrelNum1").innerHTML = sampleReport.barrelNum1;
+        document.getElementById("cellNum1").innerHTML = sampleReport.cellNum1;
+        document.getElementById("cellWeight1").innerHTML = sampleReport.cellWeight1;
+
+        document.getElementById("totalWeight1").innerHTML = sampleReport.totalWeight1;
+        document.getElementById("eyeMeasure1").innerHTML = sampleReport.eyeMeasure1;
+        document.getElementById("checkBarrel1").innerHTML = sampleReport.checkBarrel1;
+        document.getElementById("tester1").innerHTML = sampleReport.tester1;
+        document.getElementById("deviceInfo1").innerHTML = sampleReport.deviceInfo1;
+        document.getElementById("remark1").innerHTML = sampleReport.remark1;
+        document.getElementById("sampleMan1").innerHTML = sampleReport.sampleMan1;
+        document.getElementById("date").innerHTML = getTime();
+    })
+
+    function decode(type){
+        switch(type){
+            case '0':
+                    return "机采";
+                break;
+            case '1':
+                    return "智能化";
+                break;
+            case '2':
+                    return "人工";
+                break;
+            default:
+                    return "机采";
+                break;
+        }
+    }
+
+    function getTime(){
+        var date = new Date();
+        var currentdate = date.getFullYear() +"年"+ date.getMonth() + "月" + date.getDay()
+              +"日"
+        return currentdate;
+    }
+
+    function printLabRpt() {
+        var bdhtml = window.document.body.innerHTML;
+        var sprnstr = "<!--startprint-->";
+        var eprnstr = "<!--endprint-->";
+        var prnhtml = bdhtml.substr(bdhtml.indexOf(sprnstr)+17);
+        prnhtml = prnhtml.substring(0,prnhtml.indexOf(eprnstr));
+        window.document.body.innerHTML=prnhtml;
+        window.print();
+    }
+
+</script>

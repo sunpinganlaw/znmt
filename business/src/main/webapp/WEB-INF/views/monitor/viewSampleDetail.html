@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>煤样厂内流转明细</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="datagrid-detailview.js"></script>
+    <#include "/include/common.html"/>
+</head>
+<body>
+<div id="layoutDiv" class="easyui-layout" style="width:95%">
+    <table id="tb">
+        &nbsp;&nbsp;
+        <label for="batchNo">批次号</label>
+        <input class="easyui-textbox" id="batchNo" style="width:145px;" value=""/>
+        &nbsp;&nbsp;
+        <label for="sampleCode">采样编码</label>
+        <input class="easyui-textbox" id="sampleCode" style="width:145px;" value=""/>
+        &nbsp;&nbsp;
+        <label for="samplingCode">制样编码</label>
+        <input class="easyui-textbox" id="samplingCode" style="width:145px;" value=""/>
+        &nbsp;&nbsp;
+        <label for="laborCode">化验编码</label>
+        <input class="easyui-textbox" id="laborCode" style="width:145px;" value=""/>
+        &nbsp;&nbsp;
+        <span style="margin-left: 0;">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>
+        </span>
+     </table>
+
+    <table style="width:100%;">
+            <tr>
+                <td style="text-align: left">
+                    <span>&nbsp;批次号:</span>
+                    <span style="color: #0099FF;"><strong id="topBatchNo">&nbsp;</strong></span>
+                    <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;采样码:</span>
+                    <span style="color: #0099FF;"><strong id="topSampleCode">&nbsp;</strong></span>
+                    <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;制样码:</span>
+                    <span style="color: #0099FF;"><strong id="topSamplingCode">&nbsp;</strong></span>
+                    <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;化验码:</span>
+                    <span style="color: #0099FF;"><strong id="topLaborCode">&nbsp;</strong></span>
+                    <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;矿点:</span>
+                    <span style="color: #0099FF;"><strong id="topMineName">&nbsp;</strong></span>
+                    <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;供应商:</span>
+                    <span style="color: #0099FF;"><strong id="topVendorName">&nbsp;</strong></span>
+                    <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;煤种:</span>
+                    <span style="color: #0099FF;"><strong id="topCoalName">&nbsp;</strong></span>
+                </td>
+            </tr>
+    </table>
+</div>
+
+
+<div id = "sampleStatusDg1" style="width:80%;height:250px"  data-options="region:'center'">
+    <table id="sampleStatusDg" title="煤样采制存状态" style="width:95%" ></table>
+</div>
+
+<div id = "sixSample1"   style="width:80%;height:250px"  data-options="region:'center'">
+    <table id="sixSample" title="6mm全水样状态" style="width:95%"></table>
+</div>
+
+<div id = "threeSample1"  style="width:80%;height:250px"  data-options="region:'center'">
+    <table id="threeSample" title="3mm存查样状态" style="width:95%"></table>
+</div>
+
+<div id = "twoSample1" style="width:80%;height:250px"  data-options="region:'center'">
+    <table id="twoSample" title="0.2mm备查样状态" style="width:95%"></table>
+</div>
+
+<div id = "twoHSample1" style="width:90%;height:250px"  data-options="region:'center'">
+    <table id="twoHSample" title="0.2mm化验样状态" style="width:95%"></table>
+</div>
+
+<div id="showSubViewWin"></div>
+
+</body>
+</html>
+<script type="text/javascript">
+
+    $detaildg = $("#sampleStatusDg");
+    $sixdetaildg = $("#sixSample");
+    $threedetaildg = $("#threeSample");
+    $twodetaildg = $("#twoSample");
+    $twoHdetaildg = $("#twoHSample");
+
+    $detaildg.datagrid({
+        url: "${base}/business/monitor/qrySampleDetailInfo",
+        remoteSort:false,
+        singleSelect:true,
+        nowrap:false,
+        idField:'stepID',
+        fitColumns:true,
+        height: $(this).height() - 8,
+        width: $(this).width() - 8,
+        queryParams: {
+            search_batchNo:'-1',
+            search_sampleType:'0'
+        },
+        columns:[[
+            {field:'stepName',title:'状态',align:'center',width:'50%',formatter:operLink},
+            {field:'operTime',title:'时间',align:'center',width:'50%'}
+        ]],
+        view: detailview,
+        detailFormatter: function(rowIndex, rowData){
+            return '<table style="width:90%;text-align: center"><tr>' +
+                    '<td style="border:0">操作人: ' + rowData.operName  +'</td>'+
+                    '<td style="border:0">操作对象: ' + rowData.operObj + '</td>'+
+                    '</tr><tr>'+
+                    '<td style="border:0" colspan="2">说明: '+ rowData.operDesc + '</td>'+
+                    '</tr></table>';
+        }
+    });
+
+    $sixdetaildg.datagrid({
+        url: "${base}/business/monitor/qrySampleDetailInfo",
+        remoteSort:false,
+        singleSelect:true,
+        nowrap:false,
+        fitColumns:true,
+        height: $(this).height() - 8,
+        width: $(this).width() - 8,
+        queryParams: {
+            search_batchNo:'-1',
+            search_sampleType:'61'
+        },
+        columns:[[
+            {field:'stepName',title:'状态',align:'center',width:'50%'},
+            {field:'operTime',title:'时间',align:'center',width:'50%'}
+        ]],
+        view: detailview,
+        detailFormatter: function(rowIndex, rowData){
+            return '<table style="width:90%;text-align: center"><tr>' +
+                    '<td style="border:0">操作人: ' + rowData.operName  +'</td>'+
+                    '<td style="border:0">操作对象: ' + rowData.operObj + '</td>'+
+                    '</tr><tr>'+
+                    '<td style="border:0" colspan="2">说明: '+ rowData.operDesc + '</td>'+
+                    '</tr></table>';
+        }
+    });
+
+    $threedetaildg.datagrid({
+        url: "${base}/business/monitor/qrySampleDetailInfo",
+        remoteSort:false,
+        singleSelect:true,
+        nowrap:false,
+        fitColumns:true,
+        height: $(this).height() - 8,
+        width: $(this).width() - 8,
+        queryParams: {
+            search_batchNo:'-1',
+            search_sampleType:'32'
+        },
+        columns:[[
+            {field:'stepName',title:'状态',align:'center',width:'50%'},
+            {field:'operTime',title:'时间',align:'center',width:'50%'}
+        ]],
+        view: detailview,
+        detailFormatter: function(rowIndex, rowData){
+            return '<table style="width:90%;text-align: center"><tr>' +
+                    '<td style="border:0">操作人: ' + rowData.operName  +'</td>'+
+                    '<td style="border:0">操作对象: ' + rowData.operObj + '</td>'+
+                    '</tr><tr>'+
+                    '<td style="border:0" colspan="2">说明: '+ rowData.operDesc + '</td>'+
+                    '</tr></table>';
+        }
+    });
+
+    $twodetaildg.datagrid({
+        url: "${base}/business/monitor/qrySampleDetailInfo",
+        remoteSort:false,
+        singleSelect:true,
+        nowrap:false,
+        fitColumns:true,
+        height: $(this).height() - 8,
+        width: $(this).width() - 8,
+        queryParams: {
+            search_batchNo:'-1',
+            search_sampleType:'22'
+        },
+        columns:[[
+            {field:'stepName',title:'状态',align:'center',width:'50%'},
+            {field:'operTime',title:'时间',align:'center',width:'50%'}
+        ]],
+        view: detailview,
+        detailFormatter: function(rowIndex, rowData){
+            return '<table style="width:90%;text-align: center"><tr>' +
+                    '<td style="border:0">操作人: ' + rowData.operName  +'</td>'+
+                    '<td style="border:0">操作对象: ' + rowData.operObj + '</td>'+
+                    '</tr><tr>'+
+                    '<td style="border:0" colspan="2">说明: '+ rowData.operDesc + '</td>'+
+                    '</tr></table>';
+        }
+    });
+
+    $twoHdetaildg.datagrid({
+        url: "${base}/business/monitor/qrySampleDetailInfo",
+        remoteSort:false,
+        singleSelect:true,
+        nowrap:false,
+        fitColumns:true,
+        height: $(this).height() - 8,
+        width: $(this).width() - 8,
+        queryParams: {
+            search_batchNo:'-1',
+            search_sampleType:'21'
+        },
+        columns:[[
+            {field:'stepName',title:'状态',align:'center',width:'50%'},
+            {field:'operTime',title:'时间',align:'center',width:'50%'}
+        ]],
+        view: detailview,
+        detailFormatter: function(rowIndex, rowData){
+            return '<table style="width:90%;text-align: center"><tr>' +
+                    '<td style="border:0">操作人: ' + rowData.operName  +'</td>'+
+                    '<td style="border:0">操作对象: ' + rowData.operObj + '</td>'+
+                    '</tr><tr>'+
+                    '<td style="border:0" colspan="2">说明: '+ rowData.operDesc + '</td>'+
+                    '</tr></table>';
+        }
+    });
+
+    function operLink(val,row,index){
+        var eventType = row.stepIDtifier;
+        var eventName = row.stepName;
+        var sampleCodePa = row.sampleCode;
+        return ('<a href="javascript:void(0)" onclick="showSubView(\''+eventType+'\',\''+sampleCodePa +'\')">'+eventName+'</a>');
+    }
+
+    function showSubView(type1,value1){
+        if(type1 == 'SAMPLING_END') {
+            $('#showSubViewWin').window({
+                modal : true,
+                title : '制样明细查询',
+                width : 480,
+                height : 320,
+                collapsible : false,
+                minimizable : false,
+                maximizable : true,
+                href : '${base}/business/report/samplingDetailView/'+value1
+            });
+        }else if(type1 == 'SAMPLE_END'){
+            $('#showSubViewWin').window({
+                modal : true,
+                title : '采样明细查询',
+                width : 550,
+                height : 250,
+                collapsible : false,
+                minimizable : false,
+                maximizable : true,
+                href : '${base}/business/report/sampleDetailView/'+value1
+            });
+        }else if(type1 == 'LABOR'){
+
+        }
+
+
+    }
+
+    //查询煤样批次信息
+    function loadTopSampleInfo(qryObj) {
+
+        $.post("${base}/business/monitor/qrySampleBatchNoInfo",qryObj,function(rsp) {
+            if(rsp.successful){
+                var sumObj = rsp.data;
+                document.getElementById("topBatchNo").innerText = sumObj.batchNo;
+                document.getElementById("topSampleCode").innerText = sumObj.sampleCode;;
+                document.getElementById("topSamplingCode").innerText = sumObj.samplingCode;
+                document.getElementById("topLaborCode").innerText = sumObj.laborCode;
+                document.getElementById("topMineName").innerText = sumObj.mineName;
+                document.getElementById("topVendorName").innerText = sumObj.venName;
+                document.getElementById("topCoalName").innerText = sumObj.coalName;
+            } else {
+                showMsg("提示", rsp.msg);
+            }
+        });
+    }
+
+    function qry(){
+        var batchNo = $("#batchNo").textbox("getValue");
+        var sampleCode = $("#sampleCode").textbox("getValue");
+        var samplingCode = $("#samplingCode").textbox("getValue");
+        var laborCode = $("#laborCode").textbox("getValue");
+
+        var qryCommObj = {};
+        if (batchNo != null && batchNo != "" && batchNo.length > 0) {
+            qryCommObj.search_batchNo = batchNo;
+        }
+        if (sampleCode != null && sampleCode != "" && sampleCode.length > 0) {
+            qryCommObj.search_sampleCode = sampleCode;
+        }
+        if (samplingCode != null && samplingCode != "" && samplingCode.length > 0) {
+            qryCommObj.search_samplingCode = samplingCode;
+        }
+        if (laborCode != null && laborCode != "" && laborCode.length > 0) {
+            qryCommObj.search_laborCode = laborCode;
+        }
+
+        if(laborCode.length > 0 || samplingCode.length > 0 || sampleCode.length > 0|| batchNo.length > 0){
+
+            loadTopSampleInfo(qryCommObj);
+
+            qryCommObj.search_sampleType = '0';
+            $detaildg.datagrid('load', qryCommObj);
+            qryCommObj.search_sampleType = '61';
+            $sixdetaildg.datagrid('load', qryCommObj);
+            qryCommObj.search_sampleType = '32';
+            $threedetaildg.datagrid('load', qryCommObj);
+            qryCommObj.search_sampleType = '21';
+            $twoHdetaildg.datagrid('load', qryCommObj);
+            qryCommObj.search_sampleType = '22';
+            $twodetaildg.datagrid('load', qryCommObj);
+        }else {
+            alert("必须输入一个正确的查询限制条件");
+            return false;
+        }
+    }
+</script>

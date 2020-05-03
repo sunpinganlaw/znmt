@@ -1,0 +1,330 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>存查样柜监控</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <#include "/include/common.html"/>
+
+    <style type="text/css">
+        .easy-contect{ padding: 20px; background: #EFEFEF; }
+        .easy-table01{ background: #FFFFFF; border: 1px solid #d4d4d4; width: 100%; margin: 10px;}
+        .easy-table01 td{ background: #00CC00; border: 1px solid #009900; color: #FFFFFF; text-align: center; padding: 5px;}
+        .easy-table02{ background: #FFFFFF; border: 1px solid #d4d4d4; width: 100%; margin: 10px;}
+        .easy-table02 td{ background: #0099FF; border: 1px solid #0066CC; color: #FFFFFF; text-align: center; padding: 5px;}
+        .easy-table03{ background: #FFFFFF; border: 1px solid #d4d4d4; width: 100%; margin: 10px;}
+        .easy-table03 td{ background: #CC3300; border: 1px solid #990000; color: #FFFFFF; text-align: center; padding: 5px;}
+    </style>
+</head>
+
+<body>
+
+<div style="width: 100%; height: 60px;">
+    <table style="width: 85%; ">
+        <tr><td colspan="8">&nbsp;</td></tr>
+        <tr>
+            <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+            <td>共有存放区域：96 个</td>
+            <td id="unusedArea" style="background: #00CC00;text-align: center;padding: 10px;margin: 15px;">未用区域：</td>
+            <td id="usedArea" style="background: #0099FF;text-align: center;padding: 10px;margin: 15px;">已用区域：</td>
+            <td id="usedRate" style="background: #0099FF;text-align: center;padding: 10px;margin: 15px;">存放率：</td>
+            <td id="exceedArea" style="background: #CC3300;text-align: center;padding: 10px;margin: 15px;">超期区域：</td>
+            <td id="exceedRate" style="background: #CC3300;text-align: center;padding: 10px;margin: 15px;">超期率：</td>
+            <td >
+                <input type="button" onclick="getSample('3');" value="取样">&nbsp;&nbsp;<input type="button" onclick="getSample('4')" value="清样"/>
+            </td>
+        </tr>
+        <tr><td colspan="8">&nbsp;</td></tr>
+    </table>
+</div>
+
+<table style="width: 98%">
+    <tr>
+        <td>
+            <div>
+                <table border="0" cellspacing="8" cellpadding="0" class="easy-table01">
+                    <tr>
+                        <td id="box001" ondblclick="viewDetail('001');"><div style="text-align: left">001</div><div id="date001">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box002" ondblclick="viewDetail('002');"><div style="text-align: left">002</div><div id="date002">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box003" ondblclick="viewDetail('003');"><div style="text-align: left">003</div><div id="date003">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box004" ondblclick="viewDetail('004');"><div style="text-align: left">004</div><div id="date004">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                    </tr>
+                    <tr>
+                        <td id="box005" ondblclick="viewDetail('005');"><div style="text-align: left">005</div><div id="date005">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box006" ondblclick="viewDetail('006');"><div style="text-align: left">006</div><div id="date006">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box007" ondblclick="viewDetail('007');"><div style="text-align: left">007</div><div id="date007">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box008" ondblclick="viewDetail('008');"><div style="text-align: left">008</div><div id="date008">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                    </tr>
+                    <tr>
+                        <td id="box009" ondblclick="viewDetail('009');"><div style="text-align: left">009</div><div id="date009">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box010" ondblclick="viewDetail('010');"><div style="text-align: left">010</div><div id="date010">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box011" ondblclick="viewDetail('011');"><div style="text-align: left">011</div><div id="date011">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box012" ondblclick="viewDetail('012');"><div style="text-align: left">012</div><div id="date012">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                    </tr>
+                    <tr>
+                        <td id="box013" ondblclick="viewDetail('013');"><div style="text-align: left">013</div><div id="date013">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box014" ondblclick="viewDetail('014');"><div style="text-align: left">014</div><div id="date014">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box015" ondblclick="viewDetail('015');"><div style="text-align: left">015</div><div id="date015">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box016" ondblclick="viewDetail('016');"><div style="text-align: left">016</div><div id="date016">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+
+        <td>
+            <div>
+                <table border="0" cellspacing="8" cellpadding="0" class="easy-table01">
+                    <tr>
+                        <td id="box017" ondblclick="viewDetail('017');"><div style="text-align: left">017</div><div id="date017">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box018" ondblclick="viewDetail('018');"><div style="text-align: left">018</div><div id="date018">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box019" ondblclick="viewDetail('019');"><div style="text-align: left">019</div><div id="date019">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box020" ondblclick="viewDetail('020');"><div style="text-align: left">020</div><div id="date020">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                    </tr>
+                    <tr>
+                        <td id="box021" ondblclick="viewDetail('021');"><div style="text-align: left">021</div><div id="date021">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box022" ondblclick="viewDetail('022');"><div style="text-align: left">022</div><div id="date022">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box023" ondblclick="viewDetail('023');"><div style="text-align: left">023</div><div id="date023">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box024" ondblclick="viewDetail('024');"><div style="text-align: left">024</div><div id="date024">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                    </tr>
+                    <tr>
+                        <td id="box025" ondblclick="viewDetail('025');"><div style="text-align: left">025</div><div id="date025">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box026" ondblclick="viewDetail('026');"><div style="text-align: left">026</div><div id="date026">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box027" ondblclick="viewDetail('027');"><div style="text-align: left">027</div><div id="date027">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box028" ondblclick="viewDetail('028');"><div style="text-align: left">028</div><div id="date028">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                    </tr>
+                    <tr>
+                        <td id="box029" ondblclick="viewDetail('029');"><div style="text-align: left">029</div><div id="date029">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box030" ondblclick="viewDetail('030');"><div style="text-align: left">030</div><div id="date030">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box031" ondblclick="viewDetail('031');"><div style="text-align: left">031</div><div id="date031">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box032" ondblclick="viewDetail('032');"><div style="text-align: left">032</div><div id="date032">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+    </tr>
+</table>
+
+
+<table style="width: 98%">
+    <tr>
+        <td>
+            <div>
+                <table border="0" cellspacing="8" cellpadding="0" class="easy-table01">
+                    <tr>
+                        <td id="box033" ondblclick="viewDetail('033');"><div style="text-align: left">033</div><div id="date033">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box034" ondblclick="viewDetail('034');"><div style="text-align: left">034</div><div id="date034">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box035" ondblclick="viewDetail('035');"><div style="text-align: left">035</div><div id="date035">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box036" ondblclick="viewDetail('036');"><div style="text-align: left">036</div><div id="date036">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                    </tr>
+                    <tr>
+                        <td id="box037" ondblclick="viewDetail('037');"><div style="text-align: left">037</div><div id="date037">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box038" ondblclick="viewDetail('038');"><div style="text-align: left">038</div><div id="date038">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box039" ondblclick="viewDetail('039');"><div style="text-align: left">039</div><div id="date039">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box040" ondblclick="viewDetail('040');"><div style="text-align: left">040</div><div id="date040">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                    </tr>
+                    <tr>
+                        <td id="box041" ondblclick="viewDetail('041');"><div style="text-align: left">041</div><div id="date041">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box042" ondblclick="viewDetail('042');"><div style="text-align: left">042</div><div id="date042">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box043" ondblclick="viewDetail('043');"><div style="text-align: left">043</div><div id="date043">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box044" ondblclick="viewDetail('044');"><div style="text-align: left">044</div><div id="date044">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                    </tr>
+                    <tr>
+                        <td id="box045" ondblclick="viewDetail('045');"><div style="text-align: left">045</div><div id="date045">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box046" ondblclick="viewDetail('046');"><div style="text-align: left">046</div><div id="date046">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box047" ondblclick="viewDetail('047');"><div style="text-align: left">047</div><div id="date047">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box048" ondblclick="viewDetail('048');"><div style="text-align: left">048</div><div id="date048">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+
+        <td>
+            <div>
+                <table border="0" cellspacing="8" cellpadding="0" class="easy-table01">
+                    <tr>
+                        <td id="box049" ondblclick="viewDetail('049');"><div style="text-align: left">049</div><div id="date049">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box050" ondblclick="viewDetail('050');"><div style="text-align: left">050</div><div id="date050">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box051" ondblclick="viewDetail('051');"><div style="text-align: left">051</div><div id="date051">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box052" ondblclick="viewDetail('052');"><div style="text-align: left">052</div><div id="date052">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                    </tr>
+                    <tr>
+                        <td id="box053" ondblclick="viewDetail('053');"><div style="text-align: left">053</div><div id="date053">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box054" ondblclick="viewDetail('054');"><div style="text-align: left">054</div><div id="date054">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box055" ondblclick="viewDetail('055');"><div style="text-align: left">055</div><div id="date055">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box056" ondblclick="viewDetail('056');"><div style="text-align: left">056</div><div id="date056">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                    </tr>
+                    <tr>
+                        <td id="box057" ondblclick="viewDetail('057');"><div style="text-align: left">057</div><div id="date057">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box058" ondblclick="viewDetail('058');"><div style="text-align: left">058</div><div id="date058">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box059" ondblclick="viewDetail('059');"><div style="text-align: left">059</div><div id="date059">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box060" ondblclick="viewDetail('060');"><div style="text-align: left">060</div><div id="date060">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                    </tr>
+                    <tr>
+                        <td id="box061" ondblclick="viewDetail('061');"><div style="text-align: left">061</div><div id="date061">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box062" ondblclick="viewDetail('062');"><div style="text-align: left">062</div><div id="date062">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box063" ondblclick="viewDetail('063');"><div style="text-align: left">063</div><div id="date063">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box064" ondblclick="viewDetail('064');"><div style="text-align: left">064</div><div id="date064">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<table style="width: 98%">
+    <tr>
+        <td>
+            <div>
+                <table border="0" cellspacing="8" cellpadding="0" class="easy-table01">
+                    <tr>
+                        <td id="box065" ondblclick="viewDetail('065');"><div style="text-align: left">065</div><div id="date065">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box066" ondblclick="viewDetail('066');"><div style="text-align: left">066</div><div id="date066">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box067" ondblclick="viewDetail('067');"><div style="text-align: left">067</div><div id="date067">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box068" ondblclick="viewDetail('068');"><div style="text-align: left">068</div><div id="date068">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                    </tr>
+                    <tr>
+                        <td id="box069" ondblclick="viewDetail('069');"><div style="text-align: left">069</div><div id="date069">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box070" ondblclick="viewDetail('070');"><div style="text-align: left">070</div><div id="date070">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box071" ondblclick="viewDetail('071');"><div style="text-align: left">071</div><div id="date071">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box072" ondblclick="viewDetail('072');"><div style="text-align: left">072</div><div id="date072">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                    </tr>
+                    <tr>
+                        <td id="box073" ondblclick="viewDetail('073');"><div style="text-align: left">073</div><div id="date073">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box074" ondblclick="viewDetail('074');"><div style="text-align: left">074</div><div id="date074">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box075" ondblclick="viewDetail('075');"><div style="text-align: left">075</div><div id="date075">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box076" ondblclick="viewDetail('076');"><div style="text-align: left">076</div><div id="date076">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                    </tr>
+                    <tr>
+                        <td id="box077" ondblclick="viewDetail('077');"><div style="text-align: left">077</div><div id="date077">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box078" ondblclick="viewDetail('078');"><div style="text-align: left">078</div><div id="date078">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box079" ondblclick="viewDetail('079');"><div style="text-align: left">079</div><div id="date079">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box080" ondblclick="viewDetail('080');"><div style="text-align: left">080</div><div id="date080">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+
+        <td>
+            <div>
+                <table border="0" cellspacing="8" cellpadding="0" class="easy-table01">
+                    <tr>
+                        <td id="box081" ondblclick="viewDetail('081');"><div style="text-align: left">081</div><div id="date081">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box082" ondblclick="viewDetail('082');"><div style="text-align: left">082</div><div id="date082">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box083" ondblclick="viewDetail('083');"><div style="text-align: left">083</div><div id="date083">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box084" ondblclick="viewDetail('084');"><div style="text-align: left">084</div><div id="date084">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                    </tr>
+                    <tr>
+                        <td id="box085" ondblclick="viewDetail('085');"><div style="text-align: left">085</div><div id="date085">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box086" ondblclick="viewDetail('086');"><div style="text-align: left">086</div><div id="date086">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box087" ondblclick="viewDetail('087');"><div style="text-align: left">087</div><div id="date087">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box088" ondblclick="viewDetail('088');"><div style="text-align: left">088</div><div id="date088">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                    </tr>
+                    <tr>
+                        <td id="box089" ondblclick="viewDetail('089');"><div style="text-align: left">089</div><div id="date089">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box090" ondblclick="viewDetail('090');"><div style="text-align: left">090</div><div id="date090">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box091" ondblclick="viewDetail('091');"><div style="text-align: left">091</div><div id="date091">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box092" ondblclick="viewDetail('092');"><div style="text-align: left">092</div><div id="date092">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                    </tr>
+                    <tr>
+                        <td id="box093" ondblclick="viewDetail('093');"><div style="text-align: left">093</div><div id="date093">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box094" ondblclick="viewDetail('094');"><div style="text-align: left">094</div><div id="date094">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box095" ondblclick="viewDetail('095');"><div style="text-align: left">095</div><div id="date095">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                        <td id="box096" ondblclick="viewDetail('096');"><div style="text-align: left">096</div><div id="date096">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<!--样包详情-->
+<div id="sampleBagInfoWin" ></div>
+<!--取样包-->
+<div id="processSampleWin" ></div>
+</body>
+</html>
+<script type="text/javascript">
+
+var totalBoxesNum = 96;
+var dealTag;
+var qrySampleStatus;
+function loadBoxesInfo(){
+    var redNum = 0;
+    var greenNum = 0;
+    var blueNum = 0;
+    $.post("${base}/business/monitor/qrySampleBoxesInfo", function (rsp) {
+        if (rsp) {
+            $.each(rsp, function(i, val) {
+                if (val.isExceed == 'Y'){//首先判断是否超期
+                    //红色  已超期
+                    redNum++;
+                    $('#box'+val.boxNo).css({"background": "#CC3300", "border": "1px solid #990000", "color": "#FFFFFF", "text-align": "center", "padding": "5px;"});
+                    $('#date'+val.boxNo).html(val.samTime);
+                } else { //其次判断是否占用
+                    if (val.isUsed == '1') {
+                        // 蓝色  已使用
+                        blueNum++;
+                        $('#box'+val.boxNo).css({"background": "#0099FF", "border": "1px solid #0066CC", "color": "#FFFFFF", "text-align": "center", "padding": "5px;"});
+                        $('#date'+val.boxNo).html(val.samTime);
+                    }
+//                    else { //既没超期，也没被占用的，则是没使用  表格默认就是绿色的
+//                        // 绿色  未使用
+//                        greenNum++;
+//                        $('#box'+val.boxNo).css({"background": "#00CC00", "border": "1px solid #009900", "color": "#FFFFFF", "text-align": "center", "padding": "5px;"});
+//                        $('#date'+val.boxNo).html("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+//                    }
+                }
+            })
+            $("#unusedArea").html("未用区域："+(96-blueNum-redNum)+"个");
+            $("#usedArea").html("已用区域："+blueNum+"个");
+            $("#usedRate").html("存放率："+(parseInt((blueNum+redNum)/96*100))+"%");
+            $("#exceedArea").html("超期区域："+redNum+"个");
+            $("#exceedRate").html("超期率："+(parseInt(redNum/(blueNum+redNum)*100))+"%");
+        } else {
+            showMsg("提示", "查询存样柜数据失败！");
+        }
+    }).error(function () {
+        showMsg("提示", "查询存样柜数据异常！");
+    });
+}
+
+    //进入页面第一次执行
+    loadBoxesInfo();
+
+    //每隔x秒刷新一次
+    window.setInterval(loadBoxesInfo, 20*1000);
+
+    //查看单个箱子的详情
+    function viewDetail(curboxno){
+        $('#sampleBagInfoWin').window({
+            modal : true,
+            title : '样品包详细信息',
+            width : 1200,
+            height : 350,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/monitor/qrySampleBoxesDetailInfo/'+curboxno
+        });
+    }
+
+function getSample(dealType){
+    var dealName = dealType=="3"?"取样":"清样";
+    dealTag = dealType;
+    qrySampleStatus = dealType=="3"?"3":"4";//暂时先认为弃样只对状态为2的
+    $('#processSampleWin').window({
+        modal : true,
+        title : dealName,
+        width : 1210,//1210
+        height : 460,//460
+        collapsible : false,
+        minimizable : false,
+        maximizable : true,
+        href : '${base}/business/monitor/processSample'
+    });
+}
+</script>

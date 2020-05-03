@@ -1,0 +1,62 @@
+    <div class="form-div">
+        <form id="finishForm" method="post">
+                <table>
+                    <!--<tr>-->
+                        <!--<td>皮带秤吨位</td>-->
+                        <!--<td><input class="easyui-numberbox" data-options="required:true, min:0, max:300000, precision:1"  id="receiveQty" name="receiveQty" style="width:145px;"/></td>-->
+                    <!--</tr>-->
+                    <tr>
+                        <td>卸完时间</td>
+                        <td><input class="easyui-datetimebox" data-options="required:true" id="unloadTime" name="unloadTime" style="width:145px"></td>
+                    </tr>
+                    <tr>
+                        <td>离港时间</td>
+                        <td><input class="easyui-datetimebox" data-options="required:true" id="departTime" name="departTime" style="width:145px"></td>
+                    </tr>
+                    <tr id="opTR1">
+                        <td style="text-align: center" colspan="4">
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm1()">保存</a>
+                        </td>
+                    </tr>
+                </table>
+
+        </form>
+    </div>
+
+<script type="text/javascript">
+
+    //提交表单
+    function submitForm1(){
+        if (! $("#finishForm").form('validate')) {
+            showMsg("提示", "有必填项未输入值!");
+            return false;
+        }
+
+        $.messager.confirm('提示', '确定保存?', function (r) {
+            if (r) {
+                //提交保存
+                save();
+            }
+        });
+    }
+
+    //保存
+    function save(){
+        var params = $("#finishForm").serialize();
+        var shipRecID = document.getElementById("shipRecIdHidden").value;
+
+        params = params + "&shipRecID=" + shipRecID;
+
+        $.post("${base}/business/monitor/finishUnloadRec", params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示",rsp.msg);
+                $('#finishUnloadWin').window('close');
+                $basicdg.datagrid('reload');
+                $shipCargolDg.datagrid('reload');
+            } else {
+                showMsg("提示", rsp.msg);
+            }
+        });
+    }
+
+</script>

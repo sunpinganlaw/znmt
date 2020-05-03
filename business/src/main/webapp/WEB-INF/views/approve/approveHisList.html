@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>审批查询</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+
+<body>
+
+    <div id="tb" >
+        <label for="apprEventTag">事项类型</label>
+        <select id="apprEventTag" class="easyui-combobox" data-options="panelHeight:'auto'" style="width:100px;">
+            <option selected value="1">我请求的</option>
+            <option value="2">我审批的</option>
+        </select>
+        <label for="apprEventTypeCd">审批事项</label>
+        <input id="apprEventTypeCd" class="easyui-combobox" style="width:100px;"
+               data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/APPR_EVENT_TYPE'" />
+        <label for="beginDt">审批请求日期</label>
+        <input class="easyui-datebox" id="beginDt" style="width:145px">
+        <label for="endDt">~</label>
+        <input class="easyui-datebox" id="endDt"  style="width:145px">
+        <a href="javascript:void(0)" id="qryBtn" class="easyui-linkbutton" iconCls="icon-search"  onclick="qryMyApprList()">查询</a>
+    </div>
+
+
+    <div id="tx" style="margin: 4px;width: 99%">
+        <table id="dg"></table>
+    </div>
+
+
+    <!--详情窗口-->
+    <div id="viewApproveProgressWin" ></div>
+    <input type="hidden" id="h_eventId">
+</body>
+<script type="text/javascript">
+    $dg = $("#dg");
+
+    function qryMyApprList(){
+        var apprEventTypeCd = $("#apprEventTypeCd").combobox("getValue");
+        var apprEventTag = $("#apprEventTag").combobox("getValue");
+        var beginDt = $("#beginDt").datebox("getValue");
+        var endDt = $("#endDt").datebox("getValue");
+        var o={};
+
+        if (apprEventTypeCd != null && apprEventTypeCd != "" && apprEventTypeCd.length > 0) {
+            o.search_apprEventTypeCd = apprEventTypeCd;
+        }
+
+        //不是我提交的，就是我审批的
+        if (apprEventTag != null && apprEventTag != "" && apprEventTag.length > 0) {
+            if (apprEventTag == "1"){
+                o.search_submitTag = "1";
+            } else {
+                o.search_approveTag = "1";
+            }
+        }
+
+        if (beginDt != null && beginDt != "" && beginDt.length > 0) {
+            o.search_beginDt = beginDt;
+        }
+
+        if (endDt != null && endDt != "" && endDt.length > 0) {
+            o.search_endDt = endDt;
+        }
+
+        $dg.datagrid("load",o);
+    }
+
+    //查询待审批事项
+    $(function () {
+        $dg.datagrid({
+            url: "${base}/business/approve/qryMyApproveList",
+            pagination: true,
+            pagenumber:true,
+            pageSize:15,
+            pageList: [15, 30, 45],
+            fitColumns: true,
+            height: $(this).height() - 8,
+            width: $(this).width() - 8,
+            idField:'eventId',
+            singleSelect:true,
+            rownumbers: true,
+            toolbar: '#tb',
+            queryParams: {
+                search_submitTag:"1"//开始默认查我请求的
+            },
+            columns: [
+                [
+                    {field: 'apprEventTypeName', title: '审批事项', width: 28, align:'center'},
+                    {field: 'apprEventTag', title: '事项类型', width: 30, align:'center'},
+                    {field: 'apprInitiatorName', title: '申请人', width: 28, align:'center'},
+                    {field: 'apprReqDt', title: '申请时间', width: 40, align:'center'},
+                    {field: 'apprContent', title: '申请事项内容描述', width: 180, align:'left'},
+                    {field: 'eventId', title: '操作', width: 25, align:'center',formatter:operLink}
+                ]
+            ]
+        });
+    });
+
+    function operLink(val,row,index){
+        var v = row.eventId;
+        return '<a href="javascript:void(0)" onclick="viewApprovingDeail('+v+')">查看审批详情</a>';
+    }
+
+    function viewApprovingDeail(v){
+        document.getElementById("h_eventId").value = v;
+        $('#viewApproveProgressWin').window({
+            modal : true,
+            title : "查看审批流程详细信息",
+            width : 780,
+            height : 250,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/approve/approveProgressWin'
+        });
+    }
+
+</script>
+</html>

@@ -1,0 +1,83 @@
+<div style="margin: 4px;width: 99%">
+    <table id="shipBatchDetailDg"></table>
+</div>
+<div style="text-align: left">
+    <span style="color: #ff081e;">&nbsp;&nbsp;&nbsp;<strong>“结束”说明：</strong></span>
+</div>
+<div style="text-align: left">
+    <span style="color: #0099FF;">&nbsp;&nbsp;&nbsp;该功能主要用于如下2种情况，除以下两种情况外，随意使用该功能，会导致批次数据紊乱而影响采制流程：</span>
+</div>
+<div style="text-align: left">
+    <span style="color: #0099FF;">&nbsp;&nbsp;&nbsp;1. 一个批次卸煤吨位已经达到批次设定值，但是因为在停采样机或卸样或启制样机环节出现故障而无法自然结束该批次时候（从管控系统启动制样机，则该批次结束），</span>
+</div>
+<div style="text-align: left">
+    <span style="color: #0099FF;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;用“结束”功能结束该批次以便下一个批次可以继续采样。</span>
+</div>
+<div style="text-align: left">
+    <span style="color: #0099FF;">&nbsp;&nbsp;&nbsp;2. 一船煤的最后一个批次转为人工控制情况下，卸煤结束，需要人工结束最后一个批次时，使用“结束”功能。</span>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $("#shipBatchDetailDg").datagrid({
+            url: "${base}/business/monitor/qryShipBatchInfo",
+            fitColumns: true,
+            singleSelect:true,
+            height: $(this).height()/2-140,
+            width: $(this).width()-100,
+            idField:'batchNo',
+            queryParams: {
+                search_shipRecID: document.getElementById("shipRecIdHidden").value
+            },
+            columns: [
+                [   {field: 'dayBatchNum', title: '顺序',align:'center', width:15},
+                    {field: 'batchNo', title: '批次号',align:'center', width:30},
+                    //{field: 'shipTransNo', title: '运输编号',align:'center', width:30},
+                    //{field: 'batchStatusName', title: '状态',align:'center', width:25},
+                    {field: 'mineName', title: '矿点',align:'center', width:25},
+                    {field: 'coalName', title: '煤种',align:'center', width: 20},
+                    {field: 'thisBatchQty', title: '本批吨位',align:'center', width:20},
+                    {field: 'sampleCode', title: '采样编码',align:'center', width: 30},
+                    {field: 'samplingCode', title: '制样编码',align:'center', width: 30},
+//                    {field: 'laborCode', title: '化验编码',align:'center', width: 30},
+                    {field: 'batchTime', title: '分批时间',align:'center', width: 40},
+                    {field: 'batchStatusName', title: '状态',align:'center', width:25},
+                    {field: '_oper', title: '操作',align:'center', width: 30, formatter:operLink}
+                ]
+            ]
+        });
+    });
+
+
+    function operLink(val,row,index){
+        var status = row.isValid;
+        if (status == "1") {
+//            return ('<a href="javascript:void(0)" onclick="completeBatch('+row.sampleCode+',0)">开启</a>');
+            return ('');
+        } else {
+            return ('<a href="javascript:void(0)" onclick="completeBatch('+row.sampleCode+',1)">结束</a>');
+        }
+    }
+
+
+    function completeBatch(sampleCode, status) {
+        var params = {};
+        params.search_sampleCode = sampleCode;
+        params.search_status = status;//结束
+
+        $.messager.confirm('提示', '确定要结束该批次吗?', function (r) {
+            if (r) {
+                $.post("${base}/business/monitor/forceUpdateBatch", params, function (rsp) {
+                    if (rsp.successful) {
+                        $("#shipBatchDetailDg").datagrid("reload");
+                        showMsg("提示", "本批次已经人工置成完成！");
+                    } else {
+                        showMsg("提示", "处理失败："+rsp.msg);
+                    }
+                });
+            }
+        });
+    }
+
+
+</script>

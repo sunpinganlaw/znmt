@@ -1,0 +1,152 @@
+<div class="form-div">
+    <form id="oneTrainInfoForm" method="post">
+        <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border: 1px;">
+            <tbody>
+            <tr>
+                <td style="width:50%;height:30px;text-align:right;">自动</td>
+                <td style="width:40%;height:30px;text-align:left;"><input type="radio" id="workMode1" name="workMode" onclick="change();" value="1" /></td>
+            </tr>
+            <tr>
+                <td style="width:50%;height:30px;text-align:right;">手动</td>
+                <td style="width:40%;height:30px;text-align:left;"><input type="radio" id="workMode2" name="workMode" onclick="change();" value="2" /></td>
+            </tr>
+            <tr>
+                <td style="width:50%;height:30px;text-align:right;">半自动</td>
+                <td style="width:40%;height:30px;text-align:left;"><input type="radio" id="workMode3" name="workMode" onclick="change();" value="3" /></td>
+            </tr>
+            <tr>
+                <td style="width:45%;height:40px;text-align:right;">三通1</td>
+                <td style="width:55%;height:40px;text-align:left;">
+                    <input id="sanTong1" style="width:80px;"/>
+                    <!--<select id="sanTong1" class="easyui-combobox" data-options="panelHeight:'auto'" readonly="readonly" style="width:80px;" >-->
+                        <!--<option value="11">A皮带</option>-->
+                        <!--<option value="12">B皮带</option>-->
+                    <!--</select>-->
+                </td>
+            </tr>
+            <tr>
+                <td style="width:45%;height:40px;text-align:right;">三通2</td>
+                <td style="width:55%;height:40px;text-align:left;">
+                    <input id="sanTong2" style="width:80px;"/>
+                    <!--<select id="sanTong2" class="easyui-combobox" data-options="panelHeight:'auto'" readonly="readonly" style="width:80px;" >-->
+                        <!--<option value="21">A皮带</option>-->
+                        <!--<option value="22">B皮带</option>-->
+                    <!--</select>-->
+                </td>
+            </tr>
+            <tr>
+                <td style="width:90%;height:30px;text-align:center;" colspan="2">
+                    <input type="button" onclick="submitForm()" value="      确   定      "/>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+    </form>
+</div>
+
+<script type="text/javascript">
+
+    function change(){
+        var workCodeVal = $("input[name=workMode]:checked").val();
+        if (workCodeVal == "3"){
+            $('#sanTong1').combobox({
+                panelHeight:'auto',
+                valueField:'id',
+                textField:'name',
+                data: [{
+                    id: '0',
+                    name: 'A皮带'
+                },{
+                    id: '1',
+                    name: 'B皮带'
+                }]
+            });
+
+            $('#sanTong2').combobox({
+                panelHeight:'auto',
+                valueField:'id',
+                textField:'name',
+                data: [{
+                    id: '0',
+                    name: 'A皮带'
+                },{
+                    id: '1',
+                    name: 'B皮带'
+                }]
+            });
+        } else {
+            $('#sanTong1').combobox({
+                panelHeight:'auto',
+                valueField:'id',
+                textField:'name',
+                data: []
+            });
+
+            $('#sanTong2').combobox({
+                panelHeight:'auto',
+                valueField:'id',
+                textField:'name',
+                data: []
+            });
+        }
+    }
+
+    //提交表单
+    function submitForm(){
+        var workCodeVal = $("input[name=workMode]:checked").val();
+
+        if (workCodeVal == null || workCodeVal == undefined || workCodeVal == ""){
+            showMsg("提示","请选择工作模式");
+            return false;
+        }
+
+        if (workCodeVal == "3"){
+            var sanTong1 = $("#sanTong1").combobox("getValue");
+            var sanTong2 = $("#sanTong2").combobox("getValue");
+
+            if (sanTong1 == null || sanTong1 == undefined || sanTong1 == "") {
+                showMsg("提示","请选择三通1位置信息");
+                return false;
+            }
+
+            if (sanTong2 == null || sanTong2 == undefined || sanTong2 == "") {
+                showMsg("提示","请选择三通2位置信息");
+                return false;
+            }
+        }
+
+        $.messager.confirm('请确定', '确定输入值正确并提交?', function(sure){
+            if(sure){
+                var paramObj = new Object();
+                paramObj.search_workMode = workCodeVal;
+
+                if (workCodeVal == "3"){
+                    var sanTong1 = $("#sanTong1").combobox("getValue");
+                    var sanTong2 = $("#sanTong2").combobox("getValue");
+                    paramObj.search_param2 = sanTong1;
+                    paramObj.search_param3 = sanTong2;
+                }
+                $.post("${base}/business/monitor/addNewWorkMode", paramObj, function (rsp) {
+                    if (rsp.successful) {
+                        $('#modWorkModeWin').window('close');
+                        //刷新
+                        $.post("${base}/business/monitor/qryWorkModeInfo", function (rsp1) {
+                            var o = JSON.parse(rsp1);
+                            document.getElementById("workModeLink").innerHTML = o.workModeName;
+                            document.getElementById("workModeDesc").innerHTML = o.descr;
+                        });
+                        showMsg("提示", rsp.msg);
+                    } else {
+                        showMsg("提示", "修改系统工作模式提交失败!");
+                    }
+                }).error(function () {
+                            showMsg("提示", "修改系统工作模式提交失败!");
+                        });
+            }
+        });
+    }
+
+
+
+</script>

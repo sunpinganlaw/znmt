@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <#include "/include/common.html"/>
+<title>抽检样采样列表</title>
+<style type="text/css">
+    body{ background-color:#fff; color:#000; font-size:0.9em; width:1000px; margin:0 auto;}
+    h1{ font-size:2em; text-align:center; line-height:2em;}
+    table.table01{border-left:1px solid #000;border-top:1px solid #000;border-bottom:1px solid #000;}
+    table.table01 td{ border-right:1px solid #000;border-bottom:1px solid #000; padding:5px;}
+
+    table.table02{ border-left:1px solid #000;}
+    table.table02 td{ border-right:1px solid #000;border-bottom:1px solid #000; padding:5px;}
+
+    .styip01 input{ margin-right:12px;}
+    input[type=checkbox]{ vertical-align:middle;}
+    .stymr01{ margin-right:100px;}
+    .stymr02{ margin-right:40px;}
+</style>
+</head>
+
+<body>
+<!--startprint-->
+<h1>火车来煤抽检单</h1>
+
+<div style=" width: 10%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;抽检人：</div>
+<div style=" width: 10%">&nbsp;</div>
+
+<table id="printTable" width="90%" border="0" cellspacing="0" cellpadding="0" class="table01">
+    <tr>
+        <td style="text-align:center;" width="12%">采样码</td>
+        <td style="text-align:center;" width="5%">序号</td>
+        <td style="text-align:center;" width="8%">车号</td>
+        <td style="text-align:center;" width="10%">采样方式</td>
+        <td style="text-align:center;" width="8%">毛重</td>
+        <td style="text-align:center;" width="8%">皮重</td>
+        <td style="text-align:center;" width="8%">净重</td>
+        <td style="text-align:center;" width="8%">标重</td>
+        <td style="text-align:center;" width="8%">铁道线</td>
+        <td style="text-align:center;" width="15%">对位时间</td>
+        <td style="text-align:center;" width="10%">翻车时间</td>
+    </tr>
+</table>
+<!--endprint-->
+
+<div>&nbsp;</div>
+<div id="printButton2" style="text-align: right; width: 90%">
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-print" onclick="printFC();">打印</a>
+</div>
+
+</body>
+</html>
+
+<script type="text/javascript">
+    $(function(){
+        var attachBatchNo = ${attachBatchNo};
+        var trainNo = ${trainNo};
+        var paramsObj = {};
+        paramsObj.search_trainNo = trainNo;
+        paramsObj.search_attachBatchNo = attachBatchNo;
+        $.post("${base}/business/monitor/trainDetailList", paramsObj, function(rsp) {
+            var arr = rsp.rows;
+            var table1 = $('#printTable');
+            for (var i=0; i<arr.length; i++) {  style='text-align:center;'
+                var row = $("<tr></tr>");
+                var td = $("<td style='text-align:center;'>"+arr[i].manCheckSample
+                        +"</td><td style='text-align:center;'>"+arr[i].xhNum
+                        +"</td><td style='text-align:center;'>"+arr[i].carId
+                        +"</td><td style='text-align:center;'>人工采样"
+                        +"</td><td style='text-align:center;'>"+arr[i].mzQty
+                        +"</td><td style='text-align:center;'>"+arr[i].pzQty
+                        +"</td><td style='text-align:center;'>"+arr[i].netQty
+                        +"</td><td style='text-align:center;'>"+arr[i].bzQty
+                        +"</td><td style='text-align:center;'>"+arr[i].trackNo
+                        +"</td><td style='text-align:center;'>"+arr[i].aimTime
+                        +"</td><td>&nbsp;</td>");
+                row.append(td);
+                table1.append(row);
+            }
+        });
+    });
+
+    function printFC() {
+        var bdhtml = window.document.body.innerHTML;
+        var sprnstr = "<!--startprint-->";
+        var eprnstr = "<!--endprint-->";
+        var prnhtml = bdhtml.substr(bdhtml.indexOf(sprnstr)+17);
+        prnhtml = prnhtml.substring(0,prnhtml.indexOf(eprnstr));
+        window.document.body.innerHTML=prnhtml;
+        window.print();
+    }
+</script>

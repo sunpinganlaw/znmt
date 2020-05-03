@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>制样报表</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+    <!--<script src="http://echarts.baidu.com/build/dist/echarts-all.js"></script>-->
+    <script type="text/javascript" src="${base}/styles/js/echarts-all.js"></script>
+</head>
+<body>
+<div id="layoutDiv" class="easyui-layout" style="height:100%;margin-top: 20px;margin-left: 10px">
+    <div id="tb">
+        <label for="carId">车牌号</label>
+        <input class="easyui-textbox" id="carId" style="width:145px;" value=""/>
+        <label for="machineCode">采样机</label>
+        <select id="machineCode" name="machineCode" class="easyui-combobox" data-options="panelHeight:'auto'" style="width:145px;">
+            <option selected value="">全部</option>
+            <option value="CY1">一号采样机</option>
+            <option value="CY2">二号采样机</option>
+        </select>
+        <label for="startTime">开始时间</label>
+        <input class="easyui-datebox" name="startTime" id="startTime" style="width:145px;"/>
+        <label for="endTime">结束时间</label>
+        <input class="easyui-datebox" name="endTime" id="endTime" style="width:145px;"/>
+        <span style="margin-left: 0%;">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" onclick="qry()">查询</a>
+        </span>
+    </div>
+    
+    <!--<img style="float: right;margin-top: -30px;margin-right: 20%" src="${base}/styles/images/sampleTruck.jpg">-->
+    <img style="float: right;margin-top: -30px;margin-right: 20%" src="${base}/styles/images/sampleTruck.png">
+    <div style="margin-top: 10px;clear: right"><img style="display: block;margin-left: auto;margin-right: auto" src="${base}/styles/images/sampleTruckInfo.png"></div>
+    <div id="main" style="height:600px;margin-top: 10px;clear: right"></div>
+</div>
+
+<div id="samplingRptWin"></div>
+</body>
+</html>
+<script type="text/javascript">
+    var jsonData0 = new Array();
+    var jsonData1 = new Array();
+
+    $(function () {
+        $.messager.progress();
+        $.ajax({
+            async: true,
+            cache: false,
+            type: 'POST',
+            url: '${base}/business/monitor/areaPartList',
+            error: function () {// 请求失败处理函数
+                showMsg("提示", "查询数据失败,请重新登陆!");
+            },
+            success: function (json) {
+                //alert(JSON.stringify(json));
+                $.messager.progress('close');
+                for (var i = 0; i < json.length; i++) {
+                    jsonData0.push(Number(json[i].areaPart));
+                    jsonData1.push(Number(json[i].areaNum));
+                }
+                var myChart = echarts.init(document.getElementById('main'));
+                var option = {
+                    title: {
+                        text: '采样点数统计'
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    calculable : true,
+                    toolbox: {
+                        show : true,
+                        feature : {
+                            magicType : {show: true, type: ['line', 'bar']},
+                            restore : {show: true},
+                            saveAsImage : {show: true}
+                        }
+                    },
+                    legend: {
+                        data: ['采样点数']
+                    },
+                    xAxis: [
+                        {
+                            type: 'category',
+                            data: jsonData0
+                        }
+                    ],
+                    yAxis: [
+                        {
+                            type: 'value'
+                        }
+                    ],
+                    series: [
+                        {
+                            "name": "采样点数",
+                            "type": "bar",
+                            "data": jsonData1,
+                            markPoint: {
+                                data: [
+                                    {type: 'max', name: '最大值'},
+                                    {type: 'min', name: '最小值'}
+                                ]
+                            },
+                            markLine: {
+                                data: [
+                                    {type: 'average', name: '平均值'}
+                                ]
+                            }
+                        }
+                    ]
+                };
+                myChart.setOption(option);
+            }
+        });
+    });
+    function qry() {
+        $.messager.progress();
+        var paramO = new Object();
+        var carId = $("#carId").textbox("getValue");
+        var machineCode = $("#machineCode").datebox("getValue");
+        var startTime = $("#startTime").datebox("getValue");
+        var endTime = $("#endTime").datebox("getValue");
+
+        if (carId != null && carId != "" && carId.length > 0) {
+            paramO.search_carId = carId;
+        }
+        if (machineCode != null && machineCode != "" && machineCode.length > 0) {
+            paramO.search_machineCode = machineCode;
+        }
+        if (startTime != null && startTime != "" && startTime.length > 0) {
+            paramO.search_startTime = startTime;
+        }
+        if (endTime != null && endTime != "" && endTime.length > 0) {
+            paramO.search_endTime = endTime;
+        }
+        $.ajax({
+            async: true,
+            cache: false,
+            type: 'POST',
+            url: '${base}/business/monitor/areaPartList',
+            data: paramO,
+            error: function () {// 请求失败处理函数
+                showMsg("提示", "查询数据失败,请重新登陆!");
+            },
+            success: function (json) {
+//                alert(JSON.stringify(json));
+                $.messager.progress('close');
+                jsonData0 = new Array();
+                jsonData1 = new Array();
+                for (var i = 0; i < json.length; i++) {
+                    jsonData0.push(Number(json[i].areaPart));
+                    jsonData1.push(Number(json[i].areaNum));
+                }
+                var myChart = echarts.init(document.getElementById('main'));
+                var option = {
+                    title: {
+                        text: '采样机点阵数统计'
+                    },
+                    tooltip: {
+                        show: true
+                    },
+                    legend: {
+                        data: ['采样点数']
+                    },
+                    xAxis: [
+                        {
+                            type: 'category',
+                            data: jsonData0
+                        }
+                    ],
+                    yAxis: [
+                        {
+                            type: 'value'
+                        }
+                    ],
+                    calculable : true,
+                    toolbox: {
+                        show : true,
+                        feature : {
+                            magicType : {show: true, type: ['line', 'bar']},
+                            restore : {show: true},
+                            saveAsImage : {show: true}
+                        }
+                    },
+                    series: [
+                        {
+                            "name": "采样点数",
+                            "type": "bar",
+                            "data": jsonData1
+                        }
+                    ]
+                };
+                myChart.setOption(option);
+            }
+        });
+    }
+</script>

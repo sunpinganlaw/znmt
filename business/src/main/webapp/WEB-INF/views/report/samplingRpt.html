@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>制样结果查询</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+<body>
+<div id="layoutDiv" class="easyui-layout" style="height:100%">
+    <div id="tb">
+
+       <label for="sampleCode">采样编码</label>
+        <input class="easyui-textbox" id="sampleCode" style="width:145px;" value=""/>
+        <label for="samplingCode">制样编码</label>
+        <input class="easyui-textbox" id="samplingCode" style="width:145px;" value=""/>
+        <label for="startDate">开始时间</label>
+        <input class="easyui-datebox" name="startDate" id="startDate"  style="width:145px;"/>
+        <label for="endDate">结束时间</label>
+        <input class="easyui-datebox" name="endDate" id="endDate"  style="width:145px;"/>
+        <label for="batchNoType">批次类型</label>
+        <select id="batchNoType" name="batchNoType" class="easyui-combobox" data-options="required:true,panelHeight:'auto'"  style="width:145px;" >
+            <option selected value="">全部</option>
+            <option value="0">汽车煤批次</option>
+            <option value="1">火车煤批次</option>
+            <option value="9">入炉煤批次</option>
+        </select>
+        <span style="margin-left: 0;">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>
+
+        <@shiro.hasPermission name="SamplingRpt:edit">
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit"  onclick="manSamplingRecord()">编辑人工制样结果</a>
+        </@shiro.hasPermission>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-print"  onclick="printManSamplingRecord();">打印</a>
+        </span>
+
+        <input type="hidden" id="doAction" />
+        <input type="hidden" id="samplingCodeHidden" />
+        <input type="hidden" id="sampleCodeHidden" />
+
+        <input type="hidden" id="packCode6Hidden" />
+        <input type="hidden" id="packCode3Hidden" />
+        <input type="hidden" id="packCode21Hidden" />
+        <input type="hidden" id="packCode22Hidden" />
+    </div>
+
+    <div data-options="region:'center',title:'制样明细',noheader:false;">
+        <table id="sampleCodeDg"></table>
+    </div>
+</div>
+
+<!--预报查看编辑窗口-->
+<div id="samplingRptWin" ></div>
+<div id="editSamplingResRecordWin" ></div>
+<div id="printSamplingResRecordWin" ></div>
+</body>
+</html>
+<script type="text/javascript">
+    $sampleCodeDg = $("#sampleCodeDg");
+    var rowObject ;
+
+    $(function () {
+        var myDate = new Date();
+        var defaultBeginTime = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+        var defaultEndTime =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+
+        $sampleCodeDg.datagrid({
+            url:  '${base}/business/report/qrySamplingRptList',
+            animate: true,
+            border:true,
+            height: $(this).height() - 2,
+            width: $(this).width() - 2,
+            idField:'recId',
+            singleSelect:true,
+            rownumbers:true,
+            pagination: true,
+            pagenumber:true,
+            pageSize:70,
+            pageList: [70,100],
+            queryParams: {//默认进来查当天
+                search_startTime:defaultBeginTime,
+                search_endTime:defaultEndTime
+            },
+            frozenColumns:[[
+                // {field: 'batchNo', title: '批次编号',align:'center', width:"140px"},
+                {field: 'samplingCode', title: '制样编码',align:'center', width: "120px"},
+                {field: 'batchTypeName', title: '批次类型',align:'center', width:"100px"},
+                {field: 'zyTypeName', title: '制样方式',align:'center', width:"100px"},
+                {field: 'zyWeight', title: '来样重量',align:'center', width:"80px"}
+            ]],
+            columns: [
+                [
+                    {field: 'packCode6', title: '6mm全水样封装码',align:'center', width:"220px"},
+                    {field: 'packCode3', title: '3mm存查样封装码',align:'center', width:"220px"},
+                    {field: 'packCode21', title: '0.2mm化验样封装码',align:'center', width:"220px"},
+                    {field: 'packCode22', title: '0.2mm存查样封装码',align:'center', width:"220px"},
+                    {field: 'startTime', title: '制样时间',align:'center', width:"160px"},
+                    {field: 'userName', title: '制样人',align:'center', width:"90px"}
+                ]
+            ],
+            toolbar: '#tb',
+            onDblClickRow: function(rowIndex, rowData){
+                rowObject = rowData;
+                qrySamplingRptListView(rowData.samplingCode);
+            }
+        })
+    });
+
+    function qry(){
+        var paramO = new Object();
+        var sampleCode = $("#sampleCode").textbox("getValue");
+        var samplingCode = $("#samplingCode").textbox("getValue");
+        var startTime = $("#startDate").datebox("getValue");
+        var endTime = $("#endDate").datebox("getValue");
+        var batchNoType = $("#batchNoType").combobox("getValue");
+
+        if (sampleCode != null && sampleCode != "" && sampleCode.length > 0) {
+            paramO.search_sampleCode = sampleCode;
+        }
+        if (samplingCode != null && samplingCode != "" && samplingCode.length > 0) {
+            paramO.search_samplingCode = samplingCode;
+        }
+        if (startTime != null && startTime != "" && startTime.length > 0) {
+            paramO.search_startTime = startTime;
+        }
+        if (endTime != null && endTime != "" && endTime.length > 0) {
+            paramO.search_endTime = endTime;
+        }
+        if (batchNoType != null && batchNoType != "" && batchNoType.length > 0) {
+            paramO.search_batchNoType = batchNoType;
+        }
+        $sampleCodeDg.datagrid("load",paramO);
+    }
+    function qrySamplingRptListView(samplingCode) {
+        var win = $('#samplingRptWin').window({
+            modal : true,
+            title : '制样明细查询',
+            width : 480,
+            height : 320,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/report/samplingRptView'
+        });
+    }
+
+
+    function manSamplingRecord(){
+        var selectedRow = $sampleCodeDg.datagrid('getSelected');
+        if (selectedRow) {
+            document.getElementById("samplingCodeHidden").value = selectedRow.samplingCode;
+            document.getElementById("sampleCodeHidden").value = selectedRow.sampleCode;
+
+        } else {
+            showMsg("提示", "请先选择录入制样结果的批次记录");
+            return false;
+        }
+
+        $('#editSamplingResRecordWin').window({
+            modal : true,
+            title : '编辑人工制样结果记录',
+            width : 700,
+            height : 230,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/report/gotoSamplingResRec'
+        });
+    }
+
+    function printManSamplingRecord() {
+        var selectedRow = $sampleCodeDg.datagrid('getSelected');
+        if (selectedRow) {
+            document.getElementById("samplingCodeHidden").value = selectedRow.samplingCode;
+            document.getElementById("sampleCodeHidden").value = selectedRow.sampleCode;
+
+            document.getElementById("packCode6Hidden").value = selectedRow.packCode6;
+            document.getElementById("packCode3Hidden").value = selectedRow.packCode3;
+            document.getElementById("packCode21Hidden").value = selectedRow.packCode21;
+            document.getElementById("packCode22Hidden").value = selectedRow.packCode22;
+        } else {
+            showMsg("提示", "请先选择录入制样结果的批次记录");
+            return false;
+        }
+
+        $('#printSamplingResRecordWin').window({
+            modal : true,
+            title : '打印制样封装码',
+            width : 380,
+            height : 160,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/report/gotoPrintSamplingResRec'
+        });
+    }
+</script>

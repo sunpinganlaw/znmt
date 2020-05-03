@@ -1,0 +1,163 @@
+    <div class="form-div">
+        <form id="mineCardDetailForm" method="post">
+                <table >
+                    <tr>
+                        <td >矿卡编号</td>
+                        <td><input class="easyui-textbox" readonly="readonly" style="width:180px;"  id="mineCardId" name="mineCardId"  data-options="required:true"/></td>
+                        <td id="buttonTD" colspan="2">
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="getCard();">扫描卡</a>
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel"  onclick="formReset()">重置</a>
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm();">保存</a></td>
+                    </tr>
+                    <tr>
+                        <td >可视卡号</td>
+                        <td><input class="easyui-textbox"  name="viewCardId" style="width:126px;" id="viewCardId" data-options="required:true"/></td>
+                        <td >状态</td>
+                        <td><select id="validSta" name="validSta" class="easyui-combobox" data-options="required:true,panelHeight:'auto'" style="width:126px;" >
+                            <option value="1">有效</option>
+                            <option value="0">无效</option>
+                        </select></td>
+                    </tr>
+                    <tr>
+                        <td >煤矿</td>
+                        <td><input id="mineNo" name="mineNo" class="easyui-combobox" style="width:126px;"
+                                   data-options="required:true,valueField:'id',textField:'name',panelHeight:'300',url:'${base}/business/tool/getComboboxOpt/COAL_MINE'" /></td>
+                        <td >煤种</td>
+                        <td><input id="coalNo" name="coalNo" class="easyui-combobox" style="width:126px;"
+                                   data-options="required:true,valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/COAL_TYPE'" /></td>
+                       </tr>
+                    <tr>
+                        <td >生效日期</td>
+                        <td><input class="easyui-datebox" style="width:126px;" id="effTime" name="effTime" data-options="required:true"/></td>
+                        <td >失效日期</td>
+                        <td><input class="easyui-datebox" style="width:126px;" id="expTime" name="expTime" data-options="required:true"/></td>
+                    </tr>
+                    <tr>
+                        <!--<td >供货商</td>-->
+                        <!--<td><input id="venNo" name="venNo" class="easyui-combobox" style="width:126px;"-->
+                                   <!--data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/VENDOR_INFO'" /></td>-->
+                        <td >运输单位</td>
+                        <td><input id="carrierNo" name="carrierNo" class="easyui-combobox" style="width:126px;"
+                                   data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/CARRIER_INFO'" /></td>
+                        <td>备注</td>
+                        <td><input class="easyui-textbox" id="remark" name="remark" style="width:126px;"/>
+                            <input type="hidden" id="cardRecId"  name="cardRecId"/></td>
+                    </tr>
+                </table>
+        </form>
+    </div>
+
+<script type="text/javascript">
+    var doActionTag = document.getElementById("doAction").value
+    //查看需要禁用编辑
+    if (doActionTag == "VIEW") {
+        document.getElementById("buttonTD").innerHTML = "";
+        $("input").attr("readonly", "readonly");
+        $("select").attr("readonly", "readonly");
+    } else if(doActionTag == "MOD") {
+        $("#mineCardId").textbox({editable:false});
+        $("#viewCardId").textbox({editable:false});
+    } else if(doActionTag == "ADD") {
+        //新增初始化生效日期
+        $('#mineCardDetailForm').form('load', {"effTime":getThisDate()});
+    }
+
+    //重置表单
+    function formReset(){
+        $.messager.confirm('提示', '确定需要重置输入表单?', function (r) {
+            if (r) {
+                $('#mineCardDetailForm').form('clear');
+            }
+        });
+    }
+
+
+    //提交表单
+    function submitForm(){
+        if (! $("#mineCardDetailForm").form('validate')) {
+            showMsg("提示", "有必填项未输入值!");
+            return false;
+        }
+
+        var effDt = $("#effTime").datebox("getValue");
+        var validDt = $("#expTime").datebox("getValue");
+        var today = getThisDate();
+        if (validDt < effDt) {
+            showMsg("提示", "失效日期不能早于生效日期!");
+            return false;
+        }
+
+        if (validDt < today) {
+            alert(today);
+            showMsg("提示", "失效日期不能早于今天!");
+            return false;
+        }
+
+        $.messager.confirm('提示', '确定保存?', function (r) {
+            if (r) {
+                save();
+            }
+        });
+    }
+
+    //保存
+    function save(){
+        var params = $("#mineCardDetailForm").serialize();
+        var postUrl = "";
+        if (doActionTag == "ADD") {
+            postUrl = "${base}/business/monitor/editMineCardInfo/add";
+        } else if(doActionTag == "MOD") {
+            postUrl = "${base}/business/monitor/editMineCardInfo/mod";
+        } else {
+        }
+
+        $.post(postUrl, params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示",rsp.msg);
+                $('#mineRegEditWin').window('close');
+            } else {
+                showMsg("提示", rsp.msg);
+            }
+        }).error(function () {
+            showMsg("提示", "新增失败!");
+        });
+    }
+
+    //得到card
+    function getCard() {
+        $("#mineCardId").textbox('setValue',"");
+       var recId = "-1";
+       $.post("${base}/business/monitor/editCarInfo/"+recId, function(rsp) {
+           if(rsp.successful){
+               $("#mineCardId").textbox('setValue',rsp.msg);
+           } else {
+                showMsg("提示", rsp.msg);
+           }
+       }, "JSON").error(function() {
+           showMsg("提示", "获得卡号失败，请查看连接线是否正常连接！");
+       });
+    }
+
+    //加载读取的详情信息
+    var respEntity = JSON.parse(JSON.stringify(${mineCardDetailEntity}));
+
+    if(respEntity != undefined && respEntity != null && respEntity != "") {
+        $('#mineCardDetailForm').form('load', respEntity);
+    }
+
+    function getThisDate(){
+        var myDate = new Date();
+        var year = myDate.getFullYear();
+        var month = myDate.getMonth()+1;
+        if (month < 10){
+            month = "0"+month;
+        }
+        var date = myDate.getDate();
+
+        if (date < 10){
+            date = "0"+date;
+        }
+        return year+"-"+month+"-"+date;
+    }
+
+</script>

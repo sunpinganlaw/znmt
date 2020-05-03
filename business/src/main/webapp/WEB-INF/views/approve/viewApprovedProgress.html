@@ -1,0 +1,25 @@
+<div style="margin: 4px;width: 99%">
+    <table id="apprProgressDg"></table>
+</div>
+
+<script type="text/javascript">
+    $("#apprProgressDg").datagrid({
+        url: "${base}/business/approve/qryApproveProgress",
+        fitColumns: true,
+        //width: $(this).width() - 200,
+        //height: $(this).height() - 10,
+        queryParams: {
+            search_eventId: document.getElementById("h_eventId").value
+        },
+        columns: [
+            [
+                {field: 'apprOrder', title: '顺序',align:'center', width:25},
+                {field: 'isArroved', title: '审批情况',align:'center', width:20},
+                {field: 'approver', title: '审批人',align:'center', width:25},
+                {field: 'apprDt', title: '审批时间',align:'center', width: 35},
+                {field: 'isOk', title: '审批结果',align:'center', width:20},
+                {field: 'apprDesc', title: '审批意见',align:'center', width: 40}
+            ]
+        ]
+    });
+</script>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>采样结果查询</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+<body>
+<div id="layoutDiv" class="easyui-layout" style="height:100%">
+    <div id="tb">
+        <input type="hidden" id="doAction" /><!--动作隐藏按钮-->
+        <label for="sampleCode">采样编码</label>
+        <input class="easyui-textbox" id="sampleCode" style="width:145px;" value=""/>
+        <label for="batchNo">批次号</label>
+        <input class="easyui-textbox" id="batchNo" style="width:145px;" value=""/>
+        <label for="startTime">批次时间</label>
+        <input class="easyui-datebox" name="startTime" id="startTime"  style="width:145px;"/>&nbsp;~&nbsp;
+        <input class="easyui-datebox" name="endTime" id="endTime"  style="width:145px;"/>
+        <label for="batchNoType">批次类型</label>
+        <select id="batchNoType" name="batchNoType" class="easyui-combobox" data-options="required:true,panelHeight:'auto'"  style="width:145px;" >
+            <option selected value="">全部</option>
+            <option value="0">汽车煤批次</option>
+            <option value="1">火车煤批次</option>
+            <option value="2">轮船煤批次</option>
+            <option value="7">火车抽检批次</option>
+            <option value="8">汽车抽检批次</option>
+            <option value="9">入炉煤批次</option>
+        </select>
+        <span style="margin-left: 0;">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>
+        </span>
+    </div>
+
+    <div data-options="region:'center',title:'采样报表清单',noheader:false;">
+        <table id="sampleCodeDg"></table>
+    </div>
+</div>
+
+<!--预报查看编辑窗口-->
+<div id="carPlanEditWin" ></div>
+</body>
+</html>
+<script type="text/javascript">
+    $sampleCodeDg = $("#sampleCodeDg");
+    $(function () {
+        $sampleCodeDg.datagrid({
+            url:  '${base}/business/report/qrySampleRptList',
+            //fitColumns: true,
+            animate: true,
+            border:true,
+            height: $(this).height() - 2,
+            width: $(this).width() - 2,
+            idField:'recId',
+            singleSelect:true,
+            rownumbers:true,
+            pagination: true,
+            pagenumber:true,
+            pageSize:70,
+            pageList: [70, 100],
+            frozenColumns:[
+                [
+                    //{field: 'batchNo', title: '批次号',align:'center', width:"120px"},
+                    {field: 'sampleCode', title: '采样编码',align:'center', width:"100px"},
+                    {field: 'batchTypeName', title: '批次类型',align:'center', width:"100px"},
+                    {field: 'sampleType', title: '采样类型',align:'center', width:"60px"},
+                    {field: 'coalName', title: '煤种',align:'center', width: "60px"},
+                    {field: 'startTime', title: '采样开始时间',align:'center', width:"125px"},
+                    {field: 'endTime', title: '采样结束时间',align:'center', width:"125px"},
+                    {field: 'sampleCnt', title: '采样点数',align:'center', width:"80px"},
+                    {field: 'carCnt', title: '采样车数',align:'center', width:"80px"},
+                    {field: 'totalNetQty', title: '总吨数',align:'center', width:"80px"}
+                ]
+            ],
+            columns: [
+                [
+                    {field: 'carId', title: '车(船)号',align:'left', width:"1300px"}
+                ]
+            ],
+            toolbar: '#tb'
+        })
+    });
+
+    function qry(){
+        var paramO = new Object();
+        var sampleCode = $("#sampleCode").textbox("getValue");
+        var batchNo = $("#batchNo").textbox("getValue");
+        var startTime = $("#startTime").datebox("getValue");
+        var endTime = $("#endTime").datebox("getValue");
+        var batchNoType = $("#batchNoType").combobox("getValue");
+
+        if (sampleCode != null && sampleCode != "" && sampleCode.length > 0) {
+            paramO.search_sampleCode = sampleCode;
+        }
+        if (batchNo != null && batchNo != "" && batchNo.length > 0) {
+            paramO.search_batchNo = batchNo;
+        }
+        if (startTime != null && startTime != "" && startTime.length > 0) {
+            paramO.search_startTime = startTime;
+        }
+        if (endTime != null && endTime != "" && endTime.length > 0) {
+            paramO.search_endTime = endTime;
+        }
+        if (batchNoType != null && batchNoType != "" && batchNoType.length > 0) {
+            paramO.search_batchNoType = batchNoType;
+        }
+
+        $sampleCodeDg.datagrid("load",paramO);
+    }
+</script>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>设备故障报警信息</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+<body>
+<div id="layoutDiv" class="easyui-layout" style="height:100%">
+    <div id="tb">
+        <label for="beginTime">开始时间：</label>
+        <input class="easyui-datebox" id="beginTime" style="width:120px">
+        <label for="endTime">结束时间：</label>
+        <input class="easyui-datebox" id="endTime" style="width:120px">
+        <label for="errorConfirm">故障状态</label>
+        <select id="errorConfirm" name="errorConfirm" class="easyui-combobox" data-options="value:'0',required:true,panelHeight:'auto'"  style="width:100px;" >
+            <option value="">全部</option>
+            <option selected value="0">未处理</option>
+            <option value="1">已处理</option>
+        </select>
+        <label for="machineCode">设备名称：</label>
+        <input id="machineCode" name="machineCode" class="easyui-combobox" style="width:120px;"
+         data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/DEVICE_INFO'" />
+        <span style="margin-left:0%;"/>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qryErrorSpec()">查询</a>
+    </div>
+    <div data-options="region:'center',title:'设备故障报警信息',noheader:false;">
+        <table id="deviceErrDg"></table>
+    </div>
+</div>
+
+<div id="deviceErrDetailWin"></div>
+</body>
+</html>
+<script type="text/javascript">
+    $deviceErrDg = $("#deviceErrDg");
+    var deviceIp ;
+    var machineCode;
+    var flowId;
+
+    $(function () {
+        var startTime = getDay(-2);
+        var endTime = getDay(0);
+        var paramO = new Object();
+
+        paramO.search_beginTime = startTime;
+        paramO.search_endTime = endTime;
+        paramO.search_errorConfirm = '0';
+
+        $deviceErrDg.datagrid({
+            url: '${base}/business/monitor/deviceErrListView',
+            fitColumns: true,
+            animate: true,
+            border: true,
+            height: $(this).height() - 5,
+            width: $(this).width() - 5,
+            idField: 'errorRecId',
+            singleSelect: true,
+            rownumbers: true,
+            pagination: true,
+            pagenumber: true,
+            pageSize: 15,
+            pageList: [15, 30, 45],
+            queryParams:paramO,
+            columns: [
+                [
+                    //{field: 'errorRecId', title: '故障信息ID', align: 'center', width: 30},
+                    {field: 'errorDec', title: '故障描述', align: 'center', width: 50},
+                    {field: 'machineName', title: '设备名称', align: 'center', width: 30},
+                    {field: 'flowName', title: '流程名称', align: 'center', width: 30},
+                    {field: 'errorConfirm', title: '故障状态', align: 'center', width: 30},
+                    {field: 'bak', title: '处理详情', align: 'center', width: 50},
+                    {field: 'confirmOp', title: '处理人', align: 'center', width: 30},
+                    {field: 'errorTime', title: '故障时间', align: 'center', width: 30}
+                ]
+            ],
+            onDblClickRow: function(rowIndex, rowData){
+                deviceIp = rowData.deviceIp;
+                machineCode = rowData.machineCode;
+                flowId = rowData.flowId;
+                viewDeviceErrDetail(rowData.errorRecId);
+            },
+            toolbar: '#tb'
+        });
+    });
+
+
+    function getDay(day){
+        var today = new Date();
+        var targetday_milliseconds=today.getTime() + 1000*60*60*24*day;
+        today.setTime(targetday_milliseconds); //注意，这行是关键代码
+        var tYear = today.getFullYear();
+        var tMonth = today.getMonth();
+        var tDate = today.getDate();
+        tMonth = doHandleMonth(tMonth + 1);
+        tDate = doHandleMonth(tDate);
+        return tYear+"-"+tMonth+"-"+tDate;
+    }
+    function doHandleMonth(month){
+        var m = month;
+        if(month.toString().length == 1){
+            m = "0" + month;
+        }
+        return m;
+    }
+    function viewDeviceErrDetail(recId) {
+        var win = $('#deviceErrDetailWin').window({
+            modal : true,
+            title : '故障报警信息详情及处理',
+            width : $(window).width()-100,
+            height : $(window).height()-50,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/monitor/deviceErrDetail/'+recId,
+            onClose : function() {
+                $("#deviceErrDg").datagrid('load');
+            }
+        });
+    }
+    function qryErrorSpec() {
+        var paramO = new Object();
+        var beginTime = $("#beginTime").datebox("getValue");
+        var endTime = $("#endTime").datebox("getValue");
+        var machineCode = $("#machineCode").combobox("getValue");
+        var errorConfirm = $("#errorConfirm").combobox("getValue");
+        if (beginTime != null && beginTime != "" && beginTime.length > 0) {
+            paramO.search_beginTime = beginTime;
+        }
+        if (endTime != null && endTime != "" && endTime.length > 0) {
+            paramO.search_endTime = endTime;
+        }
+        if (machineCode != null && machineCode != "" && machineCode.length > 0) {
+            paramO.search_machineCode = machineCode;
+        }
+        if (errorConfirm != null && errorConfirm != "" && errorConfirm.length > 0) {
+            paramO.search_errorConfirm = errorConfirm;
+        }
+        $deviceErrDg.datagrid("load", paramO);
+    }
+
+</script>

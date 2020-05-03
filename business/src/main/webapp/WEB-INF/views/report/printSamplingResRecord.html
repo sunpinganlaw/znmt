@@ -1,0 +1,93 @@
+<style>
+    .printImg {
+        float: right;
+        position: relative;
+        margin-top: 3px;
+        margin-left: 10px;
+        cursor:pointer;
+    }
+</style>
+<div class="form-div">
+        <form id="samplingResRecordForm" method="post">
+                <table>
+                    <tr>
+                        <td>6mm全水样封装码</td>
+                        <td><input class="easyui-textbox"   id="printPackCode6" name="printPackCode6" style="width:195px;" /><img class="printImg" id="printCode6" src="${base}/styles/easyui/themes/icons/print.png"></td>
+                    </tr>
+                    <tr>
+                        <td>3mm存查样封装码</td>
+                        <td><input class="easyui-textbox"   id="printPackCode3" name="printPackCode3" style="width:195px;" /><img class="printImg" id="printCode3"  src="${base}/styles/easyui/themes/icons/print.png"></td>
+                    </tr>
+                    <tr>
+                        <td>0.2mm化验样封装码</td>
+                        <td><input class="easyui-textbox"   id="printPackCode21" name="printPackCode21" style="width:195px;" readonly/><img class="printImg" id="printCode21"  src="${base}/styles/easyui/themes/icons/print.png"></td>
+                    </tr>
+                    <tr>
+                        <td>0.2mm存查样封装码</td>
+                        <td><input class="easyui-textbox"   id="printPackCode22" name="printPackCode22" style="width:195px;" readonly/><img class="printImg" id="printCode22"  src="${base}/styles/easyui/themes/icons/print.png"></td>
+                    </tr>
+                </table>
+
+        </form>
+    </div>
+
+<script type="text/javascript">
+    $(function () {
+        //qryObj.search_samplingCode = document.getElementById("samplingCodeHidden").value;
+        var printPackCode6 = document.getElementById("packCode6Hidden").value;
+        var printPackCode3 = document.getElementById("packCode3Hidden").value;
+        var printPackCode21 = document.getElementById("packCode21Hidden").value;
+        var printPackCode22 = document.getElementById("packCode22Hidden").value;
+
+        $('#printPackCode6').val(printPackCode6);
+        $('#printPackCode3').val(printPackCode3);
+        $('#printPackCode21').val(printPackCode21);
+        $('#printPackCode22').val(printPackCode22);
+
+        $(".printImg").click(function () {
+            switch($(this).attr("id"))
+            {
+                case "printCode6":
+                    printSample($('#printPackCode6').textbox('getValue'));
+                    break;
+                case "printCode3":
+                    printSample($('#printPackCode3').textbox('getValue'));
+                    break;
+                case "printCode21":
+                    printSample($('#printPackCode21').textbox('getValue'));
+                    break;
+                case "printCode22":
+                    printSample($('#printPackCode22').textbox('getValue'));
+                    break;
+                default:
+                    alert("异常");
+            }
+        });
+    });
+
+    function printSample(packCode){
+        if (packCode) {
+            $.messager.confirm('提示', '打印采样码，确定继续操作?', function (r) {
+                if (r) {
+                    printPackCode(packCode);
+                }
+            });
+        }else {
+            showMsg("提示", "请先选择要打印条码的信息！");
+        }
+    }
+    function printPackCode(packCode){
+        var printType = "1";
+        if(printType=="1"){
+            window.open('${base}/business/monitor/barcodePrintWin/'+packCode,
+                    'newwindow',
+                    'height=500,width=800,top=0,left=0,toolbar=no,menubar=no,scrollbars=no, resizable=no,location=no, status=no');
+        }else if(printType=="2"){
+            window.open('${base}/business/monitor/qrcodePrintWin/'+packCode,
+                    'newwindow',
+                    'height=500,width=800,top=0,left=0,toolbar=no,menubar=no,scrollbars=no, resizable=no,location=no, status=no');
+        }else{
+            showMsg("提示", "打印条码出错！");
+        }
+    }
+</script>

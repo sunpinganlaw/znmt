@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>翻车机</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+    <style>
+        html,body{height:100%;}
+    </style>
+</head>
+
+<body>
+<div id="cc" class="easyui-layout" style="height:100%;">
+    <div data-options="region:'center',title:'工作状况',noheader:'true'" style="width:100%;height:80%;padding:5px;text-align: center">
+        <iframe src="${base}/cocosresource/DK_FCJ/index.html" width="900" style="text-align: center"
+                height="350"></iframe>
+    </div>
+
+    <div data-options="region:'south',title:'翻车机信息',split:true" style="height:420px">
+        <table id="tt" class="easyui-datagrid"
+               data-options="method:'get',border:false,singleSelect:true,fit:true,fitColumns:true">
+            <thead>
+            <tr>
+                <th data-options="field:'carId',width:40,align:'center'">车号</th>
+                <th data-options="field:'fcjCode',width:50,align:'center'">翻车机号</th>
+                <th data-options="field:'czDtm',width:40,align:'center'">重车时间</th>
+                <th data-options="field:'jqDtm',width:40,align:'center'">轻车时间</th>
+                <th data-options="field:'mzQty',width:50,align:'center'">毛重</th>
+                <th data-options="field:'pzQty',width:50,align:'center'">皮重</th>
+                <th data-options="field:'tickQty',width:50,align:'center'">票重</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+
+    $dg = $("#tt");
+    var url = '${base}/business/trainMonitor/carDumperList';
+    $(function () {
+        $dg.datagrid({
+            iconCls: 'icon-edit',
+            height: $(this).height() - 46,
+            width: $(this).width() - 10,
+            singleSelect: true,
+            animate: true,
+            fitColumns: true,
+            url: url,
+            pagination: true,
+            rownumbers: true
+        });
+    });
+
+</script>

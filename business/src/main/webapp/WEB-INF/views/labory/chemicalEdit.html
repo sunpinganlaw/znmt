@@ -1,0 +1,115 @@
+<div class="form-div">
+    <form id="ff" method="post" commandName="labChemicalAnaly">
+        <input type="hidden" id="doWhat" name="doWhat">
+        <input type="hidden" id="chemicalAnalyId" name="chemicalAnalyId">
+            <div title="元素类型化验值编辑"style="overflow:auto;padding:0px;">
+                <table >
+                    <tr>
+                        <td >煤种:</td>
+                        <td>
+                            <input id="coalNo" name="coalNo" class="easyui-combobox" style="width:145px;"
+                                   data-options="required:true,valueField:'id',textField:'name',panelHeight:'300',url:'${base}/business/tool/getComboboxOpt/COAL_TYPE'" />
+                        </td>
+                        <td >元素类型:</td>
+                        <td>
+                            <input id="chemicalType" name="chemicalType" class="easyui-combobox" style="width:145px;"
+                                   data-options="required:true,valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getDictionaryByType/CHEMICAL_TYPE'" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td >开始时间:</td>
+                        <td>
+                            <input class="easyui-datebox" id="startTime" name="startTime" style="width:145px" data-options="required:true">
+                        </td>
+                        <td >结束时间:</td>
+                        <td>
+                            <input class="easyui-datebox" id="endTime" name="endTime"  style="width:145px" data-options="required:true">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td >元素值:</td>
+                        <td colspan="3">
+                            <input type="text" id="chemicalValue" name="chemicalValue" class="easyui-numberbox"  style="width:145px" data-options="required:true,min:0,precision:3"/>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+    </form>
+    <div class="submit-div">
+        <a href="javascript:void(0)" id="add" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm()">提交</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="clearFrom();">重置</a>
+    </div>
+</div>
+<script type="text/javascript">
+
+    function clearFrom() {
+            $('#ff').form('clear');
+    }
+
+    function save() {
+        var params = new Object();
+        var nowDate = dateToNumber(new Date().format("yyyy-MM-dd"));
+        var chemicalType = $("#chemicalType").combobox("getValue");
+        var startTime = $("#startTime").datebox("getValue");
+        var endTime = $("#endTime").datebox("getValue");
+        var coalNo = $("#coalNo").datebox("getValue");
+        var chemicalValue = $("#chemicalValue").numberbox("getValue");
+        if (coalNo == null || coalNo == undefined || coalNo == "") {
+            showMsg("提示", "请选择指定的煤种（此处不支持“全部”）");
+            return ;
+        }
+        var startTimeTemp = dateToNumber($("#startTime").datebox("getValue"));
+        var endTimeTemp = dateToNumber($("#endTime").datebox("getValue"));
+
+        if (startTimeTemp >= endTimeTemp) {
+            showMsg("提示", "开始时间不能大于结束时间");
+            return ;
+        }
+        else if (startTimeTemp < nowDate) {
+            showMsg("提示", "选择开始时间时间段不能小于当前日期");
+            return ;
+        }
+
+        params.search_chemicalType = chemicalType;
+        params.search_startTime = startTime;
+        params.search_endTime = endTime;
+        params.search_chemicalValue = chemicalValue;
+        params.search_coalNo = coalNo;
+        params.search_indexType = 'manual';//人工输入得到
+
+        var postUrl = "${base}/business/labory/manualSubmitHad";
+        $.post(postUrl, params, function(rsp) {
+            if(rsp.successful){
+                //加载数据
+                showMsg("提示", rsp.msg+" 氢元素化验数据前台设置成功。");
+                closeWin();
+            } else {
+                showMsg("提示", rsp.msg);
+            }
+        });
+
+    }
+
+    function submitForm(){
+        if (! $("#ff").form('validate')){
+            showMsg("提示", "红色部分必填项未填写完整，请重新填写!");
+            return ;
+        }
+        save();
+    }
+
+    function dateToNumber(v_date){
+        var dateString = v_date;
+        var dateYear_s = "";
+        var dateMonth_s = "";
+        var dateDate_s = "";
+        var dateDateString_s = "";
+        var dateDateInt_s = 0;
+        dateYear_s=dateString.substr(0,4);
+        dateMonth_s=dateString.substr(5,2);
+        dateDate_s=dateString.substr(8,2);
+        dateDateString_s=dateYear_s+dateMonth_s+dateDate_s;//判断隔天的依据
+        dateDateInt_s = Number(dateDateString_s);
+        return dateDateInt_s;
+    }
+</script>

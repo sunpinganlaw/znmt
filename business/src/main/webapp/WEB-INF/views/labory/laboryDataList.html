@@ -1,0 +1,519 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>化验数据查询和确认</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <#include "/include/common.html"/>
+
+</head>
+
+<body>
+    <div>&nbsp;</div>
+    <div>
+        <label for="laborCode">&nbsp;&nbsp;化验编码：</label>
+        <input id="laborCode" style="width:120px;"/>
+        <label for="batchType">&nbsp;&nbsp;化验批次类型：</label>
+        <input id="batchType" style="width:120px;"/>
+        &nbsp;<input type="hidden" id="hideLaborCode"/><input type="hidden" id="hideBatchType"/>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qryResData();">查询</a>
+        <@shiro.hasPermission name="LabDataMgr:control1">
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-ok" onclick="genLabReport();">生成化验报告</a>
+        </@shiro.hasPermission>
+    </div>
+
+
+    <div style="margin: 5px;width: 98%">
+        <!--<span style="color: #0099FF"><strong>化验天平</strong><input type="checkbox" value="1" id="tpCheckbox" /></span>-->
+        <span style="color: #0099FF"><strong>化验天平</strong></span>
+        <table id="labScalesDataDg" ></table>
+    </div>
+
+
+    <div style="margin: 5px;width: 98%">
+        <!--<span style="color: #0099FF"><strong>定硫仪</strong><input type="checkbox" value="2" id="dlyCheckbox" /></span>-->
+        <span style="color: #0099FF"><strong>定硫仪</strong></span>
+        <table id="labSDataDg" ></table>
+    </div>
+
+    <div style="margin: 5px;width: 98%">
+        <!--<span style="color: #0099FF"><strong>工业分析仪</strong><input type="checkbox" value="3" id="gyfxyCheckbox" /></span>-->
+        <span style="color: #0099FF"><strong>工业分析仪</strong></span>
+        <table id="labIADataDg" ></table>
+    </div>
+
+    <div style="margin: 5px;width: 98%">
+        <!--<span style="color: #0099FF"><strong>量热仪</strong><input type="checkbox" value="4" id="lryCheckbox" /></span>-->
+        <span style="color: #0099FF"><strong>量热仪</strong></span>
+        <table id="labHotDataDg" ></table>
+    </div>
+
+    <div style="margin: 5px;width: 98%">
+        <!--<span style="color: #0099FF"><strong>光波分析仪</strong><input type="checkbox" value="5" id="gbfxyCheckbox" /></span>-->
+        <span style="color: #0099FF"><strong>光波分析仪</strong></span>
+        <table id="labLaDataDg" ></table>
+    </div>
+
+    <div style="margin: 5px;width: 98%">
+        <!--<span style="color: #0099FF"><strong>光波分析仪</strong><input type="checkbox" value="5" id="gbfxyCheckbox" /></span>-->
+        <span style="color: #0099FF"><strong>红外测氢仪</strong></span>
+        <table id="labHwDataDg" ></table>
+    </div>
+
+</body>
+</html>
+
+<script type="text/javascript">
+    //查询数据表格准备
+    $scalesDg = $("#labScalesDataDg");
+    $sDg = $("#labSDataDg");
+    $iDg = $("#labIADataDg");
+    $hotDg = $("#labHotDataDg");
+    $laDg = $("#labLaDataDg");
+    $hwDg = $("#labHwDataDg");
+
+ var lossStyleList = [{"value":"1","text":"焦渣特性一"},{"value":"2","text":"焦渣特性二"},
+     {"value":"3","text":"焦渣特性三"},{"value":"4","text":"焦渣特性四"},
+     {"value":"5","text":"焦渣特性五"},{"value":"6","text":"焦渣特性六"},
+     {"value":"7","text":"焦渣特性七"},{"value":"8","text":"焦渣特性八"}];
+    //下拉框获取化验编码
+    $('#laborCode').combobox({
+        url: '${base}/business/tool/getComboboxOpt/LABOR_CODE',
+        panelHeight:'auto',
+        valueField:'id',
+        textField:'name'
+    });
+
+
+    $('#batchType').combobox({
+        panelHeight:'auto',
+        valueField:'id',
+        textField:'name',
+        data: [
+            {id: '1', name: '初次化验', selected: true},
+            {id: '2', name: '抽样第1次'},
+            {id: '3',name: '抽样第2次'},
+            {id: '4',name: '抽样第3次'}
+        ]
+    });
+
+
+    //天平
+    $(function(){
+        $scalesDg.datagrid({
+            //url: "${base}/business/labory/qryScalesResData",
+            url:"",
+            fitColumns: false,//此处一定不要自适应
+            height: 200,
+            width: $(this).width() - 25,
+            idField:'id',
+            queryParams: {
+                search_laborCode:'-1'
+            },
+            frozenColumns: [
+                [   {field: 'laborCode', title: '化验编码',align:'center', width:100},
+                    {field: 'statusName', title: '数据状态',align:'center', width: 70},
+                    {field: 'batchType', title: '化验批次类型',align:'center', width: 100},
+                    {field: 'opTime', title: '化验时间',align:'center', width: 130},
+                    {field: 'opName', title: '化验人',align:'center', width: 70}
+
+                ]
+            ],
+            columns: [
+                [   {field: 'standard', title: '执行标准',align:'center', width: 100},
+                    {field: 'temperature', title: '温度',align:'center', width: 70},
+                    {field: 'humidity', title: '湿度',align:'center', width: 70},
+                    {field: 'ggNo', title: '坩埚号',align:'center', width: 70,hidden:true},
+                    {field: 'mt', title: '全水分',align:'center', width: 70},
+                    {field: 'mad', title: '水分',align:'center', width: 70},
+                    {field: 'adStyle', title: '灰分化验方式',align:'center', width: 70,hidden:true},
+                    {field: 'aad', title: '空干基灰分',align:'center', width: 70},
+                    {field: 'ad', title: '干基灰分',align:'center', width: 70,hidden:true},
+                    {field: 'vad', title: '挥发分',align:'center', width: 70},
+                    {field: 'lossStyle', title: '焦渣特性',align:'center', width: 100,formatter: lossStyleFormatter},
+                    {field: 'deviceName', title: '化验设备',align:'center', width: 70},
+                    {field: 'mypQty', title: '煤样瓶重量',align:'center', width: 70},
+                    {field: 'samplingQty', title: '样品重量',align:'center', width: 70},
+                    {field: 'totalQty', title: '总重量',align:'center', width: 70},
+                    {field: 'afterDryQty', title: '干燥后总重量',align:'center', width: 70},
+                    {field: 'testQty', title: '检查后干燥重量',align:'center', width: 70},
+                    {field: 'qtyLoss', title: '重量损失',align:'center', width: 70}
+                ]
+            ]
+        })
+    });
+
+    //定硫仪
+    $(function(){
+        $sDg.datagrid({
+            //url: "${base}/business/labory/qrySResData",
+            url:"",
+            fitColumns: true,//此处一定不要自适应
+            height: 120,
+            width: $(this).width() - 25,
+            idField:'id',
+            queryParams: {
+                search_laborCode:'-1'
+            },
+            frozenColumns: [
+                [   {field: 'laborCode', title: '化验编码',align:'center', width:100},
+                    {field: 'statusName', title: '数据状态',align:'center', width: 70},
+                    {field: 'batchType', title: '化验批次类型',align:'center', width: 100},
+                    {field: 'opTime', title: '化验时间',align:'center', width: 130},
+                    {field: 'opName', title: '化验人',align:'center', width: 70}
+
+                ]
+            ],
+            columns: [
+                [   {field: 'standard', title: '执行标准',align:'center', width: 100},
+                    {field: 'temperature', title: '温度',align:'center', width: 70},
+                    {field: 'humidity', title: '湿度',align:'center', width: 70},
+                    {field: 'ggNo', title: '坩埚号',align:'center', width: 70,hidden:true},
+                    {field: 'samplingName', title: '试样名称',align:'center', width: 70,hidden:true},
+                    {field: 'samplingWeight', title: '试样重量',align:'center', width: 70},
+                    {field: 'mad', title: '空干基水分水分',align:'center', width: 70,hidden:true},
+                    {field: 'stAd', title: '空干基全硫',align:'center', width: 70},
+                    {field: 'stD', title: '干基全硫',align:'center', width: 70,hidden:true},
+                    {field: 'ccVal', title: '超差',align:'center', width: 70,hidden:true},
+                    {field: 'jzStyle', title: '校正方式',align:'center', width: 70,hidden:true},
+                    {field: 'totalTime', title: '总时间',align:'center', width: 100},
+                    {field: 'deviceName', title: '化验设备',align:'center', width: 70}
+                ]
+            ]
+        })
+    });
+
+    function lossStyleFormatter(values,row){
+        for(var i=0; !(i >= lossStyleList.length); i++){
+            if (lossStyleList[i].value == values) return lossStyleList[i].text;
+        }
+        return values;
+    }
+
+
+    //工业分析仪
+    $(function(){
+        $iDg.datagrid({
+            //url: "${base}/business/labory/qryIAResData",
+            url:"",
+            fitColumns: true,//此处一定不要自适应
+            height: 120,
+            width: $(this).width() - 25,
+            idField:'id',
+            queryParams: {
+                search_laborCode:'-1'
+            },
+            frozenColumns: [
+                [   {field: 'laborCode', title: '化验编码',align:'center', width:100},
+                    {field: 'statusName', title: '数据状态',align:'center', width: 70},
+                    {field: 'batchType', title: '化验批次类型',align:'center', width: 100},
+                    {field: 'opTime', title: '化验时间',align:'center', width: 130},
+                    {field: 'opName', title: '化验人',align:'center', width: 70}
+                ]
+            ],
+            columns: [
+                [   {field: 'lossStyle', title: '焦渣特性',align:'center', width: 100,formatter: lossStyleFormatter},
+                    {field: 'standard', title: '执行标准',align:'center', width: 100},
+                    {field: 'temperature', title: '温度',align:'center', width: 70},
+                    {field: 'humidity', title: '湿度',align:'center', width: 70},
+                    {field: 'samplingName', title: '试样名称',align:'center', width: 70,hidden:true},
+                    {field: 'ggNo', title: '坩埚号',align:'center', width: 70,hidden:true},
+                    {field: 'mad', title: '空干基水分',align:'center', width: 70},
+                    {field: 'aad', title: '空干基灰分',align:'center', width: 70},
+                    {field: 'vad', title: '空干基挥发分',align:'center', width: 70},
+                    {field: 'shKggWeight', title: '水灰空坩埚重',align:'center', width: 70},
+                    {field: 'shSamplingWeight', title: '水灰煤样重',align:'center', width: 70},
+                    {field: 'ad', title: '干基灰分',align:'center', width: 70,hidden:true},
+                    {field: 'hkTotalWeight', title: '挥空坩埚加样重',align:'center', width: 70},
+                    {field: 'hkSamplingWeight', title: '挥空煤样重量',align:'center', width: 70},
+                    {field: 'vdaf', title: '收到基挥发分',align:'center', width: 70,hidden:true},
+                    {field: 'ccVal', title: '超差',align:'center', width: 70,hidden:true},
+                    {field: 'deviceName', title: '化验设备',align:'center', width: 70}
+                ]
+            ]
+        })
+    });
+
+    //量热仪
+    $(function(){
+        $hotDg.datagrid({
+            //url: "${base}/business/labory/qryHotResData",
+            url:"",
+            fitColumns: true,//此处一定不要自适应
+            height: 120,
+            width: $(this).width() - 25,
+            idField:'id',
+            queryParams: {
+                search_laborCode:'-1'
+            },
+            frozenColumns: [
+                [   {field: 'laborCode', title: '化验编码',align:'center', width:100},
+                    {field: 'statusName', title: '数据状态',align:'center', width: 70},
+                    {field: 'batchType', title: '化验批次类型',align:'center', width: 100},
+                    {field: 'opTime', title: '化验时间',align:'center', width: 130},
+                    {field: 'opName', title: '化验人',align:'center', width: 70}
+                ]
+            ],
+            columns: [
+                [   {field: 'standard', title: '执行标准',align:'center', width: 100},
+                    {field: 'temperature', title: '温度',align:'center', width: 70},
+                    {field: 'humidity', title: '湿度',align:'center', width: 70},
+                    {field: 'samplingName', title: '试样名称',align:'center', width: 70,hidden:true},
+                    {field: 'samplingWeight', title: '试样重量',align:'center', width: 70},
+                    {field: 'ggNo', title: '坩埚号',align:'center', width: 70,hidden:true},
+                    {field: 'tempIncrease', title: '主期升温',align:'center', width: 70,hidden:true},
+                    {field: 'jzValue', title: '校正值',align:'center', width: 70},
+                    {field: 'jqTemp', title: '机器热熔温',align:'center', width: 70,hidden:true},
+                    {field: 'qbAd', title: '弹筒热',align:'center', width: 70},
+                    {field: 'ccVal', title: '超差',align:'center', width: 70,hidden:true},
+                    {field: 'deviceName', title: '化验设备',align:'center', width: 70}
+                ]
+            ]
+        })
+    });
+
+
+//    //光波分析仪
+    $(function(){
+        $laDg.datagrid({
+            //url: "${base}/business/labory/qryLaResData",
+            url:"",
+            fitColumns: true,//此处一定不要自适应
+            height: 120,
+            width: $(this).width() - 25,
+            idField:'id',
+            queryParams: {
+                search_laborCode:'-1'
+            },
+            frozenColumns: [
+                [   {field: 'laborCode', title: '化验编码',align:'center', width:100},
+                    {field: 'statusName', title: '数据状态',align:'center', width: 70},
+                    {field: 'batchType', title: '化验批次类型',align:'center', width: 100},
+                    {field: 'opTime', title: '化验时间',align:'center', width: 130},
+                    {field: 'opName', title: '化验人',align:'center', width: 70}
+                ]
+            ],
+            columns: [
+                [   {field: 'standard', title: '执行标准',align:'center', width: 100},
+                    {field: 'temperature', title: '温度',align:'center', width: 70},
+                    {field: 'humidity', title: '湿度',align:'center', width: 70},
+                    {field: 'samplingName', title: '试样名称',align:'center', width: 70,hidden:true},
+                    {field: 'mt', title: '全水分',align:'center', width: 70},
+                    {field: 'samplingWeight', title: '试样重量',align:'center', width: 70},
+                    {field: 'ggNo', title: '坩埚号',align:'center', width: 70,hidden:true},
+                    {field: 'mypWeight', title: '煤样瓶重量',align:'center', width: 70},
+                    {field: 'weightLoss', title: '残重',align:'center', width: 70},
+                    {field: 'tempPower', title: '温度/功率',align:'center', width: 70,hidden:true},
+                    {field: 'keepTime', title: '恒温时间',align:'center', width: 70,hidden:true},
+                    {field: 'ccVal', title: '超差',align:'center', width: 70,hidden:true},
+                    {field: 'deviceName', title: '化验设备',align:'center', width: 70}
+                ]
+            ]
+        })
+    });
+
+    //红外测氢仪
+    $(function(){
+        $hwDg.datagrid({
+            //url: "${base}/business/labory/qryHwResData",
+            url:"",
+            fitColumns: true,//此处一定不要自适应
+            height: 120,
+            width: $(this).width() - 25,
+            idField:'id',
+            queryParams: {
+                search_laborCode:'-1'
+            },
+            frozenColumns: [
+                [   {field: 'laborCode', title: '化验编码',align:'center', width:100},
+                    {field: 'statusName', title: '数据状态',align:'center', width: 70},
+                    {field: 'batchType', title: '化验批次类型',align:'center', width: 100},
+                    {field: 'opTime', title: '化验时间',align:'center', width: 130},
+                    {field: 'opName', title: '化验人',align:'center', width: 70}
+                ]
+            ],
+            columns: [
+                [   {field: 'standard', title: '执行标准',align:'center', width: 100},
+                    {field: 'temperature', title: '温度',align:'center', width: 70},
+                    {field: 'humidity', title: '湿度',align:'center', width: 70},
+                    {field: 'samplingName', title: '试样名称',align:'center', width: 70,hidden:true},
+                    {field: 'had', title: '空干基氢',align:'center', width: 70},
+                    {field: 'hd', title: '干基氢',align:'center', width: 70},
+                    {field: 'samplingWeight', title: '试样重量',align:'center', width: 70},
+//                    {field: 'ggNo', title: '坩埚号',align:'center', width: 70,hidden:true},
+                    {field: 'cad', title: '空干基碳',align:'center', width: 70},
+                    {field: 'cd', title: '空干基碳',align:'center', width: 70},
+                    {field: 'mad', title: '水分',align:'center', width: 70,hidden:true},
+                    {field: 'method', title: '方法',align:'center', width: 70,hidden:true},
+                    {field: 'ccVal', title: '超差',align:'center', width: 70,hidden:true},
+                    {field: 'deviceName', title: '化验设备',align:'center', width: 70}
+                ]
+            ]
+        })
+    });
+
+
+
+    //查询
+    function qryResData() {
+        var qryLaborCode = $("#laborCode").combobox("getValue");
+        var qryBatchType = $("#batchType").combobox("getValue");
+
+        if (qryLaborCode == null || qryLaborCode == undefined || qryLaborCode == "") {
+            showMsg("提示", "请选择要查询的化验编码");
+            return false;
+        } else {
+            document.getElementById("hideLaborCode").value = qryLaborCode;
+            document.getElementById("hideBatchType").value = qryBatchType;
+        }
+
+        $.messager.progress({ msg: '正在查询已确认的化验数据...' });
+
+        var paramObj = new Object();
+
+        if (qryLaborCode != null && qryLaborCode != undefined && qryLaborCode != "") {
+            paramObj.search_laborCode = qryLaborCode;
+        }
+
+        if (qryBatchType != null && qryBatchType != undefined && qryBatchType != "") {
+            paramObj.search_batchType = qryBatchType;
+        }
+
+        //加载数据
+//        $scalesDg.datagrid("load",paramObj);
+//        $sDg.datagrid("load",paramObj);
+//        $iDg.datagrid("load",paramObj);
+//        $hotDg.datagrid("load",paramObj);
+//        $laDg.datagrid("load",paramObj);
+//        $hwDg.datagrid("load",paramObj);
+//天平       $scalesDg   url: "${base}/business/labory/qryScalesResData",
+//定硫仪     $sDg        url: "${base}/business/labory/qrySResData",
+//工业分析仪 $iDg        url: "${base}/business/labory/qryIAResData",
+//量热仪     $hotDg      url: "${base}/business/labory/qryHotResData",
+//光波分析仪 $laDg       url: "${base}/business/labory/qryLaResData",
+//红外测氢仪 $hwDg       url: "${base}/business/labory/qryHwResData",
+        try{
+            setTimeout(function(){$scalesDg.datagrid({url:'${base}/business/labory/qryScalesResData',
+                queryParams:paramObj
+            });}, 150);
+
+            setTimeout(function(){$sDg.datagrid({url:'${base}/business/labory/qrySResData',
+                queryParams:paramObj
+            });}, 300);
+
+            setTimeout(function(){$iDg.datagrid({url:'${base}/business/labory/qryIAResData',
+                queryParams:paramObj
+            });}, 450);
+
+            setTimeout(function(){$hotDg.datagrid({url:'${base}/business/labory/qryHotResData',
+                queryParams:paramObj
+            });}, 600);
+
+            setTimeout(function(){$laDg.datagrid({url:'${base}/business/labory/qryLaResData',
+                queryParams:paramObj
+            });}, 750);
+
+            setTimeout(function(){$hwDg.datagrid({url:'${base}/business/labory/qryHwResData',
+                queryParams:paramObj
+            });}, 900);
+
+        }catch (e){
+            alert(e);
+        }
+
+        //延迟2.5秒取消遮罩，防止重复点
+        setTimeout(function(){
+            $.messager.progress('close');
+        }, 2500);
+    }
+
+    //生成化验报告
+    function genLabReport(){
+        //校验必要动作
+        var qryLC = document.getElementById("hideLaborCode").value;
+        var qryBatchType = document.getElementById("hideBatchType").value;
+        if (qryLC == null || qryLC == ""){
+            showMsg("提示", "请先选择化验编码进行相应的化验数据查询");
+            return false;
+        }
+
+        //校验数据状态
+        var scalesRows =  $scalesDg.datagrid('getRows');
+        for ( var i = 0; !(i >= scalesRows.length); i++) {
+            if (scalesRows[i].status != "0") {
+                showMsg("提示", "化验天平有数据状态不满足生成化验报告条件");
+                return false;
+            }
+        }
+
+        var sRows =  $sDg.datagrid('getRows');
+        for ( var i = 0; !(i >= sRows.length); i++) {
+            if (sRows[i].status != "0") {
+                showMsg("提示", "定硫仪有数据状态不满足生成化验报告条件");
+                return false;
+            }
+        }
+
+        var iRows =  $iDg.datagrid('getRows');
+        for ( var i = 0; !(i >= iRows.length); i++) {
+            if (iRows[i].status != "0") {
+                showMsg("提示", "工业分析仪有数据状态不满足生成化验报告条件");
+                return false;
+            }
+        }
+
+        var hotRows =  $hotDg.datagrid('getRows');
+        for ( var i = 0; !(i >= hotRows.length); i++) {
+            if (hotRows[i].status != "0") {
+                showMsg("提示", "量热仪有数据状态不满足生成化验报告条件");
+                return false;
+            }
+        }
+
+        var laRows =  $laDg.datagrid('getRows');
+        for ( var i = 0; !(i >= laRows.length); i++) {
+            if (laRows[i].status != "0") {
+                showMsg("提示", "光波分析仪有数据状态不满足生成化验报告条件");
+                return false;
+            }
+        }
+        var hwRows =  $hwDg.datagrid('getRows');
+        for ( var i = 0; !(i >= hwRows.length); i++) {
+            if (hwRows[i].status != "0") {
+                showMsg("提示", "光波分析仪有数据状态不满足生成化验报告条件");
+                return false;
+            }
+        }
+
+        var paramObj = new Object();
+        paramObj.search_laborCode = qryLC;
+        paramObj.search_batchType = qryBatchType;
+        paramObj.search_apprEventTypeCd = '5';//审批事件类型，5生成化验报告
+        $.messager.confirm('提示', '一个批次的化验数据确认完整才能生成完整的化验报告，确定继续?', function (r) {
+            if (r) {
+                //提交数据   scales表示天平
+                $.post("${base}/business/labory/submitLabReport", paramObj, function(rsp) {
+                    if(rsp.successful){
+                        //加载数据
+                        $scalesDg.datagrid("reload");
+                        $sDg.datagrid("reload");
+                        $iDg.datagrid("reload");
+                        $hotDg.datagrid("reload");
+                        $laDg.datagrid("reload");
+                        $hwDg.datagrid("reload");
+                        showMsg("提示", rsp.msg+" 化验报告审批请求已提交，审批通过后系统将生成化验报告。");
+                    } else {
+                        showMsg("提示", rsp.msg);
+                    }
+                }, "JSON").error(function() {
+                            showMsg("提示", "保存失败！");
+                        });
+            }
+        });
+    }
+
+</script>

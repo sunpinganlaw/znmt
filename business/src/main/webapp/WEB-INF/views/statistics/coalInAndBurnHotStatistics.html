@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>入厂入炉热值统计报表</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+    <link rel="stylesheet" type="text/css" href="${base}/styles/css/statistics.css">
+    <script type="text/javascript" src="${base}/styles/js/echarts-all.js"></script>
+    <script type="text/javascript" src="${base}/styles/js/statistics/statistics.js"></script>
+</head>
+<body>
+<div id="layoutDiv" class="easyui-layout" style="height:100%;margin-top: 20px;margin-left: 10px">
+    <div id="tb">
+        <table>
+            <tbody>
+            <tr>
+                <td id="qryDate">
+                    时间范围: &nbsp;&nbsp;
+                    <input class="easyui-datebox" name="beginDate" id="beginDate" style="width:145px;"/>&nbsp;~&nbsp;
+                    <input class="easyui-datebox" name="endDate" id="endDate" style="width:145px;"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;~&nbsp;
+                    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" onclick="qry()">查询</a>&nbsp;&nbsp;
+                    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" onclick="exportExcel()">导出Excel</a>
+                </td>
+            </tr>
+            <tr><td><p>入场热值</p></td></tr>
+            <tr><td><div id="tableMainCoalIn" style="height:300px;width:800px;margin-top: 10px;margin: 0 auto;"> </div></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td><p>入炉热值</p></td></tr>
+            <tr><td><div id="tableMainCoalBurn" style="height:300px;width:800px;margin-top: 10px;margin: 0 auto;"> </div></td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
+
+<script type="text/javascript">
+    var initTrNums = 5;
+    $(function () {
+        loadTable(null,true,"CoalIn");
+        loadTable(null,true,"CoalBurn");
+    });
+
+    function getParamSelf(reportTypeCd){
+        var param = new Object();
+        var beginDate = $("#beginDate").datebox("getValue");
+        var endDate = $("#endDate").datebox("getValue");
+        param.search_reportTypeCd = reportTypeCd;
+        param.search_statLatType = 3;
+        if (beginDate != null && beginDate != "" && beginDate.length > 0) {
+            param.search_beginDate = beginDate;
+        }
+        if (endDate != null && endDate != "" && endDate.length > 0) {
+            param.search_endDate = endDate;
+        }
+        return param;
+    }
+
+    function qry(){
+        $.messager.progress();
+        $.ajax({
+            async: true,
+            cache: false,
+            type: 'POST',
+            data: getParamSelf("COAL_IN_HOT"),
+            url: '${base}/business/statistics/qryStatisticsData',
+            error: function () {// 请求失败处理函数
+                loadTable(null,true,"CoalIn");
+                showMsg("提示", "查询入厂数据失败!");
+            },
+            success: function (json) {
+                if(json.length == 0){
+                    loadTable(null,true,"CoalIn");
+                    showMsg("提示", "未查询到入厂数据!");
+                    return;
+                }else{
+                    loadTable(json,false,"CoalIn");
+                }
+            }
+        });
+        $.ajax({
+            async: true,
+            cache: false,
+            type: 'POST',
+            data: getParamSelf("COAL_BURN_HOT"),
+            url: '${base}/business/statistics/qryStatisticsData',
+            error: function () {// 请求失败处理函数
+                $.messager.progress('close');
+                loadTable(null,true,"CoalBurn");
+                showMsg("提示", "查询数据入炉失败!");
+            },
+            success: function (json) {
+                $.messager.progress('close');
+                if(json.length == 0){
+                    loadTable(null,true,"CoalBurn");
+                    showMsg("提示", "未查询到入炉数据!");
+                    return;
+                }else{
+                    loadTable(json,false,"CoalBurn");
+                }
+            }
+        });
+    }
+
+    //加载table，显示详情数据
+    function loadTable(json,isInit,type){
+
+        $("#tableMain"+type).empty();
+        var tableArray = new Array();
+        tableArray.push('<table id="dataTb'+type+'" class = "dataShowT"  width="700px"><tobody>');
+        tableArray.push('<th height="30">');tableArray.push('日期');tableArray.push('</th>');
+        tableArray.push('<th height="30">');tableArray.push('批次号');tableArray.push('</th>');
+        tableArray.push('<th height="30">');tableArray.push('化验编码');tableArray.push('</th>');
+        tableArray.push('<th height="30">');tableArray.push('热值(MJ/kg)');tableArray.push('</th>');
+        if(isInit){
+            for (var i = 0; i < initTrNums; i++) {
+                tableArray.push('<tr height="30">');
+                tableArray.push('<td>');tableArray.push("&nbsp;");tableArray.push('</td>');
+                tableArray.push('<td>');tableArray.push("&nbsp;");tableArray.push('</td>');
+                tableArray.push('<td>');tableArray.push("&nbsp;");tableArray.push('</td>');
+                tableArray.push('<td>');tableArray.push("&nbsp;");tableArray.push('</td>');
+                tableArray.push('</tr>');
+            }
+        }else{
+            for (var i = 0; i < json.length; i++) {
+                tableArray.push('<tr height="30">');
+                tableArray.push('<td>');tableArray.push(json[i].statLat);tableArray.push('</td>');
+                tableArray.push('<td>');tableArray.push(json[i].statResult1);tableArray.push('</td>');
+                tableArray.push('<td>');tableArray.push(json[i].statResult2);tableArray.push('</td>');
+                tableArray.push('<td>');tableArray.push(json[i].statResult3);tableArray.push('</td>');
+                tableArray.push('</tr>');
+            }
+        }
+
+        tableArray.push('</tobody></table>');
+        $('#tableMain'+type).append(tableArray.join(""));
+        renderTable('dataTb'+type);
+    }
+
+</script>

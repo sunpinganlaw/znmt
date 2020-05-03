@@ -1,0 +1,313 @@
+    <div class="form-div">
+        <form id="ffNew" method="post">
+                <table>
+                    <tr>
+                        <td>车次：</td>
+                        <td><input class="easyui-textbox" data-options="missingMessage:'ceshi'" id="trainNoNew" style="width: 145px;" /></td>
+                        <td colspan="4"><input type="button" value="获取新车次" onclick="newTrainNo()"/>
+                            <span style="color: #0099FF;">&nbsp;&nbsp;&nbsp;若输入已有车次编号，则新增的车厢属于该已有车次.</span></td>
+                    </tr>
+                    <tr>
+                        <td>矿点</td>
+                        <td><input id="colryNoNew" name="colryNoNew" class="easyui-combobox" style="width:145px;"
+                                   data-options="required:true,valueField:'id',textField:'name',panelHeight:'300',url:'${base}/business/tool/getComboboxOpt/COAL_MINE'" /></td>
+                        <td>煤种</td>
+                        <td><input id="coalNoNew" name="coalNoNew" class="easyui-combobox" style="width:145px;"
+                                   data-options="required:true,valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/COAL_TYPE'" /></td>
+                        <!--<td>供应商</td>-->
+                        <!--<td><input id="venNoNew" name="venNoNew" class="easyui-combobox" style="width:145px;"-->
+                                   <!--data-options="required:true,valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/VENDOR_INFO'" /></td>-->
+                        <td>采样方式</td>
+                        <td><select id="sampleTypNew" name="sampleTypNew" class="easyui-combobox" data-options="required:true,panelHeight:'auto'"  style="width:145px;" >
+                            <option value="0">皮带采样</option>
+                            <option value="1">皮带大水分旁路</option>
+                            <option value="2">人工采样</option>
+                            <option value="3">车厢采样</option>
+                            <option value="4">车厢大水分旁路</option>
+                        </select></td>
+
+                    </tr>
+
+                    <tr>
+                        <td>发站</td>
+                        <td>
+                            <input id="startPlaceNew" name="startPlaceNew" style="width:145px;"/>
+                        </td>
+                        <td>到站</td>
+                        <td>
+                            <input id="finalPlaceNew" name="finalPlaceNew" style="width:145px;"/>
+                        </td>
+                        <td>收货单位</td>
+                        <td>
+                            <input id="goodsReceiverNew" name="goodsReceiverNew" style="width:145px;"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>发站时间</td>
+                        <td><input class="easyui-datetimebox" data-options="required:true" id="deliverTimeNew" name="deliverTimeNew" style="width:145px"></td>
+                        <td>入厂时间</td>
+                        <td><input class="easyui-datetimebox" data-options="required:true" id="recordDtmNew" style="width:145px"></td>
+                        <td>对位时间</td>
+                        <td><input class="easyui-datetimebox" data-options="required:true" id="aimTimeNew" name="aimTimeNew" style="width:145px"></td>
+                    </tr>
+                    <tr>
+                        <td>轨道号</td>
+                        <td><input id="trackNoNew" name="trackNoNew" style="width:145px;"/></td>
+                      <td>备注</td>
+                        <td colspan="3"><input class="easyui-textbox"  id="remarkNew" style="width:361px"></td>
+                    </tr>
+                </table>
+
+            <hr style="height:1px;border:none;border-top:1px dashed #0066CC;" />
+
+            <div style="text-align: left">&nbsp;&nbsp;&nbsp;新增<input class="easyui-numberbox" data-options="min:1, max:100"  id="carsCntNew" style="width:40px;"/>节车厢&nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="button" value="预生成" onclick="generateCarsRow()"/>
+            </div>
+            <br>
+            <div id = "dynamicDivNew"></div>
+
+            <div >
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-save" onclick="saveNewTrainInfo();">保存</a>
+            </div>
+        </form>
+    </div>
+
+<script type="text/javascript">
+    var paramObj = new Object();
+    var carsNum = 0;
+    $(function () {
+        //修改时加载数据到控件
+        var hrecordNo = document.getElementById("hiddenRecordNo").value;
+        var hmodifyTag = document.getElementById("trainModifyTag").value;
+
+        $('#emptyFlgNew').combobox({
+            panelHeight:'auto',
+            valueField:'id',
+            textField:'name',
+            data: [
+                {id: '1', name: '否', selected: true},
+                {id: '0', name: '是'}
+            ]
+        });
+
+        $('#trackNoNew').combobox({
+            url:'${base}/business/tool/getDictionaryByType/TRACK_NO',
+            valueField:'id',
+            textField:'name',
+            panelHeight:'auto',
+            onLoadSuccess: function () { //加载完成后,设置选中第一项
+                var val = $(this).combobox("getData");
+                for (var item in val[0]) {
+                    if (item == "id") {
+                        $(this).combobox("select", val[0][item]);
+                    }
+                }
+            }
+        });
+
+        $('#startPlaceNew').combobox({
+            url:'${base}/business/tool/getDictionaryByType/START_RAIL_STATION',
+            valueField:'id',
+            textField:'name',
+            panelHeight:'auto'
+        });
+
+        $('#finalPlaceNew').combobox({
+            url:'${base}/business/tool/getDictionaryByType/FINAL_RAIL_STATION',
+            valueField:'id',
+            textField:'name',
+            panelHeight:'auto'
+        });
+
+        $('#goodsReceiverNew').combobox({
+            url:'${base}/business/tool/getDictionaryByType/GOODS_RECEIVER',
+            valueField:'id',
+            textField:'name',
+            panelHeight:'auto'
+        });
+
+    });
+
+    function generateCarsRow(){
+        var divObj1 = document.getElementById("dynamicDivNew");
+        divObj1.innerHTML = "";//先清空下
+        carsNum = 0;
+        var fillCnt = $("#carsCntNew").numberbox("getValue");
+
+        if (fillCnt == null || fillCnt == ""){
+            showMsg("提示", "请填写要生成的车厢节数");
+            return false;
+        }
+        carsNum = parseInt(fillCnt);
+        for ( var i = 1; i <= carsNum; i++) {
+            divObj1.innerHTML = divObj1.innerHTML +
+                '<div style="text-align: left">&nbsp;&nbsp;&nbsp;'+
+                '序号：<input id="xhNumNew'+i+'" style="width:25px;"/>&nbsp;&nbsp;'+
+                '车号：<input id="carIdNew'+i+'" style="width:70px;"/>&nbsp;&nbsp;'+
+                '车型：<input id="carTypNEW'+i+'" style="width:70px;"/>&nbsp;&nbsp;'+ //增加车型hxl20170104
+                '票重(t)：<input id="tickQtyNew'+i+'" style="width:70px;"/>&nbsp;&nbsp;'+
+                '毛重(t)：<input id="mzQtyNew'+i+'" style="width:70px;"/>&nbsp;&nbsp;'+
+                '皮重(t)：<input id="pzQtyNew'+i+'" style="width:70px;"/>&nbsp;&nbsp;'+
+                '过衡速度(km/h)：<input id="speedNew'+i+'" style="width:70px;"/>&nbsp;&nbsp;'+
+                '空车：<input id="emptyFlgNew'+i+'" style="width:70px;">'+
+                '</div>';
+        }
+
+        //循环转换成easyui控件
+        for ( var i = 1; i <= carsNum; i++) {
+            $('#xhNumNew'+i).numberbox({value:i, min:0, max:100});
+            $('#carIdNew'+i).textbox({required:true});
+            $('#carTypNEW'+i).textbox({required:true});         //增加车型hxl20170104
+            $('#tickQtyNew'+i).numberbox({min:0,precision:2});
+            $('#mzQtyNew'+i).numberbox({min:0,precision:2});
+            $('#pzQtyNew'+i).numberbox({min:0,precision:2});
+            $('#speedNew'+i).numberbox({min:0,precision:2});
+            $('#emptyFlgNew'+i).combobox({valueField:'id',textField:'name',panelHeight:'auto',data: [{ id: '1',name: '否', 'selected':true},{id: '0',name: '是' }]});
+        }
+    }
+
+    function newTrainNo(){
+        var tn = $("#trainNoNew").textbox('getValue');
+
+        if (tn != null && tn != "" && tn.length > 0) {
+            showMsg("提示", "已分配车次号!");
+            return false;
+        }
+
+        $.post("${base}/business/tool/generateNewTrainNo", function (rsp) {
+            if (rsp) {
+                $("#trainNoNew").textbox('setValue',rsp);
+            } else {
+                showMsg("提示", "获取新的车次失败!");
+            }
+        });
+    }
+
+    //提交保存
+    function saveNewTrainInfo() {
+        $.messager.confirm('提示', '确定保存?', function (r) {
+            if (r) {
+                //获取公共部分值
+                var commonObj = new Object();
+                commonObj.trainNo = $("#trainNoNew").textbox("getValue");
+                commonObj.colryNo = $("#colryNoNew").combobox("getValue");
+                commonObj.coalNo = $("#coalNoNew").combobox("getValue");
+                //commonObj.venNo = $("#venNoNew").combobox("getValue");
+                commonObj.sampleTyp = $("#sampleTypNew").combobox("getValue");
+                commonObj.trackNo = $("#trackNoNew").combobox("getValue");
+                commonObj.startPlace = $("#startPlaceNew").combobox("getValue");
+                commonObj.finalPlace = $("#finalPlaceNew").combobox("getValue");
+                commonObj.recordDtm = $("#recordDtmNew").datetimebox("getValue");
+
+                commonObj.goodsReceiver = $("#goodsReceiverNew").combobox("getValue");
+                commonObj.aimTime = $("#aimTimeNew").datetimebox("getValue");
+                commonObj.deliverTime = $("#deliverTimeNew").datetimebox("getValue");
+
+                commonObj.remark = $("#remarkNew").textbox("getValue");
+
+                if (commonObj.trainNo == null || commonObj.trainNo == ""){
+                    showMsg("提示", "请输入正确的车次");
+                    return false;
+                }
+
+                if (commonObj.colryNo == null || commonObj.colryNo == ""){
+                    showMsg("提示", "请选择具体矿点");
+                    return false;
+                }
+
+                if (commonObj.coalNo == null || commonObj.coalNo == ""){
+                    showMsg("提示", "请选择具体煤种");
+                    return false;
+                }
+
+                if (commonObj.trackNo == null || commonObj.trackNo == ""){
+                    showMsg("提示", "请选择火车所在的轨道号");
+                    return false;
+                }
+
+                if (commonObj.sampleTyp == null || commonObj.sampleTyp == ""){
+                    showMsg("提示", "请选择采样方式");
+                    return false;
+                }
+
+                if (commonObj.recordDtm == null || commonObj.recordDtm == ""){
+                    showMsg("提示", "请填写入厂时间");
+                    return false;
+                }
+
+                if (commonObj.aimTime == null || commonObj.aimTime == ""){
+                    showMsg("提示", "请填写对位时间");
+                    return false;
+                }
+
+                if (commonObj.deliverTime == null || commonObj.deliverTime == ""){
+                    showMsg("提示", "请填写发站时间");
+                    return false;
+                }
+
+                if (carsNum <= 0) {
+                    showMsg("提示", "请填写车厢的具体信息（先预生成车厢后再填写）");
+                    return false;
+                }
+
+                //打开遮罩
+                $.messager.progress({ msg: '正在处理，请稍候...' });
+
+                //放入参数对象
+                paramObj["publicInfo"] = JSON.stringify(commonObj);
+
+                var arrayTickQtys = [];
+                for ( var i = 1; i <= carsNum; i++) {
+                    var o = {};
+                    o.xhNum = $("#xhNumNew"+i).numberbox("getValue");
+                    o.carId = $("#carIdNew"+i).textbox("getValue");
+                    o.carTyp = $("#carTypNEW"+i).textbox("getValue");
+                    if (o.carId == null || o.carId == ""){
+                        $.messager.progress('close');
+                        showMsg("提示", "车厢号必填");
+                        return false;
+                    }
+                    if (o.carTyp == null || o.carTyp == ""){
+                        $.messager.progress('close');
+                        showMsg("提示", "车型必填");
+                        return false;
+                    }
+                    o.tickQty = $("#tickQtyNew"+i).numberbox("getValue");
+                    o.mzQty = $("#mzQtyNew"+i).numberbox("getValue");
+                    o.pzQty = $("#pzQtyNew"+i).numberbox("getValue");
+                    o.speed = $("#speedNew"+i).numberbox("getValue");
+                    o.emptyFlg = $("#emptyFlgNew"+i).combobox("getValue");
+                    arrayTickQtys[i-1] = o;
+                }
+
+                //放入票重数据
+                paramObj["updateInfo"] = JSON.stringify(arrayTickQtys);
+
+
+                //提交数据
+                $.post("${base}/business/monitor/addNewTrain", paramObj, function(rsp) {
+                    if(rsp.successful){
+                        //关闭遮罩
+                        $.messager.progress('close');
+                        showMsg("提示", rsp.msg);
+                        $detaildg.datagrid('clearChecked');
+                        $detaildg.datagrid('clearSelections');
+                        $basicdg.datagrid('reload');
+                        $detaildg.datagrid('reload');
+                        //关闭编辑窗口
+                        carsNum = 0;
+                        $('#addNewTrainWin').window('close');
+                    } else {
+                        //关闭遮罩
+                        $.messager.progress('close');
+                        showMsg("提示", rsp.msg);
+                    }
+                }, "JSON").error(function() {
+                            $.messager.progress('close');
+                            showMsg("提示", "保存失败！");
+                        });
+            }
+        });
+    }
+
+</script>

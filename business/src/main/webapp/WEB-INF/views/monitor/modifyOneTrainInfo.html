@@ -1,0 +1,272 @@
+    <div class="form-div">
+
+        <form id="oneTrainInfoForm" method="post">
+                <table>
+                    <tr>
+                        <td><span style="color: #0099FF">车次</span></td>
+                        <td colspan="3"><input class="easyui-textbox"   id="trainNo" name="trainNo" data-options="required:true" style="width:145px;"/></td>
+                        <input type="hidden" id="recordNo" name="recordNo">
+                        <!--<td><span style="color: #0099FF">流水号</span></td>-->
+                        <!--<td><input class="easyui-textbox"   id="recordNo" name="recordNo" data-options="required:true" style="width:145px;"/></td>-->
+                    </tr>
+                    <tr>
+                        <td id="carIdTD">车号</td>
+                        <td><input class="easyui-textbox"   id="carId" name="carId" data-options="required:true" style="width:145px;"/></td>
+                        <td id="xhNumTD">车厢号</td>
+                        <td><input class="easyui-numberbox" data-options="required:true,min:0, max:999"  name="xhNum" id="xhNum" style="width:145px;"/></td>
+                    </tr>
+                    <tr>
+                        <td>矿点</td>
+                        <td><input id="colryNo" name="colryNo" class="easyui-combobox" style="width:145px;"
+                                   data-options="valueField:'id',textField:'name',panelHeight:'300',url:'${base}/business/tool/getComboboxOpt/COAL_MINE'" /></td>
+                        <td>煤种</td>
+                        <td><input id="coalNo" name="coalNo" class="easyui-combobox" style="width:145px;"
+                                   data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/COAL_TYPE'" /></td>
+                    </tr>
+                    <tr>
+                        <!--<td>供应商</td>-->
+                        <!--<td><input id="venNo" name="venNo" class="easyui-combobox" style="width:145px;"-->
+                                   <!--data-options="required:true,valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/VENDOR_INFO'" /></td>-->
+                        <td>采样方式</td>
+                        <td><select id="sampleTyp" name="sampleTyp" class="easyui-combobox" data-options="panelHeight:'auto'"  style="width:145px;" >
+                            <option value="0">皮带采样</option>
+                            <option value="1">皮带大水分旁路</option>
+                            <option value="2">人工采样</option>
+                            <option value="3">车厢采样</option>
+                            <option value="4">车厢大水分旁路</option>
+                        </select></td>
+                        <td>翻车时间</td>
+                        <td>
+                            <input class="easyui-datetimebox" id="fcTime"  name="fcTime" style="width:145px">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>是否空车</td>
+                        <td>
+                            <select id="emptyFlg" name="emptyFlg" class="easyui-combobox" data-options="panelHeight:'auto'"  style="width:145px;" >
+                                <option value="1">否</option>
+                                <option value="0">是</option>
+                            </select>
+                        </td>
+                        <td>票重</td>
+                        <td><input class="easyui-numberbox" data-options="min:0, precision:3"  name="tickQty" id="tickQty" style="width:145px;"/></td>
+                    </tr>
+                    <tr>
+                        <td id="mzQtyTD">毛重</td>
+                        <td><input class="easyui-numberbox" data-options="required:true,min:0, precision:3"  name="mzQty" id="mzQty" style="width:145px;"/></td>
+                        <td id="pzQtyTD">皮重</td>
+                        <td><input class="easyui-numberbox" data-options="required:true,min:0, precision:3"  name="pzQty" id="pzQty" style="width:75px;"/>
+                            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-ok" onclick="counts();">算净重</a></td>
+                    </tr>
+                    <tr>
+                        <td id="netQtyTD">净重</td>
+                        <td><input class="easyui-numberbox" data-options="required:true,min:0, precision:3"  name="netQty" id="netQty" style="width:145px;"/></td>
+                        <td id="ydQtyTD">盈亏</td>
+                        <td><input class="easyui-numberbox" data-options="precision:3"  name="ydQty" id="ydQty" style="width:145px;"/></td>
+                    </tr>
+                    <tr>
+                        <!--<td id="lossQtyTD">运损</td>-->
+                        <!--<td><input class="easyui-numberbox" data-options="min:0, precision:3"  name="lossQty" id="lossQty" style="width:145px;"/></td>-->
+                        <td>轨道</td>
+                        <td>
+                            <input id="trackNo" name="trackNo" style="width:145px;"/>
+                        </td>
+                        <td id="carTypTD">车型</td>
+                        <td><select id="carTyp" name="carTyp" class="easyui-combobox" data-options="panelHeight:'auto'"  style="width:145px;" >
+                            <option value="TC70H">TC70H</option>
+                            <option value="TC70EH">TC70EH</option>
+                            <option value="TC70E">TC70E</option>
+                            <option value="TC64K">TC64K</option>
+                            <option value="TC64T">TC64T</option>
+                            <option value="TC64H">TC64H</option>
+                            <option value="TC62BK">TC62BK</option>
+                            <option value="TC62BT">TC62BT</option>
+                            <option value="TC62AK">TC62AK</option>
+                            <option value="TC62A*">TC62A*</option>
+                            <option value="C70">C70</option>
+                        </select></td>
+                    </tr>
+                    <tr>
+                        <td>发站</td>
+                        <td><input id="startPlace" name="startPlace" style="width:145px;"/></td>
+                        <td>到站</td>
+                        <td>
+                            <input id="finalPlace" name="finalPlace" style="width:145px;"/>
+                        </td>
+                    </tr>
+                    <tr><td></td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <!--<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-cancel" onclick="formReset();">重置</a>-->
+                            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-save" onclick="submitForm();">保存</a></td>
+                    </tr>
+                </table>
+
+        </form>
+    </div>
+
+<script type="text/javascript">
+    var isSaving = false;
+    $(function () {
+        //修改时加载数据到控件
+        var hrecordNo = document.getElementById("hiddenRecordNo").value;
+        var hmodifyTag = document.getElementById("trainModifyTag").value;
+
+        if (hmodifyTag == "2"){
+            mt = "火车大票信息录入";
+        }
+
+        $('#trackNo').combobox({
+            url:'${base}/business/tool/getDictionaryByType/TRACK_NO',
+            valueField:'id',
+            textField:'name',
+            panelHeight:'auto'
+        });
+
+        $('#startPlace').combobox({
+            url:'${base}/business/tool/getDictionaryByType/START_RAIL_STATION',
+            valueField:'id',
+            textField:'name',
+            panelHeight:'auto'
+        });
+
+        $('#finalPlace').combobox({
+            url:'${base}/business/tool/getDictionaryByType/FINAL_RAIL_STATION',
+            valueField:'id',
+            textField:'name',
+            panelHeight:'auto'
+        });
+
+        $.post("${base}/business/monitor/qryOneTrainDetail/"+hrecordNo, {}, function (rsp) {
+            if (rsp) {
+                //加载
+                $("#oneTrainInfoForm").form('load',rsp);
+
+                $("#trainNo").textbox({editable:false});//该信息不能编辑
+
+                //如果是大票录入，则如下信息不允许编辑
+                if (hmodifyTag == "2"){
+                    $("#carId").textbox({editable:false});
+                    $("#xhNum").numberbox({editable:false});
+                    $("#mzQty").numberbox({editable:false});
+                    $("#pzQty").numberbox({editable:false});
+                    $("#netQty").numberbox({editable:false});
+                    $("#carTyp").combobox({readonly:true});
+                    document.getElementById("carIdTD").innerHTML = '<span style="color: #0099FF">车号</span>';
+                    document.getElementById("xhNumTD").innerHTML = '<span style="color: #0099FF">车厢号</span>';
+                    document.getElementById("mzQtyTD").innerHTML = '<span style="color: #0099FF">毛重</span>';
+                    document.getElementById("pzQtyTD").innerHTML = '<span style="color: #0099FF">皮重</span>';
+                    document.getElementById("netQtyTD").innerHTML = '<span style="color: #0099FF">净重</span>';
+                    document.getElementById("carTypTD").innerHTML = '<span style="color: #0099FF">车型</span>';
+                }
+
+            } else {
+                showMsg("提示", "查找火车车厢信息失败!");
+            }
+        });
+
+    });
+
+
+    //重置表单
+    function formReset(){
+        $.messager.confirm('提示', '确定需要重置输入表单?', function (r) {
+            if (r) {
+                $('#oneTrainInfoForm').form('clear');
+            }
+        });
+    }
+
+
+//    //提交表单
+    function submitForm(){
+		if(isSaving){
+            showMsg("提示", "正在保存中!");
+            return;
+        }
+        isSaving = true;
+
+        if (! $("#oneTrainInfoForm").form('validate')) {
+            showMsg("提示", "有必填项未输入值!");
+            return false;
+        }
+
+        var selMineNo = $("#colryNo").combobox('getValue');
+        var selCoalNo = $("#coalNo").combobox('getValue');
+
+        if (selMineNo == null || selMineNo == ""){
+            showMsg("提示","请选择矿点");
+            return false;
+        }
+        if (selCoalNo == null || selCoalNo == ""){
+            showMsg("提示","请选择煤种");
+            return false;
+        }
+
+        $.messager.confirm('提示', '确定保存?', function (r) {
+            if (r) {
+                //提交保存
+                save();
+            }
+        });
+    }
+
+    //保存
+    function save(){
+        var params = $("#oneTrainInfoForm").serialize();
+        var postUrl = "${base}/business/monitor/modifyOneTrainInfo";
+
+        $.post(postUrl, params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示",rsp.msg);
+                $('#modifyOneTrainInfoWin').window('close');
+                //刷新父页面的信息
+                $detaildg.datagrid('clearChecked');
+                $detaildg.datagrid('clearSelections');
+                //$basicdg.datagrid('reload');
+                //$detaildg.datagrid('reload');
+                //$.messager.progress({ msg: '正在刷新页面！' });
+                try{
+                    setTimeout(function(){$basicdg.datagrid('reload');}, 150);
+                    setTimeout(function(){$detaildg.datagrid('reload');}, 350);
+                }catch (e){
+                    alert(e);
+                }
+                //延迟1.5秒取消遮罩，防止重复点
+                setTimeout(function(){
+                    isSaving = false;
+                }, 1500);
+            } else {
+				isSaving = false;
+                showMsg("提示", rsp.msg);
+            }
+        }).error(function () {
+			isSaving = false;
+            showMsg("提示", "修改失败!");
+        });
+    }
+
+    $('#qryForm').find('input').on('keyup',function(event){
+        if(event.keyCode == '13'){
+            //focusCar();
+        }
+    });
+
+    function counts(){
+        var mzQty = $("#mzQty").numberbox('getValue');
+        var pzQty = $("#pzQty").numberbox('getValue');
+        if(mzQty==null||mzQty ==0||pzQty==null||pzQty ==0){
+            showMsg("提示", "皮重或者毛重为零或者空!");
+            return;
+        }
+        if(mzQty<=pzQty){
+            showMsg("提示", "毛总小于皮重，无法计算净重");
+            return;
+        }
+        var netQty = mzQty - pzQty;
+        $("#netQty").numberbox('setValue',netQty);
+
+    }
+
+</script>

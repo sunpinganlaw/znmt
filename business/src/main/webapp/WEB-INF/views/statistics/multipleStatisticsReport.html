@@ -1,0 +1,147 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+	 <base href="${base}/">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+	 <#include "/include/common.html"/>
+  <title>燃煤关键指标综合月报表</title>
+
+  <style type="text/css">
+	  /*body{ background-color:#fff; color:#000; font-size:19px;  width:1000px; margin:0 auto;}*/
+	  h1{ font-size:30px; text-align:center; line-height:30px; position:relative;}
+	  table.table01{border:1px solid #000;margin-left:5%;width:90%;border-collapse:collapse;}
+	  table.table01 td{ border:1px solid #000; text-align:center;font-size:20px;}
+  </style>
+
+ </head>
+ <body>
+    <h1 align="center">火电企业燃料技术监督月报表</h1>
+    <table class = "table01">
+
+		<tr>
+			<td colspan='2' rowspan='1'style= 'border-right:none'>填报单位:</td>
+			<td id = 'companyName' colspan='7' rowspan='1'style= 'border-left:none;text-align:left'>&nbsp;</td>
+			<td colspan='1' rowspan='1'style= 'border-right:none' >填报日期:</td>
+			<td id = 'createDate'  colspan='2' rowspan='1'style= 'border-left:none;text-align:left'>&nbsp;</td>
+		</tr>
+		<tr>
+		<td colspan='1' rowspan='3'>月份</td>
+		<td colspan='4' rowspan='1'>入厂煤炭监督</td>
+		<td colspan='7' rowspan='1'>智能化运行监督</td>
+		</tr>
+		<tr>
+		<td colspan='1' rowspan='2'>本月来煤量(t)</td>
+		<td colspan='1' rowspan='2'>检斤率(%)</td>
+		<td colspan='1' rowspan='2'>检质率(%)</td>
+		<td colspan='1' rowspan='2'>干基高位热值（MJ/kg）</td>
+		<td colspan='1' rowspan='2'>本月综合投运率（%）</td>
+		<td colspan='2' rowspan='1'>自动计量</td>
+		<td colspan='2' rowspan='1'>自动采样</td>
+		<td colspan='2' rowspan='1'>自动制样</td>
+		</tr>
+		<tr>
+		<td>煤量（t）</td>
+		<td>投运率（%）</td>
+		<td>煤量（t）</td>
+		<td>投运率（%）</td>
+		<td>煤量（t）</td>
+		<td>投运率（%）</td>
+		</tr>
+
+		<tbody id="coalIn"></tbody>
+
+
+		<tr>
+		<td colspan='1' rowspan='3'>月份</td>
+		<td colspan='4' rowspan='1'>入炉煤炭监督</td>
+		<td colspan='1' rowspan='3'>入厂入炉干基高位热值差（MJ/kg）</td>
+		<td colspan='1' rowspan='3'>设备检定率</td>
+		<td colspan='2' rowspan='1'>存查抽检</td>
+		<td colspan='3' rowspan='1'>燃油监督</td>
+		</tr>
+		<tr>
+		<td colspan='1' rowspan='2'>耗煤量(t)</td>
+		<td colspan='1' rowspan='2'>检斤率(%)</td>
+		<td colspan='1' rowspan='2'>检质率(%)</td>
+		<td colspan='1' rowspan='2'>干基高位热值（MJ/kg）</td>
+		<td colspan='1' rowspan='2'>抽检率(%)</td>
+		<td colspan='1' rowspan='2'>合格率(%)</td>
+		<td colspan='1' rowspan='2'>进油量(t)</td>
+		<td colspan='1' rowspan='2'>检斤率(%)</td>
+		<td colspan='1' rowspan='2'>检质率(%)</td>
+		</tr>
+		<tbody id="coalBurn"></tbody>
+	</table>
+ </body>
+</html>
+
+<script type="text/javascript">
+
+	var myDate = new Date();
+	var CreateTime = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+(parseInt(myDate.getDate()));
+	var companyName = "国电吉林江南热电有限公司";
+	document.getElementById("companyName").innerHTML = companyName;
+	document.getElementById("createDate").innerHTML = CreateTime;
+
+	$(function(){
+		$.ajax({
+			async: true,
+			cache: false,
+			type: 'POST',
+			//data: getParam(''),//调用公共函数中的方法，获取请求参数
+			url: '${base}/business/statistics/qryStatisticsReportData',
+			error: function () {// 请求失败处理函数
+				$.messager.progress('close');
+				showMsg("提示", "查询数据失败!");
+			},
+			success: function (json) {
+				if(json.length == 0){
+					showMsg("提示", "未查询到数据!");
+					return;
+				}else{
+					loadCoalInTable(json);
+				}
+			}
+		});
+	});
+
+	function loadCoalInTable(json){
+		var tableArray = new Array();
+		var tableArray1 = new Array();
+		for (var i = 0; i<json.length; i++) {
+			//alert(JSON.stringify(json[i]));
+			tableArray.push('<tr><td colspan="1" rowspan="1">');tableArray.push(json[i].statDate);tableArray.push('</td>');
+			tableArray.push('<td colspan="1" rowspan="1">');tableArray.push(json[i].coalInWeight);tableArray.push('</td>');
+			tableArray.push('<td colspan="1" rowspan="1">');tableArray.push(json[i].coalInWeightCheckRate);tableArray.push('</td>');
+			tableArray.push('<td colspan="1" rowspan="1">');tableArray.push(json[i].coalInQtyCheckRate);tableArray.push('</td>');
+			tableArray.push('<td colspan="1" rowspan="1">');tableArray.push(json[i].coalInHot);tableArray.push('</td>');
+			tableArray.push('<td colspan="1" rowspan="1">');tableArray.push(json[i].coalInAutoWorkRate);tableArray.push('</td>');
+			tableArray.push('<td colspan="1" rowspan="1">');tableArray.push(json[i].coalInAutoWeight);tableArray.push('</td>');
+			tableArray.push('<td colspan="1" rowspan="1">');tableArray.push(json[i].coalInAutoWeightRate);tableArray.push('</td>');
+			tableArray.push('<td colspan="1" rowspan="1">');tableArray.push(json[i].coalInAutoSample);tableArray.push('</td>');
+			tableArray.push('<td colspan="1" rowspan="1">');tableArray.push(json[i].coalInAutoSampleRate);tableArray.push('</td>');
+			tableArray.push('<td colspan="1" rowspan="1">');tableArray.push(json[i].coalInAutoSampling);tableArray.push('</td>');
+			tableArray.push('<td colspan="1" rowspan="1">');tableArray.push(json[i].coalInAutoSamplingRate);tableArray.push('</td></tr>');
+
+
+			tableArray1.push('<tr><td colspan="1" rowspan="1">');tableArray1.push(json[i].statDate);tableArray1.push('</td>');
+			tableArray1.push('<td colspan="1" rowspan="1">');tableArray1.push(json[i].coalBurnWeight);tableArray1.push('</td>');
+			tableArray1.push('<td colspan="1" rowspan="1">');tableArray1.push(json[i].coalBurnWeightCheckRate);tableArray1.push('</td>');
+			tableArray1.push('<td colspan="1" rowspan="1">');tableArray1.push(json[i].coalBurnQtyCheckRate);tableArray1.push('</td>');
+			tableArray1.push('<td colspan="1" rowspan="1">');tableArray1.push(json[i].coalBurnHot);tableArray1.push('</td>');
+			tableArray1.push('<td colspan="1" rowspan="1">');tableArray1.push(json[i].coalInBurnHotDiff);tableArray1.push('</td>');
+			tableArray1.push('<td colspan="1" rowspan="1">');tableArray1.push(json[i].equipmentCheckRate);tableArray1.push('</td>');
+			tableArray1.push('<td colspan="1" rowspan="1">');tableArray1.push(json[i].checkSampleRate);tableArray1.push('</td>');
+			tableArray1.push('<td colspan="1" rowspan="1">');tableArray1.push(json[i].checkSampleGoodRate);tableArray1.push('</td>');
+			tableArray1.push('<td colspan="1" rowspan="1">');tableArray1.push(json[i].oilWeight);tableArray1.push('</td>');
+			tableArray1.push('<td colspan="1" rowspan="1">');tableArray1.push(json[i].oilChenckWeightRate);tableArray1.push('</td>');
+			tableArray1.push('<td colspan="1" rowspan="1">');tableArray1.push(json[i].oilChenckQtyRate);tableArray1.push('</td></tr>');
+		}
+		document.getElementById("coalIn").innerHTML += tableArray.join("");
+		document.getElementById("coalBurn").innerHTML += tableArray1.join("");
+	};
+</script>

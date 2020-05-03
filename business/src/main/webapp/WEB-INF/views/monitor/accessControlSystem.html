@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>门禁控制系统</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+
+<body>
+    <div id="tb" class="easyui-layout" style="height:100%">
+        <div>
+            <table>
+                <tr>
+                    <label for="opCode">员工号：</label>
+                    <input class="easyui-textbox" id = "opCode" style="width:145px;" />&nbsp;&nbsp;
+                    <label for="opName">员工名：</label>
+                    <input class="easyui-textbox" name="opName" id="opName" style="width:145px;" />&nbsp;&nbsp;
+                    <label for="beginDate">事件日期：</label>
+                    <input class="easyui-datebox" id="beginDate" style="width:120px">&nbsp;—&nbsp;
+                    <input class="easyui-datebox" id="endDate"  style="width:120px">&nbsp;&nbsp;
+                    <a href="javascript:void(0)"  class="easyui-linkbutton" iconCls="icon-search" onclick="qry();">查询</a>
+                </tr>
+            </table>
+        </div>
+
+
+        <div id="AccessTb" style="margin: 5px;width: 98%">
+            <table id="AccessList" ></table>
+        </div>
+    </div>
+</body>
+</html>
+
+<script type="text/javascript">
+
+    $AccessListDg = $("#AccessList");
+
+    var myDate = new Date();
+    var defaultBeginTime = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+    var defaultEndTime =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+
+//    $('#opName').combobox({
+//        url:'${base}/business/tool/getComboboxOpt/USER_NAME',
+//        valueField:'name',
+//        textField:'name',
+//        panelHeight:'auto'
+//    });
+
+   $(function(){
+       $AccessListDg.datagrid({
+           url: "${base}/business/monitor/qryAccessControlInfoList",
+           pagination: true,
+           pagenumber:true,
+           pageSize:50,
+           pageList: [50, 100],
+           height: $(this).height()-10,
+           width: $(this).width()-8,
+           fitColumns: true,
+           idField:'useId',
+           queryParams: {//默认进来查近2天
+               search_useBeginTime:defaultBeginTime,
+               search_useEndTime:defaultEndTime
+           },
+           columns: [
+               [
+                   {field: 'useId', title: '记录号',align:'center', checkbox:true},
+                   {field: 'useDesc', title: '事件详情',align:'center', width: 10},
+                   {field: 'userName', title: '持卡人',align:'center', width: 10},
+                   {field: 'cardId', title: '卡号',align:'center', width: 10},
+                   {field: 'useTime', title: '发生时间',align:'center', width:10},
+                   {field: 'userArea', title: '事件地点',align:'center', width: 10}
+               ]
+           ]
+       })
+   });
+
+
+    //查询
+    function qry(){
+        var beginDate = $("#beginDate").datebox("getValue");
+        var endDate = $("#endDate").datebox("getValue");
+        var opName = $("#opName").textbox("getValue");
+        var opCode = $("#opCode").textbox("getValue");
+        var qryObj = {};
+        if (beginDate != null && beginDate != "" && beginDate.length > 0) {
+            qryObj.search_useBeginTime = beginDate;
+        }
+
+        if (endDate != null && endDate != "" && endDate.length > 0) {
+            qryObj.search_useEndTime = endDate;
+        }
+
+        if (opCode != null && opCode != "" && opCode.length > 0) {
+            qryObj.search_userId = opCode;
+        }
+
+        if (opName != null && opName != "" && opName != "-1" && opName.length > 0) {
+            qryObj.search_userName = opName;
+        }
+
+        $AccessListDg.datagrid('load', qryObj);
+    }
+
+</script>

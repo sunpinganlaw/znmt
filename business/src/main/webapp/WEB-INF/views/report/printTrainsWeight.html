@@ -1,0 +1,190 @@
+<div style="width: 90%">
+    <div id="tbPRT">
+        <table>
+            <tr>
+                <td>
+                    <label for="beginTimePRT">入厂日期：</label>
+                    <input class="easyui-datebox" id="beginTimePRT" style="width:120px">&nbsp;—&nbsp;
+                    <input class="easyui-datebox" id="endTimePRT"  style="width:120px">
+                    <label for="qryTrainNoPRT">车次：</label>
+                    <input class="easyui-textbox" id="qryTrainNoPRT" style="width:130px;" value=""/>
+                    <a href="javascript:void(0)"  class="easyui-linkbutton" iconCls="icon-search"  onclick="qryPRT()">查询</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="tx"  style="margin: 5px;width: 90%">
+        <table id="trainBasicDgPRT"  style=";width: 90%"></table>
+    </div>
+
+
+
+    <div id="tbDetailPRT">
+        <table>
+            <tr>
+                <td id="batchNoTD"></td>
+                <td>
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-print" onclick="printWeightInfo();">打印</a>
+                    <input type="hidden" id="toBatchNo">
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="detPRT" style="margin: 5px;width: 90%">
+        <table id="trainDetailDgPRT" ></table>
+    </div>
+</div>
+<script type="text/javascript">
+//全局变量
+$basicdgPRT = $("#trainBasicDgPRT");
+$detaildgPRT = $("#trainDetailDgPRT");
+var tempArr = [];
+
+$(function () {
+    //刚进入页面时，查询日期默认取当前日的
+    var myDate = new Date();
+    var defaultBeginTime = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+    var defaultEndTime =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+
+    $basicdgPRT.datagrid({
+        url: "${base}/business/monitor/trainBasicList",
+        fitColumns: true,
+        height: $(this).height()/2-50,
+        width: $(this).width()-130,
+        idField:'trainNo',
+        singleSelect:true,
+        rownumbers:true,
+        queryParams: {//默认进来查当天
+            search_beginTime:defaultBeginTime,
+            search_endTime:defaultEndTime
+        },
+        columns: [
+            [   {field: 'trainNo', title: '',align:'center', width:20, checkbox:true},
+                {field: 'trainNoAlias', title: '车次',align:'center', width:20},
+                {field: 'recordDtm', title: '入厂日期',align:'center', width:25},
+                {field: 'carCnt', title: '车数',align:'center', width: 15},
+                {field: 'totalMzQty', title: '总毛重(t)',align:'center', width: 15},
+                {field: 'totalNetQty', title: '总净重(t)',align:'center', width: 15}
+            ]
+        ],
+        toolbar: '#tbPRT',
+        onClickRow:function(rowIndex, rowData){
+            var o = {};
+            o.search_trainNo = rowData.trainNo;
+            $detaildgPRT.datagrid('clearSelections');
+            $detaildgPRT.datagrid('load', o);
+
+            //加载明细表格的radio
+            document.getElementById("batchNoTD").innerHTML = "";
+            tempArr = [];
+            document.getElementById("toBatchNo").value = "";
+            $.post("${base}/business/monitor/trainDetailList", o, function(rsp) {
+                var rowsArr = rsp.rows
+                for(var i=0; i<rowsArr.length; i++){
+                    if (rowsArr[i].batchNo != null && rowsArr[i].batchNo != "" && !isExistsInArr(rowsArr[i].batchNo)){
+                        tempArr.push(rowsArr[i].batchNo);
+                        document.getElementById("batchNoTD").innerHTML = document.getElementById("batchNoTD").innerHTML +
+                                '&nbsp;&nbsp;&nbsp;<input name="batchNoPrnt" type="radio" onclick=setHiddenValue("'+rowsArr[i].batchNo+'")/>'+rowsArr[i].batchNo;
+                    }
+                }
+            });
+        }
+    })
+});
+
+function setHiddenValue(batchNo){
+    document.getElementById("toBatchNo").value = batchNo;
+}
+
+//查询
+function qryPRT(){
+    var beginTime = $("#beginTimePRT").datebox("getValue");
+    var endTime = $("#endTimePRT").datebox("getValue");
+    var trainNo = $("#qryTrainNoPRT").textbox("getValue");
+
+    var qryObj = {};
+    if (beginTime != null && beginTime != "" && beginTime.length > 0) {
+        qryObj.search_beginTime = beginTime;
+    }
+
+    if (endTime != null && endTime != "" && endTime.length > 0) {
+        qryObj.search_endTime = endTime;
+    }
+
+    if (trainNo != null && trainNo != "" && trainNo.length > 0) {
+        qryObj.search_trainNo = trainNo;
+    }
+
+    $basicdgPRT.datagrid('load', qryObj);
+}
+
+
+$(function () {
+    $detaildgPRT.datagrid({
+        url: "${base}/business/monitor/trainDetailList",
+        fitColumns: true,
+        height: $(this).height()/2-8,
+        width: $(this).width()-130,
+        idField:'recordNo',
+        singleSelect:false,
+        rownumbers:true,
+        ctrlSelect:true,
+        queryParams: {//默认进来查不到数据
+            search_trainNo:'-1'
+        },
+        toolbar: '#tbDetailPRT',
+        columns: [
+            [
+                {field: 'xhNum', title: '车厢序号',align:'center', width:18},
+                {field: 'batchNo', title: '批次号',align:'center', width:18},
+                {field: 'carId', title: '车号',align:'center', width:18},
+                {field: 'mzQty', title: '毛重(t)',align:'center', width:18},
+                {field: 'pzQty', title: '皮重(t)',align:'center', width:18},
+                {field: 'netQty', title: '净重(t)',align:'center', width:18},
+                {field: 'tickQty', title: '票重(t)',align:'center', width:18},
+                {field: 'ydQty', title: '盈亏(t)',align:'center', width:18},
+                {field: 'coalName', title: '煤种',align:'center', width: 18},
+                {field: 'venName', title: '供应商',align:'center', width:30},
+                {field: 'carTyp', title: '车型',align:'center', width:18}
+            ]
+        ],
+        rowStyler: function(index,row){
+            if (row.mzQty > 100) {
+                return 'background-color:#ff081e;';//超重红色
+            } else if(row.mzQty < 30  || row.emptyFlg == "0") {
+                return 'background-color:#0DFF7C;';//空车绿色
+            }
+        },
+        onLoadSuccess:function(data){
+
+        }
+    });
+});
+
+function isExistsInArr(batchNo){
+    var res = false;
+    for (var j = 0;j<tempArr.length;j++){
+        if(batchNo == tempArr[j]){
+            res = true;
+        }
+    }
+    return res;
+}
+
+//打印
+function printWeightInfo(){
+    var toBatchNo = document.getElementById("toBatchNo").value;
+    if (toBatchNo) {
+        window.open('${base}/business/report/gotoPrintTrainsWeightPage/'+toBatchNo,
+                'newwindow',
+                'height=600,width=1000,top=0,left=0,toolbar=no,menubar=no,scrollbars=no, resizable=no,location=no, status=no');
+    } else {
+        showMsg("提示",  "请先选择要打印的批次！");
+        return;
+    }
+}
+
+</script>
+</html>

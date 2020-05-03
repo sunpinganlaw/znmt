@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>管理员账号申请</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+<body>
+<input type="hidden" name="h_eventId"  id="h_eventId" />
+<div id="layoutDiv" class="easyui-layout" style="height:100%">
+    <div id="tb"class="easyui-layout" region="east">
+
+        &nbsp;<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit"  onclick="add();">管理员账号申请</a>
+
+    </div>
+    <table id="sysUserApprListDg"></table>
+</div>
+
+<div id="sysUserApprEditWin" ></div>
+</body>
+</html>
+<script type="text/javascript">
+    $sysUserApprListDg = $("#sysUserApprListDg");
+    $(function () {
+
+        $sysUserApprListDg.datagrid({
+            url: "${base}/business/monitor/qrySysUserApprList",
+            animate: true,
+            border:true,
+            idField:'userId',
+            fitColumns: true,
+            singleSelect:true,
+            height: $(this).height() - 2,
+            width: $(this).width() - 2,
+            frozenColumns: [
+                [
+                    {field: 'userName', title: '账号',align:'center', width:"200px"},
+                    {field: 'userRealName', title: '姓名',align:'center', width:"200px"},
+                    {field: 'roleName', title: '角色描述',align:'center', width:"200px"}
+                ]
+            ],
+            toolbar: '#tb'
+        })
+    });
+
+    //提交管理员账号审批
+    function add() {
+        var selectedRow = $sysUserApprListDg.datagrid('getSelected');
+        document.getElementById("h_eventId").value = selectedRow.userId;
+        if (selectedRow) {
+            $('#sysUserApprEditWin').window({
+                modal : true,
+                title : '管理员账号申请',
+                width : 500,
+                height : 260,
+                collapsible : false,
+                minimizable : false,
+                maximizable : true,
+                href : '${base}/business/monitor/sysUserApprDetail/'+selectedRow.userId,
+                onClose : function() {
+                    $sysUserApprListDg.datagrid('reload');
+                }
+            });
+        }else{
+            showMsg("提示", "请先选择需要申请的管理员账号!");
+            return false;
+        }
+    }
+</script>
