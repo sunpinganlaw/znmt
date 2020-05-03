@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/aop
+            http://www.springframework.org/schema/aop/spring-aop.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/tx
+            http://www.springframework.org/schema/tx/spring-tx.xsd"
+      >
+       
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="multipleDataSource"/>
+    </bean>
+
+
+    <!-- 使用annotation定义事务 -->
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="false"/>
+
+    <!-- 引擎内部提供的UUID生成器，依赖fastxml的java-uuid-generator模块 -->
+    <!--<bean id="uuidGenerator" class="org.activiti.engine.impl.persistence.StrongUuidGenerator" />
+--><!--
+    <bean id="userBean" class="org.gxz.znrl.activiti.test.UserBean">
+        <property name="runtimeService" ref="runtimeService" />
+    </bean>
+    <bean id="printer" class="org.gxz.znrl.activiti.test.Printer" />
+-->
+
+    <aop:config>
+        <aop:pointcut id="transactionPointcut" expression="execution(* org..*Service.*(..))" />
+        <aop:advisor pointcut-ref="transactionPointcut" advice-ref="transactionAdvice" />
+    </aop:config>
+
+    <tx:advice id="transactionAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="add*" propagation="REQUIRED" />
+            <tx:method name="append*" propagation="REQUIRED" />
+            <tx:method name="insert*" propagation="REQUIRED" />
+            <tx:method name="save*" propagation="REQUIRED" />
+            <tx:method name="update*" propagation="REQUIRED" />
+            <tx:method name="modify*" propagation="REQUIRED" />
+            <tx:method name="edit*" propagation="REQUIRED" />
+            <tx:method name="delete*" propagation="REQUIRED" />
+            <tx:method name="remove*" propagation="REQUIRED" />
+            <tx:method name="repair" propagation="REQUIRED" />
+            <tx:method name="delAndRepair" propagation="REQUIRED" />
+            <tx:method name="get*" propagation="SUPPORTS" />
+            <tx:method name="find*" propagation="SUPPORTS" />
+            <tx:method name="load*" propagation="SUPPORTS" />
+            <tx:method name="search*" propagation="SUPPORTS" />
+            <tx:method name="datagrid*" propagation="SUPPORTS" />
+
+            <tx:method name="*" propagation="SUPPORTS" />
+        </tx:attributes>
+    </tx:advice>
+
+    <bean id="demoDataGenerator" class="org.activiti.explorer.demo.DemoDataGenerator"  init-method="init">
+        <property name="processEngine" ref="processEngine" />
+        <property name="createDemoUsersAndGroups" value="false" />
+        <property name="createDemoProcessDefinitions" value="false" />
+        <property name="createDemoModels" value="false" />
+    </bean>
+
+    <bean id="processEngineConfiguration" class="org.activiti.spring.SpringProcessEngineConfiguration">
+        <property name="dataSource" ref="dataSource" />
+        <property name="dbIdentityUsed" value="false"/>
+        <property name="transactionManager" ref="transactionManager" />
+        <property name="databaseSchemaUpdate" value="true" />
+        <property name="jobExecutorActivate" value="false" />
+        <property name="history" value="audit" />
+        <!-- none  activity audit full-->
+        <property name="enableDatabaseEventLogging" value="true" /><!--
+        <property name="processDefinitionCacheLimit" value="10"/>-->
+        <property name="activityFontName" value="Microsoft YaHei"/>
+        <property name="labelFontName" value="SimSun"/>
+
+        <property name="mailServerHost" value="smtp.163.com" />
+        <property name="mailServerPort" value="465" />
+        <property name="mailServerUsername" value="ktmswzw7@163.com"/>
+        <property name="mailServerPassword" value="cam108twin850"/>
+        <property name="mailServerUseSSL" value="true"/>
+
+        <!-- 全局事件监听 -->
+        <property name="typedEventListeners">
+            <map>
+                <entry key="VARIABLE_CREATED" >
+                    <list>
+                        <ref bean="globalEventListener"/>
+                    </list>
+                </entry>
+            </map>
+        </property>
+        <property name="deploymentResources" value="classpath*:/deployments/*.zip" />
+
+        <!-- 自定义表单字段类型 -->
+        <property name="customFormTypes">
+            <list>
+                <bean class="org.activiti.explorer.form.UserFormType"/>
+                <bean class="org.activiti.explorer.form.ProcessDefinitionFormType"/>
+                <bean class="org.activiti.explorer.form.MonthFormType"/>
+            </list>
+        </property>
+
+    </bean>
+
+    <!-- 创建一个流程引擎bean -->
+    <bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean" destroy-method="destroy">
+        <property name="processEngineConfiguration" ref="processEngineConfiguration" />
+    </bean>
+
+    <!-- 工作流仓储服务 -->
+    <bean id="repositoryService" factory-bean="processEngine" factory-method="getRepositoryService" />
+    <bean id="runtimeService" factory-bean="processEngine" factory-method="getRuntimeService" />
+    <bean id="formService" factory-bean="processEngine" factory-method="getFormService"/>
+    <!-- 工作流唯一服务 -->
+    <bean id="identityService" factory-bean="processEngine" factory-method="getIdentityService"/>
+    <!--  工作流任务服务-->
+    <bean id="taskService" factory-bean="processEngine" factory-method="getTaskService" />
+    <!--  工作流历史数据服务-->
+    <bean id="historyService" factory-bean="processEngine" factory-method="getHistoryService" />
+    <bean id="managementService" factory-bean="processEngine" factory-method="getManagementService" />
+<!--    <bean id="activitiRule" class="org.activiti.engine.test.ActivitiRule">
+        <property name="processEngine" ref="processEngine" />
+    </bean>-->
+
+    <!-- 配置druid监控spring jdbc -->
+    <bean id="druid-stat-interceptor" class="com.alibaba.druid.support.spring.stat.DruidStatInterceptor">
+    </bean>
+    <bean id="druid-stat-pointcut" class="org.springframework.aop.support.JdkRegexpMethodPointcut" scope="prototype">
+        <property name="patterns">
+            <list>
+                <value>org.gxz.znrl.common.*</value>
+                <value>org.gxz.znrl.service.*</value>
+                <value>org.gxz.znrl.business.service.*</value>
+                <value>org.gxz.znrl.generator.service.*</value>
+            </list>
+        </property>
+    </bean>
+
+    <aop:config proxy-target-class="false">
+        <aop:advisor advice-ref="druid-stat-interceptor" pointcut-ref="druid-stat-pointcut"/>
+    </aop:config>
+    
+</beans>

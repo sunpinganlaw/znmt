@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration scan="true">
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <!--<appender name="rollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+        <!--<file>${project.basedir}/logs/znrl.log</file>-->
+        <!--<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
+            <!--<fileNamePattern>logs/znrl.%d{yyyy-MM-dd}.log</fileNamePattern>-->
+            <!--<maxHistory>30</maxHistory>-->
+        <!--</rollingPolicy>-->
+        <!--<encoder>-->
+            <!--<pattern>%d [%thread] %-5level %logger{36} - %msg%n</pattern>-->
+        <!--</encoder>-->
+    <!--</appender>-->
+    <appender name="rollingFileT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/znrl.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/znrl.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <!--
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>log/xx.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%d{HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+    -->
+    <!--log4jdbc ERROR-->
+    <!--  <logger name="jdbc.sqltiming" level="debug"/>
+      <logger name="java.sql.Connection" level="debug" />
+      <logger name="org.gxz.znrl.common.basedao.BaseDaoSingleSession" level="debug" />
+      <logger name="org.gxz.znrl.common.mybatis.PageInterceptor" level="debug" />
+      <logger name="org.apache.ibatis.executor.BaseExecutor" level="debug" />
+      <logger name="org.apache.ibatis.executor.CachingExecutor" level="debug" />
+      <logger name="org.springframework.context.support.ResourceBundleMessageSource" level="error"/>
+      <logger name="org.springframework.security.access.event.LoggerListener" level="error"/>
+      <logger name="org.springframework.security.authentication.event.LoggerListener" level="error"/>
+      <logger name="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" level="warn"/>
+     -->
+    <root level="ERROR">
+        <appender-ref ref="console" />
+        <appender-ref ref="rollingFile" />
+        <appender-ref ref="rollingFileT" />
+    </root>
+
+</configuration> 

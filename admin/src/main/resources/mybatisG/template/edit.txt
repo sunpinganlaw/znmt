@@ -1,0 +1,98 @@
+<form id="ff" method="post" commandName="{lowerModuleCode}">
+
+<div class="form-div" style="width: 460px;height: 560px;">
+    <!--
+    <div id="cc" class="easyui-layout" style="width: 460px;height: 560px;" >
+
+        <div data-options="region:'north',split:true" title="" style="height:150px;">
+            <table >
+
+             </table>
+        </div>
+        <div data-options="region:'center'" title="" style="height:200px;">
+            <table>
+
+            </table>
+        </div>
+        <div data-options="region:'south',split:true" title=""  style="height:120px;">
+            <table>
+            </table>
+        </div>
+    </div>
+    -->
+
+    <table>
+     {hiddenDiv}
+{regionGroup}
+    </table>
+
+    <div class="submit-div">
+    <#if doWhat != "view" >
+            <a href="javascript:void(0)" id="add" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm()">提交</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="$('#ff').form('clear');">重置</a>
+    </#if>
+
+    <#if doWhat == "view" >
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-print"  onclick="printIntelCtrl('#ff');">打印</a>
+    </#if>
+    </div>
+</div>
+
+</form>
+<script type="text/javascript">
+
+    var {lowerModuleCode} = JSON.parse(JSON.stringify(${{lowerModuleCode}}));
+
+    var view = "${doWhat}";
+
+    if (view != "add") {
+        $('#ff').form('load', {lowerModuleCode});
+    }
+
+    if (view == "view") {
+        hiddenAndChange('form','input','easyui-textbox');
+        hiddenAndChange('form','input','easyui-datebox');
+        hiddenAndChange('form','input','easyui-datetimebox');
+        hiddenAndChange('form','input','easyui-textbox input-readonly');
+        hiddenAndChange('form','input','easyui-textbox input-long');
+    }
+    else
+    {
+        {comboboxJavaScript}
+    }
+
+    function save()
+    {
+        var params = $("#ff").serialize();
+        if (view == "add") {
+            $.post("${base}/business/{lowerModuleCode}/saveAdd",params, function (rsp) {
+                showMsg('消息',rsp.msg);
+                closeWin();
+            }).error(function () {
+                showMsg("提示", "更新失败,请重新登陆!");
+            });
+        }
+        else
+        {
+            $.post("${base}/business/{lowerModuleCode}/saveEdit",params, function (rsp) {
+                showMsg('消息',rsp.msg);
+                closeWin();
+            }).error(function () {
+                showMsg("提示", "更新失败,请重新登陆!");
+            });
+        }
+    }
+
+    $('#ff').find('input').on('keyup',function(event){
+        if(event.keyCode == '13'){
+            submitForm();
+        }
+    });
+
+    function submitForm(){
+        if (! $("#ff").form('validate'))  return false;
+        $('#add').linkbutton({disabled:true});
+        save();
+    }
+
+</script>
