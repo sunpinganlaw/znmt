@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.gxz.znrl.mapper.PointConfigMapper">
+
+    <sql id="paging_top_sql">
+       select * from (
+    </sql>
+
+    <sql id="paging_bottom_sql">
+       ) t where t.rownumber between #{beginRowIndex,jdbcType=INTEGER} and #{endRowIndex,jdbcType=INTEGER}
+    </sql>
+
+    <resultMap id="PointConfigResultMap" type="org.gxz.znrl.entity.PointConfigEntity">
+        <result column="point_tag" jdbcType="VARCHAR" property="pointTag" />
+        <result column="point_name" jdbcType="VARCHAR" property="pointName" />
+        <result column="to_db" jdbcType="VARCHAR" property="toDb" />
+        <result column="status" jdbcType="VARCHAR" property="status" />
+        <result column="remark" jdbcType="VARCHAR" property="remark" />
+    </resultMap>
+
+    <select id="qryPointCfgInfo" parameterType="org.gxz.znrl.entity.PointConfigEntity" resultMap="PointConfigResultMap" >
+        select t.point_tag,
+        t.point_name,
+        t.to_db,
+        t.status,
+        t.remark
+        from point_cfg t
+        where 1 = 1
+        <if test="prefix != null" >
+            and t.point_tag  like  #{prefix,jdbcType=VARCHAR}||'%'
+        </if>
+    </select>
+
+    <select id="operaPointCfg" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.PointConfigEntity">
+        {call PKG_POINT.operate_point_cfg( #{prefix,mode=IN,jdbcType=VARCHAR},
+                                             #{actionType,mode=IN,jdbcType=VARCHAR},
+                                             #{jsonString,mode=IN,jdbcType=VARCHAR},
+                                             #{opCode,mode=IN,jdbcType=VARCHAR},
+                                             #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                             #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+    <resultMap id="comboboxOptResultMap" type="org.gxz.znrl.entity.ComboboxOptionEntity">
+        <result column="id" jdbcType="VARCHAR" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+
+    </resultMap>
+
+    <select id="getChannelList" resultMap="comboboxOptResultMap" >
+        select distinct SUBSTR(pc.point_tag, 1, INSTR(pc.point_tag, '.', 1, 2)-1) id,
+               SUBSTR(pc.point_tag, 1, INSTR(pc.point_tag, '.', 1, 2)-1) name
+          from point_cfg pc
+    </select>
+
+    <insert id="insertPointCfg" parameterType="org.gxz.znrl.entity.PointConfigEntity">
+        insert into point_cfg
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="pointTag != null" >
+                point_tag,
+            </if>
+            <if test="pointName != null" >
+                point_name,
+            </if>
+            <if test="toDb != null" >
+                to_db,
+            </if>
+            <if test="status != null" >
+                status,
+            </if>
+            <if test="remark != null" >
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="pointTag != null" >
+                #{pointTag,jdbcType=VARCHAR},
+            </if>
+            <if test="pointName != null" >
+                #{pointName,jdbcType=VARCHAR},
+            </if>
+            <if test="toDb != null" >
+                #{toDb,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null" >
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null" >
+                #{remark,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <delete id="delPointCfgByTag"  parameterType="org.gxz.znrl.entity.PointConfigEntity">
+    delete from point_cfg
+    where point_tag like  #{prefix,jdbcType=VARCHAR}||'%'
+    </delete>
+
+</mapper>

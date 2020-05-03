@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.gxz.znrl.mapper.VendorMineRelMapper">
+
+    <resultMap id="vendorMineRelResultMap" type="org.gxz.znrl.entity.VendorMineRelEntity">
+        <id column="VENDOR_MINE_ID" jdbcType="BIGINT" property="vendorMineId" />
+        <result column="VEN_NO" jdbcType="VARCHAR" property="venNo" />
+        <result column="MINE_NO" jdbcType="VARCHAR" property="mineNo" />
+        <result column="VEN_NAME" jdbcType="VARCHAR" property="venName" />
+        <result column="MINE_NAME" jdbcType="VARCHAR" property="mineName" />
+        <result column="CREATE_DATE" jdbcType="VARCHAR" property="createDate" />
+        <result column="UPDATE_DATE" jdbcType="VARCHAR" property="updateDate" />
+        <result column="OP_CODE" jdbcType="VARCHAR" property="opCode" />
+    </resultMap>
+
+    <select id="qryVendorMineList" parameterType="org.gxz.znrl.entity.VendorMineRelEntity" resultMap="vendorMineRelResultMap" >
+        SELECT A.VENDOR_MINE_ID,
+                A.VEN_NO,
+                A.MINE_NO,
+                (SELECT  B.VEN_NAME FROM VENDOR_INFO B WHERE B.VEN_NO=A.VEN_NO) VEN_NAME,
+                (SELECT  B.MINE_NAME FROM COAL_MINE B WHERE B.MINE_NO=A.MINE_NO) MINE_NAME,
+                A.CREATE_DATE,
+                A.UPDATE_DATE,
+                A.OP_CODE
+        FROM VENDOR_MINE_REL A
+        WHERE 1 = 1
+            <if test="venNo != null" >
+            AND A.VEN_NO = #{venNo,jdbcType=VARCHAR}
+            </if>
+            <if test="mineNo != null" >
+            AND A.MINE_NO = #{mineNo,jdbcType=VARCHAR}
+            </if>
+    </select>
+
+    <resultMap id="notExistVendorInfoResultMap" type="org.gxz.znrl.entity.VendorMineRelEntity">
+        <result column="VEN_NO" jdbcType="VARCHAR" property="venNo" />
+        <result column="VEN_NAME" jdbcType="VARCHAR" property="venName" />
+    </resultMap>
+
+    <select id="qryNotExistVendorInfoList" parameterType="org.gxz.znrl.entity.VendorMineRelEntity" resultMap="notExistVendorInfoResultMap" >
+        SELECT A.VEN_NO, A.VEN_NAME
+            FROM VENDOR_INFO A
+            WHERE 1 = 1
+            AND A.VEN_NO NOT IN
+                   (SELECT B.VEN_NO FROM VENDOR_MINE_REL B
+                     WHERE 1 = 1
+                     AND B.MINE_NO = #{mineNo,jdbcType=VARCHAR})
+    </select>
+
+    <resultMap id="notExistMineInfoResultMap" type="org.gxz.znrl.entity.VendorMineRelEntity">
+        <result column="MINE_NO" jdbcType="VARCHAR" property="mineNo" />
+        <result column="MINE_NAME" jdbcType="VARCHAR" property="mineName" />
+    </resultMap>
+
+    <select id="qryNotExistMineInfoList" parameterType="org.gxz.znrl.entity.VendorMineRelEntity" resultMap="notExistMineInfoResultMap" >
+        SELECT A.MINE_NO, A.MINE_NAME
+              FROM COAL_MINE A
+             WHERE 1 = 1
+                 AND A.MINE_NO NOT IN
+                (SELECT B.MINE_NO FROM VENDOR_MINE_REL B
+                 WHERE 1 = 1
+                  AND B.VEN_NO = #{venNo,jdbcType=VARCHAR})
+    </select>
+
+    <insert id="addVendorMineRel" parameterType="org.gxz.znrl.entity.VendorMineRelEntity" >
+        INSERT INTO VENDOR_MINE_REL
+            (VENDOR_MINE_ID,VEN_NO,MINE_NO,CREATE_DATE,UPDATE_DATE,OP_CODE)
+          VALUES
+            (#{vendorMineId,jdbcType=BIGINT},#{venNo,jdbcType=VARCHAR},#{mineNo,jdbcType=VARCHAR},SYSDATE,SYSDATE,#{opCode,jdbcType=VARCHAR})
+    </insert>
+
+    <delete id="delVendorMineRel" parameterType="org.gxz.znrl.entity.VendorMineRelEntity">
+        DELETE VENDOR_MINE_REL A
+        WHERE 1 = 1
+        <if test="venNo != null" >
+        AND A.VEN_NO =#{venNo,jdbcType=VARCHAR}
+        </if>
+        <if test="mineNo != null" >
+        AND A.MINE_NO = #{mineNo,jdbcType=VARCHAR}
+        </if>
+    </delete>
+
+    <update id="updateVendorMineRelByVenNo" parameterType="org.gxz.znrl.entity.VendorMineRelEntity">
+        UPDATE VENDOR_MINE_REL A
+        SET A.MINE_NO = #{mineNo,jdbcType=VARCHAR},A.UPDATE_DATE = SYSDATE , A.OP_CODE = #{opCode,jdbcType=VARCHAR}
+        WHERE 1 = 1
+        <if test="venNo != null" >
+            AND A.VEN_NO =#{venNo,jdbcType=VARCHAR}
+        </if>
+    </update>
+
+    <update id="updateVendorMineRelByMineNo" parameterType="org.gxz.znrl.entity.VendorMineRelEntity">
+        UPDATE VENDOR_MINE_REL A
+        SET A.VEN_NO = #{venNo,jdbcType=VARCHAR},A.UPDATE_DATE = SYSDATE , A.OP_CODE = #{opCode,jdbcType=VARCHAR}
+        WHERE 1 = 1
+        <if test="mineNo != null" >
+            AND A.MINE_NO =#{mineNo,jdbcType=VARCHAR}
+        </if>
+    </update>
+
+</mapper>

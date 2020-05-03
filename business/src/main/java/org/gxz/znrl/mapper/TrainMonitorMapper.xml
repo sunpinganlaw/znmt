@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.gxz.znrl.mapper.TrainMonitorMapper">
+
+    <sql id="paging_top_sql">
+        select * from (
+    </sql>
+
+    <sql id="paging_bottom_sql">
+        ) t where t.rownumber between #{beginRowIndex,jdbcType=INTEGER} and #{endRowIndex,jdbcType=INTEGER}
+    </sql>
+
+    <select id="qryWeightListCnt" parameterType="org.gxz.znrl.entity.WeightEntity" resultType="java.lang.Integer" >
+        select count(1)
+        from RLRECORDMSTHY a, RLCARCZMST b
+        where a.record_no = b.record_no
+        and a.record_dtm between trunc(sysdate) and trunc(sysdate)+1-0.00001
+    </select>
+
+
+    <resultMap id="weightMonitorResultMap" type="org.gxz.znrl.entity.TrainWeightEntity">
+        <id column="record_no" jdbcType="INTEGER" property="recordNo" />
+        <result column="card_id" jdbcType="VARCHAR" property="cardId" />
+        <result column="car_id" jdbcType="VARCHAR" property="carId" />
+        <result column="colry_nam" jdbcType="VARCHAR" property="colryName" />
+        <result column="coal_nam" jdbcType="VARCHAR" property="coalName" />
+        <result column="carrier_nam" jdbcType="VARCHAR" property="carrierName" />
+        <result column="mz_qty" jdbcType="VARCHAR" property="mzQty" />
+        <result column="cz_time" jdbcType="VARCHAR" property="czTime" />
+        <result column="pz_qty" jdbcType="VARCHAR" property="pzQty" />
+        <result column="jq_time" jdbcType="VARCHAR" property="jqTime" />
+        <result column="net_qty" jdbcType="VARCHAR" property="netQty" />
+    </resultMap>
+
+    <select id="qryWeightList" parameterType="org.gxz.znrl.entity.WeightEntity" resultMap="weightMonitorResultMap" >
+        <include refid="paging_top_sql" />
+        select a.record_no,
+        a.card_id,
+        a.car_id,
+        (select cm.mine_name from COAL_MINE cm where cm.mine_no = a.colry_no) colry_nam,
+        (select ct.coal_name from COAL_TYPE ct where ct.coal_no = to_char(a.coal_no)) coal_nam,
+        (select ci.carrier_name from CARRIER_INFO ci where ci.carrier_no = a.carrier_no) carrier_nam,
+        to_char(b.mz_qty) mz_qty,
+        to_char(b.cz_dtm, 'yyyy-mm-dd hh24:mi:ss') cz_time,
+        to_char(b.pz_qty) pz_qty,
+        to_char(b.jq_dtm, 'yyyy-mm-dd hh24:mi:ss') jq_time,
+        to_char(b.net_qty) net_qty,
+        rownum rownumber
+        from RLRECORDMSTHY a, RLCARCZMST b
+        where a.record_no = b.record_no
+        and a.record_dtm between trunc(sysdate) and trunc(sysdate)+1-0.00001
+        order by a.record_dtm desc
+
+        <include refid="paging_bottom_sql" />
+    </select>
+
+    <select id="qrySampleListCnt" resultType="java.lang.Integer" >
+        SELECT COUNT(1)
+                  FROM TAKE_SAMPLE_REC A
+                 WHERE 1 = 1
+                   AND A.SAMPLE_CODE IN
+                       (SELECT B.SAMPLE_CODE
+                          FROM RLRECORDMSTHY B
+                         WHERE 1 = 1
+                           AND B.RECORD_DTM BETWEEN TRUNC(SYSDATE) AND
+                               TRUNC(SYSDATE) + 1 - 0.00001)
+    </select>
+
+
+    <resultMap id="SampleMonitorResultMap" type="org.gxz.znrl.entity.TrainWeightRptEntity">
+        <id column="take_sample_recId" jdbcType="INTEGER" property="takeSampleRecId"/>
+        <result column="sample_typ" jdbcType="VARCHAR" property="sampleTyp"/>
+        <result column="sample_code" jdbcType="VARCHAR" property="sampleCode"/>
+        <result column="pack_code" jdbcType="VARCHAR" property="packCode"/>
+        <result column="start_time" jdbcType="VARCHAR" property="smplStartTime"/>
+        <result column="end_time" jdbcType="VARCHAR" property="smplEndTime"/>
+        <result column="batch_no" jdbcType="VARCHAR" property="batchNo"/>
+    </resultMap>
+
+    <select id="qrySampleList"  resultMap="SampleMonitorResultMap" >
+        <include refid="paging_top_sql" />
+        SELECT A.TAKE_SAMPLE_REC_ID,
+            DECODE(A.SAMPLE_TYP, '0', '在线采样', '1', '离线采样', '2','半自动','其他') SAMPLE_TYP,
+            A.SAMPLE_CODE,
+            A.PACK_CODE,
+            A.START_TIME SMPL_START_TIME,
+            A.END_TIME SMPL_END_TIME,
+            GET_TABLE_COLUMN_BY_COLUMN('BATCH_NO', 'BATCH_NO_INFO', 'SAMPLE_CODE', A.SAMPLE_CODE, '=', '1', 1) BATCH_NO,
+            rownum rownumber
+            FROM TAKE_SAMPLE_REC A
+            WHERE 1 = 1
+            AND A.SAMPLE_CODE IN
+            (SELECT B.SAMPLE_CODE
+            FROM RLRECORDMSTHY B
+            WHERE 1 = 1
+            AND B.RECORD_DTM BETWEEN TRUNC(SYSDATE) AND
+            TRUNC(SYSDATE) + 1 - 0.00001)
+        <include refid="paging_bottom_sql" />
+    </select>
+
+    <!--制样动态信息查询-->
+    <resultMap id="samplingResultMap" type="org.gxz.znrl.entity.MakeSampleEntity">
+        <result column="batch_no" jdbcType="VARCHAR" property="batchNo" />
+        <result column="sampling_code" jdbcType="VARCHAR" property="samplingCode" />
+        <result column="pack_code" jdbcType="VARCHAR" property="packCode" />
+        <result column="zy_weight" jdbcType="VARCHAR" property="zyWeight" />
+        <result column="zy_type" jdbcType="VARCHAR" property="zyType" />
+        <result column="sample_type" jdbcType="VARCHAR" property="sampleType" />
+        <result column="start_time" jdbcType="VARCHAR" property="startTime" />
+        <result column="end_time" jdbcType="VARCHAR" property="endTime" />
+        <result column="sample_weight" jdbcType="VARCHAR" property="sampleWeight" />
+        <result column="user_name" jdbcType="VARCHAR" property="sampleUserName" />
+    </resultMap>
+
+    <select id="qrySampling"  resultMap="samplingResultMap" >
+                SELECT (SELECT BNI.BATCH_NO
+                  FROM BATCH_NO_INFO BNI
+                 WHERE BNI.SAMPLING_CODE = B.SAMPLING_CODE) BATCH_NO,
+               B.SAMPLING_CODE,
+               B.PACK_CODE,
+               B.ZY_WEIGHT,
+               DECODE(B.ZY_TYPE, '0', '在线制样', '1', '离线制样') ZY_TYPE,
+               (SELECT DECODE(TS.SAMPLE_TYP, '0',  '在线采样', '1', '离线采样', '2', '半自动')
+                  FROM TAKE_SAMPLE_REC TS
+                 WHERE TS.SAMPLE_CODE = C.SAMPLE_CODE
+                   AND ROWNUM = 1) SAMPLE_TYPE,
+               B.START_TIME,
+               B.END_TIME,
+               B.SAMPLE_WEIGHT,
+               B.USER_NAME
+          FROM PREPAR_SAMPLING_REC B,PREPAR_SAMPLING_INTF C
+         WHERE C.SAMPLING_CODE = B.SAMPLING_CODE
+           AND B.INSERT_TIME BETWEEN TRUNC(SYSDATE) AND
+               TRUNC(SYSDATE) + 1 - 0.00001
+         ORDER BY B.INSERT_TIME DESC
+    </select>
+
+    <!--提交控制设备指令-->
+    <insert id="commitCtrlCmd" parameterType="org.gxz.znrl.entity.CtrlEntity" >
+        insert into MACHIN_CMD_INFO
+        (cmd_rec_id,
+        machin_code,
+        machin_type,
+        command_code,
+        <if test="sampleCode != null" >
+            sample_code,
+        </if>
+        send_cmd_time,
+        data_status,
+        insert_time,
+        op_code)
+        values (SEQ_MACHIN_CMD_ID.Nextval,
+        #{machineCode,jdbcType=VARCHAR},
+        #{machineType,jdbcType=VARCHAR},
+        #{commandCode,jdbcType=VARCHAR},
+        <if test="sampleCode != null" >
+            #{sampleCode,jdbcType=VARCHAR},
+        </if>
+        sysdate,
+        '0',
+        sysdate,
+        #{opCode,jdbcType=VARCHAR})
+    </insert>
+
+    <!--全厂总览：查询今日来煤情况-->
+    <resultMap id="TodayArrivedCoalResultMap" type="org.gxz.znrl.entity.TrainWeightRptEntity">
+        <result column="ven_nam" jdbcType="VARCHAR" property="venNam" />
+        <result column="coal_nam" jdbcType="VARCHAR" property="coalNam" />
+        <result column="total_mz" jdbcType="VARCHAR" property="totalMzQty" />
+        <result column="total_net" jdbcType="VARCHAR" property="totalNetQty" />
+        <result column="total_cnt" jdbcType="VARCHAR" property="totalEntryCnt" />
+    </resultMap>
+
+    <select id="qryTodayArrivedCoal"  resultMap="TodayArrivedCoalResultMap" >
+        select ven_nam, coal_nam, to_char(nvl(sum(mz_qty), 0)) total_mz, to_char(nvl(sum(net_qty), 0)) total_net, to_char(count(*)) total_cnt
+        from (select (select vi.ven_name
+        from VENDOR_INFO vi
+        where vi.ven_no = a.ven_no) ven_nam,
+        (select ct.coal_name
+        from COAL_TYPE ct
+        where ct.coal_no = a.coal_no) coal_nam,
+        to_char(b.mz_qty) mz_qty,
+        to_char(b.net_qty) net_qty
+        from RLRECORDMSTHY a, RLCARCZMST b
+        where a.record_no = b.record_no
+        and a.record_dtm between trunc(sysdate) and trunc(sysdate) + 1 - 0.00001)
+        group by ven_nam, coal_nam
+
+    </select>
+
+
+    <!--全厂总览：燃料指标-->
+    <resultMap id="fuelIndicatorResultMap" type="org.gxz.znrl.entity.TrainWeightRptEntity">
+        <result column="indicator_name" jdbcType="VARCHAR" property="indicatorName" />
+        <result column="yesterday_value" jdbcType="VARCHAR" property="yesterdayValue" />
+        <result column="this_month_value" jdbcType="VARCHAR" property="thisMonthValue" />
+        <result column="this_year_value" jdbcType="VARCHAR" property="thisYearValue" />
+    </resultMap>
+
+    <select id="qryFuelIndicator"  resultMap="fuelIndicatorResultMap" >
+        SELECT A.INDICATOR_NAME,
+                   A.YESTERDAY_VALUE,
+                   A.THIS_MONTH_VALUE,
+                   A.THIS_YEAR_VALUE
+         FROM FUEL_INDICATOR A
+    </select>
+
+    <!--全厂总览：查询汽车动态信息-->
+    <resultMap id="trainComeInMap" type="org.gxz.znrl.entity.TrainWeightRptEntity">
+        <result column="record_dtm" jdbcType="VARCHAR" property="recordDtm" />
+        <result column="car_id" jdbcType="VARCHAR" property="carId" />
+        <result column="net_qty" jdbcType="VARCHAR" property="netQty" />
+        <result column="tick_qty" jdbcType="VARCHAR" property="tickQty" />
+    </resultMap>
+
+    <select id="qryTrainComeIn"  resultMap="trainComeInMap" >
+        SELECT A.RECORD_DTM, A.CAR_ID, A.NET_QTY, A.TICK_QTY
+                  FROM RLRECORDMSTHY A
+                 WHERE 1 = 1
+                   AND A.RECORD_DTM BETWEEN TRUNC(SYSDATE) AND TRUNC(SYSDATE) + 1 - 0.00001
+                 ORDER BY A.RECORD_DTM DESC
+    </select>
+
+    <!--全厂总览：查询汽车动态信息-->
+    <resultMap id="carDynamicResultMap" type="org.gxz.znrl.entity.TrainWeightRptEntity">
+        <result column="car_id" jdbcType="VARCHAR" property="carId" />
+        <result column="carrier_nam" jdbcType="VARCHAR" property="carrierNam" />
+        <result column="coal_nam" jdbcType="VARCHAR" property="coalNam" />
+        <result column="record_dtm" jdbcType="VARCHAR" property="recordDtm" />
+        <result column="cur_pos" jdbcType="VARCHAR" property="curPos" />
+        <result column="next_pos" jdbcType="VARCHAR" property="nextPos" />
+    </resultMap>
+
+    <select id="qryCarDynamic"  resultMap="carDynamicResultMap" >
+        select a.car_id,
+        (select ci.carrier_name
+        from CARRIER_INFO ci
+        where ci.carrier_no = a.carrier_no) carrier_nam,
+        (select ct.coal_name from COAL_TYPE ct where ct.coal_no = a.coal_no) coal_nam,
+        to_char(a.record_dtm, 'yyyy-mm-dd hh24:mi:ss') record_dtm,
+        getCarFlowInfo(a.record_no,'CUR') cur_pos,
+        getCarFlowInfo(a.record_no,'NEXT') next_pos
+        from RLRECORDMSTQY a
+        where a.record_dtm between trunc(sysdate) and trunc(sysdate) + 1 - 0.00001
+        order by a.record_dtm desc
+    </select>
+
+
+    <!--全厂总览：火车过衡统计-->
+    <resultMap id="trainOveriewResultMap" type="org.gxz.znrl.entity.TrainWeightRptEntity">
+        <result column="sample_code" jdbcType="VARCHAR" property="sampleCode"/>
+        <result column="record_dtm" jdbcType="VARCHAR" property="recordDtm"/>
+        <result column="fcj_code" jdbcType="VARCHAR" property="fcjCode"/>
+        <result column="car_num" jdbcType="VARCHAR" property="carNum"/>
+        <result column="enpty_num" jdbcType="VARCHAR" property="enptyNum"/>
+        <result column="net_qty_num" jdbcType="VARCHAR" property="netQtyNum"/>
+        <result column="net_qty" jdbcType="VARCHAR" property="netQty"/>
+        <result column="tick_qty" jdbcType="VARCHAR" property="tickQty"/>
+        <result column="sample_typ" jdbcType="VARCHAR" property="sampleTyp"/>
+        <result column="sample_tag" jdbcType="VARCHAR" property="sampleTag"/>
+        <result column="sampleing_tag" jdbcType="VARCHAR" property="sampleingTag"/>
+    </resultMap>
+
+    <select id="qryTrainOveriew"  resultMap="trainOveriewResultMap" >
+                SELECT A.SAMPLE_CODE,
+                       GET_TABLE_COLUMN_BY_COLUMN('TO_CHAR(RECORD_DTM,''YYYY-MM-DD HH24:MI:SS'')', 'RLRECORDMSTHY', 'SAMPLE_CODE^_^ROWNUM', NVL(A.SAMPLE_CODE,'0')||'^_^1', '=^_^=', '1^_^1', 2) RECORD_DTM,
+                       GET_TABLE_COLUMN_BY_COLUMN('FCJ_CODE', 'RLRECORDMSTHY', 'SAMPLE_CODE^_^ROWNUM', NVL(A.SAMPLE_CODE,'0')||'^_^1', '=^_^=', '1^_^1', 2) FCJ_CODE,
+                       A.CAR_NUM,
+                       GET_EMPTY_NUM(NVL(A.SAMPLE_CODE,'0')) EMPTY_NUM,
+                       GET_NET_QTY_NUM(NVL(A.SAMPLE_CODE,'0')) NET_QTY_NUM,
+                       GET_TABLE_COLUMN_BY_COLUMN('SUM(NET_QTY)','RLRECORDMSTHY', 'SAMPLE_CODE', NVL(A.SAMPLE_CODE,'0'), '=', '1', 1) NET_QTY,
+                       GET_TABLE_COLUMN_BY_COLUMN('SUM(TICK_QTY)','RLRECORDMSTHY', 'SAMPLE_CODE', NVL(A.SAMPLE_CODE,'0'), '=', '1', 1) TICK_QTY,
+                       GET_TABLE_COLUMN_BY_COLUMN('DECODE(SAMPLE_TYP, ''0'', ''在线采样'', ''1'', ''离线采样'', ''其他'')','RLRECORDMSTHY', 'SAMPLE_CODE^_^ROWNUM', NVL(A.SAMPLE_CODE,'0')||'^_^1', '=^_^=', '1^_^1', 2) SAMPLE_TYP,
+                       GET_TABLE_COLUMN_BY_COLUMN('DECODE(SIGN(COUNT(1)), 0, ''未完成'', ''完成'')', 'TAKE_SAMPLE_REC', 'SAMPLE_CODE', NVL(A.SAMPLE_CODE,'0'), '=', '1', 1) SAMPLE_TAG,
+                       GET_TABLE_COLUMN_BY_COLUMN('DECODE(SIGN(COUNT(1)), 0, ''未完成'', ''完成'')', 'PREPAR_SAMPLING_REC', 'SAMPLING_CODE', NVL(A.SAMPLING_CODE,'0'), '=', '1', 1) SAMPLEING_TAG
+                  FROM BATCH_NO_INFO A
+                 WHERE 1 = 1
+                  AND  A.SAMPLE_CODE IN
+                       (SELECT B.SAMPLE_CODE
+                          FROM RLRECORDMSTHY B
+                          WHERE 1 = 1
+                          AND B.RECORD_DTM BETWEEN TRUNC(SYSDATE) AND TRUNC(SYSDATE) + 1 - 0.00001)
+                  AND  A.BATCH_NO_TYPE = '1'
+    </select>
+
+    <select id="qryCarDumperListCnt" resultType="java.lang.Integer" >
+        SELECT COUNT(1)
+          FROM RLRECORDMSTHY A
+         WHERE 1 = 1
+           AND A.RECORD_DTM BETWEEN TRUNC(SYSDATE) AND TRUNC(SYSDATE) + 1 - 0.00001
+    </select>
+
+    <!--翻车机-->
+    <resultMap id="carDumperResultMap" type="org.gxz.znrl.entity.TrainWeightRptEntity">
+        <result column="car_id" jdbcType="VARCHAR" property="carId" />
+        <result column="fcj_code" jdbcType="VARCHAR" property="fcjCode" />
+        <result column="cz_dtm" jdbcType="VARCHAR" property="czDtm" />
+        <result column="jq_dtm" jdbcType="VARCHAR" property="jqDtm" />
+        <result column="mz_qty" jdbcType="VARCHAR" property="mzQty" />
+        <result column="pz_qty" jdbcType="VARCHAR" property="pzQty" />
+        <result column="tick_qty" jdbcType="VARCHAR" property="tickQty" />
+    </resultMap>
+
+    <select id="qryCarDumperList"  resultMap="carDumperResultMap" >
+        SELECT A.CAR_ID,
+               A.FCJ_CODE,
+               A.CZ_DTM,
+               A.JQ_DTM,
+               A.MZ_QTY,
+               A.PZ_QTY,
+               A.TICK_QTY,
+               rownum rownumber
+          FROM RLRECORDMSTHY A
+         WHERE 1 = 1
+           AND A.RECORD_DTM BETWEEN TRUNC(SYSDATE) AND TRUNC(SYSDATE) + 1 - 0.00001
+    </select>
+
+</mapper>

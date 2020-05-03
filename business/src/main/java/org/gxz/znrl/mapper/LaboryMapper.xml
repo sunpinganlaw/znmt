@@ -1,0 +1,4422 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.gxz.znrl.mapper.LaboryMapper">
+  <sql id="paging_top_sql">
+   select * from (
+  </sql>
+
+  <sql id="paging_bottom_sql">
+   ) t where t.rownumber between #{beginRowIndex,jdbcType=INTEGER} and #{endRowIndex,jdbcType=INTEGER}
+  </sql>
+
+    <!--灰融查询-->
+    <resultMap id="MeltResDataResultMap" type="org.gxz.znrl.entity.MeltEntity">
+        <result column="melt_res_id" jdbcType="VARCHAR" property="id" />
+        <result column="labor_code" jdbcType="VARCHAR" property="laborCode" />
+        <result column="device_no" jdbcType="VARCHAR" property="deviceNo" />
+        <result column="device_name" jdbcType="VARCHAR" property="deviceName" />
+        <result column="gg_no" jdbcType="VARCHAR" property="ggNo" />
+        <result column="temperature" jdbcType="VARCHAR" property="temperature" />
+        <result column="humidity" jdbcType="VARCHAR" property="humidity" />
+        <result column="standard" jdbcType="VARCHAR" property="standard" />
+        <result column="qf_condition" jdbcType="VARCHAR" property="standard" />
+        <result column="dt" jdbcType="VARCHAR" property="dt" />
+        <result column="st" jdbcType="VARCHAR" property="st" />
+        <result column="ht" jdbcType="VARCHAR" property="ht" />
+        <result column="ft" jdbcType="VARCHAR" property="ft" />
+        <result column="op_name" jdbcType="VARCHAR" property="opName" />
+        <result column="op_code" jdbcType="VARCHAR" property="opCode" />
+        <result column="op_time" jdbcType="VARCHAR" property="opTime" />
+        <result column="op_date" jdbcType="VARCHAR" property="opDate" />
+        <result column="status" jdbcType="VARCHAR" property="status" />
+        <result column="status_name" jdbcType="VARCHAR" property="statusName" />
+        <result column="other_status_name" jdbcType="VARCHAR" property="otherStatusName" />
+        <result column="batch_type" jdbcType="VARCHAR" property="batchType" />
+        <result column="cc_val" jdbcType="VARCHAR" property="ccVal" />
+        <result column="report_tag" jdbcType="VARCHAR" property="reportTag"/>
+    </resultMap>
+
+    <!--灰熔融化验原始数据查询-->
+    <select id="qryMeltResOrgData"  parameterType="org.gxz.znrl.entity.MeltEntity" resultMap="MeltResDataResultMap">
+        SELECT a.melt_res_id,
+                a.labor_code,
+                a.device_no,
+                (select b.device_name from LAB_DEVICE b where b.device_no = a.device_no) device_name,
+                a.gg_no,
+                '' temperature,
+                '' humidity,
+                '' standard,
+                a.qf_condition,
+                a.dt,
+                a.st,
+                a.ht,
+                a.ft,
+                a.op_code,
+                a.op_name,
+                a.cc_val,
+                decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次', '') batch_type,
+                to_char(a.op_time, 'yyyy-mm-dd hh24:mi:ss') op_time,
+                to_char(trunc(a.op_time), 'yyyy-mm-dd') op_date,
+                decode(a.status, '0','未确认','1','已确认','2','作废') status_name,
+                a.status
+        FROM LAB_MELT_RESULT_ORG a
+        WHERE 1 = 1
+
+        <if test="beginDate != null" >
+            and a.op_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.op_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="status != null" >
+            and a.status = #{status,jdbcType=VARCHAR}
+        </if>
+
+        <if test="batchType != null" >
+            and a.batch_type = #{batchType,jdbcType=VARCHAR}
+        </if>
+
+        order by a.labor_code desc, a.op_time desc
+    </select>
+
+    <!--灰融化验数据查询-->
+    <select id="qryMeltResData"  parameterType="org.gxz.znrl.entity.MeltEntity" resultMap="MeltResDataResultMap">
+        SELECT a.melt_res_id,
+                a.labor_code,
+                a.device_no,
+                (select b.device_name from LAB_DEVICE b where b.device_no = a.device_no) device_name,
+                a.gg_no,
+                a.temperature,
+                a.humidity,
+                (select c.standard_name from lab_standard c where c.standard_id = a.standard) standard,
+                a.qf_condition,
+                a.dt,
+                a.st,
+                a.ht,
+                a.ft,
+                a.op_code,
+                a.op_name,
+                decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次', '') batch_type,
+                to_char(a.op_time, 'yyyy-mm-dd hh24:mi:ss') op_time,
+                to_char(trunc(a.op_time), 'yyyy-mm-dd') op_date,
+                decode(a.status, '0','未审批','1','审批中','2','已审批','3','作废') status_name,
+                decode(a.status, '0','未计算','1','已计算','2','作废') other_status_name,
+                (select sign(count(1)) from lab_report b where b.labor_code = a.labor_code  and b.appr_status <![CDATA[ <> ]]> '3') report_tag,
+                a.status
+        FROM LAB_MELT_RESULT a
+        WHERE 1 = 1
+
+        <if test="beginDate != null" >
+            and a.op_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.op_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="status != null" >
+            and a.status = #{status,jdbcType=VARCHAR}
+        </if>
+
+        <if test="batchType != null" >
+            and a.batch_type = #{batchType,jdbcType=VARCHAR}
+        </if>
+
+        order by a.labor_code desc, a.op_time desc
+    </select>
+
+  <!--天平查询-->
+  <resultMap id="ScalesResDataResultMap" type="org.gxz.znrl.entity.ScalesEntity">
+      <result column="scales_res_id" jdbcType="VARCHAR" property="id" />
+      <result column="labor_code" jdbcType="VARCHAR" property="laborCode" />
+      <result column="device_no" jdbcType="VARCHAR" property="deviceNo" />
+      <result column="device_name" jdbcType="VARCHAR" property="deviceName" />
+      <result column="gg_no" jdbcType="VARCHAR" property="ggNo" />
+      <result column="temperature" jdbcType="VARCHAR" property="temperature" />
+      <result column="humidity" jdbcType="VARCHAR" property="humidity" />
+      <result column="standard" jdbcType="VARCHAR" property="standard" />
+      <result column="myp_qty" jdbcType="VARCHAR" property="mypQty" />
+      <result column="sampling_qty" jdbcType="VARCHAR" property="samplingQty" />
+      <result column="total_qty" jdbcType="VARCHAR" property="totalQty" />
+      <result column="afterdry_qty" jdbcType="VARCHAR" property="afterDryQty" />
+      <result column="test_qty" jdbcType="VARCHAR" property="testQty" />
+      <result column="qty_loss" jdbcType="VARCHAR" property="qtyLoss" />
+      <result column="loss_style" jdbcType="VARCHAR" property="lossStyle" />
+      <result column="index_type" jdbcType="VARCHAR" property="indexType" />
+      <result column="index_type_name" jdbcType="VARCHAR" property="indexTypeName" />
+      <result column="index_value" jdbcType="VARCHAR" property="indexVal" />
+      <result column="org_keyid" jdbcType="VARCHAR" property="orgKeyId" />
+      <result column="mt" jdbcType="VARCHAR" property="mt" />
+      <result column="mad" jdbcType="VARCHAR" property="mad" />
+      <result column="ad_style" jdbcType="VARCHAR" property="adStyle" />
+      <result column="aad" jdbcType="VARCHAR" property="aad" />
+      <result column="ad" jdbcType="VARCHAR" property="ad" />
+      <result column="vad" jdbcType="VARCHAR" property="vad" />
+      <result column="op_name" jdbcType="VARCHAR" property="opName" />
+      <result column="op_code" jdbcType="VARCHAR" property="opCode" />
+      <result column="op_time" jdbcType="VARCHAR" property="opTime" />
+      <result column="op_date" jdbcType="VARCHAR" property="opDate" />
+      <result column="confirm_time" jdbcType="VARCHAR" property="confirmTime" />
+      <result column="confirm_name" jdbcType="VARCHAR" property="confirmName" />
+      <result column="status" jdbcType="VARCHAR" property="status" />
+      <result column="status_name" jdbcType="VARCHAR" property="statusName" />
+      <result column="other_status_name" jdbcType="VARCHAR" property="otherStatusName" />
+      <result column="batch_type" jdbcType="VARCHAR" property="batchType" />
+      <result column="cc_val" jdbcType="VARCHAR" property="ccVal" />
+      <result column="cc_status" jdbcType="VARCHAR" property="ccStatus" />
+      <result column="report_tag" jdbcType="VARCHAR" property="reportTag"/>
+      <result column="remark" jdbcType="VARCHAR" property="remark"/>
+  </resultMap>
+
+    <!--天平化验原始数据查询-->
+    <select id="qryScalesResOrgData"  parameterType="org.gxz.znrl.entity.ScalesEntity" resultMap="ScalesResDataResultMap">
+        SELECT a.scales_res_id,
+                a.labor_code,
+                a.device_no,
+                (select b.device_name from LAB_DEVICE b where b.device_no = a.device_no) device_name,
+                a.gg_no,
+                '' temperature,
+                '' humidity,
+                '' standard,
+                a.myp_qty,
+                a.sampling_qty,
+                a.total_qty,
+                a.afterdry_qty,
+                a.test_qty,
+                a.qty_loss,
+                a.loss_style,
+                a.mt,
+                a.mad,
+                decode(a.ad_style, '1','快灰法','2','慢灰法') ad_style,
+                a.aad,
+                a.ad,
+                a.vad,
+                a.op_code,
+                a.op_name,
+                a.cc_val,
+                decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次', '') batch_type,
+                to_char(a.op_time, 'yyyy-mm-dd hh24:mi:ss') op_time,
+                to_char(trunc(a.op_time), 'yyyy-mm-dd') op_date,
+                decode(a.status, '0','未确认','1','已确认','2','作废') status_name,
+                a.cc_status,
+                a.status
+          FROM LAB_SCALES_RESULT_ORG a
+         WHERE 1 = 1
+
+            <if test="beginDate != null" >
+                and a.op_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+            </if>
+
+            <if test="endDate != null" >
+                and a.op_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+            </if>
+
+            <if test="laborCode != null" >
+                and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+            </if>
+
+            <if test="status != null" >
+                and a.status = #{status,jdbcType=VARCHAR}
+            </if>
+
+            <if test="batchType != null" >
+                and a.batch_type = #{batchType,jdbcType=VARCHAR}
+            </if>
+
+            order by a.op_time desc,a.labor_code desc
+    </select>
+
+
+    <!--天平化验原始数据查询,新版 20160223 add by xieyt-->
+    <select id="qryScalesResOrgDataNew"  parameterType="org.gxz.znrl.entity.ScalesEntity" resultMap="ScalesResDataResultMap">
+        SELECT a.scales_res_id,
+                a.labor_code,
+                a.device_no,
+                (select b.device_name from LAB_DEVICE b where b.device_no = a.device_no) device_name,
+                a.gg_no,
+                a.myp_qty,
+                a.sampling_qty,
+                a.total_qty,
+                a.afterdry_qty,
+                a.index_type,
+                a.index_value,
+                decode(a.index_type,'mt','全水','mad','水分','aad','灰分','vad','挥发分') index_type_name,
+                a.op_code,
+                a.op_name,
+                a.cc_status,
+                decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次', '99', '全水调整化验') batch_type,
+                to_char(a.op_time, 'yyyy-mm-dd hh24:mi:ss') op_time,
+                to_char(trunc(a.op_time), 'yyyy-mm-dd') op_date,
+                decode(a.status, '0','未确认','1','已确认','2','作废') status_name,
+                a.status
+        FROM LAB_SCALES_RESULT_ORG a
+        WHERE 1 = 1
+
+        <if test="beginDate != null" >
+            and a.op_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.op_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="status != null" >
+            and a.status = #{status,jdbcType=VARCHAR}
+        </if>
+
+        <if test="batchType != null" >
+            and a.batch_type = #{batchType,jdbcType=VARCHAR}
+        </if>
+
+        <if test="indexType != null" >
+            and a.index_type = #{indexType,jdbcType=VARCHAR}
+        </if>
+
+        order by a.labor_code desc,a.index_type, a.op_time desc
+    </select>
+
+
+    <select id="qryMAVResData"  parameterType="org.gxz.znrl.entity.ScalesEntity" resultMap="ScalesResDataResultMap">
+        SELECT lab_confirm_id scales_res_id,
+                labor_code,
+                decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次', '') batch_type,
+                (select b.device_name from LAB_DEVICE b where b.device_no = a.device_no) device_name,
+                index_type,
+                decode(index_type, 'mt','全水分','mad','水分','aad','灰分','vad','挥发分') index_type_name,
+                index_value,
+                org_keyid,
+                temperature,
+                humidity,
+                standard,
+                status,
+                decode(a.status, '0','未计算','1','已计算','2','作废') status_name,
+                op_code,
+                to_char(a.op_time, 'yyyy-mm-dd hh24:mi:ss') op_time,
+                to_char(trunc(a.op_time), 'yyyy-mm-dd') op_date,
+                op_name,
+                confirm_code,
+                to_char(a.confirm_time, 'yyyy-mm-dd hh24:mi:ss') confirm_time,
+                remark
+          FROM lab_mav_result a
+         WHERE 1 = 1
+
+        <if test="beginDate != null" >
+            and a.op_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.op_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="status != null" >
+            and a.status = #{status,jdbcType=VARCHAR}
+        </if>
+
+        <if test="batchType != null" >
+            and a.batch_type = #{batchType,jdbcType=VARCHAR}
+        </if>
+
+        <if test="indexType != null" >
+            and a.index_type = #{indexType,jdbcType=VARCHAR}
+        </if>
+
+        order by a.op_time desc,a.labor_code desc
+    </select>
+
+
+    <insert id="addLabScalesResultOrg" parameterType="org.gxz.znrl.entity.ScalesEntity" >
+        INSERT INTO LAB_SCALES_RESULT_ORG (SCALES_RES_ID,DEVICE_NO,LABOR_CODE,GG_NO,
+                                                MYP_QTY,SAMPLING_QTY,TOTAL_QTY,AFTERDRY_QTY,
+                                                TEST_QTY,QTY_LOSS,LOSS_STYLE,MT,
+                                                MAD,AD_STYLE,AAD,AD,
+                                                VAD,STATUS,INSERT_TIME,OP_CODE,
+                                                OP_TIME,REL_SCALES_RES_ID)
+                                           VALUES
+                                            (#{scalesResId,jdbcType=VARCHAR},#{deviceNo,jdbcType=VARCHAR},#{laborCode,jdbcType=VARCHAR},#{ggNo,jdbcType=VARCHAR},
+                                             #{mypQty,jdbcType=VARCHAR},#{samplingQty,jdbcType=VARCHAR},#{totalQty,jdbcType=VARCHAR},#{afterDryQty,jdbcType=VARCHAR},
+                                             #{testQty,jdbcType=VARCHAR},#{qtyLoss,jdbcType=VARCHAR},#{lossStyle,jdbcType=VARCHAR},#{mt,jdbcType=VARCHAR},
+                                             #{mad,jdbcType=VARCHAR},#{adStyle,jdbcType=VARCHAR},#{add,jdbcType=VARCHAR},#{ad,jdbcType=VARCHAR},
+                                             #{vad,jdbcType=VARCHAR},'0',SYSDATE,#{opCode,jdbcType=VARCHAR},
+                                             SYSDATE,#{relScalesResId,jdbcType=VARCHAR})
+    </insert>
+
+    <select id="addLabScalesResultOrgNew" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.ScalesEntity" >
+        {call PK_LABORY.add_scales_result_org(#{insertString,mode=IN,jdbcType=VARCHAR},
+                                              #{opCode,mode=IN,jdbcType=VARCHAR},
+                                              #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                              #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+    <!--天平化验数据查询-->
+    <select id="qryScalesResData"  parameterType="org.gxz.znrl.entity.ScalesEntity" resultMap="ScalesResDataResultMap">
+           SELECT a.scales_res_id,
+                   a.labor_code,
+                   a.device_no,
+                   (select b.device_name from LAB_DEVICE b where b.device_no = a.device_no) device_name,
+                   a.gg_no,
+                   a.temperature,
+                   a.humidity,
+                  (select c.standard_name from lab_standard c where c.standard_id = a.standard) standard,
+                   a.myp_qty,
+                   a.sampling_qty,
+                   a.total_qty,
+                   a.afterdry_qty,
+                   a.test_qty,
+                   a.qty_loss,
+                   a.loss_style,
+                   a.mt,
+                   a.mad,
+                   decode(a.ad_style, '1','快灰法','2','慢灰法') ad_style,
+                   a.aad,
+                   a.ad,
+                   a.vad,
+                   a.op_code,
+                   a.op_name,
+                   decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次', '') batch_type,
+                   to_char(a.op_time, 'yyyy-mm-dd hh24:mi:ss') op_time,
+                   to_char(trunc(a.op_time), 'yyyy-mm-dd') op_date,
+                   decode(a.status, '0','未审批','1','审批中','2','已审批','3','作废') status_name,
+                   decode(a.status, '0','未计算','1','已计算','2','作废') other_status_name,
+                   (select sign(count(1)) from lab_report b where b.labor_code = a.labor_code and b.appr_status <![CDATA[ <> ]]> '3') report_tag,
+                   a.status
+              FROM LAB_SCALES_RESULT a
+             WHERE 1 = 1
+
+            <if test="beginDate != null" >
+                and a.op_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+            </if>
+
+            <if test="endDate != null" >
+                and a.op_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+            </if>
+
+            <if test="laborCode != null" >
+                and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+            </if>
+
+            <if test="status != null" >
+                and a.status = #{status,jdbcType=VARCHAR}
+            </if>
+
+            <if test="batchType != null" >
+                and a.batch_type = #{batchType,jdbcType=VARCHAR}
+            </if>
+
+             order by a.op_time desc,a.labor_code desc,mt desc ,mad desc,aad desc,vad desc
+
+    </select>
+
+
+    <!--定硫仪查询-->
+    <resultMap id="SResDataResultMap" type="org.gxz.znrl.entity.SEntity">
+        <result column="s_res_id" jdbcType="VARCHAR" property="id" />
+        <result column="labor_code" jdbcType="VARCHAR" property="laborCode" />
+        <result column="device_no" jdbcType="VARCHAR" property="deviceNo" />
+        <result column="device_name" jdbcType="VARCHAR" property="deviceName" />
+        <result column="gg_no" jdbcType="VARCHAR" property="ggNo" />
+        <result column="temperature" jdbcType="VARCHAR" property="temperature" />
+        <result column="humidity" jdbcType="VARCHAR" property="humidity" />
+        <result column="standard" jdbcType="VARCHAR" property="standard" />
+        <result column="sampling_name" jdbcType="VARCHAR" property="samplingName" />
+        <result column="sampling_weight" jdbcType="VARCHAR" property="samplingWeight" />
+        <result column="mad" jdbcType="VARCHAR" property="mad" />
+        <result column="st_ad" jdbcType="VARCHAR" property="stAd" />
+        <result column="st_d" jdbcType="VARCHAR" property="stD" />
+        <result column="cc_val" jdbcType="VARCHAR" property="ccVal" />
+        <result column="jz_style" jdbcType="VARCHAR" property="jzStyle" />
+        <result column="total_time" jdbcType="VARCHAR" property="totalTime" />
+        <result column="op_name" jdbcType="VARCHAR" property="opName" />
+        <result column="op_code" jdbcType="VARCHAR" property="opCode" />
+        <result column="op_time" jdbcType="VARCHAR" property="opTime" />
+        <result column="op_date" jdbcType="VARCHAR" property="opDate" />
+        <result column="cc_status" jdbcType="VARCHAR" property="ccStatus" />
+        <result column="status" jdbcType="VARCHAR" property="status" />
+        <result column="status_name" jdbcType="VARCHAR" property="statusName" />
+        <result column="other_status_name" jdbcType="VARCHAR" property="otherStatusName" />
+        <result column="batch_type" jdbcType="VARCHAR" property="batchType" />
+        <result column="report_tag" jdbcType="VARCHAR" property="reportTag"/>
+    </resultMap>
+
+    <!--定硫仪化验原始数据查询-->
+    <select id="qrySResOrgData"  parameterType="org.gxz.znrl.entity.SEntity" resultMap="SResDataResultMap">
+        SELECT a.s_res_id,
+                a.labor_code,
+                (select b.device_name from LAB_DEVICE b where b.device_no = a.device_no) device_name,
+                a.gg_no,
+                a.sampling_name,
+                '' temperature,
+                '' humidity,
+                '' standard,
+                a.sampling_weight,
+                a.mad,
+                a.st_ad,
+                a.st_d,
+                a.cc_val,
+                a.jz_style,
+                a.total_time,
+                a.insert_time,
+                a.op_code,
+                op_name,
+                decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次', '') batch_type,
+                to_char(a.op_time, 'yyyy-mm-dd hh24:mi:ss') op_time,
+                to_char(trunc(a.op_time), 'yyyy-mm-dd') op_date,
+                decode(a.status, '0','未确认','1','已确认','2','作废') status_name,
+                a.cc_status,
+                a.status
+          FROM LAB_S_RESULT_ORG a
+         WHERE 1 = 1
+                <if test="beginDate != null" >
+                    and a.op_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+                </if>
+
+                <if test="endDate != null" >
+                    and a.op_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+                </if>
+
+                <if test="laborCode != null" >
+                    and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+                </if>
+
+                <if test="status != null" >
+                    and a.status = #{status,jdbcType=VARCHAR}
+                </if>
+
+                <if test="batchType != null" >
+                    and a.batch_type = #{batchType,jdbcType=VARCHAR}
+                </if>
+          order by a.op_time desc,a.labor_code desc
+    </select>
+
+    <!--定硫仪化验数据查询-->
+    <select id="qrySResData"  parameterType="org.gxz.znrl.entity.SEntity" resultMap="SResDataResultMap">
+        SELECT s_res_id,
+                labor_code,
+                (select b.device_name from LAB_DEVICE b where b.device_no = a.device_no) device_name,
+                gg_no,
+                sampling_name,
+                temperature,
+                humidity,
+                (select c.standard_name from lab_standard c where c.standard_id = a.standard) standard,
+                sampling_weight,
+                mad,
+                st_ad,
+                st_d,
+                cc_val,
+                jz_style,
+                total_time,
+                insert_time,
+                op_code,
+                op_name,
+                decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次', '') batch_type,
+                to_char(a.op_time, 'yyyy-mm-dd hh24:mi:ss') op_time,
+                to_char(trunc(a.op_time), 'yyyy-mm-dd') op_date,
+                decode(a.status, '0','未审批','1','审批中','2','已审批','3','作废') status_name,
+                decode(a.status, '0','未计算','1','已计算','2','作废') other_status_name,
+                (select sign(count(1)) from lab_report b where b.labor_code = a.labor_code  and b.appr_status <![CDATA[ <> ]]> '3') report_tag,
+                a.status
+           FROM LAB_S_RESULT a
+          WHERE 1 = 1
+            <if test="beginDate != null" >
+                and a.op_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+            </if>
+
+            <if test="endDate != null" >
+                and a.op_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+            </if>
+
+            <if test="laborCode != null" >
+                and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+            </if>
+
+            <if test="status != null" >
+                and a.status = #{status,jdbcType=VARCHAR}
+            </if>
+
+            <if test="batchType != null" >
+                and a.batch_type = #{batchType,jdbcType=VARCHAR}
+            </if>
+          order by a.op_time desc,a.labor_code desc
+    </select>
+
+
+    <!--工业分析仪查询结果集映射-->
+    <resultMap id="IAResDataResultMap" type="org.gxz.znrl.entity.IndstAnalyEntity">
+        <result column="indst_analy_res_id" jdbcType="VARCHAR" property="id" />
+        <result column="labor_code" jdbcType="VARCHAR" property="laborCode" />
+        <result column="device_no" jdbcType="VARCHAR" property="deviceNo" />
+        <result column="device_name" jdbcType="VARCHAR" property="deviceName" />
+        <result column="gg_no" jdbcType="VARCHAR" property="ggNo" />
+        <result column="temperature" jdbcType="VARCHAR" property="temperature" />
+        <result column="humidity" jdbcType="VARCHAR" property="humidity" />
+        <result column="standard" jdbcType="VARCHAR" property="standard" />
+        <result column="loss_style" jdbcType="VARCHAR" property="lossStyle" />
+        <result column="sampling_name" jdbcType="VARCHAR" property="samplingName" />
+        <result column="sh_kgg_weight" jdbcType="VARCHAR" property="shKggWeight" />
+        <result column="sh_sampling_weight" jdbcType="VARCHAR" property="shSamplingWeight" />
+        <result column="mad" jdbcType="VARCHAR" property="mad" />
+        <result column="aad" jdbcType="VARCHAR" property="aad" />
+        <result column="ad" jdbcType="VARCHAR" property="ad" />
+        <result column="hk_total_weight" jdbcType="VARCHAR" property="hkTotalWeight" />
+        <result column="hk_sampling_weight" jdbcType="VARCHAR" property="hkSamplingWeight" />
+        <result column="vad" jdbcType="VARCHAR" property="vad" />
+        <result column="vdaf" jdbcType="VARCHAR" property="vdaf" />
+        <result column="cc_val" jdbcType="VARCHAR" property="ccVal" />
+        <result column="op_name" jdbcType="VARCHAR" property="opName" />
+        <result column="op_code" jdbcType="VARCHAR" property="opCode" />
+        <result column="op_time" jdbcType="VARCHAR" property="opTime" />
+        <result column="op_date" jdbcType="VARCHAR" property="opDate" />
+        <result column="status" jdbcType="VARCHAR" property="status" />
+        <result column="cc_status" jdbcType="VARCHAR" property="ccStatus" />
+        <result column="status_name" jdbcType="VARCHAR" property="statusName" />
+        <result column="other_status_name" jdbcType="VARCHAR" property="otherStatusName" />
+        <result column="batch_type" jdbcType="VARCHAR" property="batchType" />
+        <result column="report_tag" jdbcType="VARCHAR" property="reportTag"/>
+    </resultMap>
+
+    <!--工业分析仪原始数据查询-->
+    <select id="qryIAResOrgData"  parameterType="org.gxz.znrl.entity.IndstAnalyEntity" resultMap="IAResDataResultMap">
+        SELECT a.indst_analy_res_id,
+                a.labor_code,
+                a.device_no,
+                (select b.device_name from LAB_DEVICE b where b.device_no = a.device_no) device_name,
+                a.gg_no,
+                '' temperature,
+                '' humidity,
+                '' standard,
+                sampling_name,
+                sh_kgg_weight,
+                sh_sampling_weight,
+                mad,
+                aad,
+                ad,
+                hk_total_weight,
+                hk_sampling_weight,
+                vad,
+                vdaf,
+                cc_val,
+                op_code,
+                op_name,
+                decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次', '') batch_type,
+                to_char(a.op_time, 'yyyy-mm-dd hh24:mi:ss') op_time,
+                to_char(trunc(a.op_time), 'yyyy-mm-dd') op_date,
+                decode(a.status, '0','未确认','1','已确认','2','作废') status_name,
+                a.cc_status,
+                a.status
+          FROM LAB_INDST_ANALY_RESULT_ORG a
+         WHERE 1 = 1
+
+        <if test="beginDate != null" >
+            and a.op_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.op_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="status != null" >
+            and a.status = #{status,jdbcType=VARCHAR}
+        </if>
+
+        <if test="batchType != null" >
+            and a.batch_type = #{batchType,jdbcType=VARCHAR}
+        </if>
+
+        <if test='dataType == "mad"' >
+            and a.mad is not null
+        </if>
+
+        <if test='dataType == "aad"' >
+            and a.aad is not null
+        </if>
+
+        <if test='dataType == "vad"' >
+            and a.vad is not null
+        </if>
+        order by a.op_time desc,a.labor_code desc
+    </select>
+
+
+    <!--工业分析仪数据查询-->
+    <select id="qryIAResData"  parameterType="org.gxz.znrl.entity.IndstAnalyEntity" resultMap="IAResDataResultMap">
+        SELECT a.indst_analy_res_id,
+                a.labor_code,
+                a.device_no,
+                (select b.device_name from LAB_DEVICE b where b.device_no = a.device_no) device_name,
+                a.gg_no,
+                temperature,
+                loss_style,
+                humidity,
+                (select c.standard_name from lab_standard c where c.standard_id = a.standard) standard,
+                sampling_name,
+                sh_kgg_weight,
+                sh_sampling_weight,
+                mad,
+                aad,
+                ad,
+                hk_total_weight,
+                hk_sampling_weight,
+                vad,
+                vdaf,
+                cc_val,
+                op_code,
+                op_name,
+                decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次', '') batch_type,
+                to_char(a.op_time, 'yyyy-mm-dd hh24:mi:ss') op_time,
+                to_char(trunc(a.op_time), 'yyyy-mm-dd') op_date,
+                decode(a.status, '0','未审批','1','审批中','2','已审批','3','作废') status_name,
+                decode(a.status, '0','未计算','1','已计算','2','作废') other_status_name,
+                (select sign(count(1)) from lab_report b where b.labor_code = a.labor_code  and b.appr_status <![CDATA[ <> ]]> '3') report_tag,
+                a.status
+          FROM LAB_INDST_ANALY_RESULT a
+         WHERE 1 = 1
+
+        <if test="beginDate != null" >
+            and a.op_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.op_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="status != null" >
+            and a.status = #{status,jdbcType=VARCHAR}
+        </if>
+
+        <if test="batchType != null" >
+            and a.batch_type = #{batchType,jdbcType=VARCHAR}
+        </if>
+
+        order by a.op_time desc,a.labor_code desc
+    </select>
+
+
+    <!--量热仪查询结果集映射-->
+    <resultMap id="HotResDataResultMap" type="org.gxz.znrl.entity.HotEntity">
+        <result column="hot_res_id" jdbcType="VARCHAR" property="id" />
+        <result column="labor_code" jdbcType="VARCHAR" property="laborCode" />
+        <result column="device_no" jdbcType="VARCHAR" property="deviceNo" />
+        <result column="device_name" jdbcType="VARCHAR" property="deviceName" />
+        <result column="gg_no" jdbcType="VARCHAR" property="ggNo" />
+        <result column="temperature" jdbcType="VARCHAR" property="temperature" />
+        <result column="humidity" jdbcType="VARCHAR" property="humidity" />
+        <result column="standard" jdbcType="VARCHAR" property="standard" />
+        <result column="sampling_name" jdbcType="VARCHAR" property="samplingName" />
+        <result column="sampling_weight" jdbcType="VARCHAR" property="samplingWeight" />
+        <result column="temp_increase" jdbcType="VARCHAR" property="tempIncrease" />
+        <result column="jz_value" jdbcType="VARCHAR" property="jzValue" />
+        <result column="jq_temp" jdbcType="VARCHAR" property="jqTemp" />
+        <result column="qb_ad" jdbcType="VARCHAR" property="qbAd" />
+        <result column="cc_val" jdbcType="VARCHAR" property="ccVal" />
+        <result column="status" jdbcType="VARCHAR" property="status" />
+        <result column="status_name" jdbcType="VARCHAR" property="statusName" />
+        <result column="other_status_name" jdbcType="VARCHAR" property="otherStatusName" />
+        <result column="cc_status" jdbcType="VARCHAR" property="ccStatus" />
+        <result column="op_name" jdbcType="VARCHAR" property="opName" />
+        <result column="op_code" jdbcType="VARCHAR" property="opCode" />
+        <result column="op_time" jdbcType="VARCHAR" property="opTime" />
+        <result column="op_date" jdbcType="VARCHAR" property="opDate" />
+        <result column="batch_type" jdbcType="VARCHAR" property="batchType" />
+        <result column="report_tag" jdbcType="VARCHAR" property="reportTag"/>
+    </resultMap>
+
+    <!--量热仪原始数据查询-->
+    <select id="qryHotResOrgData"  parameterType="org.gxz.znrl.entity.HotEntity" resultMap="HotResDataResultMap">
+        SELECT a.hot_res_id,
+                a.labor_code,
+                a.device_no,
+                (select b.device_name from LAB_DEVICE b where b.device_no = a.device_no) device_name,
+                a.gg_no,
+                '' temperature,
+                '' humidity,
+                '' standard,
+                sampling_name,
+                sampling_weight,
+                temp_increase,
+                jz_value,
+                jq_temp,
+                qb_ad,
+                cc_val,
+                op_code,
+                op_name,
+                decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次', '') batch_type,
+                to_char(a.op_time, 'yyyy-mm-dd hh24:mi:ss') op_time,
+                to_char(trunc(a.op_time), 'yyyy-mm-dd') op_date,
+                decode(a.status, '0','未确认','1','已确认','2','作废') status_name,
+                a.cc_status,
+                a.status
+          FROM LAB_HOT_RESULT_ORG a
+         WHERE 1 = 1
+
+        <if test="beginDate != null" >
+            and a.op_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.op_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="status != null" >
+            and a.status = #{status,jdbcType=VARCHAR}
+        </if>
+
+        <if test="batchType != null" >
+            and a.batch_type = #{batchType,jdbcType=VARCHAR}
+        </if>
+
+        order by a.op_time desc,a.labor_code desc
+    </select>
+
+
+    <!--量热仪数据查询-->
+    <select id="qryHotResData"  parameterType="org.gxz.znrl.entity.HotEntity" resultMap="HotResDataResultMap">
+        SELECT a.hot_res_id,
+                a.labor_code,
+                a.device_no,
+                (select b.device_name from LAB_DEVICE b where b.device_no = a.device_no) device_name,
+                a.gg_no,
+                temperature,
+                humidity,
+               (select c.standard_name from lab_standard c where c.standard_id = a.standard) standard,
+                sampling_name,
+                sampling_weight,
+                temp_increase,
+                jz_value,
+                jq_temp,
+                qb_ad,
+                cc_val,
+                op_code,
+                op_name,
+                decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次', '') batch_type,
+                to_char(a.op_time, 'yyyy-mm-dd hh24:mi:ss') op_time,
+                to_char(trunc(a.op_time), 'yyyy-mm-dd') op_date,
+                decode(a.status, '0','未审批','1','审批中','2','已审批','3','作废') status_name,
+                decode(a.status, '0','未计算','1','已计算','2','作废') other_status_name,
+                (select sign(count(1)) from lab_report b where b.labor_code = a.labor_code  and b.appr_status <![CDATA[ <> ]]> '3') report_tag,
+                a.status
+        FROM LAB_HOT_RESULT a
+        WHERE 1 = 1
+
+        <if test="beginDate != null" >
+            and a.op_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.op_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="status != null" >
+            and a.status = #{status,jdbcType=VARCHAR}
+        </if>
+
+        <if test="batchType != null" >
+            and a.batch_type = #{batchType,jdbcType=VARCHAR}
+        </if>
+
+        order by a.op_time desc,a.labor_code desc
+    </select>
+
+
+    <!--光波分析仪查询结果集映射-->
+    <resultMap id="LAResDataResultMap" type="org.gxz.znrl.entity.LightAnalyEntity">
+        <result column="light_analy_res_id" jdbcType="VARCHAR" property="id" />
+        <result column="labor_code" jdbcType="VARCHAR" property="laborCode" />
+        <result column="device_no" jdbcType="VARCHAR" property="deviceNo" />
+        <result column="device_name" jdbcType="VARCHAR" property="deviceName" />
+        <result column="gg_no" jdbcType="VARCHAR" property="ggNo" />
+        <result column="temperature" jdbcType="VARCHAR" property="temperature" />
+        <result column="humidity" jdbcType="VARCHAR" property="humidity" />
+        <result column="standard" jdbcType="VARCHAR" property="standard" />
+        <result column="sampling_name" jdbcType="VARCHAR" property="samplingName" />
+        <result column="sampling_weight" jdbcType="VARCHAR" property="samplingWeight" />
+        <result column="myp_weight" jdbcType="VARCHAR" property="mypWeight" />
+        <result column="weight_loss" jdbcType="VARCHAR" property="weightLoss" />
+        <result column="mt" jdbcType="VARCHAR" property="mt" />
+        <result column="temp_power" jdbcType="VARCHAR" property="tempPower" />
+        <result column="keep_time" jdbcType="VARCHAR" property="keepTime" />
+        <result column="cc_val" jdbcType="VARCHAR" property="ccVal" />
+        <result column="status" jdbcType="VARCHAR" property="status" />
+        <result column="status_name" jdbcType="VARCHAR" property="statusName" />
+        <result column="other_status_name" jdbcType="VARCHAR" property="otherStatusName" />
+        <result column="cc_status" jdbcType="VARCHAR" property="ccStatus" />
+        <result column="op_name" jdbcType="VARCHAR" property="opName" />
+        <result column="op_code" jdbcType="VARCHAR" property="opCode" />
+        <result column="op_time" jdbcType="VARCHAR" property="opTime" />
+        <result column="op_date" jdbcType="VARCHAR" property="opDate" />
+        <result column="batch_type" jdbcType="VARCHAR" property="batchType" />
+        <result column="report_tag" jdbcType="VARCHAR" property="reportTag"/>
+    </resultMap>
+
+    <!--光波分析仪原始数据查询-->
+    <select id="qryLaResOrgData"  parameterType="org.gxz.znrl.entity.LightAnalyEntity" resultMap="LAResDataResultMap">
+        SELECT a.light_analy_res_id,
+                a.labor_code,
+                a.device_no,
+                (select b.device_name from LAB_DEVICE b where b.device_no = a.device_no) device_name,
+                a.gg_no,
+                '' temperature,
+                '' humidity,
+                '' standard,
+                sampling_name,
+                sampling_weight,
+                myp_weight,
+                weight_loss,
+                mt,
+                temp_power,
+                keep_time,
+                cc_val,
+                cc_status,
+                op_code,
+                op_name,
+                decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次', '') batch_type,
+                to_char(a.op_time, 'yyyy-mm-dd hh24:mi:ss') op_time,
+                to_char(trunc(a.op_time), 'yyyy-mm-dd') op_date,
+                decode(a.status, '0','未确认','1','已确认','2','作废') status_name,
+                a.status
+        FROM LAB_LIGHT_ANALY_RESULT_ORG a
+        WHERE 1 = 1
+
+        <if test="beginDate != null" >
+            and a.op_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.op_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="status != null" >
+            and a.status = #{status,jdbcType=VARCHAR}
+        </if>
+
+        <if test="batchType != null" >
+            and a.batch_type = #{batchType,jdbcType=VARCHAR}
+        </if>
+        order by a.op_time desc,a.labor_code desc
+    </select>
+
+    <!--光波分析仪数据查询-->
+    <select id="qryLaResData"  parameterType="org.gxz.znrl.entity.LightAnalyEntity" resultMap="LAResDataResultMap">
+        SELECT a.light_analy_res_id,
+                a.labor_code,
+                a.device_no,
+                (select b.device_name from LAB_DEVICE b where b.device_no = a.device_no) device_name,
+                a.gg_no,
+                temperature,
+                humidity,
+               (select c.standard_name from lab_standard c where c.standard_id = a.standard) standard,
+                sampling_name,
+                sampling_weight,
+                myp_weight,
+                weight_loss,
+                mt,
+                temp_power,
+                keep_time,
+                cc_val,
+                op_code,
+                op_name,
+                decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次', '') batch_type,
+                to_char(a.op_time, 'yyyy-mm-dd hh24:mi:ss') op_time,
+                to_char(trunc(a.op_time), 'yyyy-mm-dd') op_date,
+                decode(a.status, '0','未审批','1','审批中','2','已审批','3','作废') status_name,
+                decode(a.status, '0','未计算','1','已计算','2','作废') other_status_name,
+                (select sign(count(1)) from lab_report b where b.labor_code = a.labor_code  and b.appr_status <![CDATA[ <> ]]> '3') report_tag,
+                a.status
+        FROM LAB_LIGHT_ANALY_RESULT a
+        WHERE 1 = 1
+
+        <if test="beginDate != null" >
+            and a.op_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.op_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="status != null" >
+            and a.status = #{status,jdbcType=VARCHAR}
+        </if>
+
+        <if test="batchType != null" >
+            and a.batch_type = #{batchType,jdbcType=VARCHAR}
+        </if>
+        order by a.op_time desc,a.labor_code desc
+    </select>
+
+    <!--确认原始数据，并填写温度、湿度、执行标准-->
+    <select id="editLabData" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.SEntity">
+      {call PK_LABORY.edit_lab_data(#{updateString,mode=IN,jdbcType=VARCHAR},
+                                    #{updateCode,mode=IN,jdbcType=VARCHAR},
+                                    #{dataType,mode=IN,jdbcType=VARCHAR},
+                                    #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                    #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+    <!--确认原始数据，并填写温度、湿度、执行标准-->
+    <select id="deleteLabData" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.SEntity">
+      {call PK_LABORY.delete_lab_data(#{updateString,mode=IN,jdbcType=VARCHAR},
+                                    #{updateCode,mode=IN,jdbcType=VARCHAR},
+                                    #{dataType,mode=IN,jdbcType=VARCHAR},
+                                    #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                    #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+
+    <!--红外测氢仪查询结果集映射-->
+    <resultMap id="HwResDataResultMap" type="org.gxz.znrl.entity.HEntity">
+        <result column="h_res_id" jdbcType="VARCHAR" property="id" />
+        <result column="labor_code" jdbcType="VARCHAR" property="laborCode" />
+        <result column="device_no" jdbcType="VARCHAR" property="deviceNo" />
+        <result column="device_name" jdbcType="VARCHAR" property="deviceName" />
+        <result column="gg_no" jdbcType="VARCHAR" property="ggNo" />
+        <result column="temperature" jdbcType="VARCHAR" property="temperature" />
+        <result column="humidity" jdbcType="VARCHAR" property="humidity" />
+        <result column="standard" jdbcType="VARCHAR" property="standard" />
+        <result column="sampling_name" jdbcType="VARCHAR" property="samplingName" />
+        <result column="sampling_weight" jdbcType="VARCHAR" property="samplingWeight" />
+        <result column="method" jdbcType="VARCHAR" property="method" />
+        <result column="mad" jdbcType="VARCHAR" property="mad" />
+        <result column="cad" jdbcType="VARCHAR" property="cad" />
+        <result column="cd" jdbcType="VARCHAR" property="cd" />
+        <result column="had" jdbcType="VARCHAR" property="had" />
+        <result column="hd" jdbcType="VARCHAR" property="hd" />
+        <result column="cc_val" jdbcType="VARCHAR" property="ccVal" />
+        <result column="status" jdbcType="VARCHAR" property="status" />
+        <result column="status_name" jdbcType="VARCHAR" property="statusName" />
+        <result column="other_status_name" jdbcType="VARCHAR" property="otherStatusName" />
+        <result column="cc_status" jdbcType="VARCHAR" property="ccStatus" />
+        <result column="op_name" jdbcType="VARCHAR" property="opName" />
+        <result column="op_code" jdbcType="VARCHAR" property="opCode" />
+        <result column="op_time" jdbcType="VARCHAR" property="opTime" />
+        <result column="op_date" jdbcType="VARCHAR" property="opDate" />
+        <result column="batch_type" jdbcType="VARCHAR" property="batchType" />
+        <result column="report_tag" jdbcType="VARCHAR" property="reportTag"/>
+    </resultMap>
+
+    <!--红外测氢仪原始数据查询-->
+    <select id="qryHwResOrgData"  parameterType="org.gxz.znrl.entity.HEntity" resultMap="HwResDataResultMap">
+        SELECT a.h_res_id,
+                a.labor_code,
+                a.device_no,
+                (select b.device_name from LAB_DEVICE b where b.device_no = a.device_no) device_name,
+                a.gg_no,
+                '' temperature,
+                '' humidity,
+                '' standard,
+                sampling_name,
+                sampling_weight,
+                method,
+                mad,
+                cad,
+                cd,
+                had,
+                hd,
+                cc_val,
+                cc_status,
+                op_code,
+                op_name,
+                decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次', '') batch_type,
+                to_char(a.op_time, 'yyyy-mm-dd hh24:mi:ss') op_time,
+                to_char(trunc(a.op_time), 'yyyy-mm-dd') op_date,
+                decode(a.status, '0','未确认','1','已确认','2','作废') status_name,
+                a.status
+        FROM LAB_H_RESULT_ORG a
+        WHERE 1 = 1
+
+        <if test="beginDate != null" >
+            and a.op_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.op_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="status != null" >
+            and a.status = #{status,jdbcType=VARCHAR}
+        </if>
+
+        <if test="batchType != null" >
+            and a.batch_type = #{batchType,jdbcType=VARCHAR}
+        </if>
+        order by a.op_time desc,a.labor_code desc
+    </select>
+
+    <!--红外测氢仪数据查询-->
+    <select id="qryHwResData"  parameterType="org.gxz.znrl.entity.HEntity" resultMap="HwResDataResultMap">
+        SELECT a.h_res_id,
+                a.labor_code,
+                a.device_no,
+                (select b.device_name from LAB_DEVICE b where b.device_no = a.device_no) device_name,
+                a.gg_no,
+                temperature,
+                humidity,
+                (select c.standard_name from lab_standard c where c.standard_id = a.standard) standard,
+                sampling_name,
+                sampling_weight,
+                method,
+                mad,
+                cad,
+                cd,
+                had,
+                hd,
+                cc_val,
+                op_code,
+                op_name,
+                decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次', '') batch_type,
+                to_char(a.op_time, 'yyyy-mm-dd hh24:mi:ss') op_time,
+                to_char(trunc(a.op_time), 'yyyy-mm-dd') op_date,
+                decode(a.status, '0','未审批','1','审批中','2','已审批','3','作废') status_name,
+                decode(a.status, '0','未计算','1','已计算','2','作废') other_status_name,
+                (select sign(count(1)) from lab_report b where b.labor_code = a.labor_code  and b.appr_status <![CDATA[ <> ]]> '3') report_tag,
+                a.status
+        FROM LAB_H_RESULT a
+        WHERE 1 = 1
+
+        <if test="beginDate != null" >
+            and a.op_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.op_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="status != null" >
+            and a.status = #{status,jdbcType=VARCHAR}
+        </if>
+
+        <if test="batchType != null" >
+            and a.batch_type = #{batchType,jdbcType=VARCHAR}
+        </if>
+        order by a.op_time desc,a.labor_code desc
+    </select>
+
+    <!--生成化验报告,提交审批-->
+    <select id="submit4LabReport" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.SEntity">
+      {call PK_LABORY.appr_4_lab_report(#{laborCode,mode=IN,jdbcType=VARCHAR},
+                                        #{apprEventTypeCd,mode=IN,jdbcType=VARCHAR},
+                                        #{batchType,mode=IN,jdbcType=VARCHAR},
+                                        #{opCode,mode=IN,jdbcType=VARCHAR},
+                                        #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                        #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+    <!--生成化验报告,提交审批-->
+    <select id="submit4LabReportNew" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.SEntity">
+      {call PK_LABORY.generate_lab_report(#{jsonStr,mode=IN,jdbcType=VARCHAR},
+                                          #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                          #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+
+    <!--生成化验报告,提交审批-->
+    <select id="labReport2Appr" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.SEntity">
+      {call PK_LABORY.report_data_2_appr(#{shipRecID,mode=IN,jdbcType=VARCHAR},
+                                        #{batchType,mode=IN,jdbcType=VARCHAR},
+                                        #{apprEventTypeCd,mode=IN,jdbcType=VARCHAR},
+                                        #{opCode,mode=IN,jdbcType=VARCHAR},
+                                        #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                        #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+    <!--对已经生产的化验报告进行，审批-->
+    <select id="submitLabResults" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.SEntity">
+        {call PK_LABORY.appr_lab_results(#{jsonStr,mode=IN,jdbcType=VARCHAR},
+                                        #{apprEventTypeCd,mode=IN,jdbcType=VARCHAR},
+                                        #{opCode,mode=IN,jdbcType=VARCHAR},
+                                        #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                        #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+    <!--泉州电厂对已经生产的入炉化验报告按天进行审批-->
+    <select id="submitRLLabResults" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.SEntity">
+        {call PK_LABORY.appr_rl_lab_result(#{hyDate,mode=IN,jdbcType=VARCHAR},
+                                         #{apprEventTypeCd,mode=IN,jdbcType=VARCHAR},
+                                         #{opCode,mode=IN,jdbcType=VARCHAR},
+                                         #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                         #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+
+    <!--加权处理-->
+    <select id="doProportion" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.SEntity">
+        {call PK_LABORY.do_proportion(#{jsonStr,mode=IN,jdbcType=VARCHAR},
+                                      #{opCode,mode=IN,jdbcType=VARCHAR},
+                                      #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                      #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+
+    <!--生成化验报告,提交审批-->
+    <select id="submit4LabBook" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.BookEntity">
+      {call PK_LABORY.appr_4_lab_book(#{reportIds,mode=IN,jdbcType=VARCHAR},
+                                        #{apprEventTypeCd,mode=IN,jdbcType=VARCHAR},
+                                        #{opCode,mode=IN,jdbcType=VARCHAR},
+                                        #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                        #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+
+    <!--化验报告集映射-->
+    <resultMap id="ReportDataResultMap" type="org.gxz.znrl.entity.ReportEntity">
+        <result column="lab_report_id" jdbcType="VARCHAR" property="labReportId" />
+        <result column="labor_code" jdbcType="VARCHAR" property="laborCode" />
+        <result column="batch_no" jdbcType="VARCHAR" property="batchNo" />
+        <result column="batch_no_type" jdbcType="VARCHAR" property="batchNoType" />
+        <result column="mt" jdbcType="VARCHAR" property="mt" />
+        <result column="mad" jdbcType="VARCHAR" property="mad" />
+        <result column="aad" jdbcType="VARCHAR" property="aad" />
+        <result column="ad" jdbcType="VARCHAR" property="ad" />
+        <result column="aar" jdbcType="VARCHAR" property="aar" />
+        <result column="vad" jdbcType="VARCHAR" property="vad" />
+        <result column="vd" jdbcType="VARCHAR" property="vd" />
+        <result column="var" jdbcType="VARCHAR" property="var" />
+        <result column="vdaf" jdbcType="VARCHAR" property="vdaf" />
+        <result column="st_ad" jdbcType="VARCHAR" property="stad" />
+        <result column="st_d" jdbcType="VARCHAR" property="std" />
+        <result column="st_ar" jdbcType="VARCHAR" property="star" />
+        <result column="hd" jdbcType="VARCHAR" property="hd" />
+        <result column="had" jdbcType="VARCHAR" property="had" />
+        <result column="har" jdbcType="VARCHAR" property="har" />
+        <result column="hdaf" jdbcType="VARCHAR" property="hdaf" />
+        <result column="cad" jdbcType="VARCHAR" property="cad" />
+        <result column="fcad" jdbcType="VARCHAR" property="fcad" />
+        <result column="fcar" jdbcType="VARCHAR" property="fcar" />
+        <result column="fcd" jdbcType="VARCHAR" property="fcd" />
+        <result column="fcdaf" jdbcType="VARCHAR" property="fcdaf" />
+        <result column="nad" jdbcType="VARCHAR" property="nad" />
+        <result column="qb_ad" jdbcType="VARCHAR" property="qbad" />
+        <result column="qb_ar" jdbcType="VARCHAR" property="qbar" />
+        <result column="qb_d" jdbcType="VARCHAR" property="qbd" />
+        <result column="qb_daf" jdbcType="VARCHAR" property="qbdaf" />
+        <result column="qgr_ad" jdbcType="VARCHAR" property="qgrad" />
+        <result column="qgr_ar" jdbcType="VARCHAR" property="qgrar" />
+        <result column="qgr_d" jdbcType="VARCHAR" property="qgrd" />
+        <result column="qgr_daf" jdbcType="VARCHAR" property="qgrdaf" />
+        <result column="qnet_ad" jdbcType="VARCHAR" property="qnetad" />
+        <result column="qnet_arj" jdbcType="VARCHAR" property="qnetarj" />
+        <result column="qnet_arm" jdbcType="VARCHAR" property="qnetarm" />
+        <result column="qnet_d" jdbcType="VARCHAR" property="qnetd" />
+        <result column="st" jdbcType="VARCHAR" property="st" />
+        <result column="dt" jdbcType="VARCHAR" property="dt" />
+        <result column="ht" jdbcType="VARCHAR" property="ht" />
+        <result column="ft" jdbcType="VARCHAR" property="ft" />
+        <result column="crc" jdbcType="VARCHAR" property="crc" />
+        <result column="batch_type" jdbcType="VARCHAR" property="batchType" />
+        <result column="appr_status" jdbcType="VARCHAR" property="apprStatus" />
+        <result column="appr_status_code" jdbcType="VARCHAR" property="apprStatusCode" />
+        <result column="hy_date" jdbcType="VARCHAR" property="hyDate" />
+        <result column="sample_date" jdbcType="VARCHAR" property="sampleDate" />
+        <result column="update_time" jdbcType="VARCHAR" property="updateTime" />
+        <result column="update_code" jdbcType="VARCHAR" property="updateCode" />
+        <result column="jh_time" jdbcType="VARCHAR" property="jhTime" />
+        <result column="jh_code" jdbcType="VARCHAR" property="jhCode" />
+        <result column="insert_time" jdbcType="VARCHAR" property="insertTime" />
+        <result column="op_code" jdbcType="VARCHAR" property="opCode" />
+        <result column="op_desc" jdbcType="VARCHAR" property="opDesc" />
+        <result column="ven_name" jdbcType="VARCHAR" property="venName" />
+        <result column="coal_name" jdbcType="VARCHAR" property="coalName" />
+        <result column="standing_book_id" jdbcType="VARCHAR" property="standingBookId" />
+        <result column="ship_name" jdbcType="VARCHAR" property="shipName" />
+        <result column="batch_no" jdbcType="VARCHAR" property="batchNo" />
+        <result column="trans_no" jdbcType="VARCHAR" property="transNo" />
+        <result column="proportion_type" jdbcType="VARCHAR" property="proportionType" />
+        <result column="proportion" jdbcType="VARCHAR" property="proportion" />
+        <result column="proportion_tag" jdbcType="VARCHAR" property="proportionTag" />
+        <result column="proportion_type_name" jdbcType="VARCHAR" property="proportionTypeName" />
+        <result column="proportion_tag_name" jdbcType="VARCHAR" property="proportionTagName" />
+        <result column="car_cnt" jdbcType="VARCHAR" property="carCnt" />
+        <result column="batch_time" jdbcType="VARCHAR" property="batchTime" />
+        <result column="receive_time" jdbcType="VARCHAR" property="receiveTime" />
+        <result column="receive_op" jdbcType="VARCHAR" property="receiveOp" />
+    </resultMap>
+
+    <!--化验报告数据查询-->
+    <select id="qryReportData"  parameterType="org.gxz.znrl.entity.ReportEntity" resultMap="ReportDataResultMap">
+        SELECT a.lab_report_id,
+                a.labor_code,
+                b.batch_no,
+                b.batch_no_type,
+                a.mt,
+                a.mad,
+                a.aad,
+                a.ad,
+                a.aar,
+                a.vad,
+                a.vd,
+                a.var,
+                a.vdaf,
+                a.st_ad,
+                a.st_d,
+                a.st_ar,
+                a.hd,
+                a.had,
+                a.fcad,
+                a.cad,
+                a.nad,
+                a.qb_ad,
+                a.qb_ar,
+                a.qb_d,
+                a.qb_daf,
+                a.qgr_ad,
+                a.qgr_ar,
+                a.qgr_d,
+                a.qgr_daf,
+                a.qnet_ad,
+                a.qnet_arj,
+                a.qnet_arm,
+                a.qnet_d,
+                a.batch_type,
+                decode(a.appr_status, '0','未审批','1','审批中', '2','审批通过','3','审批未通过') appr_status,
+                a.appr_status appr_status_code,
+                to_char(a.update_time, 'yyyy-mm-dd hh24:mi:ss') update_time,
+                a.update_code,
+                to_char(a.jh_time, 'yyyy-mm-dd hh24:mi:ss') jh_time,
+                a.jh_code,
+                to_char(a.insert_time, 'yyyy-mm-dd') insert_time,
+                to_char(a.hy_date, 'yyyy-mm-dd') hy_date,
+                a.op_code,
+                a.op_desc,
+                (select c.mine_name from coal_mine c where c.mine_no = b.mine_no) ven_name,
+                (select d.coal_name from coal_type d where d.coal_no = b.coal_no) coal_name
+        FROM LAB_REPORT a,BATCH_NO_INFO b
+        WHERE 1 = 1
+        and a.labor_code = b.labor_code
+
+        <if test="batchType != null" >
+            and b.batch_no_type = #{batchType,jdbcType=VARCHAR}
+        </if>
+
+        <if test="apprStatus != null" >
+            and  a.appr_status = #{apprStatus,jdbcType=VARCHAR}
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code  = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="beginDate != null" >
+            and a.hy_date  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.hy_date  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="venName != null" >
+            and b.mine_no  = #{venName,jdbcType=VARCHAR}
+        </if>
+
+        order by a.lab_report_id desc
+    </select>
+
+    <!--为都匀单独使用 by xxs-->
+    <select id="qryReportData4Dy"  parameterType="org.gxz.znrl.entity.ReportEntity" resultMap="ReportDataResultMap">
+        SELECT a.lab_report_id,
+        a.labor_code,
+        b.batch_no,
+        b.batch_no_type,
+        a.mt,
+        a.mad,
+        a.aad,
+        a.ad,
+        a.aar,
+        a.vad,
+        a.vd,
+        a.var,
+        a.vdaf,
+        a.st_ad,
+        a.st_d,
+        a.st_ar,
+        a.hd,
+        a.had,
+        a.fcad,
+        a.cad,
+        a.nad,
+        a.qb_ad,
+        a.qb_ar,
+        a.qb_d,
+        a.qb_daf,
+        a.qgr_ad,
+        a.qgr_ar,
+        a.qgr_d,
+        a.qgr_daf,
+        a.qnet_ad,
+        a.qnet_arj,
+        a.qnet_arm,
+        a.qnet_d,
+        a.batch_type,
+        decode(a.appr_status, '0','未审批','1','审批中', '2','审批通过','3','审批未通过') appr_status,
+        a.appr_status appr_status_code,
+        to_char(a.update_time, 'yyyy-mm-dd hh24:mi:ss') update_time,
+        a.update_code,
+        to_char(a.jh_time, 'yyyy-mm-dd hh24:mi:ss') jh_time,
+        a.jh_code,
+        to_char(a.insert_time, 'yyyy-mm-dd') insert_time,
+        to_char(a.hy_date, 'yyyy-mm-dd') hy_date,
+        a.op_code,
+        a.op_desc,
+        (select c.mine_name from coal_mine c where c.mine_no = b.mine_no) ven_name,
+        (select d.coal_name from coal_type d where d.coal_no = b.coal_no) coal_name
+        FROM LAB_REPORT a,BATCH_NO_INFO b
+        WHERE 1 = 1
+        and a.labor_code = b.labor_code
+
+        <if test="batchType != null" >
+            and b.batch_no_type = #{batchType,jdbcType=VARCHAR}
+        </if>
+
+        <if test="apprStatus != null" >
+            and  a.appr_status = #{apprStatus,jdbcType=VARCHAR}
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code  = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="beginDate != null" >
+            and a.hy_date  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.hy_date  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="venName != null" >
+            and b.ven_no  = #{venName,jdbcType=VARCHAR}
+        </if>
+
+        <if test="startPlace != null" >
+            and b.start_place  = #{startPlace,jdbcType=VARCHAR}
+        </if>
+
+        <if test="coalName != null" >
+            and b.coal_no  = #{coalName,jdbcType=VARCHAR}
+        </if>
+
+        order by a.lab_report_id desc
+    </select>
+
+    <!--为蚌埠化验月报单独使用 by zwj-->
+    <select id="qryReportData4BB"  parameterType="org.gxz.znrl.entity.ReportEntity" resultMap="ReportDataResultMap">
+        SELECT a.lab_report_id,
+        a.labor_code,
+        b.batch_no,
+        b.batch_no_type,
+        a.mt,
+        a.mad,
+        a.aad,
+        a.ad,
+        a.aar,
+        a.vad,
+        a.vd,
+        a.var,
+        a.vdaf,
+        a.st_ad,
+        a.st_d,
+        a.st_ar,
+        a.hd,
+        a.had,
+        a.fcad,
+        a.cad,
+        a.nad,
+        a.qb_ad,
+        a.qb_ar,
+        a.qb_d,
+        a.qb_daf,
+        a.qgr_ad,
+        a.qgr_ar,
+        a.qgr_d,
+        a.qgr_daf,
+        a.qnet_ad,
+        a.qnet_arj,
+        a.qnet_arm,
+        a.qnet_d,
+        a.batch_type,
+        decode(a.appr_status, '0','未审批','1','审批中', '2','审批通过','3','审批未通过') appr_status,
+        a.appr_status appr_status_code,
+        to_char(a.update_time, 'yyyy-mm-dd hh24:mi:ss') update_time,
+        a.update_code,
+        to_char(a.jh_time, 'yyyy-mm-dd hh24:mi:ss') jh_time,
+        a.jh_code,
+        to_char(b.insert_time, 'yyyy-mm-dd') insert_time,
+        to_char(a.hy_date, 'yyyy-mm-dd') hy_date,
+        a.op_code,
+        a.op_desc,
+        (select c.mine_name from coal_mine c where c.mine_no = b.mine_no) ven_name,
+        (select d.coal_name from coal_type d where d.coal_no = b.coal_no) coal_name
+        FROM LAB_REPORT a,BATCH_NO_INFO b
+        WHERE 1 = 1
+        and a.labor_code = b.labor_code
+
+        <if test='batchType == "1"' >
+            and b.batch_no_type <![CDATA[ <> ]]> #{batchNoType,jdbcType=VARCHAR}
+        </if>
+
+        <if test='batchType == "9"' >
+            and b.batch_no_type = #{batchNoType,jdbcType=VARCHAR}
+        </if>
+
+        <if test="apprStatus != null" >
+            and  a.appr_status = #{apprStatus,jdbcType=VARCHAR}
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code  = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="beginDate != null" >
+            and b.insert_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and b.insert_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="venName != null" >
+            and b.mine_no  = #{venName,jdbcType=VARCHAR}
+        </if>
+
+        order by b.insert_time
+    </select>
+
+    <!--船运化验报告数据查询-->
+    <select id="qryReportData4Ship"  parameterType="org.gxz.znrl.entity.ReportEntity" resultMap="ReportDataResultMap">
+        SELECT a.lab_report_id,
+                a.labor_code,
+                b.batch_no,
+                a.batch_type,
+                a.mt,
+                a.mad,
+                a.aad,
+                a.ad,
+                a.aar,
+                a.vad,
+                a.vd,
+                a.var,
+                a.vdaf,
+                a.st_ad,
+                a.st_d,
+                a.st_ar,
+                a.hd,
+                a.had,
+                a.har,
+                a.hdaf,
+                a.cad,
+                a.nad,
+                a.fcad,
+                a.fcar,
+                a.fcd,
+                a.fcdaf,
+                a.qb_ad,
+                a.qb_ar,
+                a.qb_d,
+                a.qb_daf,
+                a.qgr_ad,
+                a.qgr_ar,
+                a.qgr_d,
+                a.qgr_daf,
+                a.qnet_ad,
+                a.qnet_arj,
+                a.qnet_arm,
+                a.qnet_d,
+                a.crc,
+                a.st,
+                a.dt,
+                a.ht,
+                a.ft,
+                decode(a.appr_status, '0','未审批','1','审批中', '2','审批通过','3','审批未通过') appr_status,
+                a.appr_status appr_status_code,
+                to_char(a.update_time, 'yyyy-mm-dd hh24:mi:ss') update_time,
+                a.update_code,
+                to_char(a.jh_time, 'yyyy-mm-dd hh24:mi:ss') jh_time,
+                to_char(trunc(a.hy_date), 'yyyy-mm-dd') hy_date,
+                to_char(trunc(b.update_time), 'yyyy-mm-dd') sample_date,
+                a.jh_code,
+                to_char(a.insert_time, 'yyyy-mm-dd') insert_time,
+                a.op_code,
+                a.op_desc,
+                GET_SHIP_BY_TRANS_NO(b.train_no) ship_name,
+
+                <if test="proportionRequired != null" >
+                    a.proportion_type,
+                    decode(a.proportion_type,'1','比例加权','2','吨位加权','-') proportion_type_name,
+                    a.proportion,
+                    a.proportion_tag,
+                    decode(a.proportion_tag, '0','未被加权','1','已被加权','9','加权报告') proportion_tag_name,
+                </if>
+
+                b.batch_no,
+                b.train_no  trans_no,
+                nvl(to_char(b.receive_time,'yyyy-mm-dd hh24:mi:ss'),'') receive_time,
+                (select realname from security_user s where s.id = b.receive_op) receive_op
+         from LAB_REPORT a,BATCH_NO_INFO b
+        where 1 = 1
+          and a.labor_code=b.labor_code
+
+        <if test="labReportId != null" >
+            and a.lab_report_id = #{labReportId,jdbcType=VARCHAR}
+        </if>
+
+        <if test="beginDate != null" >
+            and a.hy_date  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.hy_date  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="shipId != null" >
+            and b.train_no in (select sr.ship_trans_no
+                                  from ship_info si, ship_record sr
+                                 where si.ship_id = sr.ship_id
+                                   and si.ship_id = TO_NUMBER(#{shipId,jdbcType=VARCHAR}))
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="proportionTag != null" >
+            and a.proportion_tag = #{proportionTag,jdbcType=VARCHAR}
+        </if>
+
+        <if test="apprStatus != null" >
+            and a.appr_status = #{apprStatus,jdbcType=VARCHAR}
+        </if>
+
+        order by a.lab_report_id desc
+    </select>
+
+    <!--船运化验报告数据查询-->
+    <select id="qryReportData4ShipBB"  parameterType="org.gxz.znrl.entity.ReportEntity" resultMap="ReportDataResultMap">
+        SELECT a.lab_report_id,
+        a.labor_code,
+        b.batch_no,
+        a.batch_type,
+        a.mt,
+        a.mad,
+        a.aad,
+        a.ad,
+        a.aar,
+        a.vad,
+        a.vd,
+        a.var,
+        a.vdaf,
+        a.st_ad,
+        a.st_d,
+        a.st_ar,
+        a.hd,
+        a.had,
+        a.har,
+        a.hdaf,
+        a.cad,
+        a.nad,
+        a.fcad,
+        a.fcar,
+        a.fcd,
+        a.fcdaf,
+        a.qb_ad,
+        a.qb_ar,
+        a.qb_d,
+        a.qb_daf,
+        a.qgr_ad,
+        a.qgr_ar,
+        a.qgr_d,
+        a.qgr_daf,
+        a.qnet_ad,
+        a.qnet_arj,
+        a.qnet_arm,
+        a.qnet_d,
+        a.crc,
+        a.st,
+        a.dt,
+        a.ht,
+        a.ft,
+        decode(a.appr_status, '0','未审批','1','审批中', '2','审批通过','3','审批未通过') appr_status,
+        a.appr_status appr_status_code,
+        to_char(a.update_time, 'yyyy-mm-dd hh24:mi:ss') update_time,
+        a.update_code,
+        to_char(a.jh_time, 'yyyy-mm-dd hh24:mi:ss') jh_time,
+        to_char(trunc(a.hy_date), 'yyyy-mm-dd') hy_date,
+        to_char(trunc(b.update_time), 'yyyy-mm-dd') sample_date,
+        a.jh_code,
+        to_char(a.insert_time, 'yyyy-mm-dd') insert_time,
+        a.op_code,
+        a.op_desc,
+        GET_SHIP_BY_TRANS_NO(b.train_no) ship_name,
+
+        <if test="proportionRequired != null" >
+            a.proportion_type,
+            decode(a.proportion_type,'1','比例加权','2','吨位加权','-') proportion_type_name,
+            a.proportion,
+            a.proportion_tag,
+            decode(a.proportion_tag, '0','未被加权','1','已被加权','9','加权报告') proportion_tag_name,
+        </if>
+
+        b.batch_no,
+        b.train_no  trans_no,
+        nvl(to_char(b.receive_time,'yyyy-mm-dd hh24:mi:ss'),'') receive_time,
+        (select realname from security_user s where s.id = b.receive_op) receive_op
+        from LAB_REPORT a,BATCH_NO_INFO b
+        where 1 = 1
+        and a.labor_code=b.labor_code
+        and b.batch_no_type in ('0','1','2','9')
+
+        <if test="labReportId != null" >
+            and a.lab_report_id = #{labReportId,jdbcType=VARCHAR}
+        </if>
+
+        <if test="beginDate != null" >
+            and a.hy_date  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.hy_date  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="shipId != null" >
+            and b.train_no in (select sr.ship_trans_no
+            from ship_info si, ship_record sr
+            where si.ship_id = sr.ship_id
+            and si.ship_id = TO_NUMBER(#{shipId,jdbcType=VARCHAR}))
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="proportionTag != null" >
+            and a.proportion_tag = #{proportionTag,jdbcType=VARCHAR}
+        </if>
+
+        <if test="apprStatus != null" >
+            and a.appr_status = #{apprStatus,jdbcType=VARCHAR}
+        </if>
+
+        order by a.lab_report_id desc
+    </select>
+
+    <!--针对抽查样的化验报告数据查询-->
+    <select id="qryReportData4CCY"  parameterType="org.gxz.znrl.entity.ReportEntity" resultMap="ReportDataResultMap">
+        SELECT a.lab_report_id,
+        a.labor_code,
+        b.batch_no,
+        a.batch_type,
+        a.mt,
+        a.mad,
+        a.aad,
+        a.ad,
+        a.aar,
+        a.vad,
+        a.vd,
+        a.var,
+        a.vdaf,
+        a.st_ad,
+        a.st_d,
+        a.st_ar,
+        a.hd,
+        a.had,
+        a.har,
+        a.hdaf,
+        a.cad,
+        a.nad,
+        a.fcad,
+        a.fcar,
+        a.fcd,
+        a.fcdaf,
+        a.qb_ad,
+        a.qb_ar,
+        a.qb_d,
+        a.qb_daf,
+        a.qgr_ad,
+        a.qgr_ar,
+        a.qgr_d,
+        a.qgr_daf,
+        a.qnet_ad,
+        a.qnet_arj,
+        a.qnet_arm,
+        a.qnet_d,
+        a.crc,
+        a.st,
+        a.dt,
+        a.ht,
+        a.ft,
+        decode(a.appr_status, '0','未审批','1','审批中', '2','审批通过','3','审批未通过') appr_status,
+        a.appr_status appr_status_code,
+        to_char(a.update_time, 'yyyy-mm-dd hh24:mi:ss') update_time,
+        a.update_code,
+        to_char(a.jh_time, 'yyyy-mm-dd hh24:mi:ss') jh_time,
+        to_char(trunc(a.hy_date), 'yyyy-mm-dd') hy_date,
+        to_char(trunc(b.update_time), 'yyyy-mm-dd') sample_date,
+        a.jh_code,
+        to_char(a.insert_time, 'yyyy-mm-dd') insert_time,
+        a.op_code,
+        a.op_desc,
+        GET_SHIP_BY_TRANS_NO(b.train_no) ship_name,
+
+        <if test="proportionRequired != null" >
+            a.proportion_type,
+            decode(a.proportion_type,'1','比例加权','2','吨位加权','-') proportion_type_name,
+            a.proportion,
+            a.proportion_tag,
+            decode(a.proportion_tag, '0','未被加权','1','已被加权','9','加权报告') proportion_tag_name,
+        </if>
+
+        b.batch_no,
+        b.train_no  trans_no,
+        nvl(to_char(b.receive_time,'yyyy-mm-dd hh24:mi:ss'),'') receive_time,
+        (select realname from security_user s where s.id = b.receive_op) receive_op
+        from LAB_REPORT a,BATCH_NO_INFO b
+        where 1 = 1
+        and a.labor_code=b.labor_code
+        and b.batch_no_type not in ('0','1','2','9')
+
+        <if test="labReportId != null" >
+            and a.lab_report_id = #{labReportId,jdbcType=VARCHAR}
+        </if>
+
+        <if test="beginDate != null" >
+            and a.hy_date  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.hy_date  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="shipId != null" >
+            and b.train_no in (select sr.ship_trans_no
+            from ship_info si, ship_record sr
+            where si.ship_id = sr.ship_id
+            and si.ship_id = TO_NUMBER(#{shipId,jdbcType=VARCHAR}))
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="proportionTag != null" >
+            and a.proportion_tag = #{proportionTag,jdbcType=VARCHAR}
+        </if>
+
+        <if test="apprStatus != null" >
+            and a.appr_status = #{apprStatus,jdbcType=VARCHAR}
+        </if>
+
+        order by a.lab_report_id desc
+    </select>
+
+    <!--船运化验报告数据查询  乐东罗荣需要特定的排序方式 xxs20180316-->
+    <select id="qryReportData4Ship4ld"  parameterType="org.gxz.znrl.entity.ReportEntity" resultMap="ReportDataResultMap">
+        SELECT a.lab_report_id,
+        a.labor_code,
+        b.batch_no,
+        a.batch_type,
+        a.mt,
+        a.mad,
+        a.aad,
+        a.ad,
+        a.aar,
+        a.vad,
+        a.vd,
+        a.var,
+        a.vdaf,
+        a.st_ad,
+        a.st_d,
+        a.st_ar,
+        a.hd,
+        a.had,
+        a.har,
+        a.hdaf,
+        a.cad,
+        a.nad,
+        a.fcad,
+        a.fcar,
+        a.fcd,
+        a.fcdaf,
+        a.qb_ad,
+        a.qb_ar,
+        a.qb_d,
+        a.qb_daf,
+        a.qgr_ad,
+        a.qgr_ar,
+        a.qgr_d,
+        a.qgr_daf,
+        a.qnet_ad,
+        a.qnet_arj,
+        a.qnet_arm,
+        a.qnet_d,
+        a.crc,
+        a.st,
+        a.dt,
+        a.ht,
+        a.ft,
+        decode(a.appr_status, '0','未审批','1','审批中', '2','审批通过','3','审批未通过') appr_status,
+        a.appr_status appr_status_code,
+        to_char(a.update_time, 'yyyy-mm-dd hh24:mi:ss') update_time,
+        a.update_code,
+        to_char(a.jh_time, 'yyyy-mm-dd hh24:mi:ss') jh_time,
+        to_char(trunc(a.hy_date), 'yyyy-mm-dd') hy_date,
+        to_char(trunc(b.update_time), 'yyyy-mm-dd') sample_date,
+        a.jh_code,
+        to_char(a.insert_time, 'yyyy-mm-dd') insert_time,
+        a.op_code,
+        a.op_desc,
+        GET_SHIP_BY_TRANS_NO(b.train_no) ship_name,
+
+        <if test="proportionRequired != null" >
+            a.proportion_type,
+            decode(a.proportion_type,'1','比例加权','2','吨位加权','-') proportion_type_name,
+            a.proportion,
+            a.proportion_tag,
+            decode(a.proportion_tag, '0','未被加权','1','已被加权','9','加权报告') proportion_tag_name,
+        </if>
+
+        b.batch_no,
+        b.train_no  trans_no
+        from LAB_REPORT a,BATCH_NO_INFO b
+        where 1 = 1
+        and a.labor_code=b.labor_code
+
+        <if test="labReportId != null" >
+            and a.lab_report_id = #{labReportId,jdbcType=VARCHAR}
+        </if>
+
+        <if test="beginDate != null" >
+            and a.hy_date  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.hy_date  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="shipId != null" >
+            and b.train_no in (select sr.ship_trans_no
+            from ship_info si, ship_record sr
+            where si.ship_id = sr.ship_id
+            and si.ship_id = TO_NUMBER(#{shipId,jdbcType=VARCHAR}))
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="proportionTag != null" >
+            and a.proportion_tag = #{proportionTag,jdbcType=VARCHAR}
+        </if>
+
+        <if test="apprStatus != null" >
+            and a.appr_status = #{apprStatus,jdbcType=VARCHAR}
+        </if>
+
+        order by a.hy_date, b.batch_no
+    </select>
+
+
+    <!--船运化验报告数据查询-->
+    <select id="qryReportData4proportion"  parameterType="org.gxz.znrl.entity.ReportEntity" resultMap="ReportDataResultMap">
+        SELECT a.lab_report_id,
+                a.labor_code,
+                b.batch_no,
+                a.batch_type,
+                a.mt,
+                a.mad,
+                a.aad,
+                a.ad,
+                a.aar,
+                a.vad,
+                a.vd,
+                a.var,
+                a.vdaf,
+                a.st_ad,
+                a.st_d,
+                a.st_ar,
+                a.hd,
+                a.had,
+                a.har,
+                a.hdaf,
+                a.cad,
+                a.nad,
+                a.fcad,
+                a.fcar,
+                a.fcd,
+                a.fcdaf,
+                a.qb_ad,
+                a.qb_ar,
+                a.qb_d,
+                a.qb_daf,
+                a.qgr_ad,
+                a.qgr_ar,
+                a.qgr_d,
+                a.qgr_daf,
+                a.qnet_ad,
+                a.qnet_arj,
+                a.qnet_arm,
+                a.qnet_d,
+                a.crc,
+                a.st,
+                a.dt,
+                a.ht,
+                a.ft,
+                decode(a.appr_status, '0','未审批','1','审批中', '2','审批通过','3','审批未通过') appr_status,
+                a.appr_status appr_status_code,
+                to_char(a.update_time, 'yyyy-mm-dd hh24:mi:ss') update_time,
+                a.update_code,
+                to_char(a.jh_time, 'yyyy-mm-dd hh24:mi:ss') jh_time,
+                to_char(trunc(a.hy_date), 'yyyy-mm-dd') hy_date,
+                to_char(trunc(b.update_time), 'yyyy-mm-dd') sample_date,
+                a.jh_code,
+                to_char(a.insert_time, 'yyyy-mm-dd') insert_time,
+                a.op_code,
+                a.op_desc,
+                GET_SHIP_BY_TRANS_NO(b.train_no) ship_name,
+
+                <if test="proportionRequired != null" >
+                    a.proportion_type,
+                    decode(a.proportion_type,'1','比例加权','2','吨位加权','-') proportion_type_name,
+                    a.proportion,
+                    a.proportion_tag,
+                    decode(a.proportion_tag, '0','未被加权','1','已被加权','9','加权报告') proportion_tag_name,
+                </if>
+
+                b.batch_no,
+                b.train_no  trans_no
+        from LAB_REPORT_FINAL a,BATCH_NO_INFO b
+        where 1 = 1
+        and a.labor_code=b.labor_code
+
+        <if test="labReportId != null" >
+            and a.lab_report_id = #{labReportId,jdbcType=VARCHAR}
+        </if>
+
+        <if test="beginDate != null" >
+            and a.hy_date  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.hy_date  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="shipId != null" >
+            and b.train_no in (select sr.ship_trans_no
+                                  from ship_info si, ship_record sr
+                                 where si.ship_id = sr.ship_id
+                                   and si.ship_id = TO_NUMBER(#{shipId,jdbcType=VARCHAR}))
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        order by b.batch_no, a.lab_report_id
+    </select>
+
+
+    <!--化验报告集映射-->
+    <resultMap id="BookDataResultMap" type="org.gxz.znrl.entity.BookEntity">
+        <result column="standing_book_id" jdbcType="VARCHAR" property="standingBookId" />
+        <result column="hy_date" jdbcType="VARCHAR" property="hyDate" />
+        <result column="zb_date" jdbcType="VARCHAR" property="zbDate" />
+        <result column="zb_name" jdbcType="VARCHAR" property="zbName" />
+        <result column="jh_time" jdbcType="VARCHAR" property="jhTime" />
+        <result column="jh_name" jdbcType="VARCHAR" property="jhName" />
+        <result column="insert_time" jdbcType="VARCHAR" property="insertTime" />
+        <result column="appr_date" jdbcType="VARCHAR" property="apprDate" />
+        <result column="appr_name" jdbcType="VARCHAR" property="apprName" />
+        <result column="appr_desc" jdbcType="VARCHAR" property="apprDesc" />
+        <result column="appr_status" jdbcType="VARCHAR" property="apprStatus" />
+        <result column="appr_status_code" jdbcType="VARCHAR" property="apprStatusCode" />
+    </resultMap>
+
+    <!--化验台账数据查询-->
+    <select id="qryBookData"  parameterType="org.gxz.znrl.entity.BookEntity" resultMap="BookDataResultMap">
+        SELECT a.standing_book_id,
+                to_char(trunc(a.hy_date), 'yyyy-mm-dd') hy_date,
+                to_char(a.zb_date, 'yyyy-mm-dd hh24:mi:ss') zb_date,
+                (select realname from security_user c where c.id = a.zb_code)  zb_name,
+                to_char(a.jh_date, 'yyyy-mm-dd hh24:mi:ss') jh_time,
+                (select realname from security_user d where d.id = a.jh_code)  jh_name,
+                to_char(a.insert_time, 'yyyy-mm-dd hh24:mi:ss') insert_time,
+                to_char(a.appr_date, 'yyyy-mm-dd hh24:mi:ss') appr_date,
+               (select realname from security_user e where e.id = a.appr_code)  appr_name,
+                a.appr_desc,
+                decode(a.appr_status, '0','未审批','1','审批中', '2','审批通过','3','审批未通过') appr_status,
+                a.appr_status appr_status_code
+        FROM LAB_STANDING_BOOK a
+        WHERE 1 = 1
+
+        <if test="beginDate != null" >
+            and a.hy_date  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.hy_date  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="apprStatus != null" >
+            and a.appr_status  = #{apprStatus,jdbcType=VARCHAR}
+        </if>
+        order by a.standing_book_id desc
+    </select>
+
+    <!--化验报告数据查询-->
+    <select id="qryReportDataView"  parameterType="org.gxz.znrl.entity.ReportEntity" resultMap="ReportDataResultMap">
+        SELECT a.lab_report_id,
+                a.labor_code,
+                b.batch_no,
+                a.mt,
+                a.mad,
+                a.aad,
+                a.ad,
+                a.aar,
+                a.vad,
+                a.vd,
+                a.var,
+                a.vdaf,
+                a.st_ad,
+                a.st_d,
+                a.st_ar,
+                a.hd,
+                a.had,
+                a.cad,
+                a.nad,
+                a.fcad,
+                a.qb_ad,
+                a.qb_ar,
+                a.qb_d,
+                a.qb_daf,
+                a.qgr_ad,
+                a.qgr_ar,
+                a.qgr_d,
+                a.qgr_daf,
+                a.qnet_ad,
+                a.qnet_arj,
+                a.qnet_arm,
+                a.qnet_d,
+                decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次','') batch_type,
+                decode(a.appr_status, '0','未审批','1','审批中', '2','审批通过','3','审批未通过') appr_status,
+                to_char(a.update_time, 'yyyy-mm-dd hh24:mi:ss') update_time,
+                a.update_code,
+                to_char(a.jh_time, 'yyyy-mm-dd hh24:mi:ss') jh_time,
+                a.jh_code,
+                to_char(a.insert_time, 'yyyy-mm-dd') insert_time,
+                a.op_code,
+                a.op_desc,
+                (select c.mine_name from coal_mine c where c.mine_no = b.mine_no) ven_name,
+                (select d.coal_name from coal_type d where d.coal_no = b.coal_no) coal_name
+        FROM LAB_REPORT a,BATCH_NO_INFO b,LAB_REPORT_BOOK_INTF e
+        WHERE 1 = 1
+          and a.labor_code=b.labor_code
+          and e.lab_report_id=a.lab_report_id
+
+        <if test="standingBookId != null" >
+            and e.standing_book_id  = #{standingBookId,jdbcType=VARCHAR}
+        </if>
+        order by a.lab_report_id desc
+    </select>
+
+    <!--化验报告数据查询-->
+    <select id="qryResultReportData"  parameterType="org.gxz.znrl.entity.ReportEntity" resultMap="ReportDataResultMap">
+        SELECT b.batch_no,
+                b.batch_no_type,
+                a.lab_report_id,
+                a.labor_code,
+                a.mt,
+                a.mad,
+                a.aad,
+                a.ad,
+                a.aar,
+                a.vad,
+                a.vd,
+                a.var,
+                a.vdaf,
+                a.st_ad,
+                a.st_d,
+                a.st_ar,
+                a.hd,
+                a.had,
+                a.cad,
+                a.nad,
+                a.qb_ad,
+                a.qb_ar,
+                a.qb_d,
+                a.qb_daf,
+                a.qgr_ad,
+                a.qgr_ar,
+                a.qgr_d,
+                a.qgr_daf,
+                a.qnet_ad,
+                a.qnet_arj,
+                a.qnet_arm,
+                a.qnet_d,
+                decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次','') batch_type,
+                decode(a.appr_status, '0','未审批','1','审批中', '2','审批通过','3','审批未通过') appr_status,
+                to_char(a.update_time, 'yyyy-mm-dd hh24:mi:ss') update_time,
+                a.update_code,
+                to_char(a.jh_time, 'yyyy-mm-dd hh24:mi:ss') jh_time,
+                a.jh_code,
+                to_char(a.insert_time, 'yyyy-mm-dd') insert_time,
+                a.op_code,
+                a.op_desc,
+               (select c.mine_name from coal_mine c where c.mine_no = b.mine_no) ven_name,
+               (select d.coal_name from coal_type d where d.coal_no = b.coal_no) coal_name,
+               to_char(trunc(a.hy_date), 'yyyy-mm-dd') hy_date,
+                case
+                when b.batch_no_type = '0' then
+                (select to_char(count(1))
+                from rlrecordmstqy bb
+                where bb.sample_code = b.sample_code)
+                when b.batch_no_type = '1' then
+                (select to_char(count(1))
+                from rlrecordmsthy bb
+                where bb.sample_code = b.sample_code)
+                when b.batch_no_type = '9' then
+                (select '入炉煤'from dual)
+                when b.batch_no_type = '2' then
+                (select '水运煤'from dual)
+                end car_cnt,
+                to_char(b.insert_time, 'yyyy-mm-dd hh24:mi:ss') batch_time
+         FROM LAB_REPORT a,BATCH_NO_INFO b
+        WHERE 1 = 1
+          and a.labor_code=b.labor_code
+
+        <if test="labReportId != null" >
+            and a.lab_report_id  in (${labReportId})
+        </if>
+        order by a.lab_report_id desc
+    </select>
+
+
+    <select id="countShipST" parameterType="org.gxz.znrl.entity.ReportEntity" resultType="java.lang.String" >
+        select count_ship_st(#{laborCode,jdbcType=VARCHAR})  from dual
+    </select>
+
+    <select id="qryLabReportData" parameterType="org.gxz.znrl.entity.ReportEntity" resultType="java.lang.String" >
+        select PK_LABORY.get_LabReport_Data(#{laborCode,jdbcType=VARCHAR},#{batchType,jdbcType=VARCHAR})  from dual
+    </select>
+
+    <select id="qryLabReportData4Sample" parameterType="org.gxz.znrl.entity.ReportEntity" resultType="java.lang.String" >
+        select PK_LABORY.get_LabReport_Data4Sample(#{labReportId,jdbcType=VARCHAR})  from dual
+    </select>
+
+    <select id="qryLabReportData4SampleCompare" parameterType="org.gxz.znrl.entity.ReportEntity" resultType="java.lang.String" >
+        select PK_LABORY.get_LabReportData4SampleCompar(#{labReportId,jdbcType=VARCHAR})  from dual
+    </select>
+
+    <select id="qryLabReportData4Ship" parameterType="org.gxz.znrl.entity.ReportEntity" resultType="java.lang.String" >
+        select PK_LABORY.get_LabReport_Data(#{shipRecID,jdbcType=VARCHAR}) from dual
+    </select>
+
+    <select id="qryLabReportData4RL" parameterType="org.gxz.znrl.entity.ReportEntity" resultType="java.lang.String" >
+        select PK_LABORY.get_LabReport_Data4RL(#{rlDate,jdbcType=VARCHAR}) from dual
+    </select>
+
+    <select id="getLabReportData4Ship" parameterType="org.gxz.znrl.entity.ReportEntity" resultType="java.lang.String" >
+        select PK_LABORY.get_LabReport_Data4ship(#{shipRecID,jdbcType=VARCHAR}) from dual
+    </select>
+
+    <resultMap id="mineChemicalRelResultMap" type="org.gxz.znrl.entity.MineChemicalRelEntity">
+        <result column="MINE_CHEMICAL_ID" jdbcType="BIGINT" property="mineChemicalId" />
+        <result column="MINE_NO" jdbcType="VARCHAR" property="mineNo" />
+        <result column="CHEMICAL_TYPE" jdbcType="VARCHAR" property="chemicalType" />
+    </resultMap>
+
+    <select id="qryMineChemicalReal" parameterType="org.gxz.znrl.entity.MineChemicalRelEntity" resultMap="mineChemicalRelResultMap" >
+        SELECT A.MINE_CHEMICAL_ID, A.MINE_NO, A.CHEMICAL_TYPE
+                  FROM MINE_CHEMICAL_REL A
+                 WHERE 1 = 1
+                <if test="mineNo != null" >
+                    AND A.MINE_NO = #{mineNo,jdbcType=VARCHAR}
+                </if>
+                <if test="chemicalType != null" >
+                    AND A.CHEMICAL_TYPE = #{chemicalType,jdbcType=VARCHAR}
+                </if>
+                <if test="mineChemicalId != null" >
+                    AND A.MINE_CHEMICAL_ID = #{mineChemicalId,jdbcType=BIGINT}
+                </if>
+    </select>
+
+    <resultMap id="labChemicalAnalyResultMap" type="org.gxz.znrl.entity.LabChemicalAnalyEntity">
+        <result column="CHEMICAL_ANALY_ID" jdbcType="BIGINT" property="chemicalAnalyId" />
+        <result column="CHEMICAL_VALUE" jdbcType="VARCHAR" property="chemicalValue" />
+        <result column="CHEMICAL_TYPE_NAME" jdbcType="VARCHAR" property="chemicalTypeName" />
+        <result column="START_TIME" jdbcType="VARCHAR" property="startTime" />
+        <result column="END_TIME" jdbcType="VARCHAR" property="endTime" />
+        <result column="STATUS" jdbcType="VARCHAR" property="status" />
+        <result column="STATUS_NAME" jdbcType="VARCHAR" property="statusName" />
+        <result column="MINE_NO_NAME" jdbcType="VARCHAR" property="mineName" />
+        <result column="COAL_NO_NAME" jdbcType="VARCHAR" property="coalName" />
+        <result column="VEN_NO_NAME" jdbcType="VARCHAR" property="venName" />
+        <result column="OP_CODE" jdbcType="VARCHAR" property="opCode" />
+        <result column="OP_TIME" jdbcType="VARCHAR" property="opTime" />
+        <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+        <result column="MINE_CHEMICAL_ID" jdbcType="BIGINT" property="mineChemicalId" />
+    </resultMap>
+
+    <select id="qryLabChemicalAnaly" parameterType="org.gxz.znrl.entity.LabChemicalAnalyEntity" resultMap="labChemicalAnalyResultMap" >
+        SELECT A.CHEMICAL_ANALY_ID, A.CHEMICAL_VALUE, TO_CHAR(A.START_TIME,'YYYY-MM-DD') START_TIME, TO_CHAR(A.END_TIME,'YYYY-MM-DD') END_TIME, A.MINE_CHEMICAL_ID
+        FROM LAB_CHEMICAL_ANALY A
+        WHERE 1 = 1
+        <if test="mineChemicalId != null" >
+            AND A.MINE_CHEMICAL_ID = #{mineChemicalId,jdbcType=BIGINT}
+        </if>
+    </select>
+
+    <select id="qryLabChemicalAnalyListCnt" parameterType="org.gxz.znrl.entity.LabChemicalAnalyLogEntity" resultType="java.lang.Integer" >
+        SELECT COUNT(1)
+        FROM LAB_CHEMICAL_ANALY_LOG A, MINE_CHEMICAL_REL B
+        WHERE 1 = 1
+        AND A.MINE_CHEMICAL_ID = B.MINE_CHEMICAL_ID
+        <if test="startTime != null" >
+            AND A.START_TIME  <![CDATA[ >= ]]> to_date(#{startTime,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+        <if test="endTime != null" >
+            AND A.END_TIME  <![CDATA[ <= ]]> to_date(#{endTime,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+        <if test="chemicalType != null" >
+            AND B.CHEMICAL_TYPE = #{chemicalType,jdbcType=VARCHAR}
+        </if>
+        <if test="mineNo != null" >
+            AND B.MINE_CHEMICAL_ID IN (SELECT D.MINE_CHEMICAL_ID FROM MINE_CHEMICAL_REL D WHERE D.MINE_NO = #{mineNo,jdbcType=VARCHAR})
+        </if>
+        <if test="hisTag != null" >
+            AND A.HIS_TAG = #{hisTag,jdbcType=INTEGER}
+        </if>
+        <if test="mineChemicalId != null" >
+            AND A.MINE_CHEMICAL_ID = #{mineChemicalId,jdbcType=BIGINT}
+        </if>
+    </select>
+
+    <select id="qryLabChemicalAnalyLogListCnt" parameterType="org.gxz.znrl.entity.LabChemicalAnalyLogEntity" resultType="java.lang.Integer" >
+        SELECT COUNT(1)
+        FROM LAB_CHEMICAL_ANALY_LOG A, MINE_CHEMICAL_REL B
+        WHERE 1 = 1
+        AND A.MINE_CHEMICAL_ID = B.MINE_CHEMICAL_ID
+        <if test="mineChemicalId != null" >
+            AND A.MINE_CHEMICAL_ID = #{mineChemicalId,jdbcType=BIGINT}
+        </if>
+    </select>
+
+    <resultMap id="labChemicalAnalyListResultMap" type="org.gxz.znrl.entity.LabChemicalAnalyLogEntity">
+        <result column="CHEMICAL_ANALY_LOG_ID" jdbcType="BIGINT" property="chemicalAnalyLogId" />
+        <result column="CHEMICAL_ANALY_ID" jdbcType="BIGINT" property="chemicalAnalyId" />
+        <result column="MINE_NO" jdbcType="VARCHAR" property="mineNo" />
+        <result column="MINE_NO_NAME" jdbcType="VARCHAR" property="mineNoName" />
+        <result column="CHEMICAL_TYPE" jdbcType="VARCHAR" property="chemicalType" />
+        <result column="CHEMICAL_TYPE_NAME" jdbcType="VARCHAR" property="chemicalTypeName" />
+        <result column="CHEMICAL_VALUE" jdbcType="VARCHAR" property="chemicalValue" />
+        <result column="START_TIME" jdbcType="VARCHAR" property="startTime" />
+        <result column="END_TIME" jdbcType="VARCHAR" property="endTime" />
+        <result column="OP_CODE" jdbcType="VARCHAR" property="opCode" />
+        <result column="OP_TIME" jdbcType="VARCHAR" property="opTime" />
+        <result column="OPERATE_TAG_NAME" jdbcType="VARCHAR" property="operateTagName" />
+        <result column="HIS_TAG_NAME" jdbcType="VARCHAR" property="hisTagName" />
+        <result column="MINE_CHEMICAL_ID" jdbcType="BIGINT" property="mineChemicalId" />
+    </resultMap>
+
+    <select id="qryLabChemicalAnalyList" parameterType="org.gxz.znrl.entity.LabChemicalAnalyLogEntity" resultMap="labChemicalAnalyListResultMap" >
+        <include refid="paging_top_sql" />
+        SELECT A.CHEMICAL_ANALY_LOG_ID,
+                A.CHEMICAL_ANALY_ID,
+                B.MINE_NO,
+                (SELECT C.MINE_NAME FROM COAL_MINE C WHERE C.MINE_NO=B.MINE_NO) MINE_NO_NAME,
+                B.CHEMICAL_TYPE,
+                (SELECT C.NAME FROM DICTIONARY_TABLE C WHERE C.TYPE = 'CHEMICAL_TYPE' AND C.ID = B.CHEMICAL_TYPE) CHEMICAL_TYPE_NAME,
+                A.CHEMICAL_VALUE,
+                TO_CHAR(A.START_TIME, 'YYYY-MM-DD') START_TIME,
+                TO_CHAR(A.END_TIME, 'YYYY-MM-DD') END_TIME,
+                (SELECT C.REALNAME FROM SECURITY_USER C WHERE C.ID = A.OP_CODE) OP_CODE,
+                TO_CHAR(A.OP_TIME, 'YYYY-MM-DD') OP_TIME,
+                DECODE(A.OPERATE_TAG, 0, '删除', 1, '新增', 2,'修改') OPERATE_TAG_NAME,
+                DECODE(A.HIS_TAG, 0, '历史', 1, '最新') HIS_TAG_NAME,
+                A.MINE_CHEMICAL_ID,
+                rownum rownumber
+        FROM LAB_CHEMICAL_ANALY_LOG A, MINE_CHEMICAL_REL B
+        WHERE 1 = 1
+            AND A.MINE_CHEMICAL_ID = B.MINE_CHEMICAL_ID
+            <if test="startTime != null" >
+                AND A.START_TIME  <![CDATA[ >= ]]> to_date(#{startTime,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+            </if>
+            <if test="endTime != null" >
+                AND A.END_TIME  <![CDATA[ <= ]]> to_date(#{endTime,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+            </if>
+            <if test="chemicalType != null" >
+                AND B.CHEMICAL_TYPE = #{chemicalType,jdbcType=VARCHAR}
+            </if>
+            <if test="mineNo != null" >
+                AND B.MINE_CHEMICAL_ID IN (SELECT D.MINE_CHEMICAL_ID FROM MINE_CHEMICAL_REL D WHERE D.MINE_NO = #{mineNo,jdbcType=VARCHAR})
+            </if>
+            <if test="hisTag != null" >
+                AND A.HIS_TAG = #{hisTag,jdbcType=INTEGER}
+            </if>
+            <if test="mineChemicalId != null" >
+                AND A.MINE_CHEMICAL_ID = #{mineChemicalId,jdbcType=BIGINT}
+            </if>
+        <include refid="paging_bottom_sql" />
+    </select>
+
+    <insert id="addMineChemicalRel" parameterType="org.gxz.znrl.entity.MineChemicalRelEntity" >
+        INSERT INTO MINE_CHEMICAL_REL
+              (MINE_CHEMICAL_ID, MINE_NO, CHEMICAL_TYPE, CREATE_DATE, UPDATE_DATE, OP_CODE)
+            VALUES
+              (#{mineChemicalId,jdbcType=BIGINT}, #{mineNo,jdbcType=VARCHAR}, #{chemicalType,jdbcType=VARCHAR}, SYSDATE, SYSDATE, #{opCode,jdbcType=VARCHAR})
+    </insert>
+
+    <insert id="addLabChemicalAnaly" parameterType="org.gxz.znrl.entity.LabChemicalAnalyEntity" >
+        INSERT INTO LAB_CHEMICAL_ANALY
+          (CHEMICAL_ANALY_ID, CHEMICAL_VALUE, START_TIME, END_TIME, OP_CODE, OP_TIME, MINE_CHEMICAL_ID)
+        VALUES
+          (#{chemicalAnalyId,jdbcType=BIGINT}, #{chemicalValue,jdbcType=VARCHAR}, TO_DATE(#{startTime,jdbcType=VARCHAR},'YYYY-MM-DD'), TO_DATE(#{endTime,jdbcType=VARCHAR},'YYYY-MM-DD'), #{opCode,jdbcType=VARCHAR}, SYSDATE, #{mineChemicalId,jdbcType=BIGINT})
+    </insert>
+
+    <update id="modiLabChemicalAnaly" parameterType="org.gxz.znrl.entity.LabChemicalAnalyEntity">
+        UPDATE LAB_CHEMICAL_ANALY A SET A.CHEMICAL_VALUE = #{chemicalValue,jdbcType=VARCHAR}, A.START_TIME = TO_DATE(#{startTime,jdbcType=VARCHAR},'YYYY-MM-DD'), A.END_TIME =  TO_DATE(#{endTime,jdbcType=VARCHAR},'YYYY-MM-DD'), A.OP_CODE = #{opCode,jdbcType=VARCHAR}, A.OP_TIME = SYSDATE
+        WHERE 1 = 1
+        AND A.CHEMICAL_ANALY_ID = #{chemicalAnalyId,jdbcType=BIGINT}
+    </update>
+
+    <insert id="addLabChemicalAnalyLog" parameterType="org.gxz.znrl.entity.LabChemicalAnalyLogEntity" >
+        INSERT INTO LAB_CHEMICAL_ANALY_LOG
+           (CHEMICAL_ANALY_LOG_ID,CHEMICAL_ANALY_ID, CHEMICAL_VALUE, START_TIME, END_TIME, OP_CODE, OP_TIME,OPERATE_TAG,HIS_TAG, MINE_CHEMICAL_ID)
+        VALUES
+           (#{chemicalAnalyLogId,jdbcType=BIGINT},#{chemicalAnalyId,jdbcType=BIGINT}, #{chemicalValue,jdbcType=VARCHAR}, TO_DATE(#{startTime,jdbcType=VARCHAR},'YYYY-MM-DD'), TO_DATE(#{endTime,jdbcType=VARCHAR},'YYYY-MM-DD'), #{opCode,jdbcType=VARCHAR}, SYSDATE, #{operateTag,jdbcType=INTEGER},1, #{mineChemicalId,jdbcType=BIGINT})
+    </insert>
+
+    <update id="modiLabChemicalAnalyLog" parameterType="org.gxz.znrl.entity.LabChemicalAnalyLogEntity">
+        UPDATE LAB_CHEMICAL_ANALY_LOG A SET A.HIS_TAG = 0
+            WHERE 1 = 1
+            AND A.CHEMICAL_ANALY_ID = #{chemicalAnalyId,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delLabChemicalAnaly" parameterType="org.gxz.znrl.entity.LabChemicalAnalyEntity">
+        DELETE LAB_CHEMICAL_ANALY A WHERE A.CHEMICAL_ANALY_ID = #{chemicalAnalyId,jdbcType=BIGINT}
+    </delete>
+
+    <delete id="delLabChemicalAnalyLog" parameterType="org.gxz.znrl.entity.LabChemicalAnalyLogEntity">
+        DELETE LAB_CHEMICAL_ANALY_LOG A WHERE A.CHEMICAL_ANALY_ID = #{chemicalAnalyId,jdbcType=BIGINT}
+    </delete>
+
+    <!--确认提交有效的化验原始数据-->
+    <select id="scalesLotAddSubmit" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.ScalesEntity">
+      {call pk_labory.scales_lot_addSubmit(#{updateString,mode=IN,jdbcType=VARCHAR},
+                                           #{publicString,mode=IN,jdbcType=VARCHAR},
+                                           #{confirmCd,mode=IN,jdbcType=VARCHAR},
+                                           #{dataType,mode=IN,jdbcType=VARCHAR},
+                                           #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                           #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+  </select>
+
+  <!--确认提交有效的化验原始数据（新版） xieyt 20160224-->
+  <select id="labOrgDataConfirm" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.ScalesEntity">
+      {call pk_labory.lab_org_data_Confirm(#{publicString,mode=IN,jdbcType=VARCHAR},
+                                           #{deviceDataString,mode=IN,jdbcType=VARCHAR},
+                                           #{scalesDataString,mode=IN,jdbcType=VARCHAR},
+                                           #{confirmCd,mode=IN,jdbcType=VARCHAR},
+                                           #{dataType,mode=IN,jdbcType=VARCHAR},
+                                           #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                           #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+  </select>
+
+    <!--确认最终全水，替代所有全水，优先级最高-->
+    <select id="labMTFinalConfirm" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.ScalesEntity">
+      {call pk_labory.lab_mt_final_confirm(#{scalesDataString,mode=IN,jdbcType=VARCHAR},
+                                           #{confirmCd,mode=IN,jdbcType=VARCHAR},
+                                           #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                           #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+  </select>
+
+    <resultMap id="LabDataUploadCfgResultMap" type="org.gxz.znrl.entity.LabDataUploadEntity">
+        <result column="lab_cfg_id" jdbcType="VARCHAR" property="labCfgId" />
+        <result column="config_name" jdbcType="VARCHAR" property="configName" />
+        <result column="ip" jdbcType="VARCHAR" property="ip" />
+        <result column="db_driver" jdbcType="VARCHAR" property="dbDriver" />
+        <result column="db_linkurl" jdbcType="VARCHAR" property="dbLinkUrl" />
+        <result column="login_acct" jdbcType="VARCHAR" property="loginAcct" />
+        <result column="login_passwd" jdbcType="VARCHAR" property="loginPasswd" />
+        <result column="get_sql" jdbcType="VARCHAR" property="getSql" />
+        <result column="write_back_tag" jdbcType="VARCHAR" property="writeBackTag" />
+        <result column="write_back_sql" jdbcType="VARCHAR" property="writeBackSql" />
+        <result column="wb_param1_type" jdbcType="VARCHAR" property="wbParam1Type" />
+        <result column="wb_param2_type" jdbcType="VARCHAR" property="wbParam2Type" />
+        <result column="wb_param1_field" jdbcType="VARCHAR" property="wbParam1Field" />
+        <result column="wb_param2_field" jdbcType="VARCHAR" property="wbParam2Field" />
+        <result column="is_valid" jdbcType="VARCHAR" property="isValid" />
+        <result column="upload_rec_id" jdbcType="VARCHAR" property="uploadRecId" />
+        <result column="upload_cnt" jdbcType="VARCHAR" property="uploadCnt" />
+        <result column="op_code" jdbcType="VARCHAR" property="opCode" />
+        <result column="op_time" jdbcType="VARCHAR" property="opTime" />
+        <result column="is_succ" jdbcType="VARCHAR" property="isSucc" />
+        <result column="latest_op_time" jdbcType="VARCHAR" property="latestOpTime" />
+        <result column="remark" jdbcType="VARCHAR" property="remark" />
+        <result column="device_no" jdbcType="VARCHAR" property="deviceNo" />
+        <result column="description" jdbcType="VARCHAR" property="dbType" />
+    </resultMap>
+
+
+    <select id="qryLabDataUploadCfg" parameterType="org.gxz.znrl.entity.LabDataUploadEntity"  resultMap="LabDataUploadCfgResultMap">
+            select a.lab_cfg_id,
+                    a.config_name,
+                    a.ip,
+                    a.db_driver,
+                    a.db_linkurl,
+                    a.login_acct,
+                    a.login_passwd,
+                    a.get_sql,
+                    a.write_back_tag,
+                    a.write_back_sql,
+                    a.wb_param1_type,
+                    a.wb_param2_type,
+                    a.wb_param1_field,
+                    a.wb_param2_field,
+                    b.device_no,
+                    b.description description,
+                    (select nvl(to_char(max(t.op_time), 'yyyy-mm-dd hh24:mi:ss'), '-')
+                      from lab_data_upload_rec t
+                     where t.lab_cfg_id = a.lab_cfg_id ) latest_op_time
+              from lab_data_upload_cfg a, lab_device b
+             where a.is_valid = 'Y'
+                and a.ip=b.device_ip
+
+            <if test="labCfgId != null" >
+                and a.lab_cfg_id = to_number(#{labCfgId,jdbcType=VARCHAR})
+            </if>
+            <if test="usage != null" >
+                and b.usage = #{usage,jdbcType=VARCHAR}
+            </if>
+             order by a.lab_cfg_id
+    </select>
+
+
+    <select id="syncData2TargetDB" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.LabDataUploadEntity">
+      {call PK_SYNC_2_ZNRL.sync_lab_main(#{syncData,mode=IN,jdbcType=VARCHAR},
+                                         #{taskId,mode=IN,jdbcType=VARCHAR},
+                                         #{opCode,mode=IN,jdbcType=VARCHAR},
+                                         #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                         #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+    <!--计算天平数据的挥发分-->
+    <select id="calcVad" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.SEntity">
+        {call PK_LABORY.calcVad(#{laborCode,mode=IN,jdbcType=VARCHAR},
+                                #{opCode,mode=IN,jdbcType=VARCHAR},
+                                #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+    <!--计算天平数据的挥发分，通过指定要计算的记录的ID-->
+    <select id="calcVadByIds" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.SEntity">
+        {call PK_LABORY.calcVadByIds(#{idsArray,mode=IN,jdbcType=VARCHAR},
+                                     #{opCode,mode=IN,jdbcType=VARCHAR},
+                                     #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                     #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+    <!--新增化验原始数据-->
+    <select id="addLabOrgData" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.SEntity">
+        {call pk_labory.add_lab_org_data(#{jsonStr,mode=IN,jdbcType=VARCHAR},
+                                         #{opCode,mode=IN,jdbcType=VARCHAR},
+                                         #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                         #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+    <!--撤销已经确认的数据-->
+    <select id="labDataUndo" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.SEntity">
+        {call PK_LABORY.lab_data_undo(#{jsonStr,mode=IN,jdbcType=VARCHAR},
+                                      #{opCode,mode=IN,jdbcType=VARCHAR},
+                                      #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                      #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+    <select id="qryResultData" parameterType="org.gxz.znrl.entity.ReportEntity" resultType="java.lang.String" >
+        select PK_LABORY.get_Result_Data(#{laborCode,jdbcType=VARCHAR},#{batchType,jdbcType=VARCHAR})  from dual
+    </select>
+
+    <select id="getMineByLaborCode" parameterType="java.lang.String"  resultType="java.lang.String" >
+           select mine_no
+            from batch_no_info  where labor_code =  #{LaborCode,jdbcType=VARCHAR}
+    </select>
+
+    <update id="addHValueSummit" parameterType="java.lang.String">
+        UPDATE LAB_H_RESULT_ORG A SET A.STATUS = 1
+            WHERE 1 = 1
+            AND  A.labor_code =  #{LaborCode,jdbcType=VARCHAR}
+    </update>
+
+
+    <!--提交人工输入的化验指标-->
+    <select id="submitInput" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.SEntity">
+        {call PK_LABORY.submit_input(#{jsonStr,mode=IN,jdbcType=VARCHAR},
+                                      #{opCode,mode=IN,jdbcType=VARCHAR},
+                                      #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                      #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+    <select id="modifyLabReport" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.ReportEntity">
+        {call pk_labory.modify_lab_report(#{updateString,mode=IN,jdbcType=VARCHAR},
+                                          #{opCode,mode=IN,jdbcType=VARCHAR},
+                                          #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                          #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+    <!--一次批量提交作废化验数据-->
+    <select id="labOrgDataInvalid" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.SEntity">
+        {call PK_LABORY.lab_org_data_invalid(#{jsonStr,mode=IN,jdbcType=VARCHAR},
+                                             #{opCode,mode=IN,jdbcType=VARCHAR},
+                                             #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                             #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+
+
+    <!--<蚌埠化验月报表统计>-->
+    <select id="qryMonthRptNum" parameterType="org.gxz.znrl.entity.ReportEntity"  resultType="java.lang.Integer">
+        SELECT count(1)
+        from LAB_REPORT a,BATCH_NO_INFO b
+        where 1 = 1
+        and a.appr_status=2
+        and a.labor_code=b.labor_code
+        <if test="beginDate != null" >
+            and b.insert_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+        <if test="endDate != null" >
+            and b.insert_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+        <if test='batchType == "1"' >
+            and b.batch_no_type <![CDATA[ <> ]]> #{batchNoType,jdbcType=VARCHAR}
+        </if>
+        <if test='batchType == "9"' >
+            and b.batch_no_type = #{batchNoType,jdbcType=VARCHAR}
+        </if>
+        order by b.insert_time desc
+    </select>
+
+    <!--提交氢元素数据-->
+    <select id="submitHad" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.SEntity">
+        {call PK_LABORY.lab_h_confirm(#{jsonStr,mode=IN,jdbcType=VARCHAR},
+                                    #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                    #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+    <!--前台配置氢元素数据-->
+    <select id="manualSubmitHad" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.LabChemicalAnalyEntity">
+        {call PK_LABORY.lab_h_confirm(#{jsonStr,mode=IN,jdbcType=VARCHAR},
+                                    #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                    #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+    <!--氢元素查看-->
+    <select id="qryLabChemicalAnalyListNew" parameterType="org.gxz.znrl.entity.LabChemicalAnalyEntity" resultMap="labChemicalAnalyResultMap" >
+        <include refid="paging_top_sql" />
+        SELECT a.CHEMICAL_ANALY_ID,
+        decode(a.CHEMICAL_TYPE,'1','氢','2','碳','3','氮') CHEMICAL_TYPE_NAME,
+        a.CHEMICAL_TYPE,
+        a.CHEMICAL_VALUE,
+        (SELECT C.MINE_NAME FROM COAL_MINE C WHERE C.MINE_NO=a.mine_no) MINE_NO_NAME,
+        a.MINE_NO,
+        (SELECT C.ven_name FROM vendor_info C WHERE C.ven_NO=a.ven_no) VEN_NO_NAME,
+        a.VEN_NO,
+        (SELECT C.coal_name FROM coal_type C WHERE C.coal_NO=a.coal_no) COAL_NO_NAME,
+        a.COAL_NO,
+        DECODE(a.STATUS, 0, '有效', 1, '失效') STATUS_NAME,
+        a.STATUS,
+        TO_CHAR(a.START_TIME, 'YYYY-MM-DD') START_TIME,
+        TO_CHAR(a.END_TIME, 'YYYY-MM-DD') END_TIME,
+        (SELECT C.REALNAME FROM SECURITY_USER C WHERE C.ID = a.op_code) OP_CODE,
+        TO_CHAR(a.OP_TIME, 'YYYY-MM-DD hh24:mm:ss') OP_TIME,
+        a.REMARK,
+        rownum rownumber
+        from lab_chemical_analy a
+        WHERE 1 = 1
+        <if test="startTime != null" >
+            AND START_TIME  <![CDATA[ >= ]]> to_date(#{startTime,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+        <if test="endTime != null" >
+            AND END_TIME  <![CDATA[ <= ]]> to_date(#{endTime,jdbcType=VARCHAR}, 'yyyy-mm-dd') + 1 - 0.00001
+        </if>
+        <if test="status != null" >
+            AND status  = #{status,jdbcType=VARCHAR}
+        </if>
+        <if test="chemicalType != null" >
+            AND CHEMICAL_TYPE = #{chemicalType,jdbcType=VARCHAR}
+        </if>
+        <if test="mineNo != null" >
+            AND mine_no = #{mineNo,jdbcType=VARCHAR}
+        </if>
+        <if test="coalNo != null" >
+            AND coal_no = #{coalNo,jdbcType=VARCHAR}
+        </if>
+        order by a.CHEMICAL_ANALY_ID desc
+        <include refid="paging_bottom_sql" />
+    </select>
+
+    <select id="qryLabChemicalAnalyListNewCnt" parameterType="org.gxz.znrl.entity.LabChemicalAnalyEntity" resultType="java.lang.Integer" >
+        SELECT count(1)
+        from  lab_chemical_analy
+        WHERE 1 = 1
+        <if test="startTime != null" >
+            AND START_TIME  <![CDATA[ >= ]]> to_date(#{startTime,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+        <if test="endTime != null" >
+            AND END_TIME  <![CDATA[ <= ]]> to_date(#{endTime,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+        <if test="status != null" >
+            AND status  = #{status,jdbcType=VARCHAR}
+        </if>
+        <if test="chemicalType != null" >
+            AND CHEMICAL_TYPE = #{chemicalType,jdbcType=VARCHAR}
+        </if>
+
+    </select>
+
+    <select id="qryLabOrgDataReportView" parameterType="org.gxz.znrl.entity.LabChemicalAnalyEntity" resultType="java.lang.String" >
+        select PK_LABORY.get_lab_Org_Result_Report(#{jsonStr,jdbcType=VARCHAR},#{indexType,jdbcType=VARCHAR})  from dual
+    </select>
+
+
+    <!--衡丰查询水，灰，挥发的确认后的化验数据-->
+    <select id="qryMAVResDataNew"  parameterType="org.gxz.znrl.entity.ScalesEntity" resultMap="ScalesResDataResultMap">
+        SELECT lab_confirm_id scales_res_id,
+        labor_code,
+        decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次', '') batch_type,
+        (select b.device_name from LAB_DEVICE b where b.device_no = a.device_no) device_name,
+        index_type,
+        decode(index_type, 'mt','全水分','mad','水分','aad','灰分','vad','挥发分') index_type_name,
+        index_value,
+        org_keyid,
+        temperature,
+        humidity,
+        decode(loss_style,'1','焦渣特性一','2','焦渣特性二','3','焦渣特性三','4','焦渣特性四','5','焦渣特性五','6','焦渣特性六','7','焦渣特性七','8','焦渣特性八','0') loss_style ,
+        cc_val,
+        standard,
+        status,
+        decode(a.status, '0','未计算','1','已计算','2','作废') status_name,
+        op_code,
+        to_char(a.op_time, 'yyyy-mm-dd hh24:mi:ss') op_time,
+        to_char(trunc(a.op_time), 'yyyy-mm-dd') op_date,
+        op_name,
+        confirm_code,
+        to_char(a.confirm_time, 'yyyy-mm-dd hh24:mi:ss') confirm_time,
+        remark
+        FROM lab_mav_result a
+        WHERE 1 = 1
+
+        <if test="beginDate != null" >
+            and a.op_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.op_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="status != null" >
+            and a.status = #{status,jdbcType=VARCHAR}
+        </if>
+
+        <if test="batchType != null" >
+            and a.batch_type = #{batchType,jdbcType=VARCHAR}
+        </if>
+
+        <if test="indexType != null" >
+            and a.index_type = #{indexType,jdbcType=VARCHAR}
+        </if>
+
+        order by a.op_time desc,a.labor_code desc
+    </select>
+
+    <select id="qryCheckSampleData" parameterType="org.gxz.znrl.entity.ReportEntity" resultType="java.lang.String" >
+        select PK_LABORY.get_CheckSampleData(#{laborCodeArray,jdbcType=VARCHAR})  from dual
+    </select>
+
+     <!-- 煤质期间分析核查记录-->
+    <resultMap id="LabDayCheckResultMap" type="org.gxz.znrl.entity.LabDayCheckEntity">
+        <result column="lab_check_id" jdbcType="VARCHAR" property="labCheckId" />
+        <result column="labor_code" jdbcType="VARCHAR" property="laborCode" />
+        <result column="mad" jdbcType="VARCHAR" property="mad" />
+        <result column="mad_standard" jdbcType="VARCHAR" property="madStandard" />
+        <result column="mad_diff" jdbcType="VARCHAR" property="madDiff" />
+        <result column="mad_status" jdbcType="VARCHAR" property="madStatus" />
+        <result column="ad" jdbcType="VARCHAR" property="ad" />
+        <result column="ad_standard" jdbcType="VARCHAR" property="adStandard" />
+        <result column="ad_diff" jdbcType="VARCHAR" property="adDiff" />
+        <result column="ad_status" jdbcType="VARCHAR" property="adStatus" />
+        <result column="vd" jdbcType="VARCHAR" property="vd" />
+        <result column="vd_standard" jdbcType="VARCHAR" property="vdStandard" />
+        <result column="vd_diff" jdbcType="VARCHAR" property="vdDiff" />
+        <result column="vd_status" jdbcType="VARCHAR" property="vdStatus" />
+        <result column="std" jdbcType="VARCHAR" property="std" />
+        <result column="std_standard" jdbcType="VARCHAR" property="stdStandard" />
+        <result column="std_diff" jdbcType="VARCHAR" property="stdDiff" />
+        <result column="std_status" jdbcType="VARCHAR" property="stdStatus" />
+        <result column="qgrd1" jdbcType="VARCHAR" property="qgrd1" />
+        <result column="qgrd1_standard" jdbcType="VARCHAR" property="qgrd1Standard" />
+        <result column="qgrd1_diff" jdbcType="VARCHAR" property="qgrd1Diff" />
+        <result column="qgrd1_status" jdbcType="VARCHAR" property="qgrd1Status" />
+        <result column="qgrd2" jdbcType="VARCHAR" property="qgrd2" />
+        <result column="qgrd2_standard" jdbcType="VARCHAR" property="qgrd2Standard" />
+        <result column="qgrd2_diff" jdbcType="VARCHAR" property="qgrd2Diff" />
+        <result column="qgrd2_status" jdbcType="VARCHAR" property="qgrd2Status" />
+
+        <result column="op_name" jdbcType="VARCHAR" property="opName" />
+        <result column="appr_name" jdbcType="VARCHAR" property="apprName" />
+        <result column="op_code" jdbcType="VARCHAR" property="opCode" />
+
+        <result column="check_date" jdbcType="VARCHAR" property="checkDate" />
+        <result column="update_time" jdbcType="VARCHAR" property="updateTime" />
+        <result column="remark" jdbcType="VARCHAR" property="remark" />
+
+        <result column="indst_deviceno" jdbcType="VARCHAR" property="indstDeviceNo" />
+        <result column="std_deviceno" jdbcType="VARCHAR" property="stdDeviceNo" />
+
+    </resultMap>
+
+    <!-- 查询煤质期间分析核查记录-->
+    <select id="qryLabDayCheckData"  parameterType="org.gxz.znrl.entity.LabDayCheckEntity" resultMap="LabDayCheckResultMap">
+        SELECT lab_check_id,
+                nvl(labor_code, ' ') labor_code,
+                nvl(mad, ' ') mad,
+                nvl(ad, ' ') ad,
+                nvl(vd, ' ') vd,
+                nvl(std, ' ') std,
+                nvl(qgrd1, ' ') qgrd1,
+                nvl(qgrd2, ' ') qgrd2,
+                nvl(mad_standard, ' ') mad_standard,
+                nvl(ad_standard, ' ') ad_standard,
+                nvl(vd_standard, ' ') vd_standard,
+                nvl(std_standard, ' ') std_standard,
+                nvl(qgrd1_standard, ' ') qgrd1_standard,
+                nvl(qgrd2_standard, ' ') qgrd2_standard,
+                nvl(mad_diff, ' ') mad_diff,
+                nvl(ad_diff, ' ') ad_diff,
+                nvl(vd_diff, ' ') vd_diff,
+                nvl(std_diff, ' ') std_diff,
+                nvl(qgrd1_diff, ' ') qgrd1_diff,
+                nvl(qgrd2_diff, ' ') qgrd2_diff,
+                nvl(mad_status, ' ') mad_status,
+                nvl(ad_status, ' ') ad_status,
+                nvl(vd_status, ' ') vd_status,
+                nvl(std_status, ' ') std_status,
+                nvl(qgrd1_status, ' ') qgrd1_status,
+                nvl(qgrd2_status, ' ') qgrd2_status,
+                op_code,
+                op_name,
+                appr_name,
+                to_char(a.check_date, 'yyyy-mm-dd') check_date,
+                to_char(a.update_time, 'yyyy-mm-dd hh24:mi:ss') update_time,
+                nvl(indst_deviceno, ' ') indst_deviceno,
+                nvl(std_deviceno, ' ') std_deviceno,
+                remark
+           FROM lab_day_check a
+         WHERE 1 = 1
+
+        <if test="beginDate != null" >
+            and a.check_date  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.check_date  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="checkDate != null" >
+            and a.check_date  <![CDATA[ = ]]> to_date(#{checkDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+        order by a.check_date
+    </select>
+
+    <!-- 编辑煤期间分析核查记录，add by zwj 0913-->
+    <select id="editLabDayCheck" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.ScalesEntity">
+      {call PK_LABORY.edit_lab_day_check(#{publicString,mode=IN,jdbcType=VARCHAR},
+                                             #{updateCode,mode=IN,jdbcType=VARCHAR},
+                                             #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                             #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+    <!-- 编辑热容量标定记录，add by zwj 0913-->
+    <select id="editLabQbCheck" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.ScalesEntity">
+      {call PK_LABORY.edit_lab_qb_check(#{publicString,mode=IN,jdbcType=VARCHAR},
+                                             #{updateCode,mode=IN,jdbcType=VARCHAR},
+                                             #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                             #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+    <!-- 热容量标定记录-->
+    <resultMap id="LabQbCheckResultMap" type="org.gxz.znrl.entity.LabQbCheckEntity">
+        <result column="lab_check_id" jdbcType="VARCHAR" property="labCheckId" />
+        <result column="labor_code" jdbcType="VARCHAR" property="laborCode" />
+        <result column="bjs_qgrd" jdbcType="VARCHAR" property="bjsQgrd" />
+        <result column="bm_qgrd" jdbcType="VARCHAR" property="bmQgrd" />
+        <result column="bm_mad" jdbcType="VARCHAR" property="bmMad" />
+        <result column="bm_stad" jdbcType="VARCHAR" property="bmStad" />
+        <result column="device_name" jdbcType="VARCHAR" property="deviceName" />
+        <result column="device_code1" jdbcType="VARCHAR" property="deviceCode1" />
+        <result column="device_code2" jdbcType="VARCHAR" property="deviceCode2" />
+        <result column="o2bumb_no1" jdbcType="VARCHAR" property="o2BumbNo1" />
+        <result column="o2bumb_no2" jdbcType="VARCHAR" property="o2BumbNo2" />
+        <result column="diff_percent1" jdbcType="VARCHAR" property="diffPercent1" />
+        <result column="diff_percent2" jdbcType="VARCHAR" property="diffPercent2" />
+
+        <result column="auto_no11" jdbcType="VARCHAR" property="autoNo11" />
+        <result column="auto_no12" jdbcType="VARCHAR" property="autoNo12" />
+        <result column="auto_no13" jdbcType="VARCHAR" property="autoNo13" />
+        <result column="auto_no14" jdbcType="VARCHAR" property="autoNo14" />
+        <result column="auto_no15" jdbcType="VARCHAR" property="autoNo15" />
+        <result column="auto_no21" jdbcType="VARCHAR" property="autoNo21" />
+        <result column="auto_no22" jdbcType="VARCHAR" property="autoNo22" />
+        <result column="auto_no23" jdbcType="VARCHAR" property="autoNo23" />
+        <result column="auto_no24" jdbcType="VARCHAR" property="autoNo24" />
+        <result column="auto_no25" jdbcType="VARCHAR" property="autoNo25" />
+
+        <result column="sam_weight11" jdbcType="VARCHAR" property="samWeight11" />
+        <result column="sam_weight12" jdbcType="VARCHAR" property="samWeight12" />
+        <result column="sam_weight13" jdbcType="VARCHAR" property="samWeight13" />
+        <result column="sam_weight14" jdbcType="VARCHAR" property="samWeight14" />
+        <result column="sam_weight15" jdbcType="VARCHAR" property="samWeight15" />
+        <result column="sam_weight21" jdbcType="VARCHAR" property="samWeight21" />
+        <result column="sam_weight22" jdbcType="VARCHAR" property="samWeight22" />
+        <result column="sam_weight23" jdbcType="VARCHAR" property="samWeight23" />
+        <result column="sam_weight24" jdbcType="VARCHAR" property="samWeight24" />
+        <result column="sam_weight25" jdbcType="VARCHAR" property="samWeight25" />
+
+        <result column="qb11" jdbcType="VARCHAR" property="qb11" />
+        <result column="qb12" jdbcType="VARCHAR" property="qb12" />
+        <result column="qb13" jdbcType="VARCHAR" property="qb13" />
+        <result column="qb14" jdbcType="VARCHAR" property="qb14" />
+        <result column="qb15" jdbcType="VARCHAR" property="qb15" />
+        <result column="qb21" jdbcType="VARCHAR" property="qb21" />
+        <result column="qb22" jdbcType="VARCHAR" property="qb22" />
+        <result column="qb23" jdbcType="VARCHAR" property="qb23" />
+        <result column="qb24" jdbcType="VARCHAR" property="qb24" />
+        <result column="qb25" jdbcType="VARCHAR" property="qb25" />
+
+        <result column="rsd1" jdbcType="VARCHAR" property="rsd1" />
+        <result column="rsd2" jdbcType="VARCHAR" property="rsd2" />
+        <result column="qb_avg1" jdbcType="VARCHAR" property="qbAvg1" />
+        <result column="qb_avg2" jdbcType="VARCHAR" property="qbAvg2" />
+
+        <result column="resam_weight11" jdbcType="VARCHAR" property="reSamWeight11" />
+        <result column="resam_weight12" jdbcType="VARCHAR" property="reSamWeight12" />
+        <result column="resam_weight13" jdbcType="VARCHAR" property="reSamWeight13" />
+        <result column="resam_weight14" jdbcType="VARCHAR" property="reSamWeight14" />
+        <result column="resam_weight15" jdbcType="VARCHAR" property="reSamWeight15" />
+        <result column="resam_weight21" jdbcType="VARCHAR" property="reSamWeight21" />
+        <result column="resam_weight22" jdbcType="VARCHAR" property="reSamWeight22" />
+        <result column="resam_weight23" jdbcType="VARCHAR" property="reSamWeight23" />
+        <result column="resam_weight24" jdbcType="VARCHAR" property="reSamWeight24" />
+        <result column="resam_weight25" jdbcType="VARCHAR" property="reSamWeight25" />
+        <result column="resam_weight_avg1" jdbcType="VARCHAR" property="reSamWeightAvg1" />
+        <result column="resam_weight_avg2" jdbcType="VARCHAR" property="reSamWeightAvg2" />
+
+        <result column="re_qbad11" jdbcType="VARCHAR" property="reQbad11" />
+        <result column="re_qbad12" jdbcType="VARCHAR" property="reQbad12" />
+        <result column="re_qbad13" jdbcType="VARCHAR" property="reQbad13" />
+        <result column="re_qbad14" jdbcType="VARCHAR" property="reQbad14" />
+        <result column="re_qbad15" jdbcType="VARCHAR" property="reQbad15" />
+        <result column="re_qbad21" jdbcType="VARCHAR" property="reQbad21" />
+        <result column="re_qbad22" jdbcType="VARCHAR" property="reQbad22" />
+        <result column="re_qbad23" jdbcType="VARCHAR" property="reQbad23" />
+        <result column="re_qbad24" jdbcType="VARCHAR" property="reQbad24" />
+        <result column="re_qbad25" jdbcType="VARCHAR" property="reQbad25" />
+        <result column="re_qbad_avg1" jdbcType="VARCHAR" property="reQbadAvg1" />
+        <result column="re_qbad_avg2" jdbcType="VARCHAR" property="reQbadAvg2" />
+
+        <result column="re_qgrd11" jdbcType="VARCHAR" property="reQgrd11" />
+        <result column="re_qgrd12" jdbcType="VARCHAR" property="reQgrd12" />
+        <result column="re_qgrd13" jdbcType="VARCHAR" property="reQgrd13" />
+        <result column="re_qgrd14" jdbcType="VARCHAR" property="reQgrd14" />
+        <result column="re_qgrd15" jdbcType="VARCHAR" property="reQgrd15" />
+        <result column="re_qgrd21" jdbcType="VARCHAR" property="reQgrd21" />
+        <result column="re_qgrd22" jdbcType="VARCHAR" property="reQgrd22" />
+        <result column="re_qgrd23" jdbcType="VARCHAR" property="reQgrd23" />
+        <result column="re_qgrd24" jdbcType="VARCHAR" property="reQgrd24" />
+        <result column="re_qgrd25" jdbcType="VARCHAR" property="reQgrd25" />
+        <result column="re_qgrd_avg1" jdbcType="VARCHAR" property="reQgrdAvg1" />
+        <result column="re_qgrd_avg2" jdbcType="VARCHAR" property="reQgrdAvg2" />
+
+        <result column="op_name" jdbcType="VARCHAR" property="opName" />
+        <result column="appr_name" jdbcType="VARCHAR" property="apprName" />
+        <result column="op_code" jdbcType="VARCHAR" property="opCode" />
+        <result column="op_date" jdbcType="VARCHAR" property="opDate" />
+        <result column="appr_date" jdbcType="VARCHAR" property="apprDate" />
+        <result column="check_date" jdbcType="VARCHAR" property="checkDate" />
+        <result column="next_date" jdbcType="VARCHAR" property="nextDate" />
+        <result column="status" jdbcType="VARCHAR" property="status" />
+        <result column="update_time" jdbcType="VARCHAR" property="updateTime" />
+        <result column="remark" jdbcType="VARCHAR" property="remark" />
+
+    </resultMap>
+
+
+    <!-- 查询热容量标定记录-->
+    <select id="qryLabQbCheckData"  parameterType="org.gxz.znrl.entity.LabQbCheckEntity" resultMap="LabQbCheckResultMap">
+        SELECT LAB_CHECK_ID,
+        LABOR_CODE        ,
+        DEVICE_NAME       ,
+        BJS_QGRD          ,
+        BM_QGRD           ,
+        BM_MAD            ,
+        BM_STAD           ,
+        EVALUATION        ,
+        OP_NAME           ,
+        APPR_NAME         ,
+        TO_CHAR(CHECK_DATE,'YYYY-MM-DD') CHECK_DATE,
+        TO_CHAR(NEXT_DATE,'YYYY-MM-DD') NEXT_DATE,
+        TO_CHAR(APPR_DATE,'YYYY-MM-DD') APPR_DATE,
+        TO_CHAR(OP_DATE,'YYYY-MM-DD') OP_DATE,
+        STATUS            ,
+        REMARK            ,
+        DEVICE_CODE1      ,
+        DEVICE_CODE2      ,
+        O2BUMB_NO1        ,
+        O2BUMB_NO2        ,
+        AUTO_NO11        ,
+        AUTO_NO12        ,
+        AUTO_NO13        ,
+        AUTO_NO14        ,
+        AUTO_NO15        ,
+        AUTO_NO21        ,
+        AUTO_NO22        ,
+        AUTO_NO23        ,
+        AUTO_NO24        ,
+        AUTO_NO25        ,
+        SAM_WEIGHT11      ,
+        SAM_WEIGHT12      ,
+        SAM_WEIGHT13      ,
+        SAM_WEIGHT14      ,
+        SAM_WEIGHT15      ,
+        SAM_WEIGHT21      ,
+        SAM_WEIGHT22      ,
+        SAM_WEIGHT23      ,
+        SAM_WEIGHT24      ,
+        SAM_WEIGHT25      ,
+        QB11              ,
+        QB12              ,
+        QB13              ,
+        QB14              ,
+        QB15              ,
+        QB21              ,
+        QB22              ,
+        QB23              ,
+        QB24              ,
+        QB25              ,
+        QB_AVG1           ,
+        QB_AVG2           ,
+        RSD1              ,
+        RSD2              ,
+        DIFF_PERCENT1     ,
+        DIFF_PERCENT2     ,
+        RESAM_WEIGHT11    ,
+        RESAM_WEIGHT12    ,
+        RESAM_WEIGHT13    ,
+        RESAM_WEIGHT14    ,
+        RESAM_WEIGHT15    ,
+        RESAM_WEIGHT21    ,
+        RESAM_WEIGHT22    ,
+        RESAM_WEIGHT23    ,
+        RESAM_WEIGHT24    ,
+        RESAM_WEIGHT25    ,
+        RESAM_WEIGHT_AVG1 ,
+        RESAM_WEIGHT_AVG2 ,
+        RE_QGRD11         ,
+        RE_QGRD12         ,
+        RE_QGRD13         ,
+        RE_QGRD14         ,
+        RE_QGRD15         ,
+        RE_QGRD21         ,
+        RE_QGRD22         ,
+        RE_QGRD23         ,
+        RE_QGRD24         ,
+        RE_QGRD25         ,
+        RE_QGRD_AVG1      ,
+        RE_QGRD_AVG2      ,
+        RE_QBAD11         ,
+        RE_QBAD12         ,
+        RE_QBAD13         ,
+        RE_QBAD14         ,
+        RE_QBAD15         ,
+        RE_QBAD21         ,
+        RE_QBAD22         ,
+        RE_QBAD23         ,
+        RE_QBAD24         ,
+        RE_QBAD25         ,
+        RE_QBAD_AVG1      ,
+        RE_QBAD_AVG2
+        FROM LAB_QB_CHECK A
+        WHERE 1 = 1
+
+        <if test="beginDate != null" >
+            and a.check_date  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.check_date  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="labCheckId != null" >
+            and a.lab_check_id  <![CDATA[ = ]]> to_number(#{labCheckId,jdbcType=VARCHAR})
+        </if>
+        order by a.lab_check_id desc
+    </select>
+
+<!--乐东入炉煤综合样报表-->
+    <select id="qryRLMonth"  parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT b.labor_code labor_code,
+               to_char(a.hy_date, 'yyyymmdd') hy_date,
+               b.batch_no,
+               get_sample_info(b.batch_no, b.batch_no_type, '1') sample_time,
+               nvl(get_sample_info(b.batch_no, b.batch_no_type, '2'),' ') recive_people,
+               nvl(get_sample_info(b.batch_no, b.batch_no_type, '3'),' ') recive_time,
+               nvl(get_sample_info(b.batch_no, b.batch_no_type, '4'), ' ') op_name,
+               nvl(get_sample_info(b.batch_no, b.batch_no_type, '5'), ' ') appr_name,
+               nvl(get_sample_info(b.batch_no, b.batch_no_type, '6'), ' ') check_name,
+               nvl(get_sample_info(b.batch_no, b.batch_no_type, '7'), ' ') remark,
+               nvl(get_sample_info(b.batch_no, b.batch_no_type, '8'), ' ') pz_name,
+               nvl(get_sample_info(b.batch_no, b.batch_no_type, '9'), ' ') tittle,
+               to_char(pk_labory.round_val(a.mt,1), 'fm99999990.0') mt,
+               to_char(a.mad, 'fm99999990.00') mad,
+               to_char(a.aad, 'fm99999990.00') aad,
+               to_char(a.ad, 'fm99999990.00') ad,
+               to_char(a.aar, 'fm99999990.00') aar,
+               to_char(a.st_ad, 'fm99999990.00') st_ad,
+               to_char(a.st_ar, 'fm99999990.00') st_ar,
+               to_char(a.vad, 'fm99999990.00') vad,
+               to_char(a.vd, 'fm99999990.00') vd,
+               to_char(a.var, 'fm99999990.00') var,
+               to_char(a.vdaf, 'fm99999990.00') vdaf,
+               to_char(a.fcad, 'fm99999990.00') fcad,
+               to_char(a.fcd, 'fm99999990.00') fcd,
+               to_char(pk_labory.round_val(a.qb_ad,-1), 'fm99999990') qb_ad,
+               to_char(a.qgr_ad, 'fm99999990.00') qgr_ad,
+               to_char(a.qgr_d, 'fm99999990.00') qgr_d,
+               nvl(to_char(a.qgr_daf, 'fm99999990.00'),' ') qgr_daf,
+               to_char(a.qnet_arj, 'fm99999990.00') qnet_arj,
+               to_char(a.had, 'fm99999990.00') had
+          FROM LAB_REPORT a, BATCH_NO_INFO b
+         WHERE 1 = 1
+           and a.labor_code = b.labor_code
+           and b.batch_no_type = #{batchType}
+        <if test="qryBeginDt != null and qryBeginDt!=''" >
+            and to_char(b.insert_time,'yyyy-mm') = #{qryBeginDt}
+        </if>
+    </select>
+
+    <!--乐东入炉煤日报-->
+    <select id="qryRLDay"  parameterType="java.util.Map" resultType="java.util.Map">
+
+        with base_tab as
+        (select '-0' || rownum bc_no
+        from dual
+        connect by rownum &lt;= 3
+        union all
+        select '-1' || rownum from dual connect by rownum &lt;= 3),
+        d as
+        (SELECT b.labor_code labor_code,
+        b.batch_no,
+        to_char(a.hy_date, 'yyyymmdd') hy_date,
+        get_sample_info(b.batch_no, b.batch_no_type, '1') sample_time,
+        nvl(get_sample_info(b.batch_no, b.batch_no_type, '2'), ' ') recive_people,
+        nvl(get_sample_info(b.batch_no, b.batch_no_type, '3'), ' ') recive_time,
+        nvl(get_sample_info(b.batch_no, b.batch_no_type, '4'), ' ') op_name,
+        nvl(get_sample_info(b.batch_no, b.batch_no_type, '5'), ' ') appr_name,
+        nvl(get_sample_info(b.batch_no, b.batch_no_type, '6'), ' ') check_name,
+        nvl(get_sample_info(b.batch_no, b.batch_no_type, '7'), ' ') remark,
+        nvl(get_sample_info(b.batch_no, b.batch_no_type, '8'), ' ') pz_name,
+        nvl(get_sample_info(b.batch_no, b.batch_no_type, '9'), ' ') tittle,
+        to_char(b.all_net_qty, 'fm99999990.00') all_net_qty,
+        to_char(a.qgr_d, 'fm99999990.00') qgr_d,
+        to_char(a.qnet_arj, 'fm99999990.00') qnet_arj,
+        to_char(pk_labory.round_val(a.qb_ad,-1), 'fm99999990') qb_ad,
+        to_char(pk_labory.round_val(a.mt,1), 'fm99999990.0') mt,
+        to_char(a.mad, 'fm99999990.00') mad,
+        to_char(a.aar, 'fm99999990.00') aar,
+        to_char(a.aad, 'fm99999990.00') aad,
+        to_char(a.ad, 'fm99999990.00') ad,
+        to_char(a.var, 'fm99999990.00') var,
+        to_char(a.vad, 'fm99999990.00') vad,
+        to_char(a.vd, 'fm99999990.00') vd,
+        to_char(a.vdaf, 'fm99999990.00') vdaf,
+        to_char(a.st_ad, 'fm99999990.00') st_ad,
+        to_char(a.st_ar, 'fm99999990.00') st_ar,
+        to_char(a.had, 'fm99999990.00') had,
+        to_char(a.qgr_ad, 'fm99999990.00') qgr_ad,
+        to_char(a.qgr_daf, 'fm99999990.00') qgr_daf
+        FROM LAB_REPORT a, BATCH_NO_INFO b
+        WHERE 1 = 1
+        and a.labor_code = b.labor_code
+
+        <if test="qryBeginDt != null and qryBeginDt!=''" >
+            and to_char(b.insert_time,'yyyy-mm-dd') = #{qryBeginDt,jdbcType=VARCHAR}
+        </if>
+
+        and b.batch_no_type = '9'
+        and a.appr_status not in ('3')),
+        s as(select * from base_tab b left join d on d.batch_no like '%' || b.bc_no)
+        select bc_no ,nvl(labor_code,' ')labor_code,
+        nvl(sample_time,' ')sample_time,
+        nvl(recive_people,' ')recive_people,
+        nvl(recive_time,' ')recive_time,
+        nvl(op_name,' ')op_name,
+        nvl(appr_name,' ')appr_name,
+        nvl(check_name,' ')check_name,
+        nvl(pz_name,' ')pz_name,
+        nvl(tittle,' ')tittle,
+        nvl(remark,' ')remark,
+        nvl(all_net_qty,' ')all_net_qty,
+        nvl(qgr_d,' ')qgr_d,
+        nvl(qnet_arj,' ')qnet_arj,
+        nvl(qb_ad,' ')qb_ad,
+        nvl(mt,' ')mt,
+        nvl(hy_date,' ')hy_date,
+        nvl(vad,' ')vad,
+        nvl(mad,' ')mad,
+        nvl(aar,' ')aar,
+        nvl(aad,' ')aad,
+        nvl(ad,' ')ad,
+        nvl(var,' ')var,
+        nvl(vd,' ')vd,
+        nvl(vdaf,' ')vdaf,
+        nvl(st_ad,' ')st_ad,
+        nvl(st_ar,' ')st_ar,
+        nvl(had,' ')had,
+        nvl(qgr_ad,' ')qgr_ad,
+        nvl(qgr_daf,' ')qgr_daf
+        from s
+
+    </select>
+
+    <select id="qryRLDay2"  parameterType="java.util.Map" resultType="java.util.Map">
+        with base_tab as
+        (select (rownum - 1) bc_no from dual connect by rownum &lt;= 2),
+        d as
+        (
+
+        SELECT substr(b.batch_no, -2, 1) bc_no,
+        nvl(to_char(sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ')all_net_qty,
+        nvl(to_char(sum(a.qgr_d * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') qgr_d,
+        nvl(to_char(sum(a.qnet_arj * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') qnet_arj,
+        nvl(to_char(pk_labory.round_val(sum(a.qb_ad * b.all_net_qty) / sum(b.all_net_qty),-1),
+        'fm99999990'),
+        ' ') qb_ad,
+        nvl(to_char(pk_labory.round_val(sum(a.mt * b.all_net_qty) / sum(b.all_net_qty),1),
+        'fm99999990.0'),
+        ' ') mt,
+        nvl(to_char(sum(a.mad * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') mad,
+        nvl(to_char(sum(a.aar * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') aar,
+        nvl(to_char(sum(a.aad * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') aad,
+        nvl(to_char(sum(a.ad * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') ad,
+        nvl(to_char(sum(a.var * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') var,
+        nvl(to_char(sum(a.vad * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') vad,
+        nvl(to_char(sum(a.vd * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') vd,
+        nvl(to_char(sum(a.vdaf * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') vdaf,
+        nvl(to_char(sum(a.st_ad * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') st_ad,
+        nvl(to_char(sum(a.st_ar * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') st_ar,
+        nvl(to_char(sum(a.had * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') had,
+        nvl(to_char(sum(a.qgr_ad * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') qgr_ad,
+        nvl(to_char(sum(a.qgr_daf * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') qgr_daf
+
+        FROM LAB_REPORT a, BATCH_NO_INFO b, coal_type c
+        WHERE 1 = 1
+        and a.labor_code = b.labor_code
+        and c.coal_no = b.coal_no
+        <if test="qryBeginDt != null and qryBeginDt!=''" >
+            and to_char(b.insert_time,'yyyy-mm-dd') = #{qryBeginDt,jdbcType=VARCHAR}
+        </if>
+        and b.batch_no_type = '9'
+        and a.appr_status not in ('3')
+        group by substr(b.batch_no, -2, 1)
+        order by substr(b.batch_no, -2, 1)),s as(
+        select * from base_tab b left join d on d.bc_no = b.bc_no)
+        select
+        nvl(vd,' ')vd,
+        nvl(all_net_qty,' ')all_net_qty,
+        nvl(qgr_d,' ')qgr_d,
+        nvl(qnet_arj,' ')qnet_arj,
+        nvl(qb_ad,' ')qb_ad,
+        nvl(mt,' ')mt,
+        nvl(mad,' ')mad,
+        nvl(aar,' ')aar,
+        nvl(aad,' ')aad,
+        nvl(ad,' ')ad,
+        nvl(var,' ')var,
+        nvl(vad,' ')vad,
+        nvl(vdaf,' ')vdaf,
+        nvl(st_ad,' ')st_ad,
+        nvl(st_ar,' ')st_ar,
+        nvl(had,' ')had,
+        nvl(qgr_ad,' ')qgr_ad,
+        nvl(qgr_daf,' ')qgr_daf
+        from s
+
+
+    </select>
+    <select id="qryRLDay3"  parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+        nvl(to_char(sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ')all_net_qty,
+        nvl(to_char(sum(a.qgr_d * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') qgr_d,
+        nvl(to_char(sum(a.qnet_arj * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') qnet_arj,
+        nvl(to_char(pk_labory.round_val(sum(a.qb_ad * b.all_net_qty) / sum(b.all_net_qty),-1),
+        'fm99999990'),
+        ' ') qb_ad,
+        nvl(to_char(pk_labory.round_val(sum(a.mt * b.all_net_qty) / sum(b.all_net_qty),1),
+        'fm99999990.0'),
+        ' ') mt,
+        nvl(to_char(sum(a.mad * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') mad,
+        nvl(to_char(sum(a.aar * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') aar,
+        nvl(to_char(sum(a.aad * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') aad,
+        nvl(to_char(sum(a.ad * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') ad,
+        nvl(to_char(sum(a.var * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') var,
+        nvl(to_char(sum(a.vad * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') vad,
+        nvl(to_char(sum(a.vd * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') vd,
+        nvl(to_char(sum(a.vdaf * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') vdaf,
+        nvl(to_char(sum(a.st_ad * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') st_ad,
+        nvl(to_char(sum(a.st_a * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') st_ar,
+        nvl(to_char(sum(a.had * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') had,
+        nvl(to_char(sum(a.qgr_ad * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') qgr_ad,
+        nvl(to_char(sum(a.qgr_daf * b.all_net_qty) / sum(b.all_net_qty),
+        'fm99999990.00'),
+        ' ') qgr_daf
+
+        FROM LAB_REPORT a, BATCH_NO_INFO b, coal_type c
+        WHERE 1 = 1
+        and a.labor_code = b.labor_code
+        and c.coal_no = b.coal_no
+        <if test="qryBeginDt != null and qryBeginDt!=''" >
+            and to_char(b.insert_time,'yyyy-mm-dd') = #{qryBeginDt,jdbcType=VARCHAR}
+        </if>
+        and b.batch_no_type = '9'
+
+    </select>
+
+    <!-- 单个编码报告 ，入厂、入厂总样、盘煤样、煤场煤样  LD-->
+    <select id="qrySingleReport"  parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT b.labor_code labor_code,
+        to_char(a.hy_date, 'yyyymmdd') hy_date,
+        b.batch_no,
+        get_sample_info(b.batch_no, b.batch_no_type, '1') sample_time,
+        nvl(get_sample_info(b.batch_no, b.batch_no_type, '2'),' ') recive_people,
+        nvl(get_sample_info(b.batch_no, b.batch_no_type, '3'),' ') recive_time,
+        nvl(get_sample_info(b.batch_no, b.batch_no_type, '4'), ' ') op_name,
+        nvl(get_sample_info(b.batch_no, b.batch_no_type, '5'), ' ') appr_name,
+        nvl(get_sample_info(b.batch_no, b.batch_no_type, '6'), ' ') check_name,
+        nvl(get_sample_info(b.batch_no, b.batch_no_type, '7'), ' ') remark,
+        nvl(get_sample_info(b.batch_no, b.batch_no_type, '8'), ' ') pz_name,
+        nvl(get_sample_info(b.batch_no, b.batch_no_type, '9'), ' ') tittle,
+        to_char(pk_labory.round_val(a.mt,1), 'fm99999990.0') mt,
+        to_char(a.mad, 'fm99999990.00') mad,
+        to_char(a.aad, 'fm99999990.00') aad,
+        to_char(a.ad, 'fm99999990.00') ad,
+        to_char(a.aar, 'fm99999990.00') aar,
+        to_char(a.st_ad, 'fm99999990.00') st_ad,
+        to_char(a.st_ar, 'fm99999990.00') st_ar,
+        to_char(a.vad, 'fm99999990.00') vad,
+        to_char(a.vd, 'fm99999990.00') vd,
+        to_char(a.var, 'fm99999990.00') var,
+        to_char(a.vdaf, 'fm99999990.00') vdaf,
+        to_char(a.fcad, 'fm99999990.00') fcad,
+        to_char(a.fcd, 'fm99999990.00') fcd,
+        to_char(pk_labory.round_val(a.qb_ad,-1), 'fm99999990') qb_ad,
+        to_char(a.qgr_ad, 'fm99999990.00') qgr_ad,
+        to_char(a.qgr_d, 'fm99999990.00') qgr_d,
+        nvl(to_char(a.qgr_daf, 'fm99999990.00'),' ') qgr_daf,
+        to_char(a.qnet_arj, 'fm99999990.00') qnet_arj,
+        to_char(a.had, 'fm99999990.00') had,
+        nvl(to_char(a.dt),' ') dt,
+        nvl(to_char(a.st),' ') st,
+        nvl(to_char(a.ht),' ') ht,
+        nvl(to_char(a.ft),' ') ft
+        FROM LAB_REPORT a, BATCH_NO_INFO b
+        WHERE 1 = 1
+        and a.labor_code = b.labor_code
+        and b.batch_no_type = #{batchType}
+        and a.labor_code=#{laborCode}
+    </select>
+
+    <!--乐东煤场煤综合样月报-->
+    <!--<select id="qryMcMonth"  parameterType="java.util.Map" resultType="java.util.Map">-->
+        <!--SELECT b.labor_code labor_code,-->
+        <!--to_char(a.hy_date, 'yyyymmdd') hy_date,-->
+        <!--b.batch_no,-->
+        <!--get_sample_info(b.batch_no, b.batch_no_type, '1') sample_time,-->
+        <!--nvl(get_sample_info(b.batch_no, b.batch_no_type, '2'),' ') recive_people,-->
+        <!--nvl(get_sample_info(b.batch_no, b.batch_no_type, '3'),' ') recive_time,-->
+        <!--nvl(get_sample_info(b.batch_no, b.batch_no_type, '4'), ' ') op_name,-->
+        <!--nvl(get_sample_info(b.batch_no, b.batch_no_type, '5'), ' ') appr_name,-->
+        <!--nvl(get_sample_info(b.batch_no, b.batch_no_type, '6'), ' ') check_name,-->
+        <!--nvl(get_sample_info(b.batch_no, b.batch_no_type, '7'), ' ') remark,-->
+        <!--nvl(get_sample_info(b.batch_no, b.batch_no_type, '8'), ' ') pz_name,-->
+        <!--nvl(get_sample_info(b.batch_no, b.batch_no_type, '9'), ' ') temp1,-->
+        <!--to_char(pk_labory.round_val(a.mt,1), 'fm99999990.0') mt,-->
+        <!--to_char(a.mad, 'fm99999990.00') mad,-->
+        <!--to_char(a.aad, 'fm99999990.00') aad,-->
+        <!--to_char(a.ad, 'fm99999990.00') ad,-->
+        <!--to_char(a.aar, 'fm99999990.00') aar,-->
+        <!--to_char(a.st_ad, 'fm99999990.00') st_ad,-->
+        <!--to_char(a.vad, 'fm99999990.00') vad,-->
+        <!--to_char(a.vd, 'fm99999990.00') vd,-->
+        <!--to_char(a.var, 'fm99999990.00') var,-->
+        <!--to_char(a.vdaf, 'fm99999990.00') vdaf,-->
+        <!--to_char(a.fcad, 'fm99999990.00') fcad,-->
+        <!--to_char(a.fcd, 'fm99999990.00') fcd,-->
+        <!--to_char(pk_labory.round_val(a.qb_ad,-1), 'fm99999990') qb_ad,-->
+        <!--to_char(a.qgr_ad, 'fm99999990.00') qgr_ad,-->
+        <!--to_char(a.qgr_d, 'fm99999990.00') qgr_d,-->
+        <!--nvl(to_char(a.qgr_daf, 'fm99999990.00'),' ') qgr_daf,-->
+        <!--to_char(a.qnet_arj, 'fm99999990.00') qnet_arj,-->
+        <!--to_char(a.had, 'fm99999990.00') had-->
+        <!--FROM LAB_REPORT a, BATCH_NO_INFO b-->
+        <!--WHERE 1 = 1-->
+        <!--and a.labor_code = b.labor_code-->
+        <!--and b.batch_no_type = #{batchType}-->
+        <!--and a.labor_code=#{laborCode}-->
+    <!--</select>-->
+
+    <!--查询化验员随机分配化验仪器的记录 xxs 20180207-->
+    <select id="qryLabManRandomList"  parameterType="org.gxz.znrl.entity.LabManRandomEntity" resultMap="LabManRandomResultMap">
+        SELECT
+        id lab_man_random_id,
+        (select s.realname from security_user s where s.id=a.op_code_4_hot) op_name_4_hot,
+        (select s.realname from security_user s where s.id=a.op_code_4_indes) op_name_4_indes,
+        (select s.realname from security_user s where s.id=a.op_code_4_light) op_name_4_light,
+        (select s.realname from security_user s where s.id=a.op_code_4_s) op_name_4_s,
+        to_char(a.hy_date, 'yyyy-mm-dd') hy_date,
+        remark
+        FROM lab_man_random a
+        WHERE 1 = 1
+
+        <if test="startTime != null" >
+            and a.insert_time  <![CDATA[ >= ]]> to_date(#{startTime,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endTime != null" >
+            and a.insert_time  <![CDATA[ <= ]]> to_date(#{endTime,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        order by a.hy_date desc
+    </select>
+
+    <!--查询化验员随机分配化验仪器的记录 xxs 20180207-->
+    <resultMap id="LabManRandomResultMap" type="org.gxz.znrl.entity.LabManRandomEntity">
+        <result column="lab_man_random_id" jdbcType="VARCHAR" property="labManRandomId" />
+        <result column="op_name_4_hot" jdbcType="VARCHAR" property="opName4Hot" />
+        <result column="op_name_4_indes" jdbcType="VARCHAR" property="opName4Indes" />
+        <result column="op_name_4_light" jdbcType="VARCHAR" property="opName4Light" />
+        <result column="op_name_4_s" jdbcType="VARCHAR" property="opName4S" />
+        <result column="hy_date" jdbcType="VARCHAR" property="hyDate" />
+        <result column="fremark" jdbcType="VARCHAR" property="remark" />
+
+    </resultMap>
+
+    <!--查询化验员随机分配化验仪器的记录 新增 xxs 20180207-->
+    <select id="addLabManRandomInfo" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.LabManRandomEntity">
+      {call lab_man_random_record(#{jsonString,mode=IN,jdbcType=VARCHAR},
+                                  #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                  #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+    <!-- 入炉煤化验月度统计报表 LD-->
+    <select id="qryCoalBurnRlMonthInfo"  parameterType="java.util.Map" resultType="java.util.Map">
+        with d as(
+        SELECT to_char(b.insert_time, 'yyyy/mm/dd') take_day,
+                to_number(to_char(b.insert_time, 'mm')) take_mon,
+                b.all_net_qty weight,
+                a.mt,
+                a.mad,
+                a.aar,
+                a.aad,
+                a.ad,
+                a.var,
+                a.vad,
+                a.vd,
+                a.vdaf,
+                a.st_ad,
+                a.st_ar,
+                a.st_d,
+                a.qgr_d,
+                a.qnet_arm,
+                a.qnet_arj
+          FROM LAB_REPORT a, BATCH_NO_INFO b
+         WHERE 1 = 1
+           and a.labor_code = b.labor_code
+           and a.appr_status not in ('3')
+           and b.batch_no_type = '9'
+          <if test="qryBeginDt != null and qryBeginDt!=''" >
+              and to_char(trunc(b.insert_time,'mm'),'yyyy-mm') = #{qryBeginDt,jdbcType=VARCHAR}
+          </if>
+          order by b.insert_time),
+        da as(
+        select
+        d.take_day,
+        d.take_mon,
+        sum(d.weight) weight_day,
+        round(divide_nozero(sum(d.mt*d.weight),sum(d.weight)),1) mt_day,
+        round(divide_nozero(sum(d.mad*d.weight),sum(d.weight)),2) mad_day,
+        round(divide_nozero(sum(d.aar*d.weight),sum(d.weight)),2) aar_day,
+        round(divide_nozero(sum(d.aad*d.weight),sum(d.weight)),2) aad_day,
+        round(divide_nozero(sum(d.ad*d.weight),sum(d.weight)),2) ad_day,
+        round(divide_nozero(sum(d.var*d.weight),sum(d.weight)),2) var_day,
+        round(divide_nozero(sum(d.vad*d.weight),sum(d.weight)),2) vad_day,
+        round(divide_nozero(sum(d.vd*d.weight),sum(d.weight)),2) vd_day,
+        round(divide_nozero(sum(d.vdaf*d.weight),sum(d.weight)),2) vdaf_day,
+        round(divide_nozero(sum(d.st_ar*d.weight),sum(d.weight)),2) st_ar_day,
+        round(divide_nozero(sum(d.st_ad*d.weight),sum(d.weight)),2) st_ad_day,
+        round(divide_nozero(sum(d.st_d*d.weight),sum(d.weight)),2) st_d_day,
+        round(divide_nozero(sum(d.qgr_d*d.weight),sum(d.weight)),2) qgr_d_day ,
+        round(divide_nozero(sum(d.qnet_arj*d.weight),sum(d.weight)),2) qnet_arj_day,
+        round(divide_nozero(sum(d.qnet_arm*d.weight),sum(d.weight)),0) qnet_arm_day
+        from d
+        group by d.take_day,d.take_mon ),
+        s as(
+        select
+        ' ' appr_name,
+        ' ' op_name,
+        sum(d.weight) weight_mon,
+        round(divide_nozero(sum(d.mt*d.weight),sum(d.weight)),1) mt_mon,
+        round(divide_nozero(sum(d.mad*d.weight),sum(d.weight)),2) mad_mon,
+        round(divide_nozero(sum(d.aar*d.weight),sum(d.weight)),2) aar_mon,
+        round(divide_nozero(sum(d.aad*d.weight),sum(d.weight)),2) aad_mon,
+        round(divide_nozero(sum(d.ad*d.weight),sum(d.weight)),2) ad_mon,
+        round(divide_nozero(sum(d.var*d.weight),sum(d.weight)),2) var_mon,
+        round(divide_nozero(sum(d.vad*d.weight),sum(d.weight)),2) vad_mon,
+        round(divide_nozero(sum(d.vd*d.weight),sum(d.weight)),2) vd_mon,
+        round(divide_nozero(sum(d.vdaf*d.weight),sum(d.weight)),2) vdaf_mon,
+        round(divide_nozero(sum(d.st_ar*d.weight),sum(d.weight)),2) st_ar_mon,
+        round(divide_nozero(sum(d.st_ad*d.weight),sum(d.weight)),2) st_ad_mon,
+        round(divide_nozero(sum(d.st_d*d.weight),sum(d.weight)),2) st_d_mon,
+        round(divide_nozero(sum(d.qgr_d*d.weight),sum(d.weight)),3) qgr_d_mon,
+        round(divide_nozero(sum(d.qnet_arj*d.weight),sum(d.weight)),2) qnet_arj_mon,
+        round(divide_nozero(sum(d.qnet_arm*d.weight),sum(d.weight)),0) qnet_arm_mon
+        from d )
+        select da.take_day     "take_day",
+                da.take_mon     "take_mon",
+                da.weight_day   "weight_day",
+                da.mt_day       "mt_day",
+                da.mad_day      "mad_day",
+                da.aar_day      "aar_day",
+                da.aad_day      "aad_day",
+                da.ad_day       "ad_day",
+                da.var_day      "var_day",
+                da.vad_day      "vad_day",
+                da.vd_day       "vd_day",
+                da.vdaf_day     "vdaf_day",
+                da.st_ar_day    "st_ar_day",
+                da.st_ad_day    "st_ad_day",
+                da.st_d_day     "st_d_day",
+                da.qgr_d_day    "qgr_d_day",
+                da.qnet_arj_day "qnet_arj_day",
+                da.qnet_arm_day "qnet_arm_day",
+                s.weight_mon    "weight_mon",
+                s.mt_mon        "mt_mon",
+                s.mad_mon       "mad_mon",
+                s.aar_mon       "aar_mon",
+                s.aad_mon       "aad_mon",
+                s.ad_mon        "ad_mon",
+                s.var_mon       "var_mon",
+                s.vad_mon       "vad_mon",
+                s.vd_mon        "vd_mon",
+                s.vdaf_mon      "vdaf_mon",
+                s.st_ar_mon     "st_ar_mon",
+                s.st_ad_mon     "st_ad_mon",
+                s.st_d_mon      "st_d_mon",
+                s.qgr_d_mon     "qgr_d_mon",
+                s.qnet_arj_mon  "qnet_arj_mon",
+                s.qnet_arm_mon  "qnet_arm_mon",
+                s.appr_name     "appr_name",
+                s.op_name       "op_name"
+                from da, s
+        order by da.take_day
+    </select>
+
+  <resultMap id="LabFlyAshResultMap" type="org.gxz.znrl.entity.LabFlyAsh" >
+    <result column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="CLASS_NO" property="classNo" jdbcType="VARCHAR" />
+    <result column="CLASS_NO_NAME" property="classNoName" jdbcType="VARCHAR" />
+    <result column="TEAM_NO" property="teamNo" jdbcType="VARCHAR" />
+    <result column="TEAM_NO_NAME" property="teamNoName" jdbcType="VARCHAR" />
+    <result column="TAKE_SAMPLE_DATE" property="takeSampleDate" jdbcType="VARCHAR" />
+    <result column="TAKE_SAMPLE_NAME" property="takeSampleName" jdbcType="VARCHAR" />
+    <result column="HY_DATE" property="hyDate" jdbcType="VARCHAR" />
+    <result column="HY_NAME" property="hyName" jdbcType="VARCHAR" />
+    <result column="CAD1" property="cad1" jdbcType="VARCHAR" />
+    <result column="FINENESS1" property="fineness1" jdbcType="VARCHAR" />
+    <result column="CAD2" property="cad2" jdbcType="VARCHAR" />
+    <result column="FINENESS2" property="fineness2" jdbcType="VARCHAR" />
+    <result column="CAD3" property="cad3" jdbcType="VARCHAR" />
+    <result column="FINENESS3" property="fineness3" jdbcType="VARCHAR" />
+    <result column="CAD4" property="cad4" jdbcType="VARCHAR" />
+    <result column="FINENESS4" property="fineness4" jdbcType="VARCHAR" />
+    <result column="CAD_5" property="cad5" jdbcType="VARCHAR" />
+    <result column="FINENESS_5" property="fineness5" jdbcType="VARCHAR" />
+    <result column="DESCR" property="descr" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="OP_CODE" property="opCode" jdbcType="VARCHAR" />
+    <result column="INSERT_TIME" property="insertTime" jdbcType="VARCHAR" />
+    <result column="UPDATE_CODE" property="updateCode" jdbcType="VARCHAR" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="VARCHAR" />
+    <result column="JH_CODE" property="jhCode" jdbcType="VARCHAR" />
+    <result column="JH_TIME" property="jhTime" jdbcType="VARCHAR" />
+  </resultMap>
+
+
+  <select id="qryFlyAsh"  parameterType="java.util.Map" resultType="java.util.Map">
+      SELECT to_char(a.class_no_name) classNoName,
+      to_char(a.team_no_name) teamNoName,
+      nvl(to_char(a.cad1,'fm99999990.00'),' ') cad1,
+      nvl(to_char(a.fineness1,'fm99999990.00'),' ') fineness1,
+      nvl(to_char(a.cad2,'fm99999990.00'),' ') cad2,
+      nvl(to_char(a.fineness2,'fm99999990.00'),' ') fineness2,
+      nvl(to_char(a.cad3,'fm99999990.00'),' ') cad3,
+      nvl(to_char(a.fineness3,'fm99999990.00'),' ') fineness3,
+      nvl(to_char(a.cad4,'fm99999990.00'),' ') cad4,
+      nvl(to_char(a.cad5,'fm99999990.00'),' ') cad5,
+      nvl(to_char(a.ash1_qty,'fm99999990.00'),' ') ashQty1,
+      nvl(to_char(a.ash2_qty,'fm99999990.00'),' ') ashQty2,
+      to_char(a.take_sample_date, 'yyyy-mm-dd') takeSampleDate,
+      to_char(a.hy_date, 'yyyy-mm-dd') hyDate,
+      to_char(a.take_sample_name) takeSampleName,
+      to_char(a.descr) descr,
+      nvl((select to_char(b.realname) from SECURITY_USER b where b.id=a.update_code),' ') updateCode,
+      nvl((select to_char(b.realname) from SECURITY_USER b where b.id=a.jh_code),' ') jhCode,
+      to_char(a.hy_name) hyName,
+      to_char(a.class_no) classNo,
+      to_char(a.team_no) teamNo,
+      nvl(remark,' ') remark
+      FROM LAB_FLY_ASH a
+      WHERE 1 = 1
+      <if test="qryBeginDt != null and qryBeginDt!=''" >
+          and to_char(a.take_sample_date,'yyyy-mm-dd') = #{qryBeginDt}
+      </if>
+      <if test="qryClassNo != null and qryClassNo!=''" >
+          and to_char(a.class_no) = #{qryClassNo}
+      </if>
+      order by decode(class_no,'3','1','1','2','2','3')
+  </select>
+
+    <select id="qryFlyAshMonth"  parameterType="java.util.Map" resultType="java.util.Map">
+        with d as
+        (SELECT to_char(a.class_no) class_no,
+        to_char(a.team_no) team_no,
+        to_char(a.class_no_name) class_name,
+        to_char(a.team_no_name) team_name,
+        to_char(a.take_sample_date, 'yyyy-mm-dd') sample_date,
+        nvl(to_char(a.cad1, 'fm99999990.00'), ' ') cad1,
+        nvl(to_char(a.fineness1, 'fm99999990.00'), ' ') fineness1,
+        nvl(to_char(a.cad2, 'fm99999990.00'), ' ') cad2,
+        nvl(to_char(a.fineness2, 'fm99999990.00'), ' ') fineness2,
+        nvl(to_char(a.cad3, 'fm99999990.00'), ' ') cad3,
+        nvl(to_char(a.fineness3, 'fm99999990.00'), ' ') fineness3,
+        nvl(to_char(a.cad4,'fm99999990.00'),' ') cad4,
+        nvl(to_char(a.cad5,'fm99999990.00'),' ') cad5,
+        nvl(to_char(a.ash1_qty, 'fm99999990.00'), ' ') ash1_qty,
+        nvl(to_char(a.ash2_qty, 'fm99999990.00'), ' ') ash2_qty,
+        nvl(to_char(a.cad1_qty, 'fm99999990.00'), ' ') cad1_qty,
+        nvl(to_char(a.cad2_qty, 'fm99999990.00'), ' ') cad2_qty,
+        nvl(to_char(a.avg_cad1, 'fm99999990.00'), ' ') avg_cad1,
+        nvl(to_char(a.avg_cad2, 'fm99999990.00'), ' ') avg_cad2,
+        a.ash1_qty ashQty1,
+        a.ash2_qty ashQty2,
+        a.cad1_qty cadQty1,
+        a.cad2_qty cadQty2,
+        a.avg_cad1 avgCad1,
+        a.avg_cad2 avgCad2
+        FROM LAB_FLY_ASH a
+        WHERE 1 = 1
+        <if test="qryBeginDt != null and qryBeginDt!=''" >
+            and to_char(trunc(a.take_sample_date, 'mm'), 'yyyy-mm') = #{qryBeginDt}
+        </if>
+        order by take_sample_date, decode(class_no, '3', '1', '1', '2', '2', '3')),
+        s as
+        (select nvl(sum(d.ashQty1), 0) sum_ash1_qty,
+        nvl(sum(d.ashQty2), 0) sum_ash2_qty,
+        nvl(sum(d.cadQty1), 0) sum_cad1_qty,
+        nvl(sum(d.cadQty2), 0) sum_cad2_qty,
+        nvl(round(divide_nozero(sum(d.ashQty1 * d.avgCad1), sum(d.ashQty1)), 2), 0) weighted_cad1,
+        nvl(round(divide_nozero(sum(d.ashQty2 * d.avgCad2), sum(d.ashQty2)), 2), 0) weighted_cad2
+        from d)
+        select d.*, s.* from d, s
+
+    </select>
+
+    <select id="qrySlagAshMonth"  parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT to_char(a.class_no) class_no,
+        to_char(a.team_no) team_no,
+        to_char(a.class_no_name) class_name,
+        to_char(a.team_no_name) team_name,
+        to_char(a.take_sample_date, 'yyyy-mm-dd') sample_date,
+        nvl(to_char(a.cad1, 'fm99999990.00'), ' ') cad1,
+        nvl(to_char(a.fineness1, 'fm99999990.00'), ' ') fineness1,
+        nvl(to_char(a.cad2, 'fm99999990.00'), ' ') cad2,
+        nvl(to_char(a.fineness2, 'fm99999990.00'), ' ') fineness2,
+        nvl(to_char(a.cad3, 'fm99999990.00'), ' ') cad3,
+        nvl(to_char(a.fineness3, 'fm99999990.00'), ' ') fineness3,
+        nvl(to_char(a.cad4,'fm99999990.00'),' ') cad4,
+        nvl(to_char(a.cad5,'fm99999990.00'),' ') cad5
+        FROM LAB_FLY_ASH a
+        WHERE 1 = 1
+        and a.cad4 is not null or a.cad5 is not null
+        <if test="qryBeginDt != null and qryBeginDt!=''" >
+            and to_char(trunc(a.take_sample_date, 'mm'), 'yyyy-mm') = #{qryBeginDt}
+        </if>
+        order by take_sample_date, decode(class_no, '3', '1', '1', '2', '2', '3')
+    </select>
+
+
+  <!-- 编辑飞灰可燃物，add by qmj 0615-->
+  <select id="editFlyAsh" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.ScalesEntity">
+      {call PK_LABORY.edit_lab_fly_ash(#{publicString,mode=IN,jdbcType=VARCHAR},
+                                             #{opCode,mode=IN,jdbcType=VARCHAR},
+                                             #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                             #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+  </select>
+
+    <select id="setReceiveInfo" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.BatchNoInfoEntity">
+        {call PK_LABORY.set_receive_info(#{laborCode,mode=IN,jdbcType=VARCHAR},
+                                         #{opCode,mode=IN,jdbcType=VARCHAR},
+                                         #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                         #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+    <!--化验设备国标信息   九江需要的  xxs 20190410-->
+    <resultMap id="LabStandardResultMap" type="org.gxz.znrl.entity.LabStandardEntity">
+        <result column="lab_standard_id" jdbcType="VARCHAR" property="labStandardId" />
+        <result column="device_no" jdbcType="VARCHAR" property="deviceNo" />
+        <result column="device_name" jdbcType="VARCHAR" property="deviceName" />
+        <result column="standard_name" jdbcType="VARCHAR" property="standardName" />
+        <result column="chemical_type" jdbcType="VARCHAR" property="chemicalType" />
+        <result column="status" jdbcType="VARCHAR" property="status" />
+        <result column="begin_date" jdbcType="VARCHAR" property="beginDate" />
+        <result column="end_date" jdbcType="VARCHAR" property="endDate" />
+        <result column="op_code" jdbcType="VARCHAR" property="opCode" />
+        <result column="op_name" jdbcType="VARCHAR" property="opName" />
+        <result column="insert_time" jdbcType="VARCHAR" property="insertTime" />
+        <result column="update_code" jdbcType="VARCHAR" property="updateCode" />
+        <result column="update_name" jdbcType="VARCHAR" property="updateName" />
+        <result column="update_time" jdbcType="VARCHAR" property="updateTime" />
+        <result column="remark" jdbcType="VARCHAR" property="remark" />
+    </resultMap>
+
+    <!--化验设备国标信息   九江需要的  xxs 20190410-->
+    <select id="qryLabStandardList"  parameterType="org.gxz.znrl.entity.LabStandardEntity" resultMap="LabStandardResultMap">
+        select lab_device_standard_id lab_standard_id,
+        device_no,
+        (select device_name from lab_device b where a.device_no=b.device_no) device_name,
+        standard_name,
+        chemical_type,
+        status,
+        to_char(a.begin_date,'yyyy-mm-dd') begin_date,
+        to_char(a.end_date,'yyyy-mm-dd') end_date,
+        op_code,
+        (select s.realname from security_user s where s.id=a.op_code) op_name,
+        to_char(a.insert_time, 'yyyy-mm-dd hh24:mi:ss') insert_time,
+        update_code,
+        (select s.realname from security_user s where s.id=a.update_code) update_name,
+        to_char(a.update_time, 'yyyy-mm-dd hh24:mi:ss') update_time,
+        remark
+        from lab_device_standard_info a
+        WHERE 1 = 1
+
+        <if test="startTime != null" >
+            and a.insert_time  <![CDATA[ >= ]]> to_date(#{startTime,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endTime != null" >
+            and a.insert_time  <![CDATA[ <= ]]> to_date(#{endTime,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="status != null" >
+            and a.status = #{status,jdbcType=VARCHAR}
+        </if>
+
+        order by a.insert_time desc
+    </select>
+
+    <!--化验设备国标信息   九江需要的  xxs 20190410-->
+    <select id="addLabStandardInfo" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.LabStandardEntity">
+      {call pk_labory.lab_device_standard_record(#{jsonString,mode=IN,jdbcType=VARCHAR},
+                                                 #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                                 #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+    <!--化验设备国标信息   九江需要的  xxs 20190410-->
+    <select id="delLabStandardInfo" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.LabStandardEntity">
+      {call pk_labory.lab_device_standard_record(#{jsonString,mode=IN,jdbcType=VARCHAR},
+                                                 #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                                 #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+    <!--化验超差数据进行取舍的原因  xxs20190419-->
+    <resultMap id="LabCcResultMap" type="org.gxz.znrl.entity.LabCcInfoEntity">
+        <result column="lab_cc_id" jdbcType="VARCHAR" property="labCcId" />
+        <result column="labor_code" jdbcType="VARCHAR" property="laborCode" />
+        <result column="device_no" jdbcType="VARCHAR" property="deviceNo" />
+        <result column="device_name" jdbcType="VARCHAR" property="deviceName" />
+        <result column="chemical_value" jdbcType="VARCHAR" property="chemicalValue" />
+        <result column="chemical_type" jdbcType="VARCHAR" property="chemicalType" />
+        <result column="confirm_status" jdbcType="VARCHAR" property="confirmStatus" />
+        <result column="cc_status" jdbcType="VARCHAR" property="ccStatus" />
+        <result column="op_reason" jdbcType="VARCHAR" property="opReason" />
+        <result column="confirm_code" jdbcType="VARCHAR" property="confirmCode" />
+        <result column="confirm_name" jdbcType="VARCHAR" property="confirmName" />
+        <result column="op_code" jdbcType="VARCHAR" property="opCode" />
+        <result column="op_name" jdbcType="VARCHAR" property="opName" />
+        <result column="insert_time" jdbcType="VARCHAR" property="insertTime" />
+        <result column="update_code" jdbcType="VARCHAR" property="updateCode" />
+        <result column="update_name" jdbcType="VARCHAR" property="updateName" />
+        <result column="update_time" jdbcType="VARCHAR" property="updateTime" />
+        <result column="remark" jdbcType="VARCHAR" property="remark" />
+    </resultMap>
+
+    <!--化验超差数据进行取舍的原因  xxs20190419-->
+    <select id="qryLabCcInfoCnt"  parameterType="org.gxz.znrl.entity.LabCcInfoEntity" resultType="java.lang.Integer">
+        select count(1)
+        from lab_cc_info a
+        WHERE 1 = 1
+        <if test="startTime != null" >
+            and a.insert_time  <![CDATA[ >= ]]> to_date(#{startTime,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endTime != null" >
+            and a.insert_time  <![CDATA[ <= ]]> to_date(#{endTime,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="labCcId != null" >
+            and a.lab_cc_id = #{labCcId,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <!--化验超差数据进行取舍的原因  xxs20190419-->
+    <select id="qryLabCcInfoList"  parameterType="org.gxz.znrl.entity.LabCcInfoEntity" resultMap="LabCcResultMap">
+        <include refid="paging_top_sql"/>
+        select t.*, rownum rownumber
+        from ( select lab_cc_id,
+        labor_code,
+        chemical_type,
+        chemical_value,
+        cc_status,
+        confirm_status status,
+        op_reason,
+        op_code,
+        (select s.realname from security_user s where s.id=a.op_code) op_name,
+        to_char(a.insert_time, 'yyyy-mm-dd hh24:mi:ss') insert_time,
+        update_code,
+        (select s.realname from security_user s where s.id=a.update_code) update_name,
+        to_char(a.update_time, 'yyyy-mm-dd hh24:mi:ss') update_time,
+        remark
+        from lab_cc_info a
+        WHERE 1 = 1
+
+        <if test="startTime != null" >
+            and a.insert_time  <![CDATA[ >= ]]> to_date(#{startTime,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endTime != null" >
+            and a.insert_time  <![CDATA[ <= ]]> to_date(#{endTime,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="labCcId != null" >
+            and a.lab_cc_id = #{labCcId,jdbcType=VARCHAR}
+        </if>
+        order by a.insert_time desc
+        )t
+        <include refid="paging_bottom_sql"/>
+    </select>
+
+    <!--化验超差数据进行取舍的原因  xxs20190419-->
+    <select id="editLabCcInfo" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.LabCcInfoEntity">
+      {call pk_labory.edit_lab_cc_record(#{jsonString,mode=IN,jdbcType=VARCHAR},
+                                         #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                         #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+    <select id="qryCoalBurnMonthly"  parameterType="java.util.Map" resultType="java.util.Map">
+       with d as
+         (select to_char(trunc(b.insert_time, 'mm'), 'mm') || '月' mon,
+                 sum(b.ALL_NET_QTY) net_qty,
+                 round(sum(b.ALL_NET_QTY * l.mt) / sum(b.ALL_NET_QTY), 2) mt,
+                 round(sum(b.ALL_NET_QTY * l.mad) / sum(b.ALL_NET_QTY), 2) mad,
+                 round(sum(b.ALL_NET_QTY * l.aar) / sum(b.ALL_NET_QTY), 2) aar,
+                 round(sum(b.ALL_NET_QTY * l.aad) / sum(b.ALL_NET_QTY), 2) aad,
+                 round(sum(b.ALL_NET_QTY * l.ad) / sum(b.ALL_NET_QTY), 2) ad,
+                 round(sum(b.ALL_NET_QTY * l.var) / sum(b.ALL_NET_QTY), 2) var,
+                 round(sum(b.ALL_NET_QTY * l.vad) / sum(b.ALL_NET_QTY), 2) vad,
+                 round(sum(b.ALL_NET_QTY * l.vd) / sum(b.ALL_NET_QTY), 2) vd,
+                 round(sum(b.ALL_NET_QTY * l.vdaf) / sum(b.ALL_NET_QTY), 2) vdaf,
+                 round(sum(b.ALL_NET_QTY * l.st_ad) / sum(b.ALL_NET_QTY), 2) st_ad,
+                 round(sum(b.ALL_NET_QTY * l.st_ar) / sum(b.ALL_NET_QTY), 2) st_ar,
+                 round(sum(b.ALL_NET_QTY * l.st_d) / sum(b.ALL_NET_QTY), 2) st_d,
+                 round(sum(b.ALL_NET_QTY * l.qgr_d) / sum(b.ALL_NET_QTY), 2) qgr_d,
+                 round(sum(b.ALL_NET_QTY * l.qnet_arj) / sum(b.ALL_NET_QTY), 2) qnet_arj,
+                 round(sum(b.ALL_NET_QTY * l.qnet_arm) / sum(b.ALL_NET_QTY), 2) qnet_arm,
+                 to_char(trunc(b.insert_time, 'mm'), 'mm') || '月' "mon",
+                 sum(b.ALL_NET_QTY) "net_qty",
+                 round(sum(b.ALL_NET_QTY * l.mt) / sum(b.ALL_NET_QTY), 2) "mt",
+                 round(sum(b.ALL_NET_QTY * l.mad) / sum(b.ALL_NET_QTY), 2) "mad",
+                 round(sum(b.ALL_NET_QTY * l.aar) / sum(b.ALL_NET_QTY), 2) "aar",
+                 round(sum(b.ALL_NET_QTY * l.aad) / sum(b.ALL_NET_QTY), 2) "aad",
+                 round(sum(b.ALL_NET_QTY * l.ad) / sum(b.ALL_NET_QTY), 2) "ad",
+                 round(sum(b.ALL_NET_QTY * l.var) / sum(b.ALL_NET_QTY), 2) "var",
+                 round(sum(b.ALL_NET_QTY * l.vad) / sum(b.ALL_NET_QTY), 2) "vad",
+                 round(sum(b.ALL_NET_QTY * l.vd) / sum(b.ALL_NET_QTY), 2) "vd",
+                round(sum(b.ALL_NET_QTY * l.vdaf) / sum(b.ALL_NET_QTY), 2) "vdaf",
+                 round(sum(b.ALL_NET_QTY * l.st_ad) / sum(b.ALL_NET_QTY), 2) "st_ad",
+                 round(sum(b.ALL_NET_QTY * l.st_ar) / sum(b.ALL_NET_QTY), 2) "st_ar",
+                 round(sum(b.ALL_NET_QTY * l.st_d) / sum(b.ALL_NET_QTY), 2) "st_d",
+                 round(sum(b.ALL_NET_QTY * l.qgr_d) / sum(b.ALL_NET_QTY), 2) "qgr_d",
+                 round(sum(b.ALL_NET_QTY * l.qnet_arj) / sum(b.ALL_NET_QTY), 2) "qnet_arj",
+                 round(sum(b.ALL_NET_QTY * l.qnet_arm) / sum(b.ALL_NET_QTY), 2) "qnet_arm"
+
+            from batch_no_info b, lab_report l
+           where b.batch_no_type = '9'
+             and b.LABOR_CODE = l.labor_code
+             and trunc(b.INSERT_TIME, 'yyyy') =trunc(to_date(#{qryBeginDt}, 'yyyy-mm-dd'), 'yyyy')
+           group by trunc(b.insert_time, 'mm')),
+        s as
+         (select sum(d.net_qty) "sum_net_qty",
+                 round(sum(d.net_qty * d.mt) / sum(d.net_qty), 2) "avg_mt",
+                 round(sum(d.net_qty * d.mad) / sum(d.net_qty), 2) "avg_mad",
+                 round(sum(d.net_qty * d.aar) / sum(d.net_qty), 2) "avg_aar",
+                 round(sum(d.net_qty * d.aad) / sum(d.net_qty), 2) "avg_aad",
+                 round(sum(d.net_qty * d.ad) / sum(d.net_qty), 2) "avg_ad",
+                 round(sum(d.net_qty * d.var) / sum(d.net_qty), 2) "avg_var",
+                 round(sum(d.net_qty * d.vad) / sum(d.net_qty), 2) "avg_vad",
+                 round(sum(d.net_qty * d.vd) / sum(d.net_qty), 2) "avg_vd",
+                 round(sum(d.net_qty * d.vdaf) / sum(d.net_qty), 2) "avg_vdaf",
+                 round(sum(d.net_qty * d.st_ad) / sum(d.net_qty), 2) "avg_st_ad",
+                 round(sum(d.net_qty * d.st_ar) / sum(d.net_qty), 2) "avg_st_ar",
+                 round(sum(d.net_qty * d.st_d) / sum(d.net_qty), 2) "avg_st_d",
+                 round(sum(d.net_qty * d.qgr_d) / sum(d.net_qty), 2) "avg_qgr_d",
+                 round(sum(d.net_qty * d.qnet_arj) / sum(d.net_qty), 2) "avg_qnet_arj",
+                 round(sum(d.net_qty * d.qnet_arm) / sum(d.net_qty), 2) "avg_qnet_arm"
+
+            from d)
+        select * from d, s order by d.mon
+    </select>
+
+
+    <!--天平化验原始数据查询-->
+    <select id="qryScalesResOrgDataByUsage"  parameterType="org.gxz.znrl.entity.ScalesEntity" resultMap="ScalesResDataResultMap">
+        SELECT a.scales_res_id,
+        a.labor_code,
+        a.device_no,
+        b.device_name,
+        a.gg_no,
+        a.myp_qty,
+        a.sampling_qty,
+        a.total_qty,
+        a.afterdry_qty,
+        a.index_type,
+        a.index_value,
+        decode(a.index_type,'mt','全水','mad','水分','aad','灰分','vad','挥发分') index_type_name,
+        a.op_code,
+        a.op_name,
+        a.cc_status,
+        decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次', '99', '全水调整化验') batch_type,
+        to_char(a.op_time, 'yyyy-mm-dd hh24:mi:ss') op_time,
+        to_char(trunc(a.op_time), 'yyyy-mm-dd') op_date,
+        decode(a.status, '0','未确认','1','已确认','2','作废') status_name,
+        a.status
+        FROM LAB_SCALES_RESULT_ORG a, lab_device b
+        WHERE 1 = 1
+        and a.device_no = b.device_no
+
+        <if test="beginDate != null" >
+            and a.op_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.op_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="status != null" >
+            and a.status = #{status,jdbcType=VARCHAR}
+        </if>
+
+        <if test="batchType != null" >
+            and a.batch_type = #{batchType,jdbcType=VARCHAR}
+        </if>
+
+        <if test="usage != null" >
+            and b.usage = #{usage,jdbcType=VARCHAR}
+        </if>
+
+        order by a.labor_code desc,a.index_type,a.op_time desc
+    </select>
+
+    <!--工业分析仪原始数据查询-->
+    <select id="qryIAResOrgDataByUsage"  parameterType="org.gxz.znrl.entity.IndstAnalyEntity" resultMap="IAResDataResultMap">
+        SELECT a.indst_analy_res_id,
+        a.labor_code,
+        a.device_no,
+        b.device_name,
+        a.gg_no,
+        '' temperature,
+        '' humidity,
+        '' standard,
+        a.sampling_name,
+        a.sh_kgg_weight,
+        a.sh_sampling_weight,
+        a.mad,
+        a.aad,
+        a.ad,
+        a.hk_total_weight,
+        a.hk_sampling_weight,
+        a.vad,
+        a.vdaf,
+        a.cc_val,
+        a.op_code,
+        a.op_name,
+        decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次', '') batch_type,
+        to_char(a.op_time, 'yyyy-mm-dd hh24:mi:ss') op_time,
+        to_char(trunc(a.op_time), 'yyyy-mm-dd') op_date,
+        decode(a.status, '0','未确认','1','已确认','2','作废') status_name,
+        a.cc_status,
+        a.status
+        FROM LAB_INDST_ANALY_RESULT_ORG a, lab_device b
+        WHERE 1 = 1
+        and a.device_no = b.device_no
+
+        <if test="beginDate != null" >
+            and a.op_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.op_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="status != null" >
+            and a.status = #{status,jdbcType=VARCHAR}
+        </if>
+
+        <if test="batchType != null" >
+            and a.batch_type = #{batchType,jdbcType=VARCHAR}
+        </if>
+
+        <if test='dataType == "mad"' >
+            and a.mad is not null
+        </if>
+
+        <if test='dataType == "aad"' >
+            and a.aad is not null
+        </if>
+
+        <if test='dataType == "vad"' >
+            and a.vad is not null
+        </if>
+
+        <if test="usage != null" >
+            and b.usage = #{usage,jdbcType=VARCHAR}
+        </if>
+
+        order by a.labor_code desc,a.op_time desc
+    </select>
+
+
+    <!--量热仪原始数据查询-->
+    <select id="qryHotResOrgDataByUsage"  parameterType="org.gxz.znrl.entity.HotEntity" resultMap="HotResDataResultMap">
+        SELECT a.hot_res_id,
+        a.labor_code,
+        a.device_no,
+        b.device_name,
+        a.gg_no,
+        '' temperature,
+        '' humidity,
+        '' standard,
+        a.sampling_name,
+        a.sampling_weight,
+        a.temp_increase,
+        a.jz_value,
+        a.jq_temp,
+        a.qb_ad,
+        a.cc_val,
+        a.op_code,
+        a.op_name,
+        decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次', '') batch_type,
+        to_char(a.op_time, 'yyyy-mm-dd hh24:mi:ss') op_time,
+        to_char(trunc(a.op_time), 'yyyy-mm-dd') op_date,
+        decode(a.status, '0','未确认','1','已确认','2','作废') status_name,
+        a.cc_status,
+        a.status
+        FROM LAB_HOT_RESULT_ORG a, lab_device b
+        WHERE 1 = 1
+        and a.device_no = b.device_no
+
+        <if test="beginDate != null" >
+            and a.op_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.op_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="status != null" >
+            and a.status = #{status,jdbcType=VARCHAR}
+        </if>
+
+        <if test="batchType != null" >
+            and a.batch_type = #{batchType,jdbcType=VARCHAR}
+        </if>
+
+        <if test="usage != null" >
+            and b.usage = #{usage,jdbcType=VARCHAR}
+        </if>
+
+        order by a.labor_code desc,a.op_time desc
+    </select>
+
+    <!--定硫仪化验原始数据查询-->
+    <select id="qrySResOrgDataByUsage"  parameterType="org.gxz.znrl.entity.SEntity" resultMap="SResDataResultMap">
+        SELECT a.s_res_id,
+        a.labor_code,
+        b.device_name,
+        a.gg_no,
+        a.sampling_name,
+        '' temperature,
+        '' humidity,
+        '' standard,
+        a.sampling_weight,
+        a.mad,
+        a.st_ad,
+        a.st_d,
+        a.cc_val,
+        a.jz_style,
+        a.total_time,
+        a.insert_time,
+        a.op_code,
+        op_name,
+        decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次', '') batch_type,
+        to_char(a.op_time, 'yyyy-mm-dd hh24:mi:ss') op_time,
+        to_char(trunc(a.op_time), 'yyyy-mm-dd') op_date,
+        decode(a.status, '0','未确认','1','已确认','2','作废') status_name,
+        a.cc_status,
+        a.status
+        FROM LAB_S_RESULT_ORG a, lab_device b
+        WHERE 1 = 1
+        and a.device_no = b.device_no
+        <if test="beginDate != null" >
+            and a.op_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.op_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="status != null" >
+            and a.status = #{status,jdbcType=VARCHAR}
+        </if>
+
+        <if test="batchType != null" >
+            and a.batch_type = #{batchType,jdbcType=VARCHAR}
+        </if>
+
+        <if test="usage != null" >
+            and b.usage = #{usage,jdbcType=VARCHAR}
+        </if>
+
+        order by a.labor_code desc,a.op_time desc
+    </select>
+
+    <!--光波分析仪原始数据查询-->
+    <select id="qryLaResOrgDataByUsage"  parameterType="org.gxz.znrl.entity.LightAnalyEntity" resultMap="LAResDataResultMap">
+        SELECT a.light_analy_res_id,
+        a.labor_code,
+        a.device_no,
+        b.device_name,
+        a.gg_no,
+        '' temperature,
+        '' humidity,
+        '' standard,
+        a.sampling_name,
+        a.sampling_weight,
+        a.myp_weight,
+        a.weight_loss,
+        a.mt,
+        a.temp_power,
+        a.keep_time,
+        a.cc_val,
+        a.cc_status,
+        a.op_code,
+        a.op_name,
+        decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次', '') batch_type,
+        to_char(a.op_time, 'yyyy-mm-dd hh24:mi:ss') op_time,
+        to_char(trunc(a.op_time), 'yyyy-mm-dd') op_date,
+        decode(a.status, '0','未确认','1','已确认','2','作废') status_name,
+        a.status
+        FROM LAB_LIGHT_ANALY_RESULT_ORG a, lab_device b
+        WHERE 1 = 1
+        and a.device_no = b.device_no
+        <if test="beginDate != null" >
+            and a.op_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.op_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="status != null" >
+            and a.status = #{status,jdbcType=VARCHAR}
+        </if>
+
+        <if test="batchType != null" >
+            and a.batch_type = #{batchType,jdbcType=VARCHAR}
+        </if>
+
+        <if test="usage != null" >
+            and b.usage = #{usage,jdbcType=VARCHAR}
+        </if>
+
+        order by a.labor_code desc,a.op_time desc
+    </select>
+
+    <!--灰熔融化验原始数据查询-->
+    <select id="qryMeltResOrgDataByUsage"  parameterType="org.gxz.znrl.entity.MeltEntity" resultMap="MeltResDataResultMap">
+        SELECT a.melt_res_id,
+        a.labor_code,
+        a.device_no,
+        b.device_name,
+        a.gg_no,
+        '' temperature,
+        '' humidity,
+        '' standard,
+        a.qf_condition,
+        a.dt,
+        a.st,
+        a.ht,
+        a.ft,
+        a.op_code,
+        a.op_name,
+        a.cc_val,
+        decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次', '') batch_type,
+        to_char(a.op_time, 'yyyy-mm-dd hh24:mi:ss') op_time,
+        to_char(trunc(a.op_time), 'yyyy-mm-dd') op_date,
+        decode(a.status, '0','未确认','1','已确认','2','作废') status_name,
+        a.status
+        FROM LAB_MELT_RESULT_ORG a, lab_device b
+        WHERE 1 = 1
+        and a.device_no = b.device_no
+
+        <if test="beginDate != null" >
+            and a.op_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.op_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="status != null" >
+            and a.status = #{status,jdbcType=VARCHAR}
+        </if>
+
+        <if test="batchType != null" >
+            and a.batch_type = #{batchType,jdbcType=VARCHAR}
+        </if>
+
+        <if test="usage != null" >
+            and b.usage = #{usage,jdbcType=VARCHAR}
+        </if>
+
+        order by a.labor_code desc,a.op_time desc
+    </select>
+
+    <!--红外测氢仪原始数据查询-->
+    <select id="qryHwResOrgDataByUsage"  parameterType="org.gxz.znrl.entity.HEntity" resultMap="HwResDataResultMap">
+        SELECT a.h_res_id,
+        a.labor_code,
+        a.device_no,
+        b.device_name,
+        a.gg_no,
+        '' temperature,
+        '' humidity,
+        '' standard,
+        a.sampling_name,
+        a.sampling_weight,
+        a.method,
+        a.mad,
+        a.cad,
+        a.cd,
+        a.had,
+        a.hd,
+        a.cc_val,
+        a.cc_status,
+        a.op_code,
+        a.op_name,
+        decode(a.batch_type, '1','初次化验','2','抽样第1次', '3','抽样第2次','4','抽样第3次', '') batch_type,
+        to_char(a.op_time, 'yyyy-mm-dd hh24:mi:ss') op_time,
+        to_char(trunc(a.op_time), 'yyyy-mm-dd') op_date,
+        decode(a.status, '0','未确认','1','已确认','2','作废') status_name,
+        a.status
+        FROM LAB_H_RESULT_ORG a, lab_device b
+        WHERE 1 = 1
+        and a.device_no = b.device_no
+
+        <if test="beginDate != null" >
+            and a.op_time  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            and a.op_time  <![CDATA[ <= ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1-0.00001
+        </if>
+
+        <if test="laborCode != null" >
+            and a.labor_code = #{laborCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="status != null" >
+            and a.status = #{status,jdbcType=VARCHAR}
+        </if>
+
+        <if test="batchType != null" >
+            and a.batch_type = #{batchType,jdbcType=VARCHAR}
+        </if>
+        <if test="usage != null" >
+            and b.usage = #{usage,jdbcType=VARCHAR}
+        </if>
+        order by a.labor_code desc,a.op_time desc
+    </select>
+
+
+    <select id="qryRLDayQz"  parameterType="java.util.Map"  resultType="java.lang.String">
+        select PK_LABORY.get_rl_day(#{batchDate,jdbcType=VARCHAR},#{period,jdbcType=VARCHAR})  from dual
+    </select>
+
+</mapper>

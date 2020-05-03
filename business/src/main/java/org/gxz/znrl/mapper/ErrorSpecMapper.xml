@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.gxz.znrl.mapper.ErrorSpecMapper">
+
+    <sql id="paging_top_sql">
+        select * from (
+    </sql>
+
+    <sql id="paging_bottom_sql">
+        ) t where t.rownumber between #{beginRowIndex,jdbcType=INTEGER} and #{endRowIndex,jdbcType=INTEGER}
+    </sql>
+
+    <select id="qryErrorSpecListCnt" parameterType="org.gxz.znrl.entity.ErrorSpecEntity" resultType="java.lang.Integer" >
+        select count(1)
+        from ERROR_SPEC A
+        WHERE 1 = 1
+        <if test="flowId != null" >
+            AND A.FLOW_ID = #{flowId,jdbcType=VARCHAR}
+        </if>
+        <if test="machinCode != null" >
+            AND A.MACHIN_CODE = #{machinCode,jdbcType=VARCHAR}
+        </if>
+        <if test="errorCode != null" >
+            AND A.ERROR_CODE = #{errorCode,jdbcType=VARCHAR}
+        </if>
+        <if test="errorTitle != null" >
+            AND A.ERROR_TITLE = #{errorTitle,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <resultMap id="errorSpecResultMap" type="org.gxz.znrl.entity.ErrorSpecEntity">
+        <id column="error_spec_id" jdbcType="VARCHAR" property="errorSpecId" />
+        <result column="error_code" jdbcType="VARCHAR" property="errorCode" />
+        <result column="error_title" jdbcType="VARCHAR" property="errorTitle" />
+        <result column="error_spec" jdbcType="VARCHAR" property="errorSpec" />
+        <result column="deal_method" jdbcType="VARCHAR" property="dealMethod" />
+        <result column="machin_code" jdbcType="VARCHAR" property="machinCode" />
+        <result column="state" jdbcType="VARCHAR" property="state" />
+        <result column="state_name" jdbcType="VARCHAR" property="stateName" />
+        <result column="create_date" jdbcType="VARCHAR" property="createDate" />
+        <result column="flow_id" jdbcType="VARCHAR" property="flowId" />
+        <result column="channel_no" jdbcType="VARCHAR" property="channelNo" />
+    </resultMap>
+
+    <select id="qryErrorSpecList" parameterType="org.gxz.znrl.entity.ErrorSpecEntity" resultMap="errorSpecResultMap">
+        <include refid="paging_top_sql"/>
+        SELECT A.ERROR_SPEC_ID,
+        A.ERROR_CODE,
+        A.ERROR_TITLE,
+        A.ERROR_SPEC,
+        A.DEAL_METHOD,
+        A.MACHIN_CODE,
+        A.STATE,
+        DECODE(A.STATE,'1','生效','失效') STATE_NAME,
+        TO_CHAR(A.CREATE_DATE,'YYYY-MM-DD') CREATE_DATE,
+        A.FLOW_ID,
+        ROWNUM rownumber
+        FROM ERROR_SPEC A
+        WHERE 1 = 1
+        <if test="flowId != null" >
+            AND A.FLOW_ID = #{flowId,jdbcType=VARCHAR}
+        </if>
+        <if test="machinCode != null" >
+            AND A.MACHIN_CODE = #{machinCode,jdbcType=VARCHAR}
+        </if>
+        <if test="errorCode != null" >
+            AND A.ERROR_CODE = #{errorCode,jdbcType=VARCHAR}
+        </if>
+        <if test="errorTitle != null" >
+            AND A.ERROR_TITLE = #{errorTitle,jdbcType=VARCHAR}
+        </if>
+        <include refid="paging_bottom_sql"/>
+    </select>
+
+    <select id="qryErrorAsSpecList" parameterType="org.gxz.znrl.entity.ErrorSpecEntity" resultMap="errorSpecResultMap">
+        SELECT A.ERROR_SPEC_ID,
+        A.ERROR_CODE,
+        A.ERROR_TITLE,
+        A.ERROR_SPEC,
+        A.DEAL_METHOD,
+        A.MACHIN_CODE,
+        A.STATE,
+        DECODE(A.STATE,'1','生效','失效') STATE_NAME,
+        TO_CHAR(A.CREATE_DATE,'YYYY-MM-DD') CREATE_DATE,
+        A.FLOW_ID,
+        a.channel_no
+        FROM ERROR_SPEC A
+        WHERE 1 = 1
+        <if test="flowId != null" >
+            AND A.FLOW_ID = #{flowId,jdbcType=VARCHAR}
+        </if>
+        <if test="machinCode != null" >
+            AND A.MACHIN_CODE = #{machinCode,jdbcType=VARCHAR}
+        </if>
+        <if test="errorCode != null" >
+            AND A.ERROR_CODE = #{errorCode,jdbcType=VARCHAR}
+        </if>
+        <if test="errorTitle != null" >
+            AND A.ERROR_TITLE = #{errorTitle,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <select id="qryErrorSpec" parameterType="org.gxz.znrl.entity.ErrorSpecEntity" resultMap="errorSpecResultMap">
+        SELECT A.ERROR_SPEC_ID,
+        A.ERROR_CODE,
+        A.ERROR_TITLE,
+        A.ERROR_SPEC,
+        A.DEAL_METHOD,
+        A.MACHIN_CODE,
+        A.STATE,
+        DECODE(A.STATE,'1','生效','失效') STATE_NAME,
+        TO_CHAR(A.CREATE_DATE,'YYYY-MM-DD') CREATE_DATE,
+        A.FLOW_ID
+        FROM ERROR_SPEC A
+        WHERE 1 = 1
+        <if test="errorSpecId != null" >
+            AND A.ERROR_SPEC_ID = #{errorSpecId,jdbcType=VARCHAR}
+        </if>
+        <if test="flowId != null" >
+            AND A.FLOW_ID = #{flowId,jdbcType=VARCHAR}
+        </if>
+        <if test="machinCode != null" >
+            AND A.MACHIN_CODE = #{machinCode,jdbcType=VARCHAR}
+        </if>
+        <if test="errorCode != null" >
+            AND A.ERROR_CODE = #{errorCode,jdbcType=VARCHAR}
+        </if>
+        <if test="errorTitle != null" >
+            AND A.ERROR_TITLE = #{errorTitle,jdbcType=VARCHAR}
+        </if>
+        <if test="state != null" >
+            AND A.STATE = #{state,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <insert id="addErrorSpec" parameterType="org.gxz.znrl.entity.ErrorSpecEntity" >
+        INSERT INTO ERROR_SPEC
+          (ERROR_SPEC_ID,ERROR_CODE, ERROR_TITLE,  ERROR_SPEC, DEAL_METHOD,
+           MACHIN_CODE, STATE, FLOW_ID,CREATE_DATE)
+        VALUES
+          (#{errorSpecId,jdbcType=VARCHAR},#{errorCode,jdbcType=VARCHAR}, #{errorTitle,jdbcType=VARCHAR}, #{errorSpec,jdbcType=VARCHAR}, #{dealMethod,jdbcType=VARCHAR},
+           #{machinCode,jdbcType=VARCHAR}, #{state,jdbcType=VARCHAR}, #{flowId,jdbcType=VARCHAR},SYSDATE)
+    </insert>
+
+    <update id="modifyErrorSpec" parameterType="org.gxz.znrl.entity.ErrorSpecEntity" >
+        UPDATE ERROR_SPEC
+        SET ERROR_TITLE=#{errorTitle,jdbcType=VARCHAR},ERROR_SPEC=#{errorSpec,jdbcType=VARCHAR},DEAL_METHOD=#{dealMethod,jdbcType=VARCHAR},
+        MACHIN_CODE=#{machinCode,jdbcType=VARCHAR},STATE=#{state,jdbcType=VARCHAR},FLOW_ID=#{flowId,jdbcType=VARCHAR},ERROR_CODE = #{errorCode,jdbcType=VARCHAR}
+        WHERE ERROR_SPEC_ID = #{errorSpecId,jdbcType=VARCHAR}
+    </update>
+
+    <update id="delErrorSpec" parameterType="org.gxz.znrl.entity.ErrorSpecEntity" >
+        DELETE ERROR_SPEC
+        WHERE ERROR_SPEC_ID = #{errorSpecId,jdbcType=VARCHAR}
+    </update>
+</mapper>

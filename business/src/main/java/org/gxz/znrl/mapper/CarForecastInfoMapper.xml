@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.gxz.znrl.mapper.CarForecastInfoMapper">
+
+    <sql id="paging_top_sql">
+        select * from (
+    </sql>
+
+    <sql id="paging_bottom_sql">
+        ) t where t.rownumber between #{beginRowIndex,jdbcType=INTEGER} and #{endRowIndex,jdbcType=INTEGER}
+    </sql>
+
+    <select id="qryCarForecastInfoListCnt" parameterType="org.gxz.znrl.entity.CarForecastInfoEntity" resultType="java.lang.Integer" >
+        select count(1)
+        from CAR_FORECAST_INFO
+        WHERE 1 = 1
+        <if test="venNo != null" >
+            AND VEN_NO = #{venNo,jdbcType=VARCHAR}
+        </if>
+        <if test="carrierNo != null" >
+            AND CARRIER_NO = #{carrierNo,jdbcType=VARCHAR}
+        </if>
+        <if test="mineNo != null" >
+            AND MINE_NO = #{mineNo,jdbcType=VARCHAR}
+        </if>
+        <if test="coalNo != null" >
+            AND COAL_NO = #{coalNo,jdbcType=VARCHAR}
+        </if>
+        <if test="isWaste != null" >
+            AND IS_WASTE = #{isWaste,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <resultMap id="carForecastInfoResultMap" type="org.gxz.znrl.entity.CarForecastInfoEntity">
+        <id column="forecast_id" jdbcType="INTEGER" property="forecastId" />
+        <result column="ven_no" jdbcType="VARCHAR" property="venNo" />
+        <result column="ven_no_name" jdbcType="VARCHAR" property="venNoName" />
+        <result column="carrier_no" jdbcType="VARCHAR" property="carrierNo" />
+        <result column="carrier_no_name" jdbcType="VARCHAR" property="carrierNoName" />
+        <result column="mine_no" jdbcType="VARCHAR" property="mineNo" />
+        <result column="mine_no_name" jdbcType="VARCHAR" property="mineNoName" />
+        <result column="coal_no" jdbcType="VARCHAR" property="coalNo" />
+        <result column="coal_no_name" jdbcType="VARCHAR" property="coalNoName" />
+        <result column="total_weight" jdbcType="VARCHAR" property="totalWeight" />
+        <result column="total_num" jdbcType="VARCHAR" property="totalNum" />
+        <result column="trans_type" jdbcType="VARCHAR" property="transType" />
+        <result column="trans_type_name" jdbcType="VARCHAR" property="transTypeName" />
+        <result column="sample_type" jdbcType="VARCHAR" property="sampleType" />
+        <result column="sample_type_name" jdbcType="VARCHAR" property="sampleTypeName" />
+        <result column="sampling_type" jdbcType="VARCHAR" property="samplingType" />
+        <result column="sampling_type_name" jdbcType="VARCHAR" property="samplingTypeName" />
+        <result column="fc_cycle" jdbcType="VARCHAR" property="fcCycle" />
+        <result column="fc_cycle_name" jdbcType="VARCHAR" property="fcCycleName" />
+        <result column="start_date" jdbcType="VARCHAR" property="startDate" />
+        <result column="end_date" jdbcType="VARCHAR" property="endDate" />
+        <result column="is_valid" jdbcType="VARCHAR" property="isValid" />
+        <result column="is_valid_name" jdbcType="VARCHAR" property="isValidName" />
+        <result column="is_waste" jdbcType="VARCHAR" property="isWaste" />
+        <result column="is_waste_name" jdbcType="VARCHAR" property="isWasteName" />
+        <result column="op_code" jdbcType="VARCHAR" property="opCode" />
+        <result column="update_code" jdbcType="VARCHAR" property="updateCode" />
+        <result column="sample_points" jdbcType="VARCHAR" property="samplePoints" />
+    </resultMap>
+
+    <select id="qryCarForecastInfoList" parameterType="org.gxz.znrl.entity.CarForecastInfoEntity" resultMap="carForecastInfoResultMap" >
+        <include refid="paging_top_sql" />
+        select s.*,  rownum rownumber from (
+         SELECT A.FORECAST_ID,
+        A.VEN_NO,
+        GET_TABLE_COLUMN_BY_COLUMN('VEN_NAME', 'VENDOR_INFO', 'VEN_NO', NVL(A.VEN_NO,0), '=', '1', 1) VEN_NO_NAME,
+        A.CARRIER_NO,
+        GET_TABLE_COLUMN_BY_COLUMN('CARRIER_NAME', 'CARRIER_INFO', 'CARRIER_NO', NVL(A.CARRIER_NO,0), '=', '1', 1) CARRIER_NO_NAME,
+        A.MINE_NO,
+        GET_TABLE_COLUMN_BY_COLUMN('MINE_NAME', 'COAL_MINE', 'MINE_NO', NVL(A.MINE_NO,0), '=', '1', 1) MINE_NO_NAME,
+        A.COAL_NO,
+        GET_TABLE_COLUMN_BY_COLUMN('COAL_NAME', 'COAL_TYPE', 'COAL_NO', NVL(A.COAL_NO,0), '=', '1', 1) COAL_NO_NAME,
+        A.TOTAL_WEIGHT,
+        A.TOTAL_NUM,
+        A.TRANS_TYPE,
+        DECODE(A.TRANS_TYPE,1,'汽车',2,'火车',3,'轮船',4,'坑口') TRANS_TYPE_NAME,
+        A.SAMPLE_TYPE,
+        DECODE(A.SAMPLE_TYPE,1,'离线采样',0,'车厢采样') SAMPLE_TYPE_NAME,
+        A.SAMPLING_TYPE,
+        DECODE(A.SAMPLING_TYPE,0,'在线制样',1,'离线制样') SAMPLING_TYPE_NAME,
+        A.FC_CYCLE,
+        DECODE(A.FC_CYCLE,1,'日',2,'月',3,'年') FC_CYCLE_NAME,
+        TO_CHAR(A.START_DATE,'YYYY-MM-DD') START_DATE,
+        TO_CHAR(A.END_DATE,'YYYY-MM-DD') END_DATE,
+        A.IS_VALID,
+        DECODE(A.IS_VALID,0,'未生效',1,'已生效',2,'已过时') IS_VALID_NAME,
+        A.IS_WASTE,
+        DECODE(A.IS_WASTE,0,'正常',1,'废弃') IS_WASTE_NAME,
+        A.OP_CODE,
+        A.UPDATE_CODE,
+        A.SAMPLE_POINTS
+        FROM CAR_FORECAST_INFO A
+        WHERE 1 = 1
+        <if test="venNo != null" >
+            AND VEN_NO = #{venNo,jdbcType=VARCHAR}
+        </if>
+        <if test="carrierNo != null" >
+            AND CARRIER_NO = #{carrierNo,jdbcType=VARCHAR}
+        </if>
+        <if test="mineNo != null" >
+            AND MINE_NO = #{mineNo,jdbcType=VARCHAR}
+        </if>
+        <if test="coalNo != null" >
+            AND COAL_NO = #{coalNo,jdbcType=VARCHAR}
+        </if>
+        <if test="isWaste != null" >
+            AND IS_WASTE = #{isWaste,jdbcType=VARCHAR}
+        </if>
+
+        <if test="startDate != null" >
+            AND start_date  <![CDATA[ >= ]]> to_date(#{startDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            AND start_date  <![CDATA[ < ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1
+        </if>
+
+        ORDER BY A.FORECAST_ID DESC ) s
+        <include refid="paging_bottom_sql" />
+    </select>
+
+    <resultMap id="carForecastInfoFootResultMap" type="org.gxz.znrl.entity.CarForecastInfoEntity">
+        <result column="forecast_id" jdbcType="VARCHAR" property="forecastId" />
+        <result column="total_weight" jdbcType="VARCHAR" property="totalWeight" />
+        <result column="total_num" jdbcType="VARCHAR" property="totalNum" />
+    </resultMap>
+
+    <select id="qryCarForecastInfoFoot" parameterType="org.gxz.znrl.entity.CarForecastInfoEntity" resultMap="carForecastInfoFootResultMap" >
+        select '合计' FORECAST_ID,
+        SUM(b.TOTAL_WEIGHT) TOTAL_WEIGHT,
+        SUM(b.TOTAL_NUM) TOTAL_NUM
+        FROM (
+        <include refid="paging_top_sql"/>SELECT
+        A.
+        TOTAL_WEIGHT,
+        A.TOTAL_NUM,
+        rownum rownumber
+        FROM CAR_FORECAST_INFO A
+        WHERE 1 = 1
+        <if test="venNo != null">AND VEN_NO = #{venNo,jdbcType=VARCHAR}
+        </if>
+            <if test="
+        carrierNo != null">AND CARRIER_NO = #{carrierNo,jdbcType=VARCHAR}
+            </if>
+            <if test="
+        mineNo != null">AND MINE_NO = #{mineNo,jdbcType=VARCHAR}
+            </if>
+            <if test="
+        coalNo != null">AND COAL_NO = #{coalNo,jdbcType=VARCHAR}
+            </if>
+            <if test="
+        isWaste != null">AND IS_WASTE = #{isWaste,jdbcType=VARCHAR}
+            </if>
+            <include
+                    refid="paging_bottom_sql"/>
+        ) b
+    </select>
+
+    <resultMap id="carForecastInfoByIdResultMap" type="org.gxz.znrl.entity.CarForecastInfoEntity">
+        <id column="forecast_id" jdbcType="INTEGER" property="forecastId" />
+        <result column="ven_no" jdbcType="VARCHAR" property="venNo" />
+        <result column="ven_no_name" jdbcType="VARCHAR" property="venNoName" />
+        <result column="carrier_no" jdbcType="VARCHAR" property="carrierNo" />
+        <result column="carrier_no_name" jdbcType="VARCHAR" property="carrierNoName" />
+        <result column="mine_no" jdbcType="VARCHAR" property="mineNo" />
+        <result column="mine_no_name" jdbcType="VARCHAR" property="mineNoName" />
+        <result column="coal_no" jdbcType="VARCHAR" property="coalNo" />
+        <result column="coal_no_name" jdbcType="VARCHAR" property="coalNoName" />
+        <result column="total_weight" jdbcType="VARCHAR" property="totalWeight" />
+        <result column="total_num" jdbcType="VARCHAR" property="totalNum" />
+        <result column="trans_type" jdbcType="VARCHAR" property="transType" />
+        <result column="trans_type_name" jdbcType="VARCHAR" property="transTypeName" />
+        <result column="sample_type" jdbcType="VARCHAR" property="sampleType" />
+        <result column="sample_type_name" jdbcType="VARCHAR" property="sampleTypeName" />
+        <result column="sampling_type" jdbcType="VARCHAR" property="samplingType" />
+        <result column="sampling_type_name" jdbcType="VARCHAR" property="samplingTypeName" />
+        <result column="fc_cycle" jdbcType="VARCHAR" property="fcCycle" />
+        <result column="fc_cycle_name" jdbcType="VARCHAR" property="fcCycleName" />
+        <result column="start_date" jdbcType="VARCHAR" property="startDate" />
+        <result column="end_date" jdbcType="VARCHAR" property="endDate" />
+        <result column="is_valid" jdbcType="VARCHAR" property="isValid" />
+        <result column="is_valid_name" jdbcType="VARCHAR" property="isValidName" />
+        <result column="is_waste" jdbcType="VARCHAR" property="isWaste" />
+        <result column="is_waste_name" jdbcType="VARCHAR" property="isWasteName" />
+        <result column="op_code" jdbcType="VARCHAR" property="opCode" />
+        <result column="update_code" jdbcType="VARCHAR" property="updateCode" />
+        <result column="time_zone_id" jdbcType="VARCHAR" property="timeZoneId" />
+        <result column="sample_points" jdbcType="VARCHAR" property="samplePoints" />
+    </resultMap>
+
+    <select id="qryCarForecastInfoById" parameterType="org.gxz.znrl.entity.CarForecastInfoEntity" resultMap="carForecastInfoByIdResultMap" >
+        SELECT A.FORECAST_ID,
+        A.VEN_NO,
+        GET_TABLE_COLUMN_BY_COLUMN('VEN_NAME', 'VENDOR_INFO', 'VEN_NO', NVL(A.VEN_NO,0), '=', '1', 1) VEN_NO_NAME,
+        A.CARRIER_NO,
+        GET_TABLE_COLUMN_BY_COLUMN('CARRIER_NAME', 'CARRIER_INFO', 'CARRIER_NO', NVL(A.CARRIER_NO,0), '=', '1', 1) CARRIER_NO_NAME,
+        A.MINE_NO,
+        GET_TABLE_COLUMN_BY_COLUMN('MINE_NAME', 'COAL_MINE', 'MINE_NO', NVL(A.MINE_NO,0), '=', '1', 1) MINE_NO_NAME,
+        A.COAL_NO,
+        GET_TABLE_COLUMN_BY_COLUMN('COAL_NAME', 'COAL_TYPE', 'COAL_NO', NVL(A.COAL_NO,0), '=', '1', 1) COAL_NO_NAME,
+        A.TOTAL_WEIGHT,
+        A.TOTAL_NUM,
+        A.TRANS_TYPE,
+        DECODE(A.TRANS_TYPE,1,'汽车',2,'火车',3,'轮船',4,'坑口') TRANS_TYPE_NAME,
+        A.SAMPLE_TYPE,
+        DECODE(A.SAMPLE_TYPE,2,'人工采样',3,'车厢采样') SAMPLE_TYPE_NAME,
+        A.SAMPLING_TYPE,
+        DECODE(A.SAMPLING_TYPE,0,'在线制样',1,'离线制样') SAMPLING_TYPE_NAME,
+        A.FC_CYCLE,
+        DECODE(A.FC_CYCLE,1,'日',2,'月',3,'年') FC_CYCLE_NAME,
+        TO_CHAR(A.START_DATE,'YYYY-MM-DD') START_DATE,
+        TO_CHAR(A.END_DATE,'YYYY-MM-DD') END_DATE,
+        A.IS_VALID,
+        DECODE(A.IS_VALID,0,'未生效',1,'已生效',2,'已过时') IS_VALID_NAME,
+        A.IS_WASTE,
+        DECODE(A.IS_WASTE,0,'正常',1,'废弃') IS_WASTE_NAME,
+        A.OP_CODE,
+        A.UPDATE_CODE,
+        A.SAMPLE_POINTS,
+        GET_CAR_TIME_ZONE(A.FORECAST_ID) TIME_ZONE_ID
+        FROM CAR_FORECAST_INFO A
+        WHERE FORECAST_ID = #{forecastId, jdbcType=INTEGER}
+    </select>
+
+    <select id="qryCarForecastInfoByEntity" parameterType="org.gxz.znrl.entity.CarForecastInfoEntity" resultMap="carForecastInfoByIdResultMap" >
+        SELECT A.FORECAST_ID,
+        A.VEN_NO,
+        GET_TABLE_COLUMN_BY_COLUMN('VEN_NAME', 'VENDOR_INFO', 'VEN_NO', NVL(A.VEN_NO,0), '=', '1', 1) VEN_NO_NAME,
+        A.CARRIER_NO,
+        GET_TABLE_COLUMN_BY_COLUMN('CARRIER_NAME', 'CARRIER_INFO', 'CARRIER_NO', NVL(A.CARRIER_NO,0), '=', '1', 1) CARRIER_NO_NAME,
+        A.MINE_NO,
+        GET_TABLE_COLUMN_BY_COLUMN('MINE_NAME', 'COAL_MINE', 'MINE_NO', NVL(A.MINE_NO,0), '=', '1', 1) MINE_NO_NAME,
+        A.COAL_NO,
+        GET_TABLE_COLUMN_BY_COLUMN('COAL_NAME', 'COAL_TYPE', 'COAL_NO', NVL(A.COAL_NO,0), '=', '1', 1) COAL_NO_NAME,
+        A.TOTAL_WEIGHT,
+        A.TOTAL_NUM,
+        A.TRANS_TYPE,
+        DECODE(A.TRANS_TYPE,1,'汽车',2,'火车',3,'轮船',4,'坑口') TRANS_TYPE_NAME,
+        A.SAMPLE_TYPE,
+        DECODE(A.SAMPLE_TYPE,2,'人工采样',3,'车厢采样') SAMPLE_TYPE_NAME,
+        A.SAMPLING_TYPE,
+        DECODE(A.SAMPLING_TYPE,0,'在线制样',1,'离线制样') SAMPLING_TYPE_NAME,
+        A.FC_CYCLE,
+        DECODE(A.FC_CYCLE,1,'日',2,'月',3,'年') FC_CYCLE_NAME,
+        TO_CHAR(A.START_DATE,'YYYY-MM-DD') START_DATE,
+        TO_CHAR(A.END_DATE,'YYYY-MM-DD') END_DATE,
+        A.IS_VALID,
+        DECODE(A.IS_VALID,0,'未生效',1,'已生效',2,'已过时') IS_VALID_NAME,
+        A.IS_WASTE,
+        DECODE(A.IS_WASTE,0,'正常',1,'废弃') IS_WASTE_NAME,
+        A.OP_CODE,
+        A.UPDATE_CODE,
+        A.SAMPLE_POINTS,
+        GET_CAR_TIME_ZONE(A.FORECAST_ID) TIME_ZONE_ID
+        FROM CAR_FORECAST_INFO A
+        WHERE 1 = 1
+          AND rownum = 1
+          AND A.IS_VALID = '1'
+          AND A.IS_WASTE = '0'
+        <if test="venNo != null" >
+            AND A.VEN_NO = #{venNo,jdbcType=VARCHAR}
+        </if>
+        <if test="mineNo != null" >
+            AND A.MINE_NO = #{mineNo,jdbcType=VARCHAR}
+        </if>
+        <if test="carrierNo != null" >
+            AND A.CARRIER_NO = #{carrierNo,jdbcType=VARCHAR}
+        </if>
+        <if test="coalNo != null" >
+            AND A.COAL_NO = #{coalNo,jdbcType=VARCHAR}
+        </if>
+        <if test="fcCycle != null" >
+            AND A.FC_CYCLE = #{fcCycle,jdbcType=VARCHAR}
+        </if>
+        <if test="startDate != null" >
+            AND start_date  <![CDATA[ >= ]]> to_date(#{startDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="endDate != null" >
+            AND end_date  <![CDATA[ < ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1
+        </if>
+    </select>
+
+    <insert id="addCarForecast" parameterType="org.gxz.znrl.entity.CarForecastInfoEntity" >
+       INSERT INTO CAR_FORECAST_INFO(FORECAST_ID,VEN_NO,CARRIER_NO,MINE_NO,
+                    COAL_NO,TOTAL_WEIGHT,TOTAL_NUM,TRANS_TYPE,
+                    SAMPLE_TYPE,SAMPLING_TYPE,FC_CYCLE,START_DATE,
+                    END_DATE,IS_VALID,IS_WASTE,OP_CODE,
+                    OP_TIME,UPDATE_TIME,UPDATE_CODE,SAMPLE_POINTS,REMARK)
+        VALUES(#{forecastId,jdbcType=INTEGER},#{venNo,jdbcType=VARCHAR},#{carrierNo,jdbcType=VARCHAR},#{mineNo,jdbcType=VARCHAR},
+                    #{coalNo,jdbcType=VARCHAR},#{totalWeight,jdbcType=VARCHAR},#{totalNum,jdbcType=VARCHAR},#{transType,jdbcType=VARCHAR},
+                    #{sampleType,jdbcType=VARCHAR},#{samplingType,jdbcType=VARCHAR},#{fcCycle,jdbcType=VARCHAR},TO_DATE(#{startDate,jdbcType=VARCHAR},'YYYY-MM-DD'),
+                    TO_DATE(#{endDate,jdbcType=VARCHAR},'YYYY-MM-DD'),#{isValid,jdbcType=VARCHAR},#{isWaste,jdbcType=VARCHAR},#{opCode,jdbcType=VARCHAR},
+                    SYSDATE,SYSDATE,#{opCode,jdbcType=VARCHAR},#{samplePoints,jdbcType=VARCHAR},#{remark,jdbcType=VARCHAR})
+    </insert>
+
+    <!--立即增加来煤计划-->
+    <insert id="addCarPlanInfo" parameterType="org.gxz.znrl.entity.CarForecastInfoEntity" >
+        INSERT INTO CAR_PLAN_INFO(CAR_PLAN_ID,CARFORECAST_ID,VEN_NO,CARRIER_NO,MINE_NO,
+        COAL_NO,TOTAL_WEIGHT,TOTAL_NUM,TRANS_TYPE,
+        SAMPLE_TYPE,SAMPLING_TYPE,EFFECT_DATE,
+        OP_CODE,OP_TIME,UPDATE_TIME,UPDATE_CODE,REMARK)
+        VALUES(#{carPlanId,jdbcType=INTEGER},#{forecastId,jdbcType=INTEGER},#{venNo,jdbcType=VARCHAR},#{carrierNo,jdbcType=VARCHAR},#{mineNo,jdbcType=VARCHAR},
+        #{coalNo,jdbcType=VARCHAR},#{totalWeight,jdbcType=VARCHAR},#{totalNum,jdbcType=VARCHAR},#{transType,jdbcType=VARCHAR},
+        #{sampleType,jdbcType=VARCHAR},#{samplingType,jdbcType=VARCHAR},TO_DATE(#{endDate,jdbcType=VARCHAR},'YYYY-MM-DD'),
+        #{opCode,jdbcType=VARCHAR},SYSDATE,SYSDATE,#{opCode,jdbcType=VARCHAR},#{remark,jdbcType=VARCHAR})
+    </insert>
+
+    <insert id="addBatchNoInfo" parameterType="org.gxz.znrl.entity.CarForecastInfoEntity" >
+        INSERT INTO BATCH_NO_INFO(BATCH_NO,BATCH_NO_TYPE,VEN_NO,
+                       COAL_NO,  ALL_NET_QTY,
+                       ALL_TICK_QTY, IS_VALID, INSERT_TIME, UPDATE_TIME,
+                       OP_CODE, UPDATE_CODE, MINE_NO, CARRIER_NO, CAR_PLAN_ID)
+        VALUES(GET_BATCH_NO(#{carPlanId,jdbcType=INTEGER}),'1',#{venNo,jdbcType=VARCHAR},
+                #{coalNo,jdbcType=VARCHAR},#{totalWeight,jdbcType=VARCHAR},
+                #{totalWeight,jdbcType=VARCHAR},'1',SYSDATE,SYSDATE,
+                #{opCode,jdbcType=VARCHAR},#{opCode,jdbcType=VARCHAR},#{mineNo,jdbcType=VARCHAR},#{carrierNo,jdbcType=VARCHAR},#{carPlanId,jdbcType=VARCHAR})
+    </insert>
+    <!--立即增加来煤计划:后台过程GENERATE_COAL_PLAN-->
+
+    <update id="modifyCarForecast" parameterType="org.gxz.znrl.entity.CarForecastInfoEntity" >
+        UPDATE CAR_FORECAST_INFO
+          SET VEN_NO=#{venNo,jdbcType=VARCHAR},CARRIER_NO=#{carrierNo,jdbcType=VARCHAR},MINE_NO=#{mineNo,jdbcType=VARCHAR},
+          COAL_NO=#{coalNo,jdbcType=VARCHAR},TOTAL_WEIGHT=#{totalWeight,jdbcType=VARCHAR},TOTAL_NUM=#{totalNum,jdbcType=VARCHAR},TRANS_TYPE=#{transType,jdbcType=VARCHAR},
+          SAMPLE_TYPE=#{sampleType,jdbcType=VARCHAR},SAMPLING_TYPE=#{samplingType,jdbcType=VARCHAR},FC_CYCLE=#{fcCycle,jdbcType=VARCHAR},START_DATE=TO_DATE(#{startDate,jdbcType=VARCHAR},'YYYY-MM-DD '),
+          END_DATE=TO_DATE(#{endDate,jdbcType=VARCHAR},'YYYY-MM-DD'),IS_VALID=#{isValid,jdbcType=VARCHAR},IS_WASTE=#{isWaste,jdbcType=VARCHAR},
+          UPDATE_TIME=SYSDATE,UPDATE_CODE=#{updateCode,jdbcType=VARCHAR},SAMPLE_POINTS=#{samplePoints,jdbcType=VARCHAR},REMARK=#{remark,jdbcType=VARCHAR}
+        WHERE FORECAST_ID = #{forecastId,jdbcType=INTEGER}
+    </update>
+
+    <update id="delCarForecast" parameterType="org.gxz.znrl.entity.CarForecastInfoEntity">
+        UPDATE CAR_FORECAST_INFO
+          SET IS_WASTE='1',
+          UPDATE_TIME=SYSDATE,UPDATE_CODE=#{updateCode,jdbcType=VARCHAR}
+        WHERE FORECAST_ID = #{forecastId,jdbcType=INTEGER}
+    </update>
+
+    <insert id="addCarForecastMap" parameterType="org.gxz.znrl.entity.CarForecastMapEntity" >
+        INSERT INTO CAR_FORECAST_MAP(FORECAST_ID,TIME_ZONE_ID,UPDATE_TIME)
+        VALUES (#{forecastId,jdbcType=INTEGER},#{timeZoneId,jdbcType=INTEGER},SYSDATE)
+    </insert>
+
+    <delete id="delCarForecastMap" parameterType="org.gxz.znrl.entity.CarForecastMapEntity" >
+        DELETE CAR_FORECAST_MAP
+         WHERE FORECAST_ID = #{forecastId,jdbcType=INTEGER}
+    </delete>
+
+    <delete id="delBatchNoInfo" parameterType="org.gxz.znrl.entity.CarPlanInfoEntity" >
+        DELETE BATCH_NO_INFO
+        WHERE CAR_PLAN_ID = #{carPlanId,jdbcType=INTEGER}
+    </delete>
+
+    <delete id="delCarPlanInfo" parameterType="org.gxz.znrl.entity.CarPlanInfoEntity" >
+        DELETE CAR_PLAN_INFO
+        WHERE CAR_PLAN_ID = #{carPlanId,jdbcType=INTEGER}
+    </delete>
+
+    <select id="qryCarPlanInfoListCnt" parameterType="org.gxz.znrl.entity.CarPlanInfoEntity" resultType="java.lang.Integer" >
+        select count(1)
+        from CAR_PLAN_INFO
+        WHERE 1 = 1
+        <if test="venNo != null" >
+            AND VEN_NO = #{venNo,jdbcType=VARCHAR}
+        </if>
+        <if test="carrierNo != null" >
+            AND CARRIER_NO = #{carrierNo,jdbcType=VARCHAR}
+        </if>
+        <if test="mineNo != null" >
+            AND MINE_NO = #{mineNo,jdbcType=VARCHAR}
+        </if>
+        <if test="coalNo != null" >
+            AND COAL_NO = #{coalNo,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <resultMap id="carPlanInfoResultMap" type="org.gxz.znrl.entity.CarPlanInfoEntity">
+        <id column="car_plan_id" jdbcType="INTEGER" property="carPlanId" />
+        <result column="forecast_id" jdbcType="VARCHAR" property="forecastId" />
+        <result column="ven_no" jdbcType="VARCHAR" property="venNo" />
+        <result column="ven_no_name" jdbcType="VARCHAR" property="venNoName" />
+        <result column="carrier_no" jdbcType="VARCHAR" property="carrierNo" />
+        <result column="carrier_no_name" jdbcType="VARCHAR" property="carrierNoName" />
+        <result column="mine_no" jdbcType="VARCHAR" property="mineNo" />
+        <result column="mine_no_name" jdbcType="VARCHAR" property="mineNoName" />
+        <result column="coal_no" jdbcType="VARCHAR" property="coalNo" />
+        <result column="coal_no_name" jdbcType="VARCHAR" property="coalNoName" />
+        <result column="total_weight" jdbcType="VARCHAR" property="totalWeight" />
+        <result column="total_num" jdbcType="VARCHAR" property="totalNum" />
+        <result column="trans_type" jdbcType="VARCHAR" property="transType" />
+        <result column="trans_type_name" jdbcType="VARCHAR" property="transTypeName" />
+        <result column="sample_type" jdbcType="VARCHAR" property="sampleType" />
+        <result column="sample_type_name" jdbcType="VARCHAR" property="sampleTypeName" />
+        <result column="sampling_type" jdbcType="VARCHAR" property="samplingType" />
+        <result column="sampling_type_name" jdbcType="VARCHAR" property="samplingTypeName" />
+        <result column="batch_num" jdbcType="VARCHAR" property="batchNum" />
+        <result column="effect_date" jdbcType="VARCHAR" property="effectDate" />
+        <result column="op_code" jdbcType="VARCHAR" property="opCode" />
+        <result column="update_code" jdbcType="VARCHAR" property="updateCode" />
+    </resultMap>
+
+    <select id="qryCarPlanInfoList" parameterType="org.gxz.znrl.entity.CarPlanInfoEntity" resultMap="carPlanInfoResultMap" >
+        <include refid="paging_top_sql" />
+        SELECT A.CAR_PLAN_ID,
+        A.CARFORECAST_ID FORECAST_ID,
+        A.VEN_NO,
+        GET_TABLE_COLUMN_BY_COLUMN('VEN_NAME', 'VENDOR_INFO', 'VEN_NO', NVL(A.VEN_NO,0), '=', '1', 1) VEN_NO_NAME,
+        A.CARRIER_NO,
+        GET_TABLE_COLUMN_BY_COLUMN('CARRIER_NAME', 'CARRIER_INFO', 'CARRIER_NO', NVL(A.CARRIER_NO,0), '=', '1', 1) CARRIER_NO_NAME,
+        A.MINE_NO,
+        GET_TABLE_COLUMN_BY_COLUMN('MINE_NAME', 'COAL_MINE', 'MINE_NO', NVL(A.MINE_NO,0), '=', '1', 1) MINE_NO_NAME,
+        A.COAL_NO,
+        GET_TABLE_COLUMN_BY_COLUMN('COAL_NAME', 'COAL_TYPE', 'COAL_NO', NVL(A.COAL_NO,0), '=', '1', 1) COAL_NO_NAME,
+        A.TOTAL_WEIGHT,
+        A.TOTAL_NUM,
+        A.TRANS_TYPE,
+        DECODE(A.TRANS_TYPE,1,'汽车',2,'火车',3,'轮船',4,'坑口') TRANS_TYPE_NAME,
+        A.SAMPLE_TYPE,
+        DECODE(A.SAMPLE_TYPE,2,'人工采样',3,'车厢采样') SAMPLE_TYPE_NAME,
+        A.SAMPLING_TYPE,
+        DECODE(A.SAMPLING_TYPE,0,'在线制样',1,'离线制样') SAMPLING_TYPE_NAME,
+        NVL(A.BATCH_NO,0) BATCH_NUM,
+        TO_CHAR(A.EFFECT_DATE,'YYYY-MM-DD') EFFECT_DATE,
+        A.OP_CODE,
+        A.UPDATE_CODE,
+        rownum rownumber
+        FROM CAR_PLAN_INFO A
+        WHERE 1 = 1
+        <if test="venNo != null" >
+            AND VEN_NO = #{venNo,jdbcType=VARCHAR}
+        </if>
+        <if test="carrierNo != null" >
+            AND CARRIER_NO = #{carrierNo,jdbcType=VARCHAR}
+        </if>
+        <if test="mineNo != null" >
+            AND MINE_NO = #{mineNo,jdbcType=VARCHAR}
+        </if>
+        <if test="coalNo != null" >
+            AND COAL_NO = #{coalNo,jdbcType=VARCHAR}
+        </if>
+        <if test="createDate != null" >
+            AND TRUNC(OP_TIME) = TO_DATE(#{createDate,jdbcType=VARCHAR},'YYYY-MM-DD')
+        </if>
+        <include refid="paging_bottom_sql" />
+    </select>
+
+    <select id="addCarForecastDetail" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.CarForecastDetailEntity">
+      {call pk_register.addCarForecastDetail(#{forecastId,mode=IN,jdbcType=VARCHAR},
+                                             #{jsonStr,mode=IN,jdbcType=VARCHAR},
+                                             #{opCode,mode=IN,jdbcType=VARCHAR},
+                                             #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                             #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+
+   <resultMap id="carForecastDetailResultMap" type="org.gxz.znrl.entity.CarForecastDetailEntity">
+        <id column="record_id" jdbcType="INTEGER" property="recordId" />
+        <result column="forecast_id" jdbcType="VARCHAR" property="forecastId" />
+        <result column="ven_no" jdbcType="VARCHAR" property="venNo" />
+        <result column="ven_no_name" jdbcType="VARCHAR" property="venNoName" />
+        <result column="carrier_no" jdbcType="VARCHAR" property="carrierNo" />
+        <result column="carrier_no_name" jdbcType="VARCHAR" property="carrierNoName" />
+        <result column="mine_no" jdbcType="VARCHAR" property="mineNo" />
+        <result column="mine_no_name" jdbcType="VARCHAR" property="mineNoName" />
+        <result column="coal_no" jdbcType="VARCHAR" property="coalNo" />
+        <result column="coal_no_name" jdbcType="VARCHAR" property="coalNoName" />
+        <result column="card_id" jdbcType="VARCHAR" property="cardId" />
+        <result column="car_id" jdbcType="VARCHAR" property="carId" />
+        <result column="mz_qty" jdbcType="VARCHAR" property="mzQty" />
+        <result column="pz_qty" jdbcType="VARCHAR" property="pzQty" />
+        <result column="net_qty" jdbcType="VARCHAR" property="netQty" />
+        <result column="status" jdbcType="VARCHAR" property="status" />
+        <result column="remark" jdbcType="VARCHAR" property="remark" />
+        <result column="op_code" jdbcType="VARCHAR" property="opCode" />
+        <result column="update_code" jdbcType="VARCHAR" property="updateCode" />
+        <result column="insert_time" jdbcType="VARCHAR" property="insertTime" />
+        <result column="update_time" jdbcType="VARCHAR" property="updateTime" />
+   </resultMap>
+
+    <select id="qryCarForecastDetailCnt" parameterType="org.gxz.znrl.entity.CarForecastDetailEntity" resultType="java.lang.Integer" >
+        select count(1)
+        from car_forecast_detail a
+        WHERE 1 = 1
+        and a.status = 0
+        <if test="forecastId != null" >
+            AND a.forecast_id = #{forecastId,jdbcType=VARCHAR}
+        </if>
+        <if test="startDate != null" >
+            AND a.insert_time  <![CDATA[     >=    ]]> to_date(#{startDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+        <if test="endDate != null" >
+            AND a.insert_time  <![CDATA[     <    ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd') + 1 - 0.00001
+        </if>
+
+    </select>
+
+    <select id="qryCarForecastDetailList" parameterType="org.gxz.znrl.entity.CarForecastDetailEntity" resultMap="carForecastDetailResultMap" >
+        <include refid="paging_top_sql" />
+        select a.record_id,
+        a.forecast_id,
+        a.card_id,
+        a.car_id,
+        a.ven_no,
+        (select ven_name from vendor_info where ven_no = a.ven_no) ven_no_name,
+        a.mine_no,
+        (select mine_name from coal_mine where mine_no = a.mine_no) mine_no_name,
+        a.coal_no,
+        (select coal_name from coal_type where coal_no = a.coal_no) coal_no_name,
+        a.carrier_no,
+        (select carrier_name
+        from carrier_info
+        where carrier_no = a.carrier_no) carrier_no_name,
+        a.mz_qty,
+        a.pz_qty,
+        a.net_qty,
+        a.status,
+        a.remark,
+        (select realname from security_user where id = a.op_code) op_code,
+        to_char(a.insert_time, 'yyyy-mm-dd hh24:mi:ss') insert_time,
+        rownum rownumber
+        from car_forecast_detail a
+        WHERE 1 = 1
+        and a.status = 0
+        <if test="forecastId != null" >
+            AND a.forecast_id = #{forecastId,jdbcType=VARCHAR}
+        </if>
+        <if test="startDate != null" >
+            AND a.insert_time  <![CDATA[     >=    ]]> to_date(#{startDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+        <if test="endDate != null" >
+            AND a.insert_time  <![CDATA[     <    ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd') + 1 - 0.00001
+        </if>
+        <include refid="paging_bottom_sql" />
+    </select>
+
+    <update id="delCarForecastDetail" parameterType="org.gxz.znrl.entity.CarForecastDetailEntity">
+        UPDATE CAR_FORECAST_Detail
+          SET STATUS = '1',
+          UPDATE_TIME=SYSDATE,
+          UPDATE_CODE=#{updateCode,jdbcType=VARCHAR}
+        WHERE record_id = #{recordId,jdbcType=VARCHAR}
+    </update>
+
+    <select id="queryContractVendorMineType" statementType="CALLABLE" parameterType="java.util.HashMap">
+        {call pk_register.queryContractVendorMineType(#{jsonStr,mode=IN,jdbcType=VARCHAR},
+        #{resCode,mode=OUT,jdbcType=VARCHAR},
+        #{resMsg,mode=OUT,jdbcType=VARCHAR},
+        #{data,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+</mapper>

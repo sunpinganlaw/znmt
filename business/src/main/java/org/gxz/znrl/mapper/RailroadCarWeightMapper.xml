@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.gxz.znrl.mapper.RailroadCarWeightMapper" >
+  <resultMap id="BaseResultMap" type="org.gxz.znrl.entity.RailroadCarWeight" >
+    <id column="RAILROAD_CAR_ID" property="railroadCarId" jdbcType="DECIMAL" />
+    <result column="RAILROAD_CAR_TYPE" property="railroadCarType" jdbcType="VARCHAR" />
+    <result column="RAILROAD_CAR_WEIGHT" property="railroadCarWeight" jdbcType="DECIMAL" />
+    <result column="OP_CODE" property="opCode" jdbcType="DECIMAL" />
+    <result column="UPDATE_CODE" property="updateCode" jdbcType="DECIMAL" />
+    <result column="UPDATE_DATE" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    RAILROAD_CAR_ID, RAILROAD_CAR_TYPE, RAILROAD_CAR_WEIGHT, OP_CODE, UPDATE_CODE, UPDATE_DATE, 
+    CREATE_DATE
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="org.gxz.znrl.entity.RailroadCarWeightCriteria" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from RAILROAD_CAR_WEIGHT
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from RAILROAD_CAR_WEIGHT
+    where RAILROAD_CAR_ID = #{railroadCarId,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from RAILROAD_CAR_WEIGHT
+    where RAILROAD_CAR_ID = #{railroadCarId,jdbcType=DECIMAL}
+  </delete>
+  <delete id="deleteByExample" parameterType="org.gxz.znrl.entity.RailroadCarWeightCriteria" >
+    delete from RAILROAD_CAR_WEIGHT
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="org.gxz.znrl.entity.RailroadCarWeight" >
+    insert into RAILROAD_CAR_WEIGHT (RAILROAD_CAR_ID, RAILROAD_CAR_TYPE, RAILROAD_CAR_WEIGHT, 
+      OP_CODE, UPDATE_CODE, UPDATE_DATE, 
+      CREATE_DATE)
+    values (#{railroadCarId,jdbcType=DECIMAL}, #{railroadCarType,jdbcType=VARCHAR}, #{railroadCarWeight,jdbcType=DECIMAL}, 
+      #{opCode,jdbcType=DECIMAL}, #{updateCode,jdbcType=DECIMAL}, #{updateDate,jdbcType=TIMESTAMP}, 
+      #{createDate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="org.gxz.znrl.entity.RailroadCarWeight" >
+    insert into RAILROAD_CAR_WEIGHT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="railroadCarId != null" >
+        RAILROAD_CAR_ID,
+      </if>
+      <if test="railroadCarType != null" >
+        RAILROAD_CAR_TYPE,
+      </if>
+      <if test="railroadCarWeight != null" >
+        RAILROAD_CAR_WEIGHT,
+      </if>
+      <if test="opCode != null" >
+        OP_CODE,
+      </if>
+      <if test="updateCode != null" >
+        UPDATE_CODE,
+      </if>
+      <if test="updateDate != null" >
+        UPDATE_DATE,
+      </if>
+      <if test="createDate != null" >
+        CREATE_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="railroadCarId != null" >
+        #{railroadCarId,jdbcType=DECIMAL},
+      </if>
+      <if test="railroadCarType != null" >
+        #{railroadCarType,jdbcType=VARCHAR},
+      </if>
+      <if test="railroadCarWeight != null" >
+        #{railroadCarWeight,jdbcType=DECIMAL},
+      </if>
+      <if test="opCode != null" >
+        #{opCode,jdbcType=DECIMAL},
+      </if>
+      <if test="updateCode != null" >
+        #{updateCode,jdbcType=DECIMAL},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="org.gxz.znrl.entity.RailroadCarWeightCriteria" resultType="java.lang.Integer" >
+    select count(*) from RAILROAD_CAR_WEIGHT
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update RAILROAD_CAR_WEIGHT
+    <set >
+      <if test="record.railroadCarId != null" >
+        RAILROAD_CAR_ID = #{record.railroadCarId,jdbcType=DECIMAL},
+      </if>
+      <if test="record.railroadCarType != null" >
+        RAILROAD_CAR_TYPE = #{record.railroadCarType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.railroadCarWeight != null" >
+        RAILROAD_CAR_WEIGHT = #{record.railroadCarWeight,jdbcType=DECIMAL},
+      </if>
+      <if test="record.opCode != null" >
+        OP_CODE = #{record.opCode,jdbcType=DECIMAL},
+      </if>
+      <if test="record.updateCode != null" >
+        UPDATE_CODE = #{record.updateCode,jdbcType=DECIMAL},
+      </if>
+      <if test="record.updateDate != null" >
+        UPDATE_DATE = #{record.updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.createDate != null" >
+        CREATE_DATE = #{record.createDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update RAILROAD_CAR_WEIGHT
+    set RAILROAD_CAR_ID = #{record.railroadCarId,jdbcType=DECIMAL},
+      RAILROAD_CAR_TYPE = #{record.railroadCarType,jdbcType=VARCHAR},
+      RAILROAD_CAR_WEIGHT = #{record.railroadCarWeight,jdbcType=DECIMAL},
+      OP_CODE = #{record.opCode,jdbcType=DECIMAL},
+      UPDATE_CODE = #{record.updateCode,jdbcType=DECIMAL},
+      UPDATE_DATE = #{record.updateDate,jdbcType=TIMESTAMP},
+      CREATE_DATE = #{record.createDate,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="org.gxz.znrl.entity.RailroadCarWeight" >
+    update RAILROAD_CAR_WEIGHT
+    <set >
+      <if test="railroadCarType != null" >
+        RAILROAD_CAR_TYPE = #{railroadCarType,jdbcType=VARCHAR},
+      </if>
+      <if test="railroadCarWeight != null" >
+        RAILROAD_CAR_WEIGHT = #{railroadCarWeight,jdbcType=DECIMAL},
+      </if>
+      <if test="opCode != null" >
+        OP_CODE = #{opCode,jdbcType=DECIMAL},
+      </if>
+      <if test="updateCode != null" >
+        UPDATE_CODE = #{updateCode,jdbcType=DECIMAL},
+      </if>
+      <if test="updateDate != null" >
+        UPDATE_DATE = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createDate != null" >
+        CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where RAILROAD_CAR_ID = #{railroadCarId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="org.gxz.znrl.entity.RailroadCarWeight" >
+    update RAILROAD_CAR_WEIGHT
+    set RAILROAD_CAR_TYPE = #{railroadCarType,jdbcType=VARCHAR},
+      RAILROAD_CAR_WEIGHT = #{railroadCarWeight,jdbcType=DECIMAL},
+      OP_CODE = #{opCode,jdbcType=DECIMAL},
+      UPDATE_CODE = #{updateCode,jdbcType=DECIMAL},
+      UPDATE_DATE = SYSDATE
+    where RAILROAD_CAR_ID = #{railroadCarId,jdbcType=DECIMAL}
+  </update>
+</mapper>

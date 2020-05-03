@@ -1,0 +1,647 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.gxz.znrl.mapper.ToolMapper">
+
+  <resultMap id="comboboxOptResultMap" type="org.gxz.znrl.entity.ComboboxOptionEntity">
+    <result column="id" jdbcType="VARCHAR" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="transferno" jdbcType="VARCHAR" property="transferNo" />
+    <result column="shipname" jdbcType="VARCHAR" property="shipName" />
+    <result column="suppliername" jdbcType="VARCHAR" property="venName" />
+    <result column="mine" jdbcType="VARCHAR" property="mineName" />
+    <result column="station" jdbcType="VARCHAR" property="startPlace" />
+    <result column="dischargeDate" jdbcType="VARCHAR" property="dischargeDate" />
+    <result column="contractNo" jdbcType="VARCHAR" property="contractNo" />
+     <result column="dischargeqty" jdbcType="VARCHAR" property="dischargeQty" />
+    <result column="transportnumber" jdbcType="VARCHAR" property="transportNum" />
+      <result column="good_name" jdbcType="VARCHAR" property="goodName" />
+      <result column="good_type_name" jdbcType="VARCHAR" property="goodTypeName" />
+
+  </resultMap>
+
+  <select id="getCoalTypeOption" resultMap="comboboxOptResultMap" >
+          select '' id, '全部' name from dual
+          union all
+          select coal_no||'' id, coal_name name from coal_type
+  </select>
+
+    <select id="getCoalTypeListOption" resultMap="comboboxOptResultMap" >
+        select coal_no||'' id, coal_name name from coal_type
+    </select>
+
+    <select id="getCoalTypeListRlOption" resultMap="comboboxOptResultMap" >
+        select coal_no||'' id, coal_name name from coal_type_rl
+    </select>
+
+    <select id="getVendorOption" resultMap="comboboxOptResultMap" >
+        select '' id, '全部' name from dual
+        union all
+        select ven_no||'' id, ven_name name from VENDOR_INFO
+    </select>
+
+    <select id="getVendorListOption" resultMap="comboboxOptResultMap" >
+        select ven_no id, ven_name name from VENDOR_INFO
+    </select>
+
+    <select id="getCarrierOption" resultMap="comboboxOptResultMap" >
+            select '' id, '全部' name from dual
+            union all
+            select carrier_no||'' id, carrier_name name from CARRIER_INFO
+    </select>
+
+    <select id="getCarrierListOption" resultMap="comboboxOptResultMap" >
+        select carrier_no||'' id, carrier_name name from CARRIER_INFO
+    </select>
+
+    <select id="getMineOption" resultMap="comboboxOptResultMap" >
+            select '' id, '全部' name from dual
+            union all
+            select mine_no||'' id, mine_name name from COAL_MINE
+            order by name ASC
+    </select>
+
+    <select id="getMineForShortOption" resultMap="comboboxOptResultMap" >
+            select '' id, '全部' name from dual
+            union all
+            select mine_no||'' id, for_short name from COAL_MINE
+            order by name ASC
+    </select>
+
+    <select id="getMineListOption" resultMap="comboboxOptResultMap" >
+        select mine_no id, mine_name name from COAL_MINE
+    </select>
+
+    <select id="getApprEventTypeOption" resultMap="comboboxOptResultMap" >
+            select '' id, '全部' name from dual
+            union all
+            select to_char(appr_event_type_cd) id, appr_event_type_name name from APPROVE_EVENT_TYPE order by id
+    </select>
+
+    <select id="getShipInfo" resultMap="comboboxOptResultMap" >
+            select '' id, '全部' name from dual
+            union all
+            select to_char(ship_id) id, ship_name||'('||ship_code||')'as name from ship_info where status='1' order by name
+    </select>
+
+
+    <select id="getTimeZoneOption" resultMap="comboboxOptResultMap" >
+        select TIME_ZONE_ID||'' id, START_TIME||'-'||END_TIME name,START_TIME||'点~'||END_TIME||'点' description from CAR_TIME_ZONE
+    </select>
+
+
+    <select id="generateNewTrainNo" resultType="java.lang.String" >
+       select getnewtrainno() from dual
+    </select>
+
+    <select id="getCarNo" resultType="java.lang.String" parameterType="org.gxz.znrl.entity.FunctionEntity">
+        SELECT GET_CARID_BY_SAMPLECODE(#{inPrm1,jdbcType=VARCHAR},#{inPrm2,jdbcType=VARCHAR}) FROM DUAL
+    </select>
+
+    <select id="checkPrivilege" resultType="java.lang.String" parameterType="org.gxz.znrl.entity.PrivilegeEntity">
+        SELECT check_privilege(#{operId,jdbcType=VARCHAR}, #{moduleName,jdbcType=VARCHAR}, #{privName,jdbcType=VARCHAR}) FROM DUAL
+    </select>
+
+    <select id="getSampleCodes" resultMap="comboboxOptResultMap" >
+          select a.sample_code name,
+                  a.sample_code id
+            from BATCH_NO_INFO a
+           where a.insert_time <![CDATA[ >= ]]> trunc(sysdate) - 4
+           order by a.insert_time desc
+  </select>
+
+    <select id="getSampleCodesZj" resultMap="comboboxOptResultMap" >
+         select * from (
+            select a.sample_code || '(' || a.batch_no || ')'  name,
+                    a.sample_code id
+              from BATCH_NO_INFO a
+             where 1 = 1
+               and a.batch_no_type IN ('0','9')
+               and a.insert_time <![CDATA[ >= ]]> trunc(sysdate) - 1
+               and a.insert_time <![CDATA[ <= ]]> trunc(sysdate)
+               order by a.sample_code desc) aa
+
+  </select>
+
+   <select id="getSampleCodes4XY" resultMap="comboboxOptResultMap" >
+          select a.sample_code name,
+                a.sample_code id
+          from BATCH_NO_INFO a
+         where a.sample_code in (select distinct b.sample_code from BARREL_STATUS_INFO b)
+         order by a.insert_time desc
+  </select>
+
+    <select id="getSampleCodes4Train" resultMap="comboboxOptResultMap" >
+          select a.sample_code  name,
+                  a.sample_code id
+            from BATCH_NO_INFO a
+           where a.insert_time <![CDATA[ >= ]]> trunc(sysdate) - 4
+             and a.batch_no_type = '1'
+           order by a.insert_time desc
+  </select>
+
+    <select id="getSampleCodes4TrainXW" resultMap="comboboxOptResultMap" >
+          select a.sample_code || '(' || a.batch_no || ')'  name,
+                  a.sample_code id
+            from BATCH_NO_INFO a
+           where a.insert_time <![CDATA[ >= ]]> trunc(sysdate) - 4
+             and a.batch_no_type in ('1','0')
+           order by a.insert_time desc
+  </select>
+
+    <select id="getSampleCodes4TrainXY" resultMap="comboboxOptResultMap" >
+          select a.sample_code name,
+                a.sample_code id
+          from BATCH_NO_INFO a
+         where a.sample_code in (select distinct b.sample_code from BARREL_STATUS_INFO b)
+         and a.batch_no_type = '1'
+         order by a.sample_code desc
+  </select>
+
+    <select id="getSampleCodes4Car" resultMap="comboboxOptResultMap" >
+          select a.sample_code  name,
+                  a.sample_code id
+            from BATCH_NO_INFO a
+           where a.insert_time <![CDATA[ >= ]]> trunc(sysdate) - 4
+             and a.batch_no_type = '0'
+           order by a.insert_time desc
+  </select>
+
+    <select id="getSampleCodes4Ship" resultMap="comboboxOptResultMap" >
+          select a.sample_code  name,
+                  a.sample_code id
+            from BATCH_NO_INFO a
+           where a.insert_time <![CDATA[ >= ]]> trunc(sysdate) - 4
+             and a.batch_no_type = '2'
+           order by a.insert_time desc
+  </select>
+
+    <select id="getSampleCodes4Hf" resultMap="comboboxOptResultMap" >
+        select a.sample_code  name,
+        a.sample_code id
+        from BATCH_NO_INFO a
+        where a.insert_time <![CDATA[ >= ]]> trunc(sysdate) - 4
+        and a.batch_no_type in('1','9')
+        order by a.insert_time desc
+    </select>
+
+    <select id="getFurnaceSampleCodes" resultMap="comboboxOptResultMap" >
+        select * from (
+        select a.sample_code || '(' || a.batch_no || ')'  name,
+        a.sample_code id
+        from BATCH_NO_INFO a
+        where 1 = 1
+        and a.batch_no_type = '9'
+        and a.insert_time <![CDATA[ >= ]]> trunc(sysdate) - 3
+        order by a.sample_code desc) aa
+        where rownum <![CDATA[ < ]]> 25
+    </select>
+
+    <select id="getFurnaceSampleCodesJB" resultMap="comboboxOptResultMap" >
+        select * from (
+        select a.sample_code || '(' || a.batch_no || decode(get_sample_record_nums(a.sample_code),1, ' 料筒完整', '') ||')'  name,
+        a.sample_code id
+        from BATCH_NO_INFO a
+        where a.batch_no_type = '9'
+        and a.begin_time <![CDATA[ >= ]]> trunc(sysdate) - 3
+        and a.begin_time <![CDATA[ < ]]> trunc(sysdate) +1
+        and not exists (select 1 from prepar_sampling_rec pr
+        where pr.sampling_code = a.sampling_code)
+        and exists (select 1 from sample_record sr where sr.sample_id = a.sample_code and sr.atomic_sample_status not in ('2'))
+        order by a.begin_time) aa
+        where rownum <![CDATA[ < ]]> 30
+    </select>
+
+    <select id="getFurnaceSampleCodes4XY" resultMap="comboboxOptResultMap" >
+        select a.sample_code || '(' || a.batch_no || ')'  name,
+        a.sample_code id
+        from BATCH_NO_INFO a
+        where a.sample_code in (select distinct b.sample_code from BARREL_STATUS_INFO b)
+        and a.insert_time <![CDATA[ >= ]]> trunc(sysdate) - 4
+        and a.batch_no_type = '9'
+        order by a.sample_code desc
+    </select>
+
+
+   <select id="getScalesStandard" resultMap="comboboxOptResultMap" >
+        select a.standard_id id, a.standard_name name from LAB_STANDARD a where standard_type = '1'
+  </select>
+
+   <select id="getSStandard" resultMap="comboboxOptResultMap" >
+        select a.standard_id id, a.standard_name name from LAB_STANDARD a where standard_type = '2'
+  </select>
+
+    <select id="getIAStandard" resultMap="comboboxOptResultMap" >
+        select a.standard_id id, a.standard_name name from LAB_STANDARD a where standard_type = '3'
+  </select>
+
+    <select id="getHotStandard" resultMap="comboboxOptResultMap" >
+        select a.standard_id id, a.standard_name name from LAB_STANDARD a where standard_type = '4'
+  </select>
+
+    <select id="getLAStandard" resultMap="comboboxOptResultMap" >
+        select a.standard_id id, a.standard_name name from LAB_STANDARD a where standard_type = '5'
+  </select>
+
+    <select id="getHStandard" resultMap="comboboxOptResultMap" >
+        select a.standard_id id, a.standard_name name from LAB_STANDARD a where standard_type = '6'
+  </select>
+
+    <select id="getMELTStandard" resultMap="comboboxOptResultMap" >
+        select a.standard_id id, a.standard_name name from LAB_STANDARD a where standard_type = '7'
+  </select>
+
+    <select id="getSysUser" resultMap="comboboxOptResultMap" >
+        select id, realname name from security_user where status = 'enabled' order by realname
+  </select>
+
+    <select id="getLaborCode" resultMap="comboboxOptResultMap" >
+        select a.labor_code id, a.labor_code name
+          from batch_no_info a
+         where a.insert_time > trunc(sysdate) - 10
+           and a.labor_code is not null
+         order by a.insert_time desc
+  </select>
+
+    <select id="getLaborCode4BB" resultMap="comboboxOptResultMap" >
+        select a.labor_code id, a.labor_code name
+          from batch_no_info a
+         where a.insert_time > trunc(sysdate) - 10
+           and a.batch_no_type in ('0','1','2','9')
+           and a.labor_code is not null
+         order by a.insert_time desc
+  </select>
+
+    <select id="getLaborCode4CCY" resultMap="comboboxOptResultMap" >
+        select a.labor_code id, a.labor_code name
+          from batch_no_info a
+         where a.insert_time > trunc(sysdate) - 10
+           and a.batch_no_type not in ('0','1','2','9')
+           and a.labor_code is not null
+         order by a.insert_time desc
+  </select>
+
+    <select id="getLaborCodeByInput" resultMap="comboboxOptResultMap" >
+        select a.labor_code id, a.labor_code name
+        from batch_no_info a
+        where 1=1
+        and a.labor_code like '%'||#{input, jdbcType=VARCHAR}||'%'
+        order by a.insert_time desc
+    </select>
+
+    <select id="getCoalMineForShortByInput" resultMap="comboboxOptResultMap" >
+        select a.mine_no id, a.for_short name
+        from coal_mine a
+        where 1=1
+        and a.for_short like '%'||#{input, jdbcType=VARCHAR}||'%'
+        order by a.mine_no desc
+    </select>
+
+    <select id="getLaborCodeByType" resultMap="comboboxOptResultMap" >
+        select a.labor_code id, a.labor_code name
+        from batch_no_info a
+        where 1=1
+        and a.batch_no_type =#{input, jdbcType=VARCHAR}
+        and a.insert_time > trunc(sysdate) - 30
+        order by a.insert_time desc
+    </select>
+
+
+    <select id="getSampleCodeByInput" resultMap="comboboxOptResultMap" >
+        select a.sample_code id, a.sample_code name
+        from batch_no_info a
+        where 1=1
+        and a.sample_code like '%'||#{input, jdbcType=VARCHAR}||'%'
+        order by a.insert_time desc
+    </select>
+
+    <select id="getSampleCodeByInputZj" resultMap="comboboxOptResultMap" >
+        select a.sample_code id, a.sample_code || '(' || a.batch_no || ')' name
+        from batch_no_info a
+        where 1=1
+        and a.sample_code like '%'||#{input, jdbcType=VARCHAR}||'%'
+        order by a.insert_time desc
+    </select>
+
+
+    <select id="getSamplingCodeByInput" resultMap="comboboxOptResultMap" >
+        select a.sampling_code id, a.sampling_code name
+        from batch_no_info a
+        where 1=1
+        and a.sampling_code like '%'||#{input, jdbcType=VARCHAR}||'%'
+        order by a.insert_time desc
+    </select>
+
+    <!--织金锁车功能中车号模糊匹配-->
+    <select id="getcarIdByInput" resultMap="comboboxOptResultMap" >
+        select a.car_id id ,a.car_id name
+        from rlcarmst a
+        where 1=1
+        and a.valid_sta ='1'and a.car_id like '%'||#{input, jdbcType=VARCHAR}||'%'
+        order by a.fstusr_dtm desc
+    </select>
+
+
+
+<!--现在蚌埠的转为从合同号读取,老谢说,这个只给蚌埠用,先留着,注释掉
+    <select id="getShipRecId" resultMap="comboboxOptResultMap" >
+        select distinct t.ship_rec_id id, t.ship_rec_id name
+          from ship_cargo_record t
+         where t.insert_time > trunc(sysdate) - 10
+           and t.rec_status = '1'
+         order by t.ship_rec_id desc
+    </select>
+
+    <select id="getShipRecIdByInput" resultMap="comboboxOptResultMap" >
+        select distinct t.ship_rec_id id, t.ship_rec_id name
+          from ship_cargo_record t
+         where 1=1
+           and t.ship_rec_id like '%'||#{input, jdbcType=VARCHAR}||'%'
+           and t.rec_status = '1'
+         order by t.ship_rec_id desc
+    </select>
+-->
+
+    <select id="getShipRecId" resultMap="comboboxOptResultMap" >
+        select  t.contract_no id, t.contract_name name
+          from contract_info t
+         where t.create_time > trunc(sysdate) - 31
+         order by t.create_time desc
+    </select>
+
+    <select id="getDischargeforecastByInput" resultMap="comboboxOptResultMap" >
+    select t.id,
+    t.transferno name,
+    t.transferno,
+    t.shipname,
+    (select v.ven_name
+    from vendor_info v
+    where v.VEN_NO = t.suppliercode) suppliername,
+    (select v.mine_name
+    from coal_mine v
+    where v.mine_no = t.minecode) mine,
+    (select name
+    from dictionary_table v
+    where type = 'START_RAIL_STATION'
+    and v.id = t.STATIONCODE) station,
+    t.dischargeenddate dischargeDate,
+    t.contractNumber contractNo,
+    t.dischargeqty,
+    t.transportnumber
+    from dischargeforecast_info t
+    where 1=1
+    and t.transferno like '%'||#{input, jdbcType=VARCHAR}||'%'
+    and t.dischargedate > trunc(sysdate) - 30
+    order by t.dischargedate desc
+</select>
+
+    <select id="getShipRecIdByInput" resultMap="comboboxOptResultMap" >
+        select  t.contract_no id, t.contract_name name
+          from contract_info t
+         where 1=1
+           and t.contract_name like '%'||#{input, jdbcType=VARCHAR}||'%'
+           and t.create_time > trunc(sysdate) - 62
+         order by t.create_time desc
+    </select>
+    
+    <select id="getContractNoList" resultMap="comboboxOptResultMap" >
+        select  t.contract_no id, t.contract_name name
+        from contract_info t
+        where t.create_time > trunc(sysdate) - 90
+        order by t.create_time desc
+    </select>
+
+    <select id="getBatchNoList" resultMap="comboboxOptResultMap" >
+        select t.batch_no id ,t.batch_no name
+        from batch_no_info t
+        where t.batch_no_type = '0'and  rownum <![CDATA[ < ]]> 11
+        order by t.insert_time desc
+    </select>
+
+    <select id="getBottleCntList" resultMap="comboboxOptResultMap" >
+        select t.labor_code id ,t.labor_code||':'||get_bot_cnt(t.sampling_code) name
+        from batch_no_info t
+        where 1 = 1 and  rownum <![CDATA[ < ]]> 11
+        order by t.insert_time desc
+    </select>
+
+    <select id="getBottleCntByInput" resultMap="comboboxOptResultMap" >
+        select t.labor_code id ,t.labor_code||':'||get_bot_cnt(t.sampling_code) name
+        from batch_no_info t
+        where  t.labor_code  = #{input, jdbcType=VARCHAR}
+        order by t.insert_time desc
+    </select>
+
+    <select id="getShipsByInput" resultMap="comboboxOptResultMap" >
+        select t.record_no id, t.cabin_nos||'('||t.tick_qty||'吨)' name
+          from ship_cargo_record t
+         where t.ship_rec_id  = #{input, jdbcType=VARCHAR}
+           and t.rec_status = '1'
+         order by t.record_no desc
+    </select>
+
+    <select id="getLaborDevice" resultMap="comboboxOptResultMap" >
+        SELECT A.DEVICE_NO ID, A.DEVICE_NAME NAME FROM LAB_DEVICE A
+    </select>
+
+
+    <resultMap id="ConstantLoadResultMap" type="org.gxz.znrl.entity.ConstantEntity">
+        <result column="const_key" jdbcType="VARCHAR" property="key" />
+        <result column="const_value" jdbcType="VARCHAR" property="value" />
+    </resultMap>
+
+    <select id="loadConstant" resultMap="ConstantLoadResultMap" >
+          select a.const_key, a.const_value
+            from constant_data_config a
+            where a.is_effective = 'Y'
+    </select>
+
+    <select id="getDeviceInfoList" resultMap="comboboxOptResultMap" >
+        select MACHINE_CODE||'' id, MACHINE_NAME name from DEVICE_INFO
+    </select>
+
+    <resultMap id="MsgPushResultMap" type="org.gxz.znrl.entity.MsgPushEntity">
+        <result column="msg_id" jdbcType="VARCHAR" property="msgId" />
+        <result column="msg_name" jdbcType="VARCHAR" property="msgName" />
+        <result column="msg_descr" jdbcType="VARCHAR" property="msgDescr" />
+        <result column="msg_type_id" jdbcType="VARCHAR" property="msgTypeId" />
+        <result column="msg_type_name" jdbcType="VARCHAR" property="msgTypeName" />
+        <result column="msg_level" jdbcType="VARCHAR" property="msgLevel" />
+        <result column="msg_redirect_url" jdbcType="VARCHAR" property="msgRedirectUrl" />
+        <result column="redirect_pg_name" jdbcType="VARCHAR" property="pageName" />
+        <result column="msg_params" jdbcType="VARCHAR" property="msgParams" />
+        <result column="need_deal" jdbcType="VARCHAR" property="needDeal" />
+        <result column="eff_time" jdbcType="VARCHAR" property="effTime" />
+        <result column="exp_time" jdbcType="VARCHAR" property="expTime" />
+    </resultMap>
+    <select id="qryPushMsgList" resultMap="MsgPushResultMap" >
+          select a.msg_id,
+                   a.msg_name,
+                   a.msg_descr,
+                   a.msg_type_id,
+                  (select name from dictionary_table d where d.type = 'PUSH_MSG_TYPE' and d.id = a.msg_type_id) msg_type_name,
+                   decode(a.msg_level, '1','普通提示','2','重要提示','3','特别重要提示') msg_level,
+                   a.msg_redirect_url,
+                   nvl(a.msg_params, '{}') msg_params,
+                   a.need_deal,
+                   a.redirect_pg_name,
+                   to_char(a.eff_time, 'yyyy-mm-dd hh24:mi:ss') eff_time,
+                   to_char(a.exp_time, 'yyyy-mm-dd hh24:mi:ss') exp_time
+              from msg_push_buffer a
+             where a.msg_id in
+            <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </select>
+
+    <select id="updatePushMsg" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.MsgPushEntity">
+      {call pk_msg.updatePushMsg(#{jsonString,mode=IN,jdbcType=VARCHAR},
+                                 #{opCode,mode=IN,jdbcType=VARCHAR},
+                                 #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                 #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+   </select>
+
+
+
+    <!--记录接口日志-->
+    <insert id="insertIntfLog" parameterType="org.gxz.znrl.entity.BizLogEntity" >
+		insert into intf_log
+              (log_id,
+               sys_id,
+               service_name,
+               req_user_id,
+               biz_id,
+               cost_time,
+               res_code,
+               res_msg,
+               trans_id,
+               log_time)
+            values
+              (#{logId,jdbcType=VARCHAR},
+               #{sysId,jdbcType=VARCHAR},
+               #{serviceName,jdbcType=VARCHAR},
+               #{reqUserId,jdbcType=VARCHAR},
+               #{bizId,jdbcType=VARCHAR},
+               #{costTime,jdbcType=VARCHAR},
+               #{resCode,jdbcType=VARCHAR},
+               #{resMsg,jdbcType=VARCHAR},
+               #{transId,jdbcType=VARCHAR},
+               sysdate)
+	</insert>
+
+    <insert id="insertIntfLogExt" parameterType="org.gxz.znrl.entity.BizLogEntity" >
+		insert into intf_log_ext
+              (log_id,
+               in_param,
+               out_param)
+            values
+              (#{logId,jdbcType=VARCHAR},
+               #{inParam,jdbcType=VARCHAR},
+               #{outParam,jdbcType=VARCHAR})
+	</insert>
+
+
+    <select id="getSeqNextval" parameterType="org.gxz.znrl.entity.CommonEntity" resultType="java.lang.String">
+		SELECT to_char(${seqName}.nextVal) FROM DUAL
+	</select>
+
+    <select id="getWorkMode" resultType="java.lang.String" parameterType="org.gxz.znrl.entity.FunctionEntity">
+        SELECT get_work_mode(#{inPrm1,jdbcType=VARCHAR}) FROM DUAL
+    </select>
+
+    <select id="getUserNameList" resultMap="comboboxOptResultMap" >
+        select ID||'' id, REALNAME name from security_user
+    </select>
+
+    <select id="getLimitValue"  parameterType="org.gxz.znrl.entity.FunctionEntity" resultType="java.lang.String">
+        SELECT get_LimitValue(#{inPrm1,jdbcType=VARCHAR},
+                               #{inPrm2,jdbcType=VARCHAR}) FROM dual
+    </select>
+
+    <select id="getBatchNoByInput" resultMap="comboboxOptResultMap" >
+        select a.batch_no id, a.batch_no name
+        from batch_no_info a
+        where 1=1
+        and a.batch_no like '%'||#{input, jdbcType=VARCHAR}||'%'
+        and a.insert_time >trunc(sysdate) -4
+        and a.batch_no_type  = 0
+        order by a.insert_time desc
+    </select>
+
+
+    <select id="getCoalTypeListForecastOption" resultMap="comboboxOptResultMap" >
+      select '' id, '全部' name from dual
+       union all
+      select mine_no  id, GET_TABLE_COLUMN_BY_COLUMN('MINE_NAME', 'COAL_MINE', 'MINE_NO', NVL(A.MINE_NO,0), '=', '1', 1)  name from CAR_FORECAST_INFO A
+      where a.end_date>trunc(sysdate) -3
+        order by name ASC
+    </select>
+
+    <select id="getCarIdByInput" resultMap="comboboxOptResultMap" >
+        select a.card_id id, a.car_id name
+        from rlcarmst a
+        where 1=1
+        and a.car_id like '%'||#{input, jdbcType=VARCHAR}||'%'
+        and a.valid_sta  = 1
+        order by a.fstusr_dtm desc
+    </select>
+
+    <select id="getLabDeviceOption" resultMap="comboboxOptResultMap" >
+          select device_no||'' id, device_name name from lab_device
+  </select>
+
+    <select id="getSampleCodesQz" resultMap="comboboxOptResultMap" >
+        select a.sample_code name,
+        a.sample_code id
+        from BATCH_NO_INFO a
+        where a.insert_time <![CDATA[ >= ]]> trunc(sysdate) - 15
+        and a.batch_no_type='2'
+        union all
+        select a.sample_code name,
+        a.sample_code id
+        from BATCH_NO_INFO a
+        where a.insert_time <![CDATA[ >= ]]> trunc(sysdate) - 4
+        and a.batch_no_type='9'
+        order by id desc
+    </select>
+
+    <select id="getShuichiTicket" resultMap="comboboxOptResultMap" >
+        select
+        PK_SHUICD  transferno,
+        CHUANM shipname,
+        CHUANC transportnumber
+        from SHUICD t
+        where 1=1
+        order by t.PK_SHUICD desc
+    </select>
+
+    <select id="getGoodInfoByInput" resultMap="comboboxOptResultMap" >
+        select t.good_no id,
+        t.good_name name,
+        t.good_name ,
+        decode(t.good_type,'0','散杂货','1','集装箱') good_type_name
+        from good_info t
+        where 1=1
+        and t.good_name like '%'||#{input, jdbcType=VARCHAR}||'%'
+        and t.STATUS ='1'
+    </select>
+
+    <select id="getGoodInfoOption" resultMap="comboboxOptResultMap" >
+        select '' id, '全部' name from dual
+        union all
+        select good_no||'' id, good_name name from GOOD_INFO
+    </select>
+
+    <select id="getStockInfoOption" resultMap="comboboxOptResultMap" >
+        select '' id, '全部' name from dual
+        union all
+        select stock_no||'' id, stock_name name from STOCK_INFO
+    </select>
+
+
+    <select id="getChannelInfoOption" resultMap="comboboxOptResultMap" >
+        select '' id, '全部' name from dual
+        union all
+        select channel_no||'' id, channel_name name from CHANNEL_INFO
+    </select>
+
+</mapper>

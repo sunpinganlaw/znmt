@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.gxz.znrl.mapper.TrainRptMapper">
+
+<!--分页sql语句的公共部分,供其他需分页sql语句引用-->
+  <sql id="paging_top_sql">
+    select * from (
+  </sql>
+  <sql id="paging_bottom_sql">
+    ) t where t.rownumber between #{beginRowIndex,jdbcType=INTEGER} and #{endRowIndex,jdbcType=INTEGER}
+  </sql>
+
+
+  <select id="qryWeightRptListCnt" parameterType="org.gxz.znrl.entity.TrainWeightRptEntity" resultType="java.lang.Integer" >
+      select count(1)
+      from RLRECORDMSTQY a, RLCARCZMST b
+      where a.record_no = b.record_no
+      <if test="beginTime != null" >
+          <![CDATA[
+             and a.record_dtm >= to_date(#{beginTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+             ]]>
+      </if>
+
+      <if test="endTime != null" >
+          <![CDATA[
+             and a.record_dtm <= to_date(#{endTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+             ]]>
+      </if>
+
+      <if test="venNo != null" >
+          and a.ven_no = #{venNo,jdbcType=VARCHAR}
+      </if>
+
+      <if test="carrierNo != null" >
+          and a.carrier_no = #{carrierNo,jdbcType=VARCHAR}
+      </if>
+
+      <if test="carId != null" >
+          and a.car_id = #{carId,jdbcType=VARCHAR}
+      </if>
+
+      <if test="coalNo != null" >
+          and a.coal_no = #{coalNo,jdbcType=VARCHAR}
+      </if>
+
+      <if test="batchNo != null" >
+          and a.car_batch_no = #{batchNo,jdbcType=VARCHAR}
+      </if>
+
+      <if test="status != null" >
+          and getCarStatusInfo(a.record_no) = #{status,jdbcType=VARCHAR}
+      </if>
+  </select>
+
+
+  <resultMap id="weightRptResultMap" type="org.gxz.znrl.entity.TrainWeightRptEntity">
+    <id column="record_no" jdbcType="INTEGER" property="recordNo" />
+    <result column="ven_nam" jdbcType="VARCHAR" property="venNam" />
+    <result column="carrier_nam" jdbcType="VARCHAR" property="carrierNam" />
+    <result column="coal_nam" jdbcType="VARCHAR" property="coalNam" />
+    <result column="car_id" jdbcType="VARCHAR" property="carId" />
+    <result column="car_type_name" jdbcType="VARCHAR" property="carTypeName" />
+    <result column="bottom_height" jdbcType="VARCHAR" property="bottomHeight" />
+    <result column="max_load" jdbcType="VARCHAR" property="maxLoad" />
+    <result column="car_batch_no" jdbcType="VARCHAR" property="batchNo" />
+    <result column="entry_order" jdbcType="VARCHAR" property="entryOrder" />
+    <result column="door_no" jdbcType="VARCHAR" property="doorNo" />
+    <result column="record_dtm" jdbcType="VARCHAR" property="recordDtm" />
+    <result column="cz_dtm" jdbcType="VARCHAR" property="czDtm" />
+    <result column="jq_dtm" jdbcType="VARCHAR" property="jqDtm" />
+    <result column="mz_qty" jdbcType="VARCHAR" property="mzQty" />
+    <result column="kd_qty" jdbcType="VARCHAR" property="kdQty" />
+    <result column="pz_qty" jdbcType="VARCHAR" property="pzQty" />
+    <result column="net_qty" jdbcType="VARCHAR" property="netQty" />
+    <result column="jq_balance_no" jdbcType="VARCHAR" property="jqBalaNo" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+  </resultMap>
+
+  <!--称重称轻计量报表查询sql-->
+  <select id="qryWeightRptList" parameterType="org.gxz.znrl.entity.TrainWeightRptEntity" resultMap="weightRptResultMap" >
+      <include refid="paging_top_sql" />
+          select (select vi.ven_name from VENDOR_INFO vi where vi.ven_no = a.ven_no) ven_nam,
+                  (select ci.carrier_name from CARRIER_INFO ci where ci.carrier_no = a.carrier_no) carrier_nam,
+                  (select ct.coal_name from COAL_TYPE ct where ct.coal_no = a.coal_no) coal_nam,
+                  a.car_id,
+                  getCarInfo(a.car_id, 'CAR_TYPE') carTypeName,
+                  getCarInfo(a.car_id, 'BOTTOM_HEIGHT') bottom_height,
+                  a.car_batch_no,
+                  a.door_no,
+                  to_char(a.record_dtm, 'yyyy-mm-dd hh24:mi:ss') record_dtm,
+                  to_char(b.cz_dtm, 'yyyy-mm-dd hh24:mi:ss') cz_dtm,
+                  to_char(b.jq_dtm, 'yyyy-mm-dd hh24:mi:ss') jq_dtm,
+                  to_char(b.mz_qty) mz_qty,
+                  getUnloadInfo(a.record_no, 'KD_QTY') kd_qty,
+                  to_char(b.pz_qty) pz_qty,
+                  to_char(b.net_qty) net_qty,
+                  b.jq_balance_no,
+                  decode(getCarStatusInfo(a.record_no), '1','采样未称重','2','称重未称轻','3','已称重称轻','未知状态') status,
+                  rownum rownumber
+            from RLRECORDMSTQY a, RLCARCZMST b
+           where a.record_no = b.record_no
+
+          <if test="beginTime != null" >
+             <![CDATA[
+             and a.record_dtm >= to_date(#{beginTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+             ]]>
+          </if>
+
+          <if test="endTime != null" >
+             <![CDATA[
+             and a.record_dtm <= to_date(#{endTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+             ]]>
+          </if>
+
+          <if test="venNo != null" >
+             and a.ven_no = #{venNo,jdbcType=VARCHAR}
+          </if>
+
+          <if test="carrierNo != null" >
+              and a.carrier_no = #{carrierNo,jdbcType=VARCHAR}
+          </if>
+
+          <if test="carId != null" >
+              and a.car_id = #{carId,jdbcType=VARCHAR}
+          </if>
+
+          <if test="coalNo != null" >
+              and a.coal_no = #{coalNo,jdbcType=VARCHAR}
+          </if>
+
+          <if test="batchNo != null" >
+              and a.car_batch_no = #{batchNo,jdbcType=VARCHAR}
+          </if>
+
+          <if test="status != null" >
+              and getCarStatusInfo(a.record_no) = #{status,jdbcType=VARCHAR}
+          </if>
+
+      <include refid="paging_bottom_sql" />
+  </select>
+
+  <!--查询称重汇总报表数据，暂时固定查当天的-->
+  <resultMap id="weightSummaryRptResultMap" type="org.gxz.znrl.entity.TrainWeightRptEntity">
+        <result column="total_entry_cnt" jdbcType="VARCHAR" property="totalEntryCnt" />
+        <result column="total_cz_cnt" jdbcType="VARCHAR" property="totalCZCnt" />
+        <result column="total_jq_cnt" jdbcType="VARCHAR" property="totalJQCnt" />
+        <result column="total_sample_cnt" jdbcType="VARCHAR" property="totalSampleCnt" />
+        <result column="total_deny_cnt" jdbcType="VARCHAR" property="totalDenyCnt" />
+        <result column="total_checkin_cnt" jdbcType="VARCHAR" property="totalCheckInCnt" />
+        <result column="total_checintun_cnt" jdbcType="VARCHAR" property="totalCheckInTunCnt" />
+  </resultMap>
+
+  <select id="qryEntryTotalCnt" parameterType="org.gxz.znrl.entity.TrainWeightRptEntity" resultType="java.lang.Integer">
+      select count(1)
+      from RLRECORDMSTHY a
+      where 1 = 1
+
+      <if test="beginTime != null" >
+          <![CDATA[
+             and a.record_dtm >= to_date(#{beginTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+             ]]>
+      </if>
+
+      <if test="endTime != null" >
+          <![CDATA[
+             and a.record_dtm <= to_date(#{endTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+             ]]>
+      </if>
+
+      <if test="venNo != null" >
+          and a.ven_no = #{venNo,jdbcType=VARCHAR}
+      </if>
+
+      <if test="carrierNo != null" >
+          and a.carrier_no = #{carrierNo,jdbcType=VARCHAR}
+      </if>
+
+      <if test="carId != null" >
+          and a.car_id = #{carId,jdbcType=VARCHAR}
+      </if>
+
+      <if test="coalNo != null" >
+          and a.coal_no = #{coalNo,jdbcType=VARCHAR}
+      </if>
+
+      <if test="batchNo != null" >
+          and a.car_batch_no = #{batchNo,jdbcType=VARCHAR}
+      </if>
+
+      <if test="status != null" >
+          and getCarStatusInfo(a.record_no) = #{status,jdbcType=VARCHAR}
+      </if>
+  </select>
+
+
+   <select id="qryWeightTotalCnt" parameterType="org.gxz.znrl.entity.TrainWeightRptEntity" resultType="java.lang.Integer" >
+        select count(1)
+        from RLRECORDMSTHY a, RLCARCZMST b
+        where a.record_no = b.record_no
+        and b.cz_dtm is not null
+        <if test="beginTime != null" >
+            <![CDATA[
+             and a.record_dtm >= to_date(#{beginTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+             ]]>
+        </if>
+
+        <if test="endTime != null" >
+            <![CDATA[
+             and a.record_dtm <= to_date(#{endTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+             ]]>
+        </if>
+
+        <if test="venNo != null" >
+            and a.ven_no = #{venNo,jdbcType=VARCHAR}
+        </if>
+
+        <if test="carrierNo != null" >
+            and a.carrier_no = #{carrierNo,jdbcType=VARCHAR}
+        </if>
+
+        <if test="carId != null" >
+            and a.car_id = #{carId,jdbcType=VARCHAR}
+        </if>
+
+        <if test="coalNo != null" >
+            and a.coal_no = #{coalNo,jdbcType=VARCHAR}
+        </if>
+
+        <if test="batchNo != null" >
+            and a.car_batch_no = #{batchNo,jdbcType=VARCHAR}
+        </if>
+
+        <if test="status != null" >
+            and getCarStatusInfo(a.record_no) = #{status,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <select id="qryLightTotalCnt" parameterType="org.gxz.znrl.entity.TrainWeightRptEntity" resultType="java.lang.Integer" >
+        select count(1)
+        from RLRECORDMSTHY a, RLCARCZMST b
+        where a.record_no = b.record_no
+        and b.jq_dtm is not null
+        <if test="beginTime != null" >
+            <![CDATA[
+             and a.record_dtm >= to_date(#{beginTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+             ]]>
+        </if>
+
+        <if test="endTime != null" >
+            <![CDATA[
+             and a.record_dtm <= to_date(#{endTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+             ]]>
+        </if>
+
+        <if test="venNo != null" >
+            and a.ven_no = #{venNo,jdbcType=VARCHAR}
+        </if>
+
+        <if test="carrierNo != null" >
+            and a.carrier_no = #{carrierNo,jdbcType=VARCHAR}
+        </if>
+
+        <if test="carId != null" >
+            and a.car_id = #{carId,jdbcType=VARCHAR}
+        </if>
+
+        <if test="coalNo != null" >
+            and a.coal_no = #{coalNo,jdbcType=VARCHAR}
+        </if>
+
+        <if test="batchNo != null" >
+            and a.car_batch_no = #{batchNo,jdbcType=VARCHAR}
+        </if>
+
+        <if test="status != null" >
+            and getCarStatusInfo(a.record_no) = #{status,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <select id="qryTotalMz" parameterType="org.gxz.znrl.entity.TrainWeightRptEntity" resultType="java.lang.Float" >
+        select nvl(sum(b.mz_qty), 0)
+        from RLRECORDMSTHY a, RLCARCZMST b
+        where a.record_no = b.record_no
+        <if test="beginTime != null" >
+            <![CDATA[
+             and a.record_dtm >= to_date(#{beginTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+             ]]>
+        </if>
+
+        <if test="endTime != null" >
+            <![CDATA[
+             and a.record_dtm <= to_date(#{endTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+             ]]>
+        </if>
+
+        <if test="venNo != null" >
+            and a.ven_no = #{venNo,jdbcType=VARCHAR}
+        </if>
+
+        <if test="carrierNo != null" >
+            and a.carrier_no = #{carrierNo,jdbcType=VARCHAR}
+        </if>
+
+        <if test="carId != null" >
+            and a.car_id = #{carId,jdbcType=VARCHAR}
+        </if>
+
+        <if test="coalNo != null" >
+            and a.coal_no = #{coalNo,jdbcType=VARCHAR}
+        </if>
+
+        <if test="batchNo != null" >
+            and a.car_batch_no = #{batchNo,jdbcType=VARCHAR}
+        </if>
+
+        <if test="status != null" >
+            and getCarStatusInfo(a.record_no) = #{status,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <select id="qryTotalPz" parameterType="org.gxz.znrl.entity.TrainWeightRptEntity" resultType="java.lang.Float" >
+        select nvl(sum(b.pz_qty), 0)
+        from RLRECORDMSTHY a, RLCARCZMST b
+        where a.record_no = b.record_no
+        <if test="beginTime != null" >
+            <![CDATA[
+             and a.record_dtm >= to_date(#{beginTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+             ]]>
+        </if>
+
+        <if test="endTime != null" >
+            <![CDATA[
+             and a.record_dtm <= to_date(#{endTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+             ]]>
+        </if>
+
+        <if test="venNo != null" >
+            and a.ven_no = #{venNo,jdbcType=VARCHAR}
+        </if>
+
+        <if test="carrierNo != null" >
+            and a.carrier_no = #{carrierNo,jdbcType=VARCHAR}
+        </if>
+
+        <if test="carId != null" >
+            and a.car_id = #{carId,jdbcType=VARCHAR}
+        </if>
+
+        <if test="coalNo != null" >
+            and a.coal_no = #{coalNo,jdbcType=VARCHAR}
+        </if>
+
+        <if test="batchNo != null" >
+            and a.car_batch_no = #{batchNo,jdbcType=VARCHAR}
+        </if>
+
+        <if test="status != null" >
+            and getCarStatusInfo(a.record_no) = #{status,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <select id="qryTotalNet" parameterType="org.gxz.znrl.entity.TrainWeightRptEntity" resultType="java.lang.Float" >
+        select nvl(sum(b.net_qty), 0)
+        from RLRECORDMSTHY a, RLCARCZMST b
+        where a.record_no = b.record_no
+        <if test="beginTime != null" >
+            <![CDATA[
+             and a.record_dtm >= to_date(#{beginTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+             ]]>
+        </if>
+
+        <if test="endTime != null" >
+            <![CDATA[
+             and a.record_dtm <= to_date(#{endTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
+             ]]>
+        </if>
+
+        <if test="venNo != null" >
+            and a.ven_no = #{venNo,jdbcType=VARCHAR}
+        </if>
+
+        <if test="carrierNo != null" >
+            and a.carrier_no = #{carrierNo,jdbcType=VARCHAR}
+        </if>
+
+        <if test="carId != null" >
+            and a.car_id = #{carId,jdbcType=VARCHAR}
+        </if>
+
+        <if test="coalNo != null" >
+            and a.coal_no = #{coalNo,jdbcType=VARCHAR}
+        </if>
+
+        <if test="batchNo != null" >
+            and a.car_batch_no = #{batchNo,jdbcType=VARCHAR}
+        </if>
+
+        <if test="status != null" >
+            and getCarStatusInfo(a.record_no) = #{status,jdbcType=VARCHAR}
+        </if>
+    </select>
+</mapper>

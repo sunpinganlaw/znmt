@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.gxz.znrl.mapper.ChannelInfoMapper" >
+  <resultMap id="BaseResultMap" type="org.gxz.znrl.entity.ChannelInfoEntity" >
+    <id column="CHANNEL_NO" property="channelNo" jdbcType="VARCHAR" />
+    <result column="CHANNEL_NAME" property="channelName" jdbcType="VARCHAR" />
+    <result column="CHANNEL_TYPE" property="channelType" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="FOR_SHORT" property="forShort" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    CHANNEL_NO, CHANNEL_NAME, CHANNEL_TYPE，REMARK,FOR_SHORT
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="org.gxz.znrl.entity.ChannelInfoCriteria" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from CHANNEL_INFO
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from CHANNEL_INFO
+    where CHANNEL_NO = #{channelNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from CHANNEL_INFO
+    where CHANNEL_NO = #{channelNo,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="org.gxz.znrl.entity.ChannelInfoCriteria" >
+    delete from CHANNEL_INFO
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="org.gxz.znrl.entity.ChannelInfoEntity" >
+    insert into CHANNEL_INFO (CHANNEL_NO,CHANNEL_NAME,CHANNEL_TYPE, REMARK,FOR_SHORT
+      )
+    values (#{channelNo,jdbcType=VARCHAR}, #{channelName,jdbcType=VARCHAR},#{channelType,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{forShort,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="org.gxz.znrl.entity.ChannelInfoEntity" >
+    insert into CHANNEL_INFO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        CHANNEL_NO,
+      <if test="channelName != null" >
+        CHANNEL_NAME,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="channelType != null" >
+        CHANNEL_TYPE,
+      </if>
+      <if test="forShort != null" >
+        FOR_SHORT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        SEQ_COMMON_CONFIG_ID.nextval,
+      <if test="channelName != null" >
+        #{channelName,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="channelType != null" >
+        #{channelType,jdbcType=VARCHAR},
+      </if>
+      <if test="forShort != null" >
+        #{forShort,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="org.gxz.znrl.entity.ChannelInfoCriteria" resultType="java.lang.Integer" >
+    select count(*) from CHANNEL_INFO
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update CHANNEL_INFO
+    <set >
+      <if test="record.channleNo != null" >
+        CHANNEL_NO = #{record.channleNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.channelName != null" >
+        CHANNEL_NAME = #{record.channelName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remark != null" >
+        REMARK = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.channelType != null" >
+        CHANNEL_TYPE = #{record.channelType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.forShort != null" >
+        FOR_SHORT = #{record.forShort,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update CHANNEL_INFO
+    set CHANNEL_NO = #{record.channelNo,jdbcType=VARCHAR},
+      CHANNEL_NAME = #{record.channelName,jdbcType=VARCHAR},
+      REMARK = #{record.remark,jdbcType=VARCHAR},
+      CHANNEL_TYPE = #{record.channelType,jdbcType=VARCHAR},
+      FOR_SHORT = #{record.forShort,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="org.gxz.znrl.entity.ChannelInfoEntity" >
+    update CHANNEL_INFO
+    <set >
+      <if test="channelName != null" >
+        CHANNEL_NAME = #{channelName,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="channelType != null" >
+        CHANNEL_TYPE = #{channelType,jdbcType=VARCHAR},
+      </if>
+      <if test="forShort != null" >
+        FORT_SHORT = #{forShort,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where CHANNEL_NO = #{channelNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="org.gxz.znrl.entity.ChannelInfoEntity" >
+    update CHANNEL_NO
+    set CHANNEL_NAME = #{channelName,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR},
+     CHANNEL_TYPE = #{record.channelType,jdbcType=VARCHAR},
+      FOR_SHORT = #{forShort,jdbcType=VARCHAR}
+    where CHANNEL_NO = #{channelNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

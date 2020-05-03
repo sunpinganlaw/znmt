@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.gxz.znrl.mapper.DictionaryTableMapper">
+
+    <resultMap id="dictionaryTableResultMap" type="org.gxz.znrl.entity.DictionaryTableEntity">
+        <id column="DICTIONARY_TABLE_ID" jdbcType="BIGINT" property="dictionaryTableId" />
+        <result column="ID" jdbcType="VARCHAR" property="id" />
+        <result column="NAME" jdbcType="VARCHAR" property="name" />
+        <result column="TYPE" jdbcType="VARCHAR" property="type" />
+        <result column="PARENT_ID" jdbcType="VARCHAR" property="parentId" />
+        <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    </resultMap>
+
+    <select id="qryDictionaryTableList" parameterType="org.gxz.znrl.entity.DictionaryTableEntity" resultMap="dictionaryTableResultMap" >
+        SELECT A.DICTIONARY_TABLE_ID,A.ID,A.NAME,A.TYPE,A.PARENT_ID,A.REMARK
+         FROM DICTIONARY_TABLE A
+        WHERE a.status = '0'
+        <if test="priorId != null" >
+            CONNECT BY PRIOR A.ID = A.PARENT_ID START WITH A.ID = #{priorId,jdbcType=VARCHAR}
+        </if>
+        <if test="id != null" >
+            AND A.ID = #{id,jdbcType=VARCHAR}
+        </if>
+        <if test="name != null" >
+            AND A.NAME = #{name,jdbcType=VARCHAR}
+        </if>
+        <if test="type != null" >
+            AND A.TYPE = #{type,jdbcType=VARCHAR}
+        </if>
+        <if test="parentId != null" >
+            AND A.PARENT_ID = #{parentId,jdbcType=VARCHAR}
+        </if>
+        <if test="dictionaryTableId != null" >
+            AND A.DICTIONARY_TABLE_ID = #{dictionaryTableId,jdbcType=BIGINT}
+        </if>
+        ORDER BY A.DICTIONARY_TABLE_ID
+    </select>
+
+    <insert id="addDictionaryTable" parameterType="org.gxz.znrl.entity.DictionaryTableEntity" >
+        INSERT INTO DICTIONARY_TABLE
+          (DICTIONARY_TABLE_ID,ID, NAME, TYPE, PARENT_ID,REMARK)
+        VALUES
+          (#{dictionaryTableId,jdbcType=BIGINT},#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{parentId,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="modiDictionaryTable" parameterType="org.gxz.znrl.entity.DictionaryTableEntity">
+        UPDATE DICTIONARY_TABLE A
+           SET A.ID = #{id,jdbcType=VARCHAR},A.NAME = #{name,jdbcType=VARCHAR}, A.TYPE = #{type,jdbcType=VARCHAR}, A.PARENT_ID=#{parentId,jdbcType=VARCHAR},A.REMARK = #{remark,jdbcType=VARCHAR}
+         WHERE A.DICTIONARY_TABLE_ID = #{dictionaryTableId,jdbcType=BIGINT}
+    </update>
+
+    <select id="qryEditableDictionaryInfo" resultType="java.lang.String" >
+       select GET_DICTIONARY_CONF_TREE() from dual
+    </select>
+
+    <select id="editDicInfo" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.DictionaryTableEntity">
+      {call edit_dic_info(#{jsonString,mode=IN,jdbcType=VARCHAR},
+                          #{resCode,mode=OUT,jdbcType=VARCHAR},
+                          #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+   </select>
+</mapper>

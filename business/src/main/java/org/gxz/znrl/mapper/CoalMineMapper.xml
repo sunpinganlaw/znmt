@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.gxz.znrl.mapper.CoalMineMapper" >
+  <resultMap id="BaseResultMap" type="org.gxz.znrl.entity.CoalMine" >
+    <id column="MINE_NO" property="mineNo" jdbcType="VARCHAR" />
+    <result column="MINE_NAME" property="mineName" jdbcType="VARCHAR" />
+    <result column="AREA" property="area" jdbcType="VARCHAR" />
+    <result column="TRANS_DIST" property="transDist" jdbcType="DECIMAL" />
+    <result column="TRANS_TIME" property="transTime" jdbcType="DECIMAL" />
+    <result column="YEAR_OUTP" property="yearOutp" jdbcType="DECIMAL" />
+    <result column="COAL_NO" property="coalNo" jdbcType="VARCHAR" />
+    <result column="LEAL_PERSON" property="lealPerson" jdbcType="VARCHAR" />
+    <result column="TRANS_MODE" property="transMode" jdbcType="VARCHAR" />
+    <result column="MINE_PROP" property="mineProp" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="FOR_SHORT" property="forShort" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    MINE_NO, MINE_NAME, AREA, TRANS_DIST, TRANS_TIME, YEAR_OUTP, COAL_NO, LEAL_PERSON, 
+    TRANS_MODE, MINE_PROP, REMARK,FOR_SHORT
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="org.gxz.znrl.entity.CoalMineCriteria" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from COAL_MINE
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from COAL_MINE
+    where MINE_NO = #{mineNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from COAL_MINE
+    where MINE_NO = #{mineNo,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="org.gxz.znrl.entity.CoalMineCriteria" >
+    delete from COAL_MINE
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="org.gxz.znrl.entity.CoalMine" >
+    insert into COAL_MINE (MINE_NO, MINE_NAME, AREA, 
+      TRANS_DIST, TRANS_TIME, YEAR_OUTP, 
+      COAL_NO, LEAL_PERSON, TRANS_MODE, 
+      MINE_PROP, REMARK,FOR_SHORT)
+    values (#{mineNo,jdbcType=VARCHAR}, #{mineName,jdbcType=VARCHAR}, #{area,jdbcType=VARCHAR}, 
+      #{transDist,jdbcType=DECIMAL}, #{transTime,jdbcType=DECIMAL}, #{yearOutp,jdbcType=DECIMAL}, 
+      #{coalNo,jdbcType=VARCHAR}, #{lealPerson,jdbcType=VARCHAR}, #{transMode,jdbcType=VARCHAR}, 
+      #{mineProp,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{forShort,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="org.gxz.znrl.entity.CoalMine" >
+    insert into COAL_MINE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="mineNo != null" >
+        MINE_NO,
+      </if>
+      <if test="mineName != null" >
+        MINE_NAME,
+      </if>
+      <if test="area != null" >
+        AREA,
+      </if>
+      <if test="transDist != null" >
+        TRANS_DIST,
+      </if>
+      <if test="transTime != null" >
+        TRANS_TIME,
+      </if>
+      <if test="yearOutp != null" >
+        YEAR_OUTP,
+      </if>
+      <if test="coalNo != null" >
+        COAL_NO,
+      </if>
+      <if test="lealPerson != null" >
+        LEAL_PERSON,
+      </if>
+      <if test="transMode != null" >
+        TRANS_MODE,
+      </if>
+      <if test="mineProp != null" >
+        MINE_PROP,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="forShort != null" >
+        FOR_SHORT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="mineNo != null" >
+        #{mineNo,jdbcType=VARCHAR},
+      </if>
+      <if test="mineName != null" >
+        #{mineName,jdbcType=VARCHAR},
+      </if>
+      <if test="area != null" >
+        #{area,jdbcType=VARCHAR},
+      </if>
+      <if test="transDist != null" >
+        #{transDist,jdbcType=DECIMAL},
+      </if>
+      <if test="transTime != null" >
+        #{transTime,jdbcType=DECIMAL},
+      </if>
+      <if test="yearOutp != null" >
+        #{yearOutp,jdbcType=DECIMAL},
+      </if>
+      <if test="coalNo != null" >
+        #{coalNo,jdbcType=VARCHAR},
+      </if>
+      <if test="lealPerson != null" >
+        #{lealPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="transMode != null" >
+        #{transMode,jdbcType=VARCHAR},
+      </if>
+      <if test="mineProp != null" >
+        #{mineProp,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="forShort != null" >
+        #{forShort,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="org.gxz.znrl.entity.CoalMineCriteria" resultType="java.lang.Integer" >
+    select count(*) from COAL_MINE
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update COAL_MINE
+    <set >
+      <if test="record.mineNo != null" >
+        MINE_NO = #{record.mineNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mineName != null" >
+        MINE_NAME = #{record.mineName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.area != null" >
+        AREA = #{record.area,jdbcType=VARCHAR},
+      </if>
+      <if test="record.transDist != null" >
+        TRANS_DIST = #{record.transDist,jdbcType=DECIMAL},
+      </if>
+      <if test="record.transTime != null" >
+        TRANS_TIME = #{record.transTime,jdbcType=DECIMAL},
+      </if>
+      <if test="record.yearOutp != null" >
+        YEAR_OUTP = #{record.yearOutp,jdbcType=DECIMAL},
+      </if>
+      <if test="record.coalNo != null" >
+        COAL_NO = #{record.coalNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.lealPerson != null" >
+        LEAL_PERSON = #{record.lealPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="record.transMode != null" >
+        TRANS_MODE = #{record.transMode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mineProp != null" >
+        MINE_PROP = #{record.mineProp,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remark != null" >
+        REMARK = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.forShort != null" >
+        FOR_SHORT = #{record.forShort,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update COAL_MINE
+    set MINE_NO = #{record.mineNo,jdbcType=VARCHAR},
+      MINE_NAME = #{record.mineName,jdbcType=VARCHAR},
+      AREA = #{record.area,jdbcType=VARCHAR},
+      TRANS_DIST = #{record.transDist,jdbcType=DECIMAL},
+      TRANS_TIME = #{record.transTime,jdbcType=DECIMAL},
+      YEAR_OUTP = #{record.yearOutp,jdbcType=DECIMAL},
+      COAL_NO = #{record.coalNo,jdbcType=VARCHAR},
+      LEAL_PERSON = #{record.lealPerson,jdbcType=VARCHAR},
+      TRANS_MODE = #{record.transMode,jdbcType=VARCHAR},
+      MINE_PROP = #{record.mineProp,jdbcType=VARCHAR},
+      REMARK = #{record.remark,jdbcType=VARCHAR},
+      FOR_SHORT = #{record.forShort,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="org.gxz.znrl.entity.CoalMine" >
+    update COAL_MINE
+    <set >
+      <if test="mineName != null" >
+        MINE_NAME = #{mineName,jdbcType=VARCHAR},
+      </if>
+      <if test="area != null" >
+        AREA = #{area,jdbcType=VARCHAR},
+      </if>
+      <if test="transDist != null" >
+        TRANS_DIST = #{transDist,jdbcType=DECIMAL},
+      </if>
+      <if test="transTime != null" >
+        TRANS_TIME = #{transTime,jdbcType=DECIMAL},
+      </if>
+      <if test="yearOutp != null" >
+        YEAR_OUTP = #{yearOutp,jdbcType=DECIMAL},
+      </if>
+      <if test="coalNo != null" >
+        COAL_NO = #{coalNo,jdbcType=VARCHAR},
+      </if>
+      <if test="lealPerson != null" >
+        LEAL_PERSON = #{lealPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="transMode != null" >
+        TRANS_MODE = #{transMode,jdbcType=VARCHAR},
+      </if>
+      <if test="mineProp != null" >
+        MINE_PROP = #{mineProp,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="forShort != null" >
+        FOR_SHORT = #{forShort,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where MINE_NO = #{mineNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="org.gxz.znrl.entity.CoalMine" >
+    update COAL_MINE
+    set MINE_NAME = #{mineName,jdbcType=VARCHAR},
+      AREA = #{area,jdbcType=VARCHAR},
+      TRANS_DIST = #{transDist,jdbcType=DECIMAL},
+      TRANS_TIME = #{transTime,jdbcType=DECIMAL},
+      YEAR_OUTP = #{yearOutp,jdbcType=DECIMAL},
+      COAL_NO = #{coalNo,jdbcType=VARCHAR},
+      LEAL_PERSON = #{lealPerson,jdbcType=VARCHAR},
+      TRANS_MODE = #{transMode,jdbcType=VARCHAR},
+      MINE_PROP = #{mineProp,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      FOR_SHORT = #{forShort,jdbcType=VARCHAR}
+    where MINE_NO = #{mineNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

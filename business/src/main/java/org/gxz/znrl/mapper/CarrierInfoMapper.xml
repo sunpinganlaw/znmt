@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.gxz.znrl.mapper.CarrierInfoMapper" >
+  <resultMap id="BaseResultMap" type="org.gxz.znrl.entity.CarrierInfo" >
+    <id column="CARRIER_NO" property="carrierNo" jdbcType="VARCHAR" />
+    <result column="CARRIER_NAME" property="carrierName" jdbcType="VARCHAR" />
+    <result column="CARRIER_ADDR" property="carrierAddr" jdbcType="VARCHAR" />
+    <result column="CONT_NUM" property="contNum" jdbcType="VARCHAR" />
+    <result column="CONT_PERSON" property="contPerson" jdbcType="VARCHAR" />
+    <result column="ZYC_NUM" property="zycNum" jdbcType="DECIMAL" />
+    <result column="PBC_NUM" property="pbcNum" jdbcType="DECIMAL" />
+    <result column="WFC_NUM" property="wfcNum" jdbcType="DECIMAL" />
+    <result column="TSC_NUM" property="tscNum" jdbcType="DECIMAL" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="FOR_SHORT" property="forShort" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    CARRIER_NO, CARRIER_NAME, CARRIER_ADDR, CONT_NUM, CONT_PERSON, ZYC_NUM, PBC_NUM, 
+    WFC_NUM, TSC_NUM, REMARK,FOR_SHORT
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="org.gxz.znrl.entity.CarrierInfoCriteria" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from CARRIER_INFO
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from CARRIER_INFO
+    where CARRIER_NO = #{carrierNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from CARRIER_INFO
+    where CARRIER_NO = #{carrierNo,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="org.gxz.znrl.entity.CarrierInfoCriteria" >
+    delete from CARRIER_INFO
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="org.gxz.znrl.entity.CarrierInfo" >
+    insert into CARRIER_INFO (CARRIER_NO, CARRIER_NAME, CARRIER_ADDR, 
+      CONT_NUM, CONT_PERSON, ZYC_NUM, 
+      PBC_NUM, WFC_NUM, TSC_NUM, 
+      REMARK,FOR_SHORT)
+    values (#{carrierNo,jdbcType=VARCHAR}, #{carrierName,jdbcType=VARCHAR}, #{carrierAddr,jdbcType=VARCHAR}, 
+      #{contNum,jdbcType=VARCHAR}, #{contPerson,jdbcType=VARCHAR}, #{zycNum,jdbcType=DECIMAL}, 
+      #{pbcNum,jdbcType=DECIMAL}, #{wfcNum,jdbcType=DECIMAL}, #{tscNum,jdbcType=DECIMAL}, 
+      #{remark,jdbcType=VARCHAR},#{forShort,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="org.gxz.znrl.entity.CarrierInfo" >
+    insert into CARRIER_INFO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        CARRIER_NO,
+      <if test="carrierName != null" >
+        CARRIER_NAME,
+      </if>
+      <if test="carrierAddr != null" >
+        CARRIER_ADDR,
+      </if>
+      <if test="contNum != null" >
+        CONT_NUM,
+      </if>
+      <if test="contPerson != null" >
+        CONT_PERSON,
+      </if>
+      <if test="zycNum != null" >
+        ZYC_NUM,
+      </if>
+      <if test="pbcNum != null" >
+        PBC_NUM,
+      </if>
+      <if test="wfcNum != null" >
+        WFC_NUM,
+      </if>
+      <if test="tscNum != null" >
+        TSC_NUM,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="forShort != null" >
+        FOR_SHORT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        SEQ_COMMON_CONFIG_ID.nextval,
+      <if test="carrierName != null" >
+        #{carrierName,jdbcType=VARCHAR},
+      </if>
+      <if test="carrierAddr != null" >
+        #{carrierAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="contNum != null" >
+        #{contNum,jdbcType=VARCHAR},
+      </if>
+      <if test="contPerson != null" >
+        #{contPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="zycNum != null" >
+        #{zycNum,jdbcType=DECIMAL},
+      </if>
+      <if test="pbcNum != null" >
+        #{pbcNum,jdbcType=DECIMAL},
+      </if>
+      <if test="wfcNum != null" >
+        #{wfcNum,jdbcType=DECIMAL},
+      </if>
+      <if test="tscNum != null" >
+        #{tscNum,jdbcType=DECIMAL},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="forShort != null" >
+        #{forShort,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="org.gxz.znrl.entity.CarrierInfoCriteria" resultType="java.lang.Integer" >
+    select count(*) from CARRIER_INFO
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update CARRIER_INFO
+    <set >
+      <if test="record.carrierNo != null" >
+        CARRIER_NO = #{record.carrierNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.carrierName != null" >
+        CARRIER_NAME = #{record.carrierName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.carrierAddr != null" >
+        CARRIER_ADDR = #{record.carrierAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contNum != null" >
+        CONT_NUM = #{record.contNum,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contPerson != null" >
+        CONT_PERSON = #{record.contPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="record.zycNum != null" >
+        ZYC_NUM = #{record.zycNum,jdbcType=DECIMAL},
+      </if>
+      <if test="record.pbcNum != null" >
+        PBC_NUM = #{record.pbcNum,jdbcType=DECIMAL},
+      </if>
+      <if test="record.wfcNum != null" >
+        WFC_NUM = #{record.wfcNum,jdbcType=DECIMAL},
+      </if>
+      <if test="record.tscNum != null" >
+        TSC_NUM = #{record.tscNum,jdbcType=DECIMAL},
+      </if>
+      <if test="record.remark != null" >
+        REMARK = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.forShort != null" >
+        FOR_SHORT = #{record.forShort,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update CARRIER_INFO
+    set CARRIER_NO = #{record.carrierNo,jdbcType=VARCHAR},
+      CARRIER_NAME = #{record.carrierName,jdbcType=VARCHAR},
+      CARRIER_ADDR = #{record.carrierAddr,jdbcType=VARCHAR},
+      CONT_NUM = #{record.contNum,jdbcType=VARCHAR},
+      CONT_PERSON = #{record.contPerson,jdbcType=VARCHAR},
+      ZYC_NUM = #{record.zycNum,jdbcType=DECIMAL},
+      PBC_NUM = #{record.pbcNum,jdbcType=DECIMAL},
+      WFC_NUM = #{record.wfcNum,jdbcType=DECIMAL},
+      TSC_NUM = #{record.tscNum,jdbcType=DECIMAL},
+      REMARK = #{record.remark,jdbcType=VARCHAR},
+      FOR_SHORT = #{record.forShort,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="org.gxz.znrl.entity.CarrierInfo" >
+    update CARRIER_INFO
+    <set >
+      <if test="carrierName != null" >
+        CARRIER_NAME = #{carrierName,jdbcType=VARCHAR},
+      </if>
+      <if test="carrierAddr != null" >
+        CARRIER_ADDR = #{carrierAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="contNum != null" >
+        CONT_NUM = #{contNum,jdbcType=VARCHAR},
+      </if>
+      <if test="contPerson != null" >
+        CONT_PERSON = #{contPerson,jdbcType=VARCHAR},
+      </if>
+      <if test="zycNum != null" >
+        ZYC_NUM = #{zycNum,jdbcType=DECIMAL},
+      </if>
+      <if test="pbcNum != null" >
+        PBC_NUM = #{pbcNum,jdbcType=DECIMAL},
+      </if>
+      <if test="wfcNum != null" >
+        WFC_NUM = #{wfcNum,jdbcType=DECIMAL},
+      </if>
+      <if test="tscNum != null" >
+        TSC_NUM = #{tscNum,jdbcType=DECIMAL},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="forShort != null" >
+        FOR_SHORT = #{forShort,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where CARRIER_NO = #{carrierNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="org.gxz.znrl.entity.CarrierInfo" >
+    update CARRIER_INFO
+    set CARRIER_NAME = #{carrierName,jdbcType=VARCHAR},
+      CARRIER_ADDR = #{carrierAddr,jdbcType=VARCHAR},
+      CONT_NUM = #{contNum,jdbcType=VARCHAR},
+      CONT_PERSON = #{contPerson,jdbcType=VARCHAR},
+      ZYC_NUM = #{zycNum,jdbcType=DECIMAL},
+      PBC_NUM = #{pbcNum,jdbcType=DECIMAL},
+      WFC_NUM = #{wfcNum,jdbcType=DECIMAL},
+      TSC_NUM = #{tscNum,jdbcType=DECIMAL},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      FOR_SHORT = #{forShort,jdbcType=VARCHAR}
+    where CARRIER_NO = #{carrierNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

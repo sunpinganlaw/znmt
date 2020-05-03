@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.gxz.znrl.mapper.StockInfoMapper" >
+  <resultMap id="BaseResultMap" type="org.gxz.znrl.entity.StockInfoEntity" >
+    <id column="STOCK_NO" property="stockNo" jdbcType="VARCHAR" />
+    <result column="STOCK_NAME" property="stockName" jdbcType="VARCHAR" />
+    <result column="STOCK_TYPE" property="stockType" jdbcType="VARCHAR" />
+    <result column="STOCK_HEIGHT" property="stockHeight" jdbcType="VARCHAR" />
+    <result column="STOCK_AREA" property="stockArea" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="FOR_SHORT" property="forShort" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    STOCK_NO, STOCK_NAME,STOCK_TYPE,STOCK_HEIGHT,STOCK_AREA, REMARK,FOR_SHORT
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="org.gxz.znrl.entity.StockInfoEntity" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from STOCK_INFO
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from STOCK_INFO
+    where STOCK_NO = #{stockNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from STOCK_INFO
+    where STOCK_NO = #{stockNo,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="org.gxz.znrl.entity.StockInfoEntity" >
+    delete from STOCK_INFO
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="org.gxz.znrl.entity.StockInfoEntity" >
+    insert into STOCK_INFO (STOCK_NO, STOCK_NAME,STOCK_TYPE,STOCK_HEIGHT,STOCK_AREA, REMARK,FOR_SHORT
+      )
+    values (#{stockNo,jdbcType=VARCHAR}, #{stockName,jdbcType=VARCHAR},#{stockType,jdbcType=VARCHAR},#{stockHeight,jdbcType=VARCHAR},#{stockArea,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{forShort,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="org.gxz.znrl.entity.StockInfoEntity" >
+    insert into STOCK_INFO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      STOCK_NO,
+      <if test="stockName != null" >
+        STOCK_NAME,
+      </if>
+      <if test="stockType != null" >
+        STOCK_TYPE,
+      </if>
+      <if test="stockHeight != null" >
+        STOCK_HEIGHT,
+      </if>
+      <if test="stockArea != null" >
+        STOCK_AREA,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="forShort != null" >
+        FOR_SHORT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        SEQ_COMMON_CONFIG_ID.nextval,
+      <if test="stockName != null" >
+        #{stockName,jdbcType=VARCHAR},
+      </if>
+      <if test="stockType != null" >
+        #{stockType,jdbcType=VARCHAR},
+      </if>
+      <if test="stockHeight != null" >
+        #{stockHeight,jdbcType=VARCHAR},
+      </if>
+      <if test="stockArea != null" >
+        #{stockArea,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="forShort != null" >
+        #{forShort,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="org.gxz.znrl.entity.StockInfoCriteria" resultType="java.lang.Integer" >
+    select count(*) from STOCK_INFO
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update STOCK_INFO
+    <set >
+      <if test="record.stockNo != null" >
+        STOCK_NO = #{record.stockNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.stockName != null" >
+        STOCK_NAME = #{record.stockName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.stockType != null" >
+        STOCK_TYPE = #{record.stockType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.stockHeight != null" >
+        STOCK_HEIGHT = #{record.stockHeight,jdbcType=VARCHAR},
+      </if>
+      <if test="record.stockArea != null" >
+        STOCK_AREA = #{record.stockArea,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remark != null" >
+        REMARK = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.forShort != null" >
+        FOR_SHORT = #{record.forShort,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update STOCK_INFO
+    set STOCK_NO = #{record.stockNo,jdbcType=VARCHAR},
+      STOCK_NAME = #{record.stockName,jdbcType=VARCHAR},
+      STOCK_TYPE = #{record.stockType,jdbcType=VARCHAR},
+      STOCK_HEIGHT = #{record.stockHeight,jdbcType=VARCHAR},
+      STOCK_AREA = #{record.stockArea,jdbcType=VARCHAR},
+      REMARK = #{record.remark,jdbcType=VARCHAR},
+      FOR_SHORT = #{record.forShort,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="org.gxz.znrl.entity.StockInfoEntity" >
+    update STOCK_INFO
+    <set >
+      <if test="stockName != null" >
+        STOCK_NAME = #{stockName,jdbcType=VARCHAR},
+      </if>
+      <if test="stockType != null" >
+      STOCK_TYPE= #{stockType,jdbcType=VARCHAR},
+      </if>
+      <if test="stockHeight != null" >
+        STOCK_HEIGHT= #{stockHeight,jdbcType=VARCHAR},
+      </if>
+      <if test="stockArea != null" >
+        STOCK_AREA= #{stockArea,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="forShort != null" >
+        FORT_SHORT = #{forShort,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where STOCK_NO = #{stockNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="org.gxz.znrl.entity.StockInfoEntity" >
+    update STOCK_INFO
+    set STOCK_NAME = #{stockName,jdbcType=VARCHAR},
+       STOCK_TYPE = #{stockType,jdbcType=VARCHAR},
+      STOCK_HEIGHT = #{stockHeight,jdbcType=VARCHAR},
+      STOCK_AREA = #{stockArea,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      FOR_SHORT = #{forShort,jdbcType=VARCHAR}
+    where STOCK_NO = #{stockNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

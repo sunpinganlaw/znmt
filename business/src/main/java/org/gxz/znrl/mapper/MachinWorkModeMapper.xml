@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.gxz.znrl.mapper.MachinWorkModeMapper">
+  <sql id="paging_top_sql">
+   select * from (
+  </sql>
+
+  <sql id="paging_bottom_sql">
+   ) t where t.rownumber between #{beginRowIndex,jdbcType=INTEGER} and #{endRowIndex,jdbcType=INTEGER}
+  </sql>
+
+
+    <select id="qryMachinWorkModeCnt" resultType="java.lang.Integer" parameterType="org.gxz.znrl.entity.MachinWorkModeEntity" >
+        select count(1)
+        from MACHIN_WORK_MODE a
+        WHERE  1= 1
+        <if test="modeRecId != null">
+            <![CDATA[
+                             and A.MODE_REC_ID <= #{modeRecId,jdbcType=VARCHAR}
+                             ]]>
+        </if>
+    </select>
+
+  <resultMap id="MachinWorkModeResultMap" type="org.gxz.znrl.entity.MachinWorkModeEntity">
+      <result column="mode_rec_id" jdbcType="VARCHAR" property="modeRecId" />
+      <result column="work_mode" jdbcType="VARCHAR" property="workMode" />
+      <result column="param1" jdbcType="VARCHAR" property="param1" />
+      <result column="remark" jdbcType="VARCHAR" property="remark" />
+      <result column="insert_time" jdbcType="VARCHAR" property="insertTime" />
+      <result column="update_time" jdbcType="VARCHAR" property="updateTime" />
+      <result column="op_code" jdbcType="VARCHAR" property="opCode" />
+      <result column="update_code" jdbcType="VARCHAR" property="updateCode" />
+  </resultMap>
+
+    <select id="qryMachinWorkMode"  parameterType="org.gxz.znrl.entity.MachinWorkModeEntity" resultMap="MachinWorkModeResultMap">
+        <include refid="paging_top_sql" />
+         SELECT A.MODE_REC_ID,
+                   A.WORK_MODE,
+                   TO_CHAR(A.PARAM1, 'YYYY-MM-DD HH24:MI:SS') PARAM1,
+                   A.REMARK,
+                   TO_CHAR(A.INSERT_TIME, 'YYYY-MM-DD HH24:MI:SS') INSERT_TIME,
+                   TO_CHAR(A.UPDATE_TIME, 'YYYY-MM-DD HH24:MI:SS') UPDATE_TIME,
+                   A.OP_CODE,
+                   A.UPDATE_CODE,
+                   ROWNUM ROWNUMBER
+              FROM MACHIN_WORK_MODE A
+              WHERE  1= 1
+                <if test="modeRecId != null">
+                    <![CDATA[
+                             and A.MODE_REC_ID <= #{modeRecId,jdbcType=VARCHAR}
+                             ]]>
+                </if>
+        <include refid="paging_bottom_sql" />
+    </select>
+
+    <select id="qryMachinWorkModeById"  parameterType="org.gxz.znrl.entity.MachinWorkModeEntity" resultMap="MachinWorkModeResultMap">
+        SELECT A.MODE_REC_ID,
+        A.WORK_MODE,
+        TO_CHAR(A.PARAM1, 'YYYY-MM-DD HH24:MI:SS') PARAM1,
+        A.REMARK,
+        TO_CHAR(A.INSERT_TIME, 'YYYY-MM-DD HH24:MI:SS') INSERT_TIME,
+        TO_CHAR(A.UPDATE_TIME, 'YYYY-MM-DD HH24:MI:SS') UPDATE_TIME,
+        A.OP_CODE,
+        A.UPDATE_CODE,
+        ROWNUM ROWNUMBER
+        FROM MACHIN_WORK_MODE A
+        WHERE  1= 1
+        <if test="modeRecId != null">
+            <![CDATA[
+                             and A.MODE_REC_ID <= #{modeRecId,jdbcType=VARCHAR}
+                             ]]>
+        </if>
+    </select>
+
+    <update id="modifyMachinWorkMode" parameterType="org.gxz.znrl.entity.MachinWorkModeEntity" >
+        UPDATE MACHIN_WORK_MODE
+           SET WORK_MODE   = #{workMode,jdbcType=VARCHAR},
+               PARAM1      = TO_DATE(#{param1,jdbcType=VARCHAR},'YYYY-MM-DD HH24:MI:SS'),
+               REMARK      = #{remark,jdbcType=VARCHAR},
+               UPDATE_TIME = SYSDATE,
+               UPDATE_CODE = #{updateCode,jdbcType=VARCHAR}
+         WHERE MODE_REC_ID = #{modeRecId,jdbcType=VARCHAR}
+    </update>
+</mapper>

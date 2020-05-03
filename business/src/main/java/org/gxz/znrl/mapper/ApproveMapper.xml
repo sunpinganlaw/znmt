@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.gxz.znrl.mapper.ApproveMapper">
+  <sql id="paging_top_sql">
+   select * from (
+  </sql>
+
+  <sql id="paging_bottom_sql">
+   ) t where t.rownumber between #{beginRowIndex,jdbcType=INTEGER} and #{endRowIndex,jdbcType=INTEGER}
+  </sql>
+
+  <resultMap id="ToApproveResultMap" type="org.gxz.znrl.entity.ApproveEntity">
+      <result column="approve_id" jdbcType="VARCHAR" property="apprId" />
+      <result column="event_id" jdbcType="VARCHAR" property="eventId" />
+      <result column="approve_event_id" jdbcType="VARCHAR" property="apprEventId" />
+      <result column="approver" jdbcType="VARCHAR" property="approver" />
+      <result column="appr_order" jdbcType="VARCHAR" property="apprOrder" />
+      <result column="appr_event_tag" jdbcType="VARCHAR" property="apprEventTag" />
+      <result column="appr_event_type_name" jdbcType="VARCHAR" property="apprEventTypeName" />
+      <result column="appr_event_type_cd" jdbcType="VARCHAR" property="apprEventTypeCd" />
+      <result column="is_approved" jdbcType="VARCHAR" property="isArroved" />
+      <result column="is_ok" jdbcType="VARCHAR" property="isOk" />
+      <result column="approve_req_dt" jdbcType="VARCHAR" property="apprReqDt" />
+      <result column="realname" jdbcType="VARCHAR" property="apprInitiatorName" />
+      <result column="approved_dt" jdbcType="VARCHAR" property="apprDt" />
+      <result column="approve_desc" jdbcType="VARCHAR" property="apprDesc" />
+      <result column="appr_event_desc" jdbcType="VARCHAR" property="apprContent" />
+      <result column="param2" jdbcType="VARCHAR" property="param2" />
+      <result column="param3" jdbcType="VARCHAR" property="param3" />
+      <result column="param4" jdbcType="VARCHAR" property="param4" />
+      <result column="param5" jdbcType="VARCHAR" property="param5" />
+      <result column="param6" jdbcType="VARCHAR" property="param6" />
+      <result column="param7" jdbcType="VARCHAR" property="param7" />
+      <result column="param19" jdbcType="VARCHAR" property="param19" />
+      <result column="param20" jdbcType="VARCHAR" property="param20" />
+      <result column="batch_No" jdbcType="VARCHAR" property="batchNo" />
+      <result column="pack_Code" jdbcType="VARCHAR" property="packCode" />
+      <result column="batch_Type" jdbcType="VARCHAR" property="batchType" />
+  </resultMap>
+
+    <select id="qryApproveResultInfo" parameterType="org.gxz.znrl.entity.ApproveEntity" resultMap="ToApproveResultMap">
+            select a.param5 pack_Code,
+                    (select bb.batch_no
+                    from prepar_sampling_rec aa,batch_no_info bb
+                    where aa.sampling_code = bb.sampling_code
+                    and aa.pack_code = a.param5) batch_no,
+                    getSampleTypeName(a.param5) batch_Type,
+                    (select su.realname from security_user su where su.id = c.approve_initiator) realname,
+                    (select su.realname from security_user su where su.id = d.STAFF_ID) approver,
+                    c.APPROVED_DT,
+                    a.remark appr_event_desc
+              from appr_req_data_buffer a,approve_event_mark b,approve_info c,APPROVE_NODE_CONFIG d
+             where c.event_id = b.event_id
+               and b.approve_event_id = a.param1
+               and c.approve_node_cd = d.approve_node_cd
+            <if test="eventId != null" >
+               and c.event_id in (${eventId})
+            </if>
+    </select>
+
+    <select id="qryApproveResultInfo4Qz" parameterType="org.gxz.znrl.entity.ApproveEntity" resultMap="ToApproveResultMap">
+        select a.param5 pack_Code,
+                (select bb.batch_no
+                   from prepar_sampling_rec aa,batch_no_info bb
+                  where aa.sampling_code = bb.sampling_code
+                    and aa.pack_code = a.param5) batch_no,
+                getSampleTypeName(a.param5) batch_Type,
+                (select su.realname from security_user su where su.id = c.approve_initiator) realname,
+                getApproveNodeNameList(c.event_id) approver,
+                c.APPROVED_DT,
+                a.remark appr_event_desc
+        from appr_req_data_buffer a,approve_event_mark b,approve_info c,APPROVE_NODE_CONFIG d
+        where c.event_id = b.event_id
+        and b.approve_event_id = a.param1
+        and c.approve_node_cd = d.approve_node_cd
+        <if test="eventId != null" >
+            and c.event_id in (${eventId})
+        </if>
+    </select>
+    <!--待审批事项查询-->
+    <select id="qryApprove"  parameterType="org.gxz.znrl.entity.ApproveEntity" resultMap="ToApproveResultMap">
+            select  a.approve_id,
+                    (select aem.approve_event_id from approve_event_mark aem where aem.event_id = a.event_id) approve_event_id,
+                    (select at.appr_event_type_name  from APPROVE_EVENT_TYPE  at where at.appr_event_type_cd= d.appr_event_type_cd) appr_event_type_name,
+                    d.appr_event_type_cd,
+                    decode(a.is_approved,'Y','已审批','N','未审批') is_approved,
+                    decode(a.is_ok,'Y','通过','N','不通过') is_ok,
+                    to_char(a.approve_req_dt, 'yyyy-mm-dd hh24:mi:ss') approve_req_dt,
+                    (select su.realname from security_user su where su.id = a.approve_initiator) realname,
+                    to_char(a.approved_dt,'yyyy-mm-dd hh24:mi:ss') approved_dt,
+                    a.approve_desc,
+                    (select c.appr_event_desc from APPROVE_EVENT_MARK c where c.event_id = a.event_id) appr_event_desc,
+                    get_appr_keyid(a.event_id, '2')  param2,
+                    get_appr_keyid(a.event_id, '3')  param3,
+                    get_appr_keyid(a.event_id, '4')  param4,
+                    get_appr_keyid(a.event_id, '5')  param5,
+                    get_appr_keyid(a.event_id, '6')  param6,
+                    get_appr_keyid(a.event_id, '7')  param7,
+                    get_appr_keyid(a.event_id, '11')  param11,
+                    get_appr_keyid(a.event_id, '12')  param12,
+                    get_appr_keyid(a.event_id, '13')  param13,
+                    get_appr_keyid(a.event_id, '14')  param14,
+                    get_appr_keyid(a.event_id, '15')  param15,
+                    get_appr_keyid(a.event_id, '16')  param16,
+                    get_appr_keyid(a.event_id, '17')  param17,
+                    get_appr_keyid(a.event_id, '18')  param18
+            from approve_info a,
+                  APPROVE_NODE_CONFIG d
+            where a.approve_node_cd = d.approve_node_cd
+        <if test="apprEventTypeCd != null" >
+              and d.appr_event_type_cd = #{apprEventTypeCd,jdbcType=VARCHAR}
+        </if>
+        <if test="apprEventId != null" >
+              and a.event_id = (select bc.event_id
+                                   from approve_event_mark bc
+                                  where bc.approve_event_id = #{apprEventId,jdbcType=VARCHAR})
+        </if>
+        <if test="apprEventId == null" >
+              and a.appr_status = '0'
+              and a.is_approved = 'N'
+              and a.is_current = 'Y'
+              <if test="opCode != '1'.toString()">
+                    and d.staff_id = #{opCode,jdbcType=VARCHAR}
+              </if>
+        </if>
+          order by a.approve_req_dt desc
+    </select>
+
+  <select id="saveApprResult" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.ApproveEntity">
+      {call approve_core.saveApproveResult(#{jsonStr,mode=IN,jdbcType=VARCHAR},
+                                           #{opCode,mode=IN,jdbcType=VARCHAR},
+                                           #{isOk,mode=IN,jdbcType=VARCHAR},
+                                           #{apprDesc,mode=IN,jdbcType=VARCHAR},
+                                           #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                           #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+  </select>
+
+
+  <select id="submitToApprove" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.ApproveEntity">
+      {call pk_sample_store.submit_approve(#{jsonStr,mode=IN,jdbcType=VARCHAR},
+                                           #{dealType,mode=IN,jdbcType=VARCHAR},
+                                           #{destination,mode=IN,jdbcType=VARCHAR},
+                                           #{remark,mode=IN,jdbcType=VARCHAR},
+                                           #{opCode,mode=IN,jdbcType=VARCHAR},
+                                           #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                           #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+  </select>
+
+  <select id="submitToApprove4YG" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.ApproveEntity">
+      {call pk_sample_store.submit_approve4YG(#{jsonStr,mode=IN,jdbcType=VARCHAR},
+                                           #{dealType,mode=IN,jdbcType=VARCHAR},
+                                           #{destination,mode=IN,jdbcType=VARCHAR},
+                                           #{remark,mode=IN,jdbcType=VARCHAR},
+                                           #{opCode,mode=IN,jdbcType=VARCHAR},
+                                           #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                           #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+  </select>
+
+    <select id="submitKdToApprove" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.ApproveEntity">
+        {call pk_sample_store.submit_approve4Kd(#{jsonStr,mode=IN,jdbcType=VARCHAR},
+                                                #{dealType,mode=IN,jdbcType=VARCHAR},
+                                                #{opCode,mode=IN,jdbcType=VARCHAR},
+                                                #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                                #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+    <select id="submitSysUserToApprove" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.ApproveEntity">
+        {call pk_sample_store.submit_approve4SysUser(#{jsonStr,mode=IN,jdbcType=VARCHAR},
+                                                     #{dealType,mode=IN,jdbcType=VARCHAR},
+                                                     #{opCode,mode=IN,jdbcType=VARCHAR},
+                                                     #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                                     #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+    <select id="submitManualSampleToApprove" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.ApproveEntity">
+        {call pk_sample_store.submit_approve4ManualSample(#{jsonStr,mode=IN,jdbcType=VARCHAR},
+                                                #{dealType,mode=IN,jdbcType=VARCHAR},
+                                                #{opCode,mode=IN,jdbcType=VARCHAR},
+                                                #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                                #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+  <select id="boxSubmitToApprove" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.ApproveEntity">
+      {call pk_sample_store.box_submit_approve(#{jsonStr,mode=IN,jdbcType=VARCHAR},
+                                               #{apprEventTypeCd,mode=IN,jdbcType=VARCHAR},
+                                               #{remark,mode=IN,jdbcType=VARCHAR},
+                                              #{opCode,mode=IN,jdbcType=VARCHAR},
+                                              #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                              #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+  </select>
+
+
+    <select id="qryMyApprove"  parameterType="org.gxz.znrl.entity.ApproveEntity" resultMap="ToApproveResultMap">
+        <include refid="paging_top_sql" />
+            select s.event_id,
+                    s.approve_event_id,
+                    s.appr_event_type_cd,
+                    s.is_ok,
+                    to_char(s.approve_req_dt, 'yyyy-mm-dd hh24:mi:ss') approve_req_dt,
+                    (select aet.appr_event_type_name
+                       from APPROVE_EVENT_TYPE aet
+                      where aet.appr_event_type_cd = s.appr_event_type_cd) appr_event_type_name,
+                    (select c.appr_event_desc
+                       from APPROVE_EVENT_MARK c
+                      where c.event_id = s.event_id) appr_event_desc,
+                    (select su.realname
+                       from security_user su
+                      where su.id = s.approve_initiator) realname,
+                    case  when TO_CHAR(s.approve_initiator) = #{opCode, jdbcType = VARCHAR}  then
+                       '我请求的'
+                    else
+                       '我审批的'
+                    end appr_event_tag,
+                      rownum rownumber
+            from (select a.event_id,
+                  (select aem.approve_event_id from approve_event_mark aem where aem.event_id = a.event_id) approve_event_id,
+                            a.approve_req_dt,
+                            decode(a.is_ok,'Y','通过','N','不通过') is_ok,
+                            a.approve_initiator,
+                            d.appr_event_type_cd,
+                            max(a.approve_node_cd) approve_node_cd
+                    from approve_info a, APPROVE_NODE_CONFIG d
+                    where a.approve_node_cd = d.approve_node_cd
+
+                    <if test="apprEventTypeCd != null" >
+                        and d.appr_event_type_cd = #{apprEventTypeCd, jdbcType = VARCHAR}
+                    </if>
+
+                    <if test="beginDt != null" >
+                        and a.approve_req_dt <![CDATA[ >= ]]> to_date(#{beginDt, jdbcType = VARCHAR}, 'yyyy-mm-dd')
+                    </if>
+
+                    <if test="endDt != null" >
+                        and a.approve_req_dt <![CDATA[ < ]]> to_date(#{endDt, jdbcType = VARCHAR}, 'yyyy-mm-dd')+1
+                    </if>
+
+                    <if test="submitTag != null" >
+                        and a.approve_initiator = #{opCode, jdbcType = VARCHAR}
+                    </if>
+
+                    <if test="approveTag != null" >
+                        and d.staff_id = #{opCode, jdbcType = VARCHAR}
+                    </if>
+
+                    group by a.event_id,
+                            a.approve_req_dt,
+                            a.is_ok,
+                            d.appr_event_type_cd,
+                            a.approve_initiator
+                    order by a.event_id desc) s
+        <include refid="paging_bottom_sql" />
+    </select>
+
+    <select id="qryMyApproveCnt" parameterType="org.gxz.znrl.entity.ApproveEntity"  resultType="java.lang.Integer" >
+           select count(1)
+            from (select a.event_id,
+                            a.approve_req_dt,
+                            a.is_ok,
+                            a.approve_initiator,
+                            d.appr_event_type_cd,
+                            max(a.approve_node_cd) approve_node_cd
+                    from approve_info a, APPROVE_NODE_CONFIG d
+                    where a.approve_node_cd = d.approve_node_cd
+                    <if test="apprEventTypeCd != null" >
+                        and d.appr_event_type_cd = #{apprEventTypeCd, jdbcType = VARCHAR}
+                    </if>
+
+                    <if test="beginDt != null" >
+                        and a.approve_req_dt <![CDATA[ >= ]]> to_date(#{beginDt, jdbcType = VARCHAR}, 'yyyy-mm-dd')
+                    </if>
+
+                    <if test="endDt != null" >
+                        and a.approve_req_dt <![CDATA[ < ]]> to_date(#{endDt, jdbcType = VARCHAR}, 'yyyy-mm-dd')+1
+                    </if>
+
+                    <if test="submitTag != null" >
+                        and a.approve_initiator = #{opCode, jdbcType = VARCHAR}
+                    </if>
+
+                    <if test="approveTag != null" >
+                        and d.staff_id = #{opCode, jdbcType = VARCHAR}
+                    </if>
+
+                    group by a.event_id,
+                            a.approve_req_dt,
+                            a.is_ok,
+                            d.appr_event_type_cd,
+                            a.approve_initiator) t
+    </select>
+
+    <!--审批历史流程查询-->
+    <select id="qryApproveProgress"  parameterType="org.gxz.znrl.entity.ApproveEntity"  resultMap="ToApproveResultMap">
+      select t.*, '第 '||rownum||' 审批人' appr_order
+         from (select  (select su.realname
+                           from security_user su
+                          where su.id = d.staff_id) approver,
+                        decode(a.is_approved,'Y','已审批','N','未审批') is_approved,
+                        decode(a.is_ok,'Y','通过','N','不通过')  is_ok,
+                        to_char(a.approved_dt,'yyyy-mm-dd hh24:mi:ss')  approved_dt,
+                        a.approve_desc
+                  from approve_info a, approve_node_config d
+                 where a.approve_node_cd = d.approve_node_cd
+                   and a.event_id = to_number(#{eventId, jdbcType = VARCHAR})
+                 order by a.approve_id) t
+    </select>
+
+    <resultMap id="ApproveNodeResultMap" type="org.gxz.znrl.entity.ApproveEntity">
+        <result column="approve_node_cd" jdbcType="VARCHAR" property="approveNodeCd" />
+        <result column="appr_event_type_cd" jdbcType="VARCHAR" property="apprEventTypeCd" />
+        <result column="appr_event_type_name" jdbcType="VARCHAR" property="apprEventTypeName" />
+        <result column="node_name" jdbcType="VARCHAR" property="ndeName" />
+        <result column="staff_id" jdbcType="VARCHAR" property="staffId" />
+        <result column="staff_name" jdbcType="VARCHAR" property="staffName" />
+        <result column="node_type" jdbcType="VARCHAR" property="ndeType" />
+        <result column="node_type_name" jdbcType="VARCHAR" property="nodeTypeName" />
+        <result column="node_status" jdbcType="VARCHAR" property="nodeStatus" />
+        <result column="node_status_name" jdbcType="VARCHAR" property="nodeStatusName" />
+        <result column="node_order" jdbcType="VARCHAR" property="nodeOrder" />
+    </resultMap>
+
+    <!--审批节点查询-->
+    <select id="qryApproveNode"  parameterType="org.gxz.znrl.entity.ApproveEntity"  resultMap="ApproveNodeResultMap">
+            select a.approve_node_cd,
+                    a.appr_event_type_cd,
+                    (select appr_event_type_name
+                    from approve_event_type b
+                    where b.appr_event_type_cd = a.appr_event_type_cd) appr_event_type_name,
+                    a.node_name,
+                    a.staff_id,
+                    (select c.realname from security_user c where c.id = a.staff_id) staff_name,
+                    a.node_type,
+                    decode(a.node_type, '1','起始节点', '2', '中途节点', '3', '末尾节点', '4', '独立节点') node_type_name,
+                    a.node_status,
+                    decode(a.node_status, '1', '在用', '2', '停用', '3','作废') node_status_name,
+                    a.node_order
+              from approve_node_config a
+             where 1 = 1
+            <if test="approveNodeCd != null" >
+                and a.approve_node_cd = #{approveNodeCd, jdbcType=VARCHAR}
+            </if>
+
+            <if test="apprEventTypeCd != null" >
+                and a.appr_event_type_cd = #{apprEventTypeCd, jdbcType=VARCHAR}
+            </if>
+               and a.node_status in (1, 2)
+             order by a.node_order
+    </select>
+
+
+  <select id="modifyApprNode" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.ApproveEntity">
+      {call approve_core.modifyApprNode(#{approveNodeCd,mode=IN,jdbcType=VARCHAR},
+                                        #{ndeName,mode=IN,jdbcType=VARCHAR},
+                                        #{staffId,mode=IN,jdbcType=VARCHAR},
+                                        #{ndeType,mode=IN,jdbcType=VARCHAR},
+                                        #{nodeStatus,mode=IN,jdbcType=VARCHAR},
+                                        #{nodeOrder,mode=IN,jdbcType=VARCHAR},
+                                        #{opCode,mode=IN,jdbcType=VARCHAR},
+                                        #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                        #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+  </select>
+
+    <select id="addApprNode" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.ApproveEntity">
+      {call approve_core.addApprNode(#{apprEventTypeCd,mode=IN,jdbcType=VARCHAR},
+                                     #{ndeName,mode=IN,jdbcType=VARCHAR},
+                                     #{staffId,mode=IN,jdbcType=VARCHAR},
+                                     #{ndeType,mode=IN,jdbcType=VARCHAR},
+                                     #{nodeStatus,mode=IN,jdbcType=VARCHAR},
+                                     #{nodeOrder,mode=IN,jdbcType=VARCHAR},
+                                     #{opCode,mode=IN,jdbcType=VARCHAR},
+                                     #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                     #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+  </select>
+
+
+   <select id="deleteApprNode" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.ApproveEntity">
+      {call approve_core.deleteApprNode(#{approveNodeCd,mode=IN,jdbcType=VARCHAR},
+                                        #{opCode,mode=IN,jdbcType=VARCHAR},
+                                        #{resCode,mode=OUT,jdbcType=VARCHAR},
+                                        #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+   </select>
+
+    <select id="submitToApprove4AddTrains" statementType="CALLABLE" parameterType="org.gxz.znrl.entity.ApproveEntity">
+        {call pk_register.submit_approve4AddTrains(#{jsonStr,mode=IN,jdbcType=VARCHAR},
+        #{dealType,mode=IN,jdbcType=VARCHAR},
+        #{opCode,mode=IN,jdbcType=VARCHAR},
+        #{resCode,mode=OUT,jdbcType=VARCHAR},
+        #{resMsg,mode=OUT,jdbcType=VARCHAR})}
+    </select>
+
+    <select id="getApprAddTrainsDetailData" resultMap="ToApproveResultMap" parameterType="org.gxz.znrl.entity.ApproveEntity">
+        select param19,
+        param20
+        from appr_req_data_buffer
+        where appr_req_id =  #{eventId, jdbcType=VARCHAR}
+    </select>
+
+
+    <select id="qryApproveResultInfo4JB" parameterType="org.gxz.znrl.entity.ApproveEntity" resultMap="ToApproveResultMap">
+        select a.param5 pack_Code,
+        (select bb.batch_no
+        from prepar_sampling_rec aa,batch_no_info bb
+        where aa.sampling_code = bb.sampling_code
+        and aa.pack_code = a.param5) batch_no,
+        getSampleTypeName(a.param5) batch_Type,
+        (select su.realname from security_user su where su.id = c.approve_initiator) realname,
+        (select su.realname from security_user su where su.id = d.STAFF_ID) approver,
+        c.APPROVED_DT,
+        decode(c.IS_OK,'N','不通过','Y','通过','-')IS_OK,
+        c.approve_desc,
+        a.remark appr_event_desc
+        from appr_req_data_buffer a,approve_event_mark b,approve_info c,APPROVE_NODE_CONFIG d
+        where c.event_id = b.event_id
+        and b.approve_event_id = a.param1
+        and c.approve_node_cd = d.approve_node_cd
+        and c.appr_status <![CDATA[ <>]]> '4'
+        <if test="eventId != null" >
+            and c.event_id in (${eventId})
+        </if>
+    </select>
+
+    <select id="qryApproveResultInfo4DWK" parameterType="org.gxz.znrl.entity.ApproveEntity" resultMap="ToApproveResultMap">
+        select a.param5 pack_Code,
+        decode(a.param2,'7','取样','8','弃样') param2,
+        (select bb.batch_no
+        from prepar_sampling_rec aa,batch_no_info bb
+        where aa.sampling_code = bb.sampling_code
+        and aa.pack_code = a.param5) batch_no,
+        getSampleTypeName(a.param5) batch_Type,
+        (select su.realname from security_user su where su.id = c.approve_initiator) realname,
+        (select su.realname from security_user su where su.id = d.STAFF_ID) approver,
+        c.APPROVED_DT,
+        decode(c.IS_OK,'N','不通过','Y','通过','-')IS_OK,
+        c.approve_desc,
+        a.remark appr_event_desc
+        from appr_req_data_buffer a,approve_event_mark b,approve_info c,APPROVE_NODE_CONFIG d
+        where c.event_id = b.event_id
+        and b.approve_event_id = a.param1
+        and c.approve_node_cd = d.approve_node_cd
+        and c.appr_status <![CDATA[ <>]]> '4'
+        <if test="eventId != null" >
+            and c.event_id in (${eventId})
+        </if>
+    </select>
+
+</mapper>

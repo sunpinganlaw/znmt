@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.gxz.znrl.mapper.WorkModeTypeMapper">
+
+    <resultMap id="workModeTypeResultMap" type="org.gxz.znrl.entity.WorkModeTypeEntity">
+        <id column="TYPE_ID" jdbcType="INTEGER" property="typeId" />
+        <result column="PARENT_TYPE_ID" jdbcType="INTEGER" property="parentTypeId" />
+        <result column="TYPE_NAME" jdbcType="VARCHAR" property="typeName" />
+        <result column="SHOW_TYPE" jdbcType="VARCHAR" property="showType" />
+        <result column="DATA_LOAD_TYPE" jdbcType="VARCHAR" property="dataLoadType" />
+        <result column="DATA_URL" jdbcType="VARCHAR" property="dataUrl" />
+        <result column="UNIT" jdbcType="VARCHAR" property="unit" />
+        <result column="SHOW_COLUMN" jdbcType="INTEGER" property="showColumn" />
+        <result column="DEPEND_TYPE_ID" jdbcType="INTEGER" property="dependTypeId" />
+        <result column="DEPEND_VALUE" jdbcType="VARCHAR" property="dependValue" />
+        <result column="WORK_MODE_VALUE" jdbcType="VARCHAR" property="workModeValue" />
+    </resultMap>
+
+    <!--称重称轻计量报表查询sql-->
+    <select id="qryWorkModeTypeList" parameterType="org.gxz.znrl.entity.WorkModeTypeEntity" resultMap="workModeTypeResultMap" >
+        SELECT A.TYPE_ID, A.PARENT_TYPE_ID, A.TYPE_NAME,  A.SHOW_TYPE, A.DATA_LOAD_TYPE, A.DATA_URL, A.UNIT, A.SHOW_COLUMN, A.DEPEND_TYPE_ID, A.DEPEND_VALUE,(SELECT B.WORK_MODE_VALUE FROM SYSTEM_WORK_MODE B WHERE B.TYPE_ID = A.TYPE_ID) WORK_MODE_VALUE
+         FROM WORK_MODE_TYPE A
+        WHERE 1 = 1
+           AND A.STATE = 1
+        <if test="parentTypeId != null" >
+            AND A.PARENT_TYPE_ID = #{parentTypeId,jdbcType=INTEGER}
+        </if>
+    </select>
+
+    <!--用于大武口参数配置的权限分离-->
+    <select id="qryWorkModeTypeList4DWK" parameterType="org.gxz.znrl.entity.WorkModeTypeEntity" resultMap="workModeTypeResultMap" >
+        SELECT A.TYPE_ID, A.PARENT_TYPE_ID, A.TYPE_NAME,  A.SHOW_TYPE, A.DATA_LOAD_TYPE, A.DATA_URL, A.UNIT, A.SHOW_COLUMN, A.DEPEND_TYPE_ID, A.DEPEND_VALUE,(SELECT B.WORK_MODE_VALUE FROM SYSTEM_WORK_MODE B WHERE B.TYPE_ID = A.TYPE_ID) WORK_MODE_VALUE
+        FROM WORK_MODE_TYPE A
+        WHERE 1 = 1
+        AND A.STATE = 2
+        <if test="parentTypeId != null" >
+            AND A.PARENT_TYPE_ID = #{parentTypeId,jdbcType=INTEGER}
+        </if>
+    </select>
+
+    <insert id="addSystemWorkModeLog" parameterType="org.gxz.znrl.entity.WorkModeTypeCommit" >
+        INSERT INTO SYSTEM_WORK_MODE_LOG
+              (TYPE_ID, ORIGINAL_VALUE, MODIFIED_VALUE, OP_CODE, REMARK, INSERT_TIME)
+            VALUES
+              (#{typeId,jdbcType=INTEGER}, #{originalValue,jdbcType=VARCHAR}, #{modifyValue,jdbcType=VARCHAR}, #{opCode,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, SYSDATE)
+    </insert>
+
+    <insert id="addSystemWorkMode" parameterType="org.gxz.znrl.entity.WorkModeTypeCommit" >
+        INSERT INTO SYSTEM_WORK_MODE
+          (TYPE_ID, WORK_MODE_VALUE, UPDATE_TIME, DATA_STATUS)
+        VALUES
+          (#{typeId,jdbcType=INTEGER}, #{modifyValue,jdbcType=VARCHAR}, SYSDATE, '0')
+    </insert>
+
+    <resultMap id="systemWorkModeResultMap" type="org.gxz.znrl.entity.WorkModeTypeCommit">
+        <id column="TYPE_ID" jdbcType="INTEGER" property="typeId" />
+        <result column="WORK_MODE_VALUE" jdbcType="VARCHAR" property="originalValue" />
+    </resultMap>
+
+    <select id="qrySystemWorkMode" parameterType="org.gxz.znrl.entity.WorkModeTypeCommit" resultMap="systemWorkModeResultMap" >
+         SELECT A.TYPE_ID,A.WORK_MODE_VALUE FROM SYSTEM_WORK_MODE A WHERE A.TYPE_ID = #{typeId,jdbcType=VARCHAR}
+    </select>
+
+    <update id="modiSystemWorkMode" parameterType="org.gxz.znrl.entity.WorkModeTypeCommit">
+        UPDATE SYSTEM_WORK_MODE A
+           SET A.WORK_MODE_VALUE = #{modifyValue,jdbcType=VARCHAR}, A.UPDATE_TIME = SYSDATE, A.DATA_STATUS='0'
+         WHERE A.TYPE_ID = #{typeId,jdbcType=INTEGER}
+    </update>
+
+</mapper>

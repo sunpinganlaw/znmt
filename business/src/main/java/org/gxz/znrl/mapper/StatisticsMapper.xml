@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.gxz.znrl.mapper.StatisticsMapper">
+     <sql id="paging_top_sql">
+       select * from (
+     </sql>
+
+     <sql id="paging_bottom_sql">
+       ) t where t.rownumber between #{beginRowIndex,jdbcType=INTEGER} and #{endRowIndex,jdbcType=INTEGER}
+     </sql>
+
+    <!--统计分析查询结果集映射-->
+    <resultMap id="StatisticsResultMap" type="org.gxz.znrl.entity.StatisticsEntity">
+        <result column="stat_data_id" jdbcType="VARCHAR" property="statDataId" />
+        <result column="report_type_cd" jdbcType="VARCHAR" property="reportTypeCd" />
+        <result column="stat_lat_type" jdbcType="VARCHAR" property="statLatType" />
+
+        <result column="stat_lat" jdbcType="VARCHAR" property="statLat" />
+        <result column="stat_result1" jdbcType="VARCHAR" property="statResult1" />
+        <result column="stat_result2" jdbcType="VARCHAR" property="statResult2" />
+        <result column="stat_result3" jdbcType="VARCHAR" property="statResult3" />
+        <result column="stat_result4" jdbcType="VARCHAR" property="statResult4" />
+        <result column="stat_result5" jdbcType="VARCHAR" property="statResult5" />
+        <result column="stat_result6" jdbcType="VARCHAR" property="statResult6" />
+        <result column="stat_result7" jdbcType="VARCHAR" property="statResult7" />
+        <result column="stat_result8" jdbcType="VARCHAR" property="statResult8" />
+        <result column="stat_result9" jdbcType="VARCHAR" property="statResult9" />
+        <result column="stat_result10" jdbcType="VARCHAR" property="statResult10" />
+    </resultMap>
+
+
+    <!--统计分析查询-->
+    <select id="qryStatisticsData"  parameterType="org.gxz.znrl.entity.StatisticsEntity" resultMap="StatisticsResultMap">
+        select a.stat_data_id,
+                a.report_type_cd,
+                a.stat_lat_type,
+                a.stat_lat,
+                a.stat_result1,
+                a.stat_result2,
+                a.stat_result3,
+                a.stat_result4,
+                a.stat_result5,
+                a.stat_result6,
+                a.stat_result7,
+                a.stat_result8,
+                a.stat_result9,
+                a.stat_result10
+          from statistics_result a
+         where 1 = 1
+           and report_type_cd = #{reportTypeCd,jdbcType=VARCHAR}
+
+        <if test="statLatType != null" >
+            and a.stat_lat_type = #{statLatType,jdbcType=VARCHAR}
+        </if>
+
+        <if test="beginDate != null" >
+            and a.STAT_TIME  <![CDATA[ >= ]]> to_date(#{beginDate,jdbcType=VARCHAR},'YYYY-MM-DD')
+        </if>
+
+        <if test="endDate != null" >
+            and a.STAT_TIME  <![CDATA[ <= ]]>  to_date(#{endDate,jdbcType=VARCHAR},'YYYY-MM-DD') + 1 - 0.00001
+        </if>
+
+        order by a.stat_lat
+    </select>
+
+    <!--统计分析查询结果集映射-->
+    <resultMap id="StatisticsReportResultMap" type="org.gxz.znrl.entity.StatisticsReportEntity">
+        <result column="stat_lat" jdbcType="VARCHAR" property="statDate" />
+        <result column="coalInWeight" jdbcType="VARCHAR" property="coalInWeight" />
+        <result column="coalInAutoWeight" jdbcType="VARCHAR" property="coalInAutoWeight" />
+        <result column="coalInAutoWeightRate" jdbcType="VARCHAR" property="coalInAutoWeightRate" />
+        <result column="coalInAutoSample" jdbcType="VARCHAR" property="coalInAutoSample" />
+        <result column="coalInAutoSampleRate" jdbcType="VARCHAR" property="coalInAutoSampleRate" />
+        <result column="coalInAutoSampling" jdbcType="VARCHAR" property="coalInAutoSampling" />
+        <result column="coalInAutoSamplingRate" jdbcType="VARCHAR" property="coalInAutoSamplingRate" />
+        <result column="coalInWeightCheckRate" jdbcType="VARCHAR" property="coalInWeightCheckRate" />
+        <result column="coalInQtyCheckRate" jdbcType="VARCHAR" property="coalInQtyCheckRate" />
+        <result column="coalInHot" jdbcType="VARCHAR" property="coalInHot" />
+
+        <result column="coalBurnWeight" jdbcType="VARCHAR" property="coalBurnWeight" />
+        <result column="coalBurnWeightCheckRate" jdbcType="VARCHAR" property="coalBurnWeightCheckRate" />
+        <result column="coalBurnQtyCheckRate" jdbcType="VARCHAR" property="coalBurnQtyCheckRate" />
+        <result column="coalBurnHot" jdbcType="VARCHAR" property="coalBurnHot" />
+        <result column="coalInBurnHotDiff" jdbcType="VARCHAR" property="coalInBurnHotDiff" />
+        <result column="equipmentCheckRate" jdbcType="VARCHAR" property="equipmentCheckRate" />
+        <result column="checkSampleRate" jdbcType="VARCHAR" property="checkSampleRate" />
+        <result column="checkSampleGoodRate" jdbcType="VARCHAR" property="checkSampleGoodRate" />
+    </resultMap>
+
+    <!--统计分析查询-->
+    <select id="qryStatisticsReportData"  parameterType="org.gxz.znrl.entity.StatisticsReportEntity" resultMap="StatisticsReportResultMap">
+        select * from (
+        select
+        distinct a.stat_lat,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'COAL_IN') coalInWeight,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'CHECK_RATE_COAL_IN_WEIGHT') coalInWeightCheckRate,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'CHECK_RATE_COAL_IN_QTY') coalInQtyCheckRate,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'COAL_IN_HOT') coalInHot,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'AUTO_WORK_RATE_COAL_IN') coalInAutoWorkRate,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'AUTO_WORK_COAL_IN_WEIGHT') coalInAutoWeight,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'AUTO_WORK_RATE_COAL_IN_WEIGHT') coalInAutoWeightRate,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'AUTO_WORK_COAL_IN_SAMPLE') coalInAutoSample,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'AUTO_WORK_RATE_COAL_IN_SAMPLE') coalInAutoSampleRate,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'AUTO_WORK_COAL_IN_SAMPLING') coalInAutoSampling,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'AUTO_WORK_RATE_COAL_IN_SAMPLING') coalInAutoSamplingRate,
+
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'COAL_BURN') coalBurnWeight,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'COAL_BURN_WEIGHT_CHECK_RATE') coalBurnWeightCheckRate,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'COAL_BURN_QTY_CHECK_RATE') coalBurnQtyCheckRate,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'COAL_BURN_HOT') coalBurnHot,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'COAL_IN_BURN_HOT_DIFF') coalInBurnHotDiff,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'DEVICE_CHECK') equipmentCheckRate,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'SAMPLE_CHECK_RATE') checkSampleRate,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'SAMPLE_CHECK_GOOD_RATE') checkSampleGoodRate
+
+
+        from statistics_result a
+        where a.stat_lat is not null
+        and a.stat_lat_type = '2'
+        and to_date(a.stat_lat,'YYYY-MM') <![CDATA[ >= ]]> to_date(#{startTime,jdbcType=VARCHAR},'YYYY-MM-DD')
+        and to_date(a.stat_lat,'YYYY-MM') <![CDATA[ <= ]]> to_date(#{endTime,jdbcType=VARCHAR},'YYYY-MM-DD')
+        order by   stat_lat )
+
+        union all
+
+        select
+        '合计' stat_lat,
+        to_char(sum(t.coalInWeight)) coalInWeight,
+        to_char(sum(t.coalInWeightCheckRate)/Count(1)) coalInWeightCheckRate,
+        to_char(sum(t.coalInQtyCheckRate)/Count(1)) coalInQtyCheckRate,
+        to_char(round(sum(t.coalInHot*t.coalInWeight)/sum(t.coalInWeight),2)) coalInHot,
+        to_char(sum(t.coalInAutoWorkRate)/Count(1)) coalInAutoWorkRate,
+        to_char(sum(t.coalInAutoWeight)) coalInAutoWeight,
+        to_char(sum(t.coalInAutoWeightRate)/Count(1)) coalInAutoWeightRate,
+        to_char(sum(t.coalInAutoSample)) coalInAutoSample,
+        to_char(sum(t.coalInAutoSampleRate)/Count(1)) coalInAutoSampleRate,
+        to_char(sum(t.coalInAutoSampling)) coalInAutoSampling,
+        to_char(sum(t.coalInAutoSamplingRate)/Count(1)) coalInAutoSamplingRate,
+
+        to_char(sum(t.coalBurnWeight)) coalBurnWeight,
+        to_char(sum(t.coalBurnWeightCheckRate)/Count(1)) coalBurnWeightCheckRate,
+        to_char(sum(t.coalBurnQtyCheckRate)/Count(1)) coalBurnQtyCheckRate,
+        to_char(round(sum(t.coalBurnHot*t.coalBurnWeight)/sum(t.coalBurnWeight),2)) coalBurnHot,
+        to_char(round(sum(t.coalInBurnHotDiff)/Count(1),2)) coalInBurnHotDiff,
+        to_char(sum(t.equipmentCheckRate)) equipmentCheckRate,
+        to_char(sum(t.checkSampleRate)/Count(1)) checkSampleRate,
+        to_char(sum(t.checkSampleGoodRate)) checkSampleGoodRate
+        from
+        (select
+        distinct a.stat_lat,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'COAL_IN') coalInWeight,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'CHECK_RATE_COAL_IN_WEIGHT') coalInWeightCheckRate,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'CHECK_RATE_COAL_IN_QTY') coalInQtyCheckRate,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'COAL_IN_HOT') coalInHot,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'AUTO_WORK_RATE_COAL_IN') coalInAutoWorkRate,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'AUTO_WORK_COAL_IN_WEIGHT') coalInAutoWeight,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'AUTO_WORK_RATE_COAL_IN_WEIGHT') coalInAutoWeightRate,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'AUTO_WORK_COAL_IN_SAMPLE') coalInAutoSample,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'AUTO_WORK_RATE_COAL_IN_SAMPLE') coalInAutoSampleRate,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'AUTO_WORK_COAL_IN_SAMPLING') coalInAutoSampling,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'AUTO_WORK_RATE_COAL_IN_SAMPLING') coalInAutoSamplingRate,
+
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'COAL_BURN') coalBurnWeight,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'COAL_BURN_WEIGHT_CHECK_RATE') coalBurnWeightCheckRate,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'COAL_BURN_QTY_CHECK_RATE') coalBurnQtyCheckRate,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'COAL_BURN_HOT') coalBurnHot,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'COAL_IN_BURN_HOT_DIFF') coalInBurnHotDiff,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'DEVICE_CHECK') equipmentCheckRate,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'SAMPLE_CHECK_RATE') checkSampleRate,
+        GET_STATISTICS_REPORT_DATA(a.stat_lat,'SAMPLE_CHECK_GOOD_RATE') checkSampleGoodRate
+
+        from statistics_result a
+        where a.stat_lat is not null
+        and a.stat_lat_type = '2'
+        and to_date(a.stat_lat,'YYYY-MM') <![CDATA[ >= ]]> to_date(#{startTime,jdbcType=VARCHAR},'YYYY-MM-DD')
+        and to_date(a.stat_lat,'YYYY-MM') <![CDATA[ <= ]]> to_date(#{endTime,jdbcType=VARCHAR},'YYYY-MM-DD')
+        ) t
+    </select>
+</mapper>
