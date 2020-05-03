@@ -1,0 +1,212 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>角色管理</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+
+<body>
+
+<@shiro.hasPermission name="Role:save">
+<div class="well" >
+    <span class="badge">提示</span>
+    在此你可以对<span class="label-info"><strong>角色</strong></span>进行批量编辑!
+</div>
+</@shiro.hasPermission>
+<div id="tb" >
+    <table>
+        <tr>
+            <td >
+            <@shiro.hasPermission name="Role:save">
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="addRows();">添加</a>
+            </@shiro.hasPermission>
+            <@shiro.hasPermission name="Role:edit:User拥有的资源">
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-save" onclick="saveRows();">保存</a>
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-sys" onclick="setRole();">权限</a>
+            </@shiro.hasPermission>
+
+            <@shiro.hasPermission name="Role:delete:User拥有的资源">
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="delRows();">删除</a>
+            </@shiro.hasPermission>
+            </td>
+    <td >
+        <input id="searchbox" type="text"/>
+    </td>
+    </tr>
+    </table>
+</div>
+<div id="mm">
+    <div name="search_description">描述</div>
+    <div name="search_name">名称</div>
+</div>
+<div id="tx" style="margin: 5px;">
+<table id="dg" title="权限清单" ></table>
+    </div>
+<div id="win" ></div>
+</body>
+<script type="text/javascript">
+
+var lastIndex;
+$(function () {
+    $dg = $("#dg");
+    $grid = $dg.datagrid({
+        url: "${base}/management/security/role/roleList",
+        pagination: true,
+        pagenumber:true,
+        pageSize:15,
+        pageList: [15, 30, 45],
+        fitColumns: true,
+        height: $(this).height() - 46,
+        width: $(this).width() - 10,
+        idField:'id',
+        singleSelect:true,
+        columns: [
+            [
+                {field: 'id', title: 'ID', width: 30},
+                {field: 'name', title: '名称', width:100, editor: {type: "validatebox", options: {required: true, validType: 'alphabet[4]'}}},
+                {field: 'description', title: '描述', width:200, editor: {type: "validatebox", options: {required: true, validType: 'length[2,20]'}}}
+            ]
+        ],
+        toolbar: '#tb',
+         onClickRow:function(rowIndex){
+         $dg.datagrid('endEdit', lastIndex);
+         $dg.datagrid('beginEdit', rowIndex);
+         lastIndex = rowIndex;
+         },
+         onBeforeEdit:function(index,row){
+         row.editing = true;
+         $dg.datagrid('refreshRow', index);
+         },
+         onAfterEdit:function(index,row){
+         row.editing = false;
+         $dg.datagrid('refreshRow', index);
+         },
+         onCancelEdit:function(index,row){
+         row.editing = false;
+         $dg.datagrid('refreshRow', index);
+         }
+    });
+
+
+
+    //搜索框
+    $("#searchbox").searchbox({
+        menu: "#mm",
+        prompt: '模糊查询',
+        searcher: function (value, name) {
+            var str = "{\"" + name + "\":\"" + value + "\"}";
+            var obj = eval('(' + str + ')');
+            $dg.datagrid('reload', obj);
+        }
+    });
+
+});
+
+function addRows() {
+/*    var success = $(this).form('validate');
+    if (! success) {
+        return false;
+    }*/
+    var options = $dg.datagrid('getPager').data("pagination").options;
+    var totalRowNum = options.total;
+    $dg.datagrid('endEdit', lastIndex);
+    $dg.datagrid('appendRow',{
+        name:'',
+        description:''
+    });
+    lastIndex = $dg.datagrid('getRows').length - 1;
+    $dg.datagrid('selectRow', lastIndex);
+    $dg.datagrid('beginEdit', lastIndex);
+}
+
+function delRows() {
+    var row = $dg.datagrid('getSelected');
+    if (row) {
+        $.messager.confirm('提示', '确定进行操作?', function (r) {
+            if (r) {
+                var index = $dg.datagrid('getRowIndex', row);
+                $dg.datagrid('deleteRow', index);
+            }
+        });
+    }
+}
+function saveRows() {
+    $dg.datagrid('selectRow', -1);
+    endEdit();
+    if ($dg.datagrid('getChanges').length) {
+        var inserted = $dg.datagrid('getChanges', "inserted");
+        var deleted = $dg.datagrid('getChanges', "deleted");
+        var updated = $dg.datagrid('getChanges', "updated");
+        var effectRow = new Object();
+        if (inserted.length) {
+            effectRow["inserted"] = JSON.stringify(inserted);
+        }
+        if (deleted.length) {
+            effectRow["deleted"] = JSON.stringify(deleted);
+        }
+        if (updated.length) {
+            effectRow["updated"] = JSON.stringify(updated);
+        }
+        $.post("${base}/management/security/role/saveRoleList", effectRow, function(rsp) {
+            if(rsp.successful){
+                showMsg("提示", rsp.msg);
+                $dg.datagrid('acceptChanges');
+                $dg.datagrid("reload");
+            }
+            else
+            {
+                showMsg("提示", rsp.msg);
+                $dg.datagrid('rejectChanges');
+            }
+        }, "JSON").error(function() {
+            showMsg("提示", "提交错误了！");
+        });
+    }
+}
+function endEdit(){
+    var rows = $dg.datagrid('getRows');
+    for ( var i = 0; !(i >= rows.length); i++) {
+        $dg.datagrid('endEdit', i);
+    }
+}
+
+
+function setRole()
+{    var row = $dg.datagrid('getSelected');
+    if (row) {
+        var id = row.id;
+        var win = $('#win').window({
+            modal: true,
+            title: '修改角色权限',
+            width: 500,
+            height: 450,
+            collapsible: false,
+            minimizable: false,
+            maximizable: true,
+            href: '${base}/management/security/role/rolePermission/'+id,
+            onClose: function () {
+                $dg.datagrid('reload');
+            }
+        });
+    }
+    else
+    {
+        showMsg("提示", "请选择一行");
+        return;
+    }
+}
+
+
+function closeWin()
+{
+    $('#win').window('close',true);
+    //$('#win').window('destroy',true);
+}
+
+</script>
+</html>

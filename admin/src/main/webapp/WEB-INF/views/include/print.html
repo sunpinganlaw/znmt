@@ -1,0 +1,52 @@
+<style type="text/css">
+    #print_me_wrapper table tbody{
+        color: #363e5a;;
+    }
+</style>
+<div id="form-div" class="form-div" >
+</div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        var print_temp_str = "";
+        var print_head = WEB_PRINT_HEAD;//中文表头
+        var print_ajax = WEB_GLOBAL_CTX+WEB_PRINT_URL;//打印页面请求链接
+        var print_title = WEB_PRINT_COLUMNS; //打印页面table表头数组编码
+        var print_param = WEB_PRINT_PARAM; //打印页面参数
+        var print_column;
+
+        var print_array_head = print_head.split("|");
+        for (y in print_array_head) {
+            print_temp_str = print_temp_str + "<th>" + print_array_head[y] + "</th>";
+        }
+        $('#form-div').append( "<table id='print_me' width='100%'><thead><tr>" + print_temp_str + "</tr></thead><tbody></tbody></table>");
+
+        print_temp_str = "";
+        var print_array = print_title.split("|");
+        for (x in print_array) {
+            print_temp_str = print_temp_str + "{\"data\":\"" + print_array[x] + "\"},";
+        }
+        print_column = eval("[" + print_temp_str + "]");
+
+        TableTools.DEFAULTS.sSwfPath = WEB_GLOBAL_CTX+"/styles/swf/copy_csv_xls_pdf.swf";
+        TableTools.DEFAULTS.aButtons = [
+            {"sExtends": "xls", "sButtonText": "下载"},
+            {"sExtends": "print", "sButtonText": "打印"}
+        ];
+        var table = $("#print_me").dataTable({
+            'bPaginate': false,
+            "bProcessing": true,
+            "bFilter": false,
+            "bInfo": false,
+            "ajax": {
+                "dataType":"json",
+                "type":"post",
+                "url": print_ajax,
+                "data": print_param
+            },
+            "columns": print_column
+        });
+        var tt = new $.fn.dataTable.TableTools(table);
+        $(tt.fnContainer()).insertBefore('div.dataTables_wrapper');
+
+    });
+</script>

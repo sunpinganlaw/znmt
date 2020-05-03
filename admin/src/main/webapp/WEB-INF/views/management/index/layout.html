@@ -1,0 +1,541 @@
+<link rel="stylesheet" type="text/css" href="${base}/styles/css/easyme.css">
+<script type="text/javascript" src="${base}/htmlresource/commonImgJS.js"></script>
+<script type="text/javascript" src="${base}/htmlresource/ocscript.js"></script>
+<style type="text/css">
+    body {
+        font-family:helvetica,tahoma,verdana,sans-serif;
+        margin:0px 0px 0px 0px;
+        padding:0px 0px 0px 0px;
+    }
+    .label-info{
+        background-color: #3A87AD;
+        border-radius: 3px 3px 3px 3px;
+        color: #FFFFFF;
+        display: inline-block;
+        font-size: 15px;
+        font-weight: bold;
+        padding: 2px 4px;
+        text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+        vertical-align: baseline;
+        white-space: nowrap;
+    }
+    .badge {
+        background-color: #B94A48;
+        border-radius: 9px 9px 9px 9px;
+        color: #FFFFFF;
+        display: inline-block;
+        font-size: 11px;
+        font-weight: bold;
+        padding: 2px 4px;
+        text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+        vertical-align: baseline;
+        white-space: nowrap;
+    }
+</style>
+
+
+
+<style type="text/css">.imcm ul,.imcm li,.imcm div,.imcm span,.imcm a{text-align:center;vertical-align:top;padding:0px;margin:0;list-style:none outside none;border-style:none;background-image:none;clear:none;float:none;display:block;position:static;overflow:visible;line-height:normal;}.imcm li a img{display:inline;border-width:0px;}.imcm span{display:inline;}.imcm .imclear,.imclear{clear:both;height:0px;visibility:hidden;line-height:0px;font-size:1px;}.imcm .imsc{position:relative;}.imcm .imsubc{position:absolute;visibility:hidden;}.imcm li{list-style:none;font-size:1px;float:left;}.imcm ul ul li{width:100%;float:none !important;}.imcm a{display:block;position:relative;}.imcm ul .imsc,.imcm ul .imsubc {z-index:999999;}.imcm ul ul .imsc,.imcm ul ul .imsubc{z-index:999999;}.imcm ul ul ul .imsc,.imcm ul ul ul .imsubc{z-index:999999;}.imde ul li:hover .imsubc{visibility:visible;}.imde ul ul li:hover  .imsubc{visibility:visible;}.imde ul ul ul li:hover  .imsubc{visibility:visible;}.imde li:hover ul  .imsubc{visibility:hidden;}.imde li:hover ul ul .imsubc{visibility:hidden;}.imde li:hover ul ul ul  .imsubc{visibility:hidden;}.imcm .imea{display:block;position:relative;left:0px;font-size:1px;line-height:1px;height:0px;width:1px;float:right;}.imcm .imea span{display:block;position:relative;font-size:1px;line-height:0px;}.dvs,.dvm{border-width:0px}/*\*//*/.imcm .imea{visibility:hidden;}/**/</style><!--[if IE]><style type="text/css">.imcm .imea span{position:absolute;}.imcm .imclear,.imclear{display:none;}.imcm{zoom:1;} .imcm li{curosr:hand;} .imcm ul{zoom:1}.imcm a{zoom:1;}</style><![endif]--><!--[if gte IE 7]><style type="text/css">.imcm .imsubc{background-image:url(ie_css_fix);}</style><![endif]--><!--end-->
+<style type="text/css">
+    /*#imenus0 .imeam span,#imenus0 .imeamj span {background-image:url(sample3_main_arrow.gif); width:7px; height:5px; left:-7px; top:5px; background-repeat:no-repeat;background-position:top left;}*/
+    /*#imenus0 li:hover .imeam span,#imenus0 li a.iactive .imeamj span {background-image:url(sample3_main_arrow.gif); background-repeat:no-repeat;background-position:top left;}*/
+    /*#imenus0 ul .imeas span,#imenus0 ul .imeasj span {background-image:url(sample3_sub_arrow.gif); width:5px; height:7px; left:-5px; top:3px; background-repeat:no-repeat;background-position:top left;}*/
+    /*#imenus0 ul li:hover .imeas span,#imenus0 ul li a.iactive .imeasj span {background-image:url(sample3_sub_arrow.gif); background-repeat:no-repeat;background-position:top left;}*/
+
+    #imouter0 {background-color:#ffffff; border-style:none; border-color:#6a6a6a; border-width:0px; padding:0px; margin:0px; }
+
+    /*下拉的*/
+    #imenus0 li ul {background-color:#efefef; border-style:solid; border-color:#cccccc; border-width:0px; padding:5px; margin:4px 0px 0px; }
+
+    #imenus0 li a, #imenus0 .imctitle {color:#333333; text-align:center; font-family:Arial; font-size:12px; font-weight:normal; text-decoration:underline; border-style:solid; border-color:#dddddd; border-width:0px; padding:2px 8px; }
+    #imenus0 li:hover>a {background-color:#efefef; height: 18px; text-decoration:underline; }
+    #imenus0 li a.ihover, .imde imenus0 a:hover {background-color:#efefef; text-decoration:underline; }
+    #imenus0 li a.iactive {}
+    #imenus0 ul a, #imenus0 .imsubc li .imctitle  {color:#555555; text-align:left; font-size:11px; font-weight:normal; text-decoration:none; border-style:none; border-color:#000000; border-width:0px; padding:2px 5px; }
+    #imenus0 ul li:hover>a {color:#000000; text-decoration:underline; }
+    #imenus0 ul li a.ihover {color:#000000; text-decoration:underline; }
+    #imenus0 ul li a.iactive {background-color:#ffffff; }
+
+</style>
+
+<script type="text/javascript" charset="utf-8">
+function logout(b) {
+    if(b)
+        location.href='${base}/logout';
+    else
+        $.messager.confirm("提示", "确认退出吗?",function(r){
+            if(r){
+                location.href='${base}/logout';
+            }
+        });
+}
+
+var userInfoWindow;
+function showUserInfo() {
+    userInfoWindow = $('<div/>').window({
+        modal : true,
+        title : '当前用户信息',
+        width : 400,
+        height : 250,
+        collapsible : false,
+        minimizable : false,
+        maximizable : true,
+        href : '${base}/management/security/user/show',
+        onClose : function() {
+            userInfoWindow.window("destroy");
+//				$(this).window('destroy');
+        }
+    });
+}
+
+
+function addTab(node) {
+    var nodes=node.split("||");
+    if (centerTabs.tabs('exists', nodes[0])) {
+        centerTabs.tabs('select', nodes[0]);
+    } else {
+        centerTabs.tabs('add', {
+            title : nodes[0],
+            closable : true,
+            content : "<iframe src="+nodes[2]+" frameborder=\"0\" style=\"border:0;width:100%;height:99.4%;\"></iframe>"
+
+        });
+    }
+}
+
+function refreshTab(title) {
+    var tab = centerTabs.tabs('getTab', title);
+    centerTabs.tabs('update', {
+        tab : tab,
+        options : tab.panel('options')
+    });
+}
+
+
+var centerTabs;
+var tabsMenu;
+$(function() {
+    tabsMenu = $('#tabsMenu').menu({
+        onClick : function(item) {
+            var curTabTitle = $(this).data('tabTitle');
+            var type = $(item.target).attr('type');
+
+            if (type === 'refresh') {
+                refreshTab(curTabTitle);
+                return;
+            }
+
+            if (type === 'close') {
+                var t = centerTabs.tabs('getTab', curTabTitle);
+                if (t.panel('options').closable) {
+                    centerTabs.tabs('close', curTabTitle);
+                }
+                return;
+            }
+
+            var allTabs = centerTabs.tabs('tabs');
+            var closeTabsTitle = [];
+
+            $.each(allTabs, function() {
+                var opt = $(this).panel('options');
+                if (opt.closable && opt.title != curTabTitle && type === 'closeOther') {
+                    closeTabsTitle.push(opt.title);
+                } else if (opt.closable && type === 'closeAll') {
+                    closeTabsTitle.push(opt.title);
+                }
+            });
+
+            for ( var i = 0; i < closeTabsTitle.length; i++) {
+                centerTabs.tabs('close', closeTabsTitle[i]);
+            }
+        }
+    });
+
+    centerTabs = $('#centerTabs').tabs({
+        tools : [ {
+            iconCls : 'icon-reload',
+            handler : function() {
+                var href = $('#centerTabs').tabs('getSelected').panel('options').href;
+                if (href) {/*说明tab是以href方式引入的目标页面*/
+                    var index = $('#centerTabs').tabs('getTabIndex', $('#centerTabs').tabs('getSelected'));
+                    $('#centerTabs').tabs('getTab', index).panel('refresh');
+                } else {   /*说明tab是以content方式引入的目标页面*/
+                    var panel = $('#centerTabs').tabs('getSelected').panel('panel');
+                    var frame = panel.find('iframe');
+                    try {
+                        if (frame.length > 0) {
+                            for ( var i = 0; i < frame.length; i++) {
+                                frame[i].contentWindow.document.write('');
+                                frame[i].contentWindow.close();
+                                frame[i].src = frame[i].src;
+                            }
+                            if ($.browser.msie) {
+                                CollectGarbage();
+                            }
+                        }
+                    } catch (e) {
+                    }
+                }
+            }
+        }, {
+            iconCls : 'icon-redo',
+            handler : function() {
+                var href = $('#centerTabs').tabs('getSelected').panel('options').href;
+                console.log("href"+href);
+                if (href) {
+                    var index = $('#centerTabs').tabs('getTabIndex', $('#centerTabs').tabs('getSelected'));
+                    $('#centerTabs').tabs('getTab', index).panel('refresh');
+                } else {
+                    var panel = $('#centerTabs').tabs('getSelected').panel('panel');
+                    var frame = panel.find('iframe');
+                    try {
+                        if (frame.length > 0) {
+                            for ( var i = 0; i < frame.length; i++) {
+                                var rv = window.open(frame[i].src);
+                            }
+                            if ($.browser.msie) {
+                                CollectGarbage();
+                            }
+                        }
+                    } catch (e) {
+                    }
+                }
+            }
+        },
+            {
+                iconCls : 'icon-max',
+                handler : function() {
+                    MaxWindows();
+                }
+            }, {
+                iconCls : 'icon-cancel',
+                handler : function() {
+                    var index = $('#centerTabs').tabs('getTabIndex', $('#centerTabs').tabs('getSelected'));
+                    var tab = $('#centerTabs').tabs('getTab', index);
+                    if (tab.panel('options').closable) {
+                        $('#centerTabs').tabs('close', index);
+                    } else {
+                        showMsg('提示', '[' + tab.panel('options').title + ']不可以被关闭', 'error');
+                    }
+                }
+            }],
+        fit : true,
+        border : false,
+        onContextMenu : function(e, title) {
+            e.preventDefault();
+            tabsMenu.menu('show', {
+                left : e.pageX,
+                top : e.pageY
+            }).data('tabTitle', title);
+        }
+    });
+
+});
+function changeTheme(theme){
+    changeThemeFun(theme);
+    save(theme,'theme');
+}
+
+function save(values,types)
+{
+    $.post("${base}/management/extmsg/addExtMsg/"+values+"/"+types, function (rsp) {
+        if (rsp.successful) {
+            showMsg("提示", "天天好心情"+"<img src='${base}/styles/images/other/laugh.png'>");
+        } else {
+            showMsg("提示", "保存样式失败!");
+        }
+    }).error(function () {
+                showMsg("提示", "更新失败,请重新登陆!");
+            });
+
+}
+
+function MaxWindows() {
+    if (!($('div[class*="layout-panel-west"]').css("display") == "none")) {
+        $('div[class*="layout-panel-west"]').css("display", "none");
+        $('div[class*="layout-panel-south"]').css("display", "none");
+        $('div[class*="layout-panel-north"]').css("display", "none");
+    }
+    else {
+        $('div[class*="layout-panel-west"]').css("display", "block");
+        $('div[class*="layout-panel-south"]').css("display", "block");
+        $('div[class*="layout-panel-north"]').css("display", "block");
+    }
+    $('#layout_main_body').layout("resize");
+}
+ADD_TAB = addTab;
+
+
+////////////////////闪烁提示代码开始/////////////////////////////////////////////////////////////////
+var flashEngine;
+var ii;
+var flashTag = "0";//0未闪  1已闪
+var currentUserId;
+var msgIdContainer=[];//发送给你的msgId累积的容器
+function init(){
+    //获取当前用户
+    $.post("${base}/management/security/user/userinfo", function (rsp) {
+        if (rsp.username != '') {
+            currentUserId = rsp.id;
+        } else {
+            showMsg("提示", "获取登录用户信息失败!");
+        }
+    });
+
+    //连接websocket获取后台数据
+    listen(new WebSocket(wsUri));
+}
+
+//页面加载时候调用
+window.addEventListener("load", init, false);
+
+//接收websocket后被调用的方法
+function businessProcess(event) {
+    var obj = JSON.parse(event.data);
+    var deviceTag = obj.DEVICE;
+    var deviceValue = obj.VALUE;
+
+    switch (deviceTag.toUpperCase()){
+        case "MSG_HINT":
+            for (var i=0; i<deviceValue.length; i++) {
+                var o = deviceValue[i];
+                var toUserArr = o.TO_USER;
+
+                //这个信息如果是派送给你了，那就闪
+                if (isExist(currentUserId, toUserArr) || toUserArr[0] == "*") {
+                    startFlash();
+
+                    //如果这个msgId还没有存放进提醒容器，则新增进去
+                    if (!isExist(o.MSG_ID, msgIdContainer)) {
+                        msgIdContainer.push(o.MSG_ID);
+                    }
+                }
+            }
+            break;
+        case "NEW_ERR_HINT":
+            startNewFlash(deviceValue);
+            break;
+        case "NEW_MSG_HINT":
+            showBroadMsg(deviceValue);
+            break;
+        default:
+    }
+}
+
+function startFlash(){
+    //需要闪，且已经闪，则不需要再执行
+    if (flashTag == "0") {
+        ii=0;
+        flashEngine = window.setInterval(function() {
+            var imgObj = document.getElementById("hintFlashLogo");
+            if (ii%2 == 0) {
+                imgObj.src = "${base}/styles/images/logo/msghint.png";
+            } else {
+                imgObj.src = "${base}/styles/images/logo/msghint1.png";
+            }
+            ii++;
+        }, 0.5*1000);
+        flashTag = "1";//标志已经闪了
+    }
+}
+
+//停止闪烁
+function stopFlash(){
+    if (flashTag == "1") {
+        clearInterval(flashEngine);
+        var o = document.getElementById("hintFlashLogo");
+        o.src = "${base}/styles/images/logo/msghint1.png";
+        flashTag = "0";//标志不闪了
+    }
+}
+
+//打开处理页面
+function openHintDetail(){
+    stopFlash();//停止闪烁
+    var myDate = new Date();
+    var curTime = myDate.toLocaleTimeString();
+    addTab("消息提醒("+curTime+")||icon-sys||${base}/business/tool/qryPushMsgList/"+JSON.stringify(msgIdContainer));
+    msgIdContainer = [];//清空缓存的消息容器
+}
+
+//判断一个值是否在数组中，如果存在true， 否则false
+function isExist(id, array){
+    var res = false;
+    for (var i = 0; i < array.length; i++) {
+        if (id == array[i]) {
+            res = true;
+            return res;
+        }
+    }
+    return res;
+}
+
+////////////////////闪烁提示代码结束/////////////////////////////////////////////////////////////////
+
+///////////////////新的告警提示begin//////////////////////////////////////////////////////////////////////
+var jjj;
+var newFlashTag = "0";//0未闪  1已闪
+var newFlashEngine;
+function startNewFlash(deviceValue){
+    //如果没有信息了，就停止闪烁
+    if (deviceValue == null || deviceValue.length == 0) {
+        stopNewFlash();
+        return;
+    }
+
+    var liHTML = "";
+    var count = "";
+    for (var i=0; i<deviceValue.length; i++) {
+        var o = deviceValue[i];
+        liHTML = liHTML + '<li style="text-align: left;cursor:pointer" onclick=addTab("故障信息查询||icon-sys||${base}/business/monitor/deviceErr/list")>'+o.MSG+'</li>';
+        count = o.CNT;
+    }
+    document.getElementById("spanERRTextID").innerHTML = "告警("+count+")";
+    document.getElementById("errULID").innerHTML = liHTML;
+
+    //需要闪，且已经闪，则不需要再执行
+    if (newFlashTag == "0") {
+        jjj = 0;
+        newFlashEngine = window.setInterval(function() {
+            var spanObj = document.getElementById("spanERRIMGID");
+            if (jjj%2 == 0) {
+                spanObj.innerHTML = '<img height="18" width="18" src="${base}/styles/images/logo/warn.png">';
+            } else {
+                spanObj.innerHTML = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+            }
+            jjj++;
+        }, 0.5*1000);
+        newFlashTag = "1";//标志已经闪了
+    }
+}
+
+//停止闪烁
+function stopNewFlash(){
+    if (newFlashTag == "1") {
+        clearInterval(newFlashEngine);
+        document.getElementById("spanERRIMGID").innerHTML = "";
+        document.getElementById("spanERRTextID").innerHTML = "";
+        document.getElementById("errULID").innerHTML = "";
+        newFlashTag = "0";//标志不闪了
+    }
+}
+
+
+function showBroadMsg(deviceValue){
+    //如果没有信息了，就停止闪烁
+    if (deviceValue == null || deviceValue.length == 0) {
+        document.getElementById("spanMSGIMGID").innerHTML = "";
+        document.getElementById("spanMSGTextID").innerHTML = "";
+        document.getElementById("msgULID").innerHTML = "";
+        return;
+    }
+
+    var liHTML = "";
+    var count = "";
+    for (var i=0; i<deviceValue.length; i++) {
+        var o = deviceValue[i];
+        liHTML = liHTML + '<li style="text-align: left;cursor:pointer" onclick=addTab("动态信息查询||icon-sys||${base}/business/monitor/deviceBroad/list?deviceBroadPri=1")>'+o.MSG+'</li>';
+        count = o.CNT;
+    }
+    document.getElementById("spanMSGIMGID").innerHTML =  '<img height="18" width="18" src="${base}/styles/images/logo/message.png">';
+    document.getElementById("spanMSGTextID").innerHTML = "信息("+count+")";
+    document.getElementById("msgULID").innerHTML = liHTML;
+}
+///////////////////新的告警提示end//////////////////////////////////////////////////////////////////////
+</script>
+
+<#macro north>
+    <div class="easy-topbox">
+        <div class="easy-topbox-left">
+            <div class="easy-topbox-right">
+
+                <!--xieyt begin-->
+                <div class="imrcmain0 imgl" style="width:600px;z-index:999999;position:relative; left:700px;top:0px;">
+                    <div class="imcm imde" id="imouter0">
+                        <ul id="imenus0">
+                            <li class="imatm"  style="width:300px;">
+                                <a style="text-transform:none;text-decoration:none;" id="errAID" onclick='addTab("故障信息查询||icon-sys||${base}/business/monitor/deviceErr/list")'>
+                                    <span id="spanERRIMGID"></span><span  id="spanERRTextID" style="text-align: left; font-size: 14px;color: #000000; "></span>
+                                </a>
+                                <div class="imsc">
+                                    <div class="imsubc" style="width:300px;top:0px;left:0px;z-index:999999">
+                                        <ul id="errULID" style="border-right:1px"></ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="imatm"  style="width:300px;">
+                                <a style="text-transform:none;text-decoration:none;" id="msgAID" onclick='addTab("动态信息查询||icon-sys||${base}/business/monitor/deviceBroad/list?deviceBroadPri=1")'>
+                                    <span id="spanMSGIMGID"></span><span  id="spanMSGTextID" style="text-align: left; font-size: 14px;color: #000000;"></span>
+                                </a>
+                                <div class="imsc">
+                                    <div class="imsubc" style="width:300px;top:0px;left:0px;">
+                                        <ul id="msgULID"></ul>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!--xieyt end-->
+
+
+                <div class="easy-topbox-logo">&nbsp;</div>
+                <div class="easy_topbox_bar">
+                    <span><@shiro.authenticated>您好，<@shiro.principal/>
+                           </@shiro.authenticated>
+                    </span><a href="javascript:void(0);" class="easyui-menubutton" menu="#layout_north_kzmbMenu">配置系统</a> <span>|</span> <a style="cursor:pointer" onclick="logout(true);">[退出系统]</a></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout_north_kzmbMenu" style="width: 100px; display: none;">
+        <@shiro.guest>
+        Hello guest!
+    </@shiro.guest>
+
+    <!--<div onclick="logout(false);" data-options="iconCls:'icon-back'">注销登陆</div>-->
+    <div onclick="javascript:introJs().start();" data-options="iconCls:'icon-tip'">新手引导</div>
+    <div onclick="showUserInfo();" data-options="iconCls:'icon-man'">个人信息</div>
+    <div class="menu-sep"></div>
+    <div data-options="iconCls:'icon-pro'">
+        <span >晒个心情</span>
+        <div style="width: 60px;">
+            <div onclick="changeTheme('default');" >天蓝</div>
+            <div onclick="changeTheme('green');">绿冉</div>
+            <div onclick="changeTheme('blue');" >海蓝</div>
+            <div onclick="changeTheme('pepper-grinder');" >咖啡</div>
+            <div onclick="changeTheme('cupertino');" >纯蓝</div>
+            <div onclick="changeTheme('orange');" >橙黄</div>
+            <div onclick="changeTheme('red');" >玫瑰</div>
+            <div onclick="changeTheme('gray');">银灰</div>
+            <div onclick="changeTheme('sunny');">阳光</div>
+            <div onclick="changeTheme('metro');">纯白</div>
+            <div onclick="changeTheme('black');">酷黑</div>
+            <div onclick="changeTheme('bootstrap');">酷灰</div>
+            <div onclick="changeTheme('dark-hive');" >黑白</div>
+        </div>
+    </div>
+    </div>
+</#macro>
+
+<#macro south>
+    <div style="text-align: center;">
+        &copy;2013~2014
+        <span class="tip">
+            <a href="javascript:void(0);" onclick="showMsg('版权','Intelligent control');" title="IntelCtrl">Intelligent Control</a>
+        </span>
+
+        <span style="text-align: right;">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <img id="hintFlashLogo" onclick="openHintDetail()" style="cursor:pointer" src="${base}/styles/images/logo/msghint1.png">
+        </span>
+    </div>
+</#macro>
+
+<#macro center>
+    <div id="centerTabs">
+        <div iconCls="icon-home" title="首页" border="false" style="overflow: hidden;">
+            <iframe src="${base}/management/index/portal" frameborder="0" style="border:0;width:100%;height:99.4%;"></iframe>
+        </div>
+    </div>
+</#macro>

@@ -1,0 +1,165 @@
+<form id="ffme" method="post" commandName="user">
+	<input type="hidden" name="id" id="id" />
+	<input type="hidden" name="salt" id="salt">
+
+	<table>
+		<tr>
+			<td>姓名:</td>
+			<td><input class="easyui-textbox" name="realname" id="realname" data-options="required:true,validType: 'length[2,50]',width:200" /></td>
+			<td>账号:</td>
+			<td><input class="easyui-textbox" name="username" id="username" data-options="required:true,validType: 'length[2,20]'" /></td>
+		</tr>
+		<tr>
+			<td>密码:</td>
+			<td><input class="easyui-textbox" type="password" name="plainPassword" id="plainPassword" /></td>
+			<td>状态:</td>
+			<td><input class="easyui-textbox" name="status" id="status" /></td>
+		</tr>
+		<tr>
+			<td>电话:</td>
+			<td><input class="easyui-textbox" name="phone" id="phone" data-options="validType: 'phone,number'" /></td>
+			<td>邮箱:</td>
+			<td><input class="easyui-textbox" name="email" id="email" data-options="validType: 'email'" /></td>
+		</tr>
+		<tr>
+			<td>角色:</td>
+			<td><input class="easyui-textbox" id="roles" name="roles"></td>
+			<td>部门:</td>
+			<td><input class="easyui-textbox" name="orgId" id="orgId" /></td>
+		</tr>
+		<tr>
+			<td>职称:</td>
+			<td><input class="easyui-textbox" id="professionId" name="professionId"></td>
+		</tr>
+	</table>
+</form>
+<div class="submit-div" style="text-align: right;">
+	<a href="javascript:void(0)" id="add" class="easyui-linkbutton" iconCls="icon-save" onclick="submitForm()">提交</a>
+	<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="$('#ffme').form('clear');">重置</a>
+</div>
+<script type="text/javascript">
+	var statusList = [{
+		id: 'enabled',
+		name: '可用'
+	}, {
+		id: 'disabled',
+		name: '不可用'
+	}];
+	$('#status').combobox({
+		data: statusList,
+		valueField: 'id',
+		required: true,
+		textField: 'name'
+	});
+
+	$('#orgId').combotree({
+		url: '${base}/management/security/organization/findAll',
+		idFiled: 'id',
+		textFiled: 'name',
+		editable: false,
+		parentField: 'parentId',
+		panelHeight: 'auto'
+	});
+
+	var user = JSON.parse(JSON.stringify(${user}));
+
+	if(user != undefined && user != null && user != "") {
+		$('#roles').combobox({
+			url: '${base}/newSysmgr/security/user/findAllRoleSelect?roles='+ user.roles,
+			valueField: 'id',
+			textField: 'description',
+			required: true,
+			multiple: true,
+			panelHeight: 'auto'
+		});
+
+		$('#professionId').combobox({
+			url: '${base}/management/security/user/findAllProfession',
+			valueField: 'id',
+			textField: 'name',
+			multiple: false,
+			panelHeight: 'auto'
+		});
+
+		delete user["roles"];
+
+		if(user.id != null && user.id != '') {
+			$('#ffme').form('load', user);
+
+			$("#status").combobox('setValue', user.status);
+			$("#orgId").combotree('setValue', user.orgId);
+			$("#professionId").combobox('setValue', user.professionId);
+			$('#plainPassword').attr("data-options", "validType: 'length[4,10]'");
+		} else {
+			$('#plainPassword').attr("data-options", "required:true,validType: 'length[4,10]'");
+		}
+	} else {
+
+		$('#roles').combobox({
+			url: '${base}/newSysmgr/security/user/findAllRole/1',
+			valueField: 'id',
+			textField: 'description',
+			required: true,
+			multiple: true,
+			panelHeight: 'auto'
+		});
+	}
+
+	function save() {
+        var statusVal;
+		if($('#status').combobox('getText') == "可用") {
+			$("#status").val("enabled");
+            statusVal = "enabled";
+		} else {
+			$("#status").val("disabled");
+            statusVal = "disabled";
+		}
+        var params = {};
+        if($("#id").val().length==0){
+            //表示新增
+        }else{
+            //修改
+            params.search_id = $("#id").val();
+        };
+        params.search_realname = $("#realname").textbox('getValue');
+        params.search_username = $("#username").textbox('getValue');
+        params.search_plainPassword = $("#plainPassword").textbox('getValue');
+        params.search_status = statusVal;
+        params.search_phone = $("#phone").textbox('getValue');
+        params.search_email = $("#email").textbox('getValue');
+        params.search_roles = String($('#roles').combobox('getValues'));
+        params.search_orgId = String($('#orgId').combobox('getValues'));
+        params.search_professionId = String($('#professionId').combobox('getValues'));
+
+		$.post("${base}/newSysmgr/security/user/saveUser", params, function(rsp) {
+			if(rsp.successful) {
+				showMsg("提示", rsp.msg);
+				closeWin();
+			} else {
+				showMsg("提示", rsp.msg);
+				$('#add').linkbutton({
+					disabled: false
+				});
+			}
+		}).error(function() {
+			showMsg("提示", "更新失败,请重新登陆!");
+			$('#add').linkbutton({
+				disabled: false
+			});
+		});
+	}
+
+	$('#ffme').find('input').on('keyup', function(event) {
+		if(event.keyCode == '13') {
+			submitForm();
+		}
+	});
+
+	function submitForm() {
+		if(!$("#ffme").form('validate')) return false;
+		$('#add').linkbutton({
+			disabled: true
+		});
+		save();
+	}
+</script>

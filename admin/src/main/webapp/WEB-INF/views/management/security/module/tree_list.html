@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>模块</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+<body>
+<@shiro.hasPermission name="Module:save">
+<div class="well well-small" style="margin-left: 5px;margin-top: 5px;margin-right: 5px">
+    <span class="badge">提示</span>在此你可以对<span class="label-info"><strong>模块</strong></span>进行编辑!
+</div>
+<div id="tb" >
+    <table>
+        <tr>
+            <td >
+                <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add"  onclick="append()">新增</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit"  onclick="edit()">修改</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-redo" onclick="endEdit()">暂存</a>
+                <!--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel"onclick="removeIt()">删除</a>-->
+                <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save"  onclick="save()">保存</a>
+            </td>
+        </tr>
+    </table>
+</div>
+</@shiro.hasPermission>
+<div id="tx" style="margin: 5px;">
+<table id="dg"  class="easyui-treegrid"></table>
+</div>
+</body>
+<script type="text/javascript">
+    $dg = $("#dg");
+    $dg.treegrid({
+        title:"模块管理",
+        iconCls: 'icon-ok',
+        fitColumns: true,
+        height: $(this).height() - 46,
+        width: $(this).width() - 10,
+        animate: true,
+        collapsible: true,
+        url: '${base}/management/security/module/getModuleList',
+        method: 'get',
+        idField:'id',
+        treeField: 'name',
+        parentField: 'parentId',
+        singleSelect:true,
+        columns: [
+            [
+                {field: 'id', title: 'ID', width:10},
+                {field: 'parentId', title: '上级ID', width:20, editor: {type: "text"}},
+                {field: 'name', title: '名称', width:50, editor: {type: "validatebox", options: {required: true, validType: 'length[2,8]'}}},
+                {field: 'description', title: '表述', width:100, editor: {type: "text"}},
+                {field: 'sn', title: '权限KEY', width:40, editor: {type: "validatebox", options: {required: true, validType: 'length[2,20]' }}},
+                {field: 'url', title: '路径', width:100,editor: {type: "validatebox", options: {required: true }}},
+                {field: 'priority', title: '优先级1~99', width:50,formatter:formatProgress,editor:{type: "validatebox",options:{required: true,validType: 'between_int[1,99]'}}}
+            ]
+        ],
+        toolbar: '#tb'
+    });
+    function formatProgress(value){
+        if (value){
+            var s = '<div style="width:100%;border:1px solid #ccc">' +
+                    '<div style="width:' + (100-value) + '%;background:#cc0000;color:#fff">' + (100-value) + '%' + '</div>'
+            '</div>';
+            return s;
+        } else {
+            return '';
+        }
+    }
+
+    var editingId;
+    function append(){
+        if (editingId != undefined){
+            $dg.treegrid('select', editingId);
+            return;
+        }
+        var node = $dg.treegrid('getSelected');
+        if ($dg.treegrid('getLevel',node.id) > 2) {
+            showMsg("提示","只能设置两级菜单，请重新选择父级菜单！！！");
+            return;
+        }
+
+        var _data = {
+            id: '',
+            name: '你的模块名',
+            description: '',
+            parentId: node.id,
+            sn:'',
+            url:'#',
+            priority:'99'
+        };
+
+        $dg.treegrid('append',{
+            parent: node.id,
+            data: [_data]
+        });
+        editingId = _data.id;
+
+        $dg.treegrid('beginEdit', editingId);
+        $dg.treegrid('select', editingId);
+    }
+    function edit(){
+        if (editingId != undefined){
+            $dg.treegrid('select', editingId);
+            return;
+        }
+        var row = $dg.treegrid('getSelected');
+        if (row){
+            editingId = row.id
+            $dg.treegrid('beginEdit', editingId);
+        }
+    }
+    function removeIt(){
+        var node = $dg.treegrid('getSelected');
+        if(node.id==1)
+        {
+            showMsg("提示","NO ZUO NO DIE");
+            return;
+        }
+        if (node){
+            $.messager.confirm('确认', '您确定要删除此选中行吗?', function (r) {
+                if (r) {
+                    $dg.treegrid('remove', node.id);
+                    editingId = undefined;
+                }
+            });
+        }
+    }
+
+    function endEdit() {
+        if (editingId != undefined) {
+            $dg.treegrid('endEdit', editingId);
+            editingId = undefined;
+        }
+    }
+
+    function save(){
+        editingId == undefined ? undefined : endEdit();
+
+            if ($dg.treegrid('getChanges').length>0) {
+                var inserted = $dg.treegrid('getChanges', "inserted");
+                var deleted = $dg.treegrid('getChanges', "deleted");
+                var updated = $dg.treegrid('getChanges', "updated");
+
+                var effectRow = new Object();
+                if (inserted.length) {
+                    effectRow["inserted"] = JSON.stringify(inserted);
+                }
+                if (deleted.length) {
+                    effectRow["deleted"] = JSON.stringify(deleted);
+                }
+                if (updated.length) {
+                    effectRow["updated"] = JSON.stringify(updated);
+                }
+                $.post("${base}/management/security/module/saveLists", effectRow, function(rsp) {
+                    if(rsp.successful){
+                        showMsg("提示", rsp.msg);
+                        $dg.treegrid('acceptChanges');
+                        $dg.treegrid("reload");
+                    }
+                    else
+                    {
+                        showMsg("提示", rsp.msg);
+                    }
+                });
+            }
+    }
+    function cancel(){
+        if (editingId != undefined){
+            $dg.treegrid('cancelEdit', editingId);
+            editingId = undefined;
+        }
+    }
+
+</script>
+</html>

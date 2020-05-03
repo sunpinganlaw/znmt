@@ -1,0 +1,57 @@
+
+<div class="form-div">
+    <#assign operation = {"show":"查","save":"增","edit":"改","delete":"删"} >
+        <form id="roleForm" method="post" commandName="rolePermission">
+            <input type="hidden" id="roleId" value="${roleid}">
+            <input type="hidden" id="rolePermission" value="">
+            <table >
+                <#list ModuleAll as module>
+                    <tr>
+                        <td>
+                            <span class="badge">${module.name}</span>
+                        </td>
+                        <td >
+                            <div style="vertical-align:middle">
+                        <#list operation ? keys as key>
+                            <input type="checkbox" id="${key}_${module.id}" value="${key}_${module.id}_${operation[key]}">${operation[key]}</input>
+                        </#list>
+                            </div>
+                        </td>
+                    </tr>
+                </#list>
+            </table>
+        </form>
+</div>
+<div  class="submit-div">
+    <a href="javascript:void(0)" id="add" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm()">提交</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="$('#ff').form('clear');">重置</a>
+</div>
+<script type="text/javascript">
+    <#list PermissionList as permission>
+    $("#${permission.shortName}_${permission.moduleId}").attr("checked",'true');
+    </#list>
+</script >
+<script type="text/javascript">
+    function save()
+    {
+        var chk_value =[];//定义一个数组
+        $('input[type="checkbox"]:checked').each(function(){//遍历每一个名字为interest的复选框，其中选中的执行函数
+            chk_value.push($(this).val());//将选中的值添加到数组chk_value中
+        });
+        $("#rolePermission").val(chk_value);
+        $.post("${base}/management/security/role/saveRolePermission/"+$("#roleId").val()+"?rolePermissionStr="+$("#rolePermission").val() , function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示",rsp.msg);
+                closeWin();
+            } else {
+                showMsg("提示", rsp.msg);
+            }
+        });
+    }
+
+    function submitForm(){
+        if (! $("#roleForm").form('validate'))  return false;
+        $('#add').linkbutton({disabled:true});
+        save();
+    }
+</script >

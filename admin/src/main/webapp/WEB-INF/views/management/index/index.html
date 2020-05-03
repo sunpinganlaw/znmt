@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <title>码头作业管理系统</title>
+	<base href="${base}/">
+    <link rel="icon" href="/styles/images/logo/muyu.png" type="image/png" >
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+	<#include "/include/common.html"/>
+	<script type="text/javascript">
+	
+			$(function(){
+				initMenu();
+//退出提示去掉
+//                window.onbeforeunload = function () { return ""; };
+			});
+		
+			function initMenu(){
+				var $ma=$("#menuAccordion");
+				$ma.accordion({animate:true,fit:true,border:false});
+				$.post("management/index/getMenuModule", {username:"1"}, function(rsp) {
+					if(rsp.children && rsp.children != ''){
+						$.each(rsp.children,function(i,e){
+							var menulist ="<div class=\"well well-small\">";
+							if(e.children && e.children.length>0){
+								$.each(e.children,function(ci,ce){
+									var effort=ce.name+"||"+ce.className+"||"+WEB_GLOBAL_CTX+ce.url;
+									menulist+="<a href=\"javascript:void(0);\" class=\"easyui-linkbutton\" style=\"text-align: left;\" data-options=\"plain:true,iconCls:'"+ce.className+"'\" onclick=\"addTab('"+effort+"');\">"+ce.name+"</a><br/>";
+								});
+							}
+							menulist+="</div>";
+							$ma.accordion('add', {
+					            title: e.name,
+					            content: menulist,
+								border:false,
+					            iconCls: e.className,
+					            selected: false
+					        });
+						});
+					}else{
+						showMsg("提示", "暂无菜单数据,请初始化菜单!");
+					}
+	
+				}).error(function() {
+					showMsg("提示", "获取菜单出错,请重新登陆!");
+				});
+			}
+		
+	</script>
+
+  </head>
+  
+  <body class="easyui-layout" id="layout_main_body">
+  	<#include "/management/index/layout.html">
+  	<div data-options="region:'north',border:false" style="height:70px;padding:0px;overflow: visible;" data-step="1" data-intro="系统知识库，用户登出及切换皮肤！" data-position='bottom-right-aligned'>
+  		<@north/>
+  	</div>
+	<div data-options="region:'west',split:true,title:'功能菜单'" style="width:170px;" data-step="2" data-intro="您的账号拥有的功能列表，点击进入对应功能！" data-position='right'>
+			<div id="menuAccordion"></div>
+	</div> 
+	<div data-options="region:'south',border:true" style="height:25px;padding:5px;overflow: hidden;" >
+		<@south/>
+	</div>
+	<div data-options="region:'center',plain:true,title:''" style="overflow: hidden;" data-step="3" data-intro="首页和您的工作区域！Esc或者方向键退出" data-position='top'>
+		<@center/>
+	</div>
+  </body>
+</html>

@@ -1,0 +1,238 @@
+    <div class="form-div">
+        <form id="ffme" method="post" commandName="user">
+            <table >
+                <input type="hidden" name="id"  id="id" />
+                <input type="hidden" name="salt"  id="salt" >
+                <input type="hidden" name="status"  id="status" >
+                <tr>
+                    <td >姓名:</td>
+                    <td><input class="easyui-textbox"  name="realname" id="realname" data-options="required:true,validType: 'length[2,50]'"/></td>
+                    <td >账号:</td>
+                    <td><input class="easyui-textbox"  name="username" id="username" data-options="required:true,validType: 'length[2,20]'"/></td>
+                </tr>
+                <tr>
+                    <td >密码:</td>
+                    <td><input class="easyui-textbox" type="password" name="plainPassword" id="plainPassword" /></td>
+                    <td >状态:</td>
+                    <td><input class="easyui-textbox" name="status1" id="status1" /></td>
+                </tr>
+                <tr>
+                    <td >电话:</td>
+                    <td><input class="easyui-textbox"  name="phone" id="phone" data-options="validType: 'phone,number'"/></td>
+                    <td >邮箱:</td>
+                    <td><input class="easyui-textbox"  name="email" id="email" data-options="required:true,validType: 'email'"/></td>
+                </tr>
+                <tr>
+                    <td >角色:</td>
+                    <td><input class="easyui-textbox"   id="roles" name="roles"></td>
+                    <td >部门:</td>
+                    <td><input class="easyui-textbox"  name="orgId" id="orgId" /></td>
+                </tr>
+                <tr>
+                    <td >职称:</td>
+                    <td><input class="easyui-textbox"   id="professionId" name="professionId"></td>
+                </tr>
+                <tr>
+                    <td >签名图片:</td>
+                    <td><input type="file" id="img" onchange="selectPicFile();"></td>
+                    <input type="hidden"  id="signPicContent" name="signPicContent">
+                    <td >预览:</td>
+                    <td rowspan="2"><div><img id="imgShow" src="" alt=""></div></td>
+                </tr>
+            </table>
+        </form>
+        <div class="submit-div">
+            <a href="javascript:void(0)" id="add" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm()">提交</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="$('#ffme').form('clear');">重置</a>
+        </div>
+    </div><!--
+    <#include "/include/common.html"/>-->
+<script type="text/javascript">
+    var signPicContentTmp = "";
+    function selectPicFile(){
+        var img = document.getElementById('img')
+        var imgShow = document.getElementById('imgShow');
+        var signPiccontent = document.getElementById('signPicContent');
+        var html5ImgFileObj = new FileReader();
+        var jsPicFile = img.files[0];
+
+        //alert("jsPicFile="+jsPicFile);
+        if(jsPicFile == undefined || jsPicFile == "" || jsPicFile == null){
+            alert("请选择文件");
+            imgShow.setAttribute('src', "");
+            return;
+        }
+
+        if(!/image\/\w+/.test(jsPicFile.type)){
+            imgShow.setAttribute('src', "");
+            alert("请选择文件为图像类型！");
+            return;
+        }
+        html5ImgFileObj.readAsDataURL(jsPicFile);
+        html5ImgFileObj.onload = function () {
+            var imgData = this.result; //base64数据
+            imgShow.setAttribute('src', imgData); //预览
+            signPiccontent.value = imgData;
+        }
+    }
+
+    /*
+    $('#status').combobox({
+        url:'${base}/business/dictionary/getList/USER-STATUS',
+        valueField:'dicKey',
+        textField:'dicValue',
+        editable:false,
+        required:true
+    });
+
+    $('#status').combobox({
+        url:'${base}/business/dictionary/getList/USER-STATUS',
+        valueField:'dicKey',
+        textField:'dicValue',
+        required:true,
+        editable:false,
+        panelHeight:'auto'
+    });*/
+
+        var statusList= [ {id:'enabled',name:'可用'},{id:'disabled',name:'不可用'}];
+        $('#status1').combobox({
+            data:statusList,
+            valueField:'id',
+            required:true,
+            textField:'name'
+        });
+
+    $('#orgId').combotree({
+        url: '${base}/management/security/organization/findAll',
+        idFiled: 'id',
+        textFiled: 'name',
+        editable:false,
+        parentField: 'parentId',
+        required: true,
+        panelHeight:'auto'
+    });
+
+
+    var user = JSON.parse(JSON.stringify(${user}));
+
+    if(user!=undefined&&user!=null&&user!="") {
+        $('#roles').combobox({
+            url: '${base}/management/security/user/findAllRoleSelect/1/' + user.roles,
+            valueField: 'id',
+            textField: 'description',
+            required: true,
+            multiple: true,
+            panelHeight: 'auto'
+        });
+
+        $('#professionId').combobox({
+            url: '${base}/management/security/user/findAllProfession',
+            valueField: 'id',
+            textField: 'name',
+            multiple: false,
+            panelHeight: 'auto'
+        });
+
+
+
+        delete user["roles"];
+
+        if (user.id != null && user.id != '') {
+            $('#ffme').form('load', user);
+
+            //$('#roles').combobox('setValues',arrayRoles);
+            /*
+             $('#roles').combobox('clear');
+             if(arrayRoles.length>0) {
+             $('#roles').combobox('setValues',arrayRoles);
+             $.each(arrayRoles, function(){
+             $('#roles').combobox('select',this);
+             });
+             }*/
+
+            /*$("#realname").val(user.realname);
+             $("#username").val(user.username);
+             $("#status").combobox('setValue',user.status);
+             $("#phone").val(user.phone);
+             $("#email").val(user.email);*/
+            //$('#roles').combobox('setValues',arrayRoles);
+            //$('#roles').combobox('setValues',arrayRoles);
+            $("#status1").combobox('setValue',user.status);
+            $("#orgId").combotree('setValue',user.orgId);
+            $("#professionId").combobox('setValue',user.professionId);
+            $('#plainPassword').attr("data-options","validType: 'length[4,10]'");
+            if(user.signPicContent == undefined || user.signPicContent=="" || user.signPicContent == null || user.signPicContent.length < 22){
+                document.getElementById('signPicContent').value =  "data:image/png;base64," ;
+            }else{
+                document.getElementById('imgShow').setAttribute('src', user.signPicContent);
+            }
+            $('#username').textbox({
+                //readonly:true,
+                disabled:true
+            });
+        }
+        else
+        {
+            $('#plainPassword').attr("data-options","required:true,validType: 'length[4,10]'")
+        }
+    }
+    else
+    {
+        $('#roles').combobox({
+            url: '${base}/management/security/user/findAllRole/1',
+            valueField: 'id',
+            textField: 'description',
+            required: true,
+            multiple: true,
+            panelHeight: 'auto'
+        });
+    }
+
+
+
+    function save()
+    {
+        if ($('#status1').combobox('getText') == "可用") {
+            $("#status").val("enabled");
+        } else {
+            $("#status").val("disabled");
+        }
+        if($("#plainPassword").val() == "") {
+            showMsg("提示","密码不能为空");
+            $('#add').linkbutton({disabled:false});
+            return false;
+        }
+        $('#username').textbox({
+            disabled:false
+        });
+
+        var picValue = document.getElementById('signPicContent').value;
+        if(picValue == null || user.signPicContent == undefined || user.signPicContent==""|| user.signPicContent.length < 22 ){
+            document.getElementById('signPicContent').value =  "data:image/png;base64," ;
+        }
+        var params = $("#ffme").serialize();
+        $.post("${base}/management/security/user/saveUser",params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示",rsp.msg);
+                closeWin();
+            } else {
+                showMsg("提示", rsp.msg);
+                $('#add').linkbutton({disabled:false});
+            }
+        }).error(function () {
+            showMsg("提示", "更新失败,请重新登陆!");
+            $('#add').linkbutton({disabled:false});
+        });
+    }
+
+    $('#ffme').find('input').on('keyup',function(event){
+        if(event.keyCode == '13'){
+            submitForm();
+        }
+    });
+    function submitForm(){
+        if (! $("#ffme").form('validate'))  return false;
+        $('#add').linkbutton({disabled:true});
+        save();
+    }
+</script>

@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>流程引擎管理</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <#include "/include/common.html"/>
+
+</head>
+
+<body>
+
+<@shiro.hasPermission name="User:save">
+<div class="well well-small" style="margin-left: 5px;margin-top: 5px;margin-right: 5px">
+    <span class="badge">提示</span>
+    在此你可以对<span class="label-info"><strong>流程模块</strong></span>进行编辑!
+</div>
+</@shiro.hasPermission>
+
+
+
+<div id="tb" >
+    <table>
+        <tr>
+            <td >
+                <@shiro.hasPermission name="User:save">
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add"  onclick="addRows();">添加</a>
+            </@shiro.hasPermission>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div id="tx" style="margin: 5px;">
+    <table id="tt" title="流程模块管理"></table>
+</div>
+
+<div  id="w" title="创建流程" class="easyui-window" closed="true">
+    <form id="ff" method="post" target="_blank">
+        <div style="text-align:center;padding:5px">
+            <table cellpadding="5">
+                <tr>
+                    <td>名称:</td>
+                    <td><input class="easyui-textbox" type="text" name="name" id="name" data-options="required:true,validType: ['length[4,20]','alphanum']"/></td>
+                </tr>
+                <tr>
+                    <td>KEY:</td>
+                    <td><input class="easyui-textbox" type="text" name="key" id="key" data-options="required:true,validType: 'length[5,20]'"/></td>
+                </tr>
+                <tr>
+                    <td>描述:</td>
+                    <td><input class="easyui-textbox" type="text" name="description" id="description" data-options="required:true"/></td>
+                </tr>
+            </table>
+            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()">提交</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="reset()">重置</a>
+        </div>
+    </form>
+</div>
+
+</body>
+
+<script type="text/javascript">
+    $(function() {
+        $("#tt").datagrid({
+            url : "/workflow/model/dataList",
+            pagination: true,
+            pagenumber:true,
+            pageSize:15,
+            pageList: [15, 20, 30],
+            fitColumns: true,
+            height: $(this).height() - 46,
+            width: $(this).width() - 10,
+            idField:'id',
+            singleSelect:true,
+            columns : [[
+                {field:'key',title:'KEY',width:80},
+                {field:'name',title:'模块名',width:100},
+                {field:'category',title:'category',width:100},
+                {field:'metaInfo',title:'metaInfo',width:100},
+                {field:'tenantId',title:'tenantId',width:100},
+                {field:'deploymentId',title:'deploymentId',width:100},
+                {field:'version',title:'version',width:100},
+                {field : 'id',title : '操作',align : 'left',editor : "text",
+                    formatter:function(value) {
+                        var a = '<a href="${base}/service/editor?id=' + value + '" target="_blank" >编辑</a> ';
+                        var b = '<a href="${base}/workflow/model/deployNew/' + value + '" >部署</a> ';
+                        var e = '<a href="${base}/workflow/model/export/' + value + '" target="_blank" >导出</a> ';
+                        var d = '<a href="${base}/workflow/model/delete/' + value + '">删除</a> ';
+                        return a + b + e + d;
+                    }
+                }
+            ]],
+            toolbar: '#tb'
+        });
+    });
+
+
+    function addRows()
+    {
+        $('#w').window('open');
+    }
+
+    function save()
+    {
+        var params = $("#ff").serialize();
+        var success = $("#ff").form('validate');
+        if (! success) {
+            return false;
+        }
+        $.post("${base}/workflow/model/create",params, function (result) {
+            $('#w').window('close');
+            $('#tt').datagrid('reload');
+        });
+
+    }
+
+    $('#ff').find('input').on('keyup',function(event){
+        if(event.keyCode == '13'){
+            submitForm();
+        }
+    });
+    function submitForm(){
+        save();
+    }
+</script>
+
+</html>

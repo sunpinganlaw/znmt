@@ -1,0 +1,75 @@
+<script type="text/javascript" charset="UTF-8" src="${base}/styles/easyui/jquery.min.js"></script>
+<link id="easyuiTheme" rel="stylesheet" type="text/css" href="${base}/styles/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="${base}/styles/easyui/themes/icon.css">
+<link rel="stylesheet" type="text/css" href="${base}/styles/easyui/demo/demo.css">
+<script type="text/javascript" src="${base}/styles/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="${base}/styles/easyui/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="${base}/styles/easyui/easyloader.js"></script>
+<script type="text/javascript" src="${base}/styles/js/common/common.js"></script>
+
+<style type="text/css">
+    body {
+        text-align: center
+    }
+</style>
+<form id="ff" method="post" commandName="reset">
+    <div id="p" class="easyui-window" title="密码重置" data-options="modal:true,minimizable:false,maximizable:false,closable:false,shadow:true"
+         style="width: 350px;height:170px;padding: 10px;margin: 0 auto;vertical-align: middle;">
+        <lable>注册邮箱:</lable>
+        <input class="easyui-textbox" name="email" id="email" value=""
+               data-options="required:true,validType: 'email'"/>
+        <br>
+        <lable>填写验证:</lable>
+        <input class="easyui-textbox" name="captcha_key" id="captcha_key" data-options="required:true"/>
+        <img style="width:80px;height:25px;" align="absmiddle" id="Kaptcha" src="${base}/captcha"/>
+        <br>
+        <br>
+        <div style="text-align: center"><a href="javascript:void(0)" id="go" class="easyui-linkbutton" onclick="submitForm()">发送</a></div>
+        <div style="text-align:center;margin:5px"><span id="show"></span></div>
+    </div>
+</form>
+<script type="text/javascript">
+
+    jQuery(document).ready(function () {
+        $("#Kaptcha").click(function () {
+            $(this).attr("src", "${base}/captcha?" + Math.floor(Math.random() * 100)).fadeIn();
+            return false;
+        });
+    });
+
+    var t=6;//设定跳转的时间
+    function refer(){
+        if(t==0){
+            //window.location.href="${base}/"; //#设定跳转的链接地址
+            window.close();
+        }
+        $('#show').html("<font color='red'>提示：<b>"+t+"&nbsp;&nbsp;</b>秒后关闭页面</font>"); // 显示倒计时
+        t--; // 计数器递减
+    }
+
+
+    function sendMail() {
+
+        $.post("${base}/reset/sendmail/" + $("#email").val() + "/" + $("#captcha_key").val(), function (rsp) {
+            showMsg('消息', rsp.msg);
+            if(rsp.successful)
+            setInterval("refer()",1000); //启动1秒定时
+        }).error(function () {
+            showMsg("提示", "失败");
+        });
+    }
+
+
+    $('#ff').find('input').on('keyup', function (event) {
+        if (event.keyCode == '13') {
+            submitForm();
+        }
+    });
+
+    function submitForm() {
+        if (!$("#ff").form('validate'))  return false;
+        $('#go').linkbutton({disabled: true});
+        sendMail();
+    }
+
+</script>

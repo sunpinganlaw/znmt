@@ -1,0 +1,131 @@
+    <script type="text/javascript">
+
+        var return_user_id;
+        var return_user_value;
+
+        function chooseUser(in_id,in_value) {
+            return_user_id = "#" + in_id;
+            return_user_value = "#" + in_value;
+            $('#y-chooseUser').window({
+                        onClose: function () {
+                            $('#tx-chooseUser').datagrid('loadData', { total: 0, rows: [] });
+                        }
+                    }
+            );
+            $('#y-chooseUser').window('open');
+            $('#y-chooseUser').window('move', { left: 350, top: document.body.scrollTop + 250});
+            user_searchGo();
+        }
+
+        var user_do_flag = false;
+
+        var user_temp_val;
+
+        function user_searchGo(){
+            $("#tx-chooseUser").datagrid({
+                url: "${base}/management/security/user/userList",
+                iconCls: 'icon-search',
+                width: 'auto',
+                height: '100%',
+                singleSelect: true,
+                idField: 'id',
+                pagination: true,
+                frozenColumns:[[
+                    {field:'realname',title:'姓名',width:80,sortable:true}
+                ]],
+                columns: [
+                    [
+                        {field: 'id', title: 'ID', width: 60},
+                        {field: 'username', title: '账号', width: 100, sortable: true},
+                        {field: 'email', title: '邮箱', width: 210, sortable: true},
+                        {field: 'orgId', title: '部门', width: 100,
+                            formatter: orgFormatter
+                        },
+                    ]
+                ],
+                onClickRow: function (rowIndex, rowData) {
+                    $(return_user_id).val(rowData.id);
+                    $(return_user_value).val(rowData.realname);
+                    if($(return_user_id).hasClass("easyui-textbox"))
+                        $(return_user_id).textbox('setValue',rowData.id);
+                    if($(return_user_value).hasClass("easyui-textbox"))
+                        $(return_user_value).textbox('setValue',rowData.realname);
+                    $('#y-chooseUser').window('close');
+                }
+            });
+
+            //搜索框
+            $("#searchbox-chooseUser").searchbox({
+                menu: "#mm-chooseUser",
+                prompt: '模糊查询',
+                searcher: function (value, name) {
+                    var str = "{\"" + name + "\":\"" + value + "\"}";
+                    var obj = eval('(' + str + ')');
+                    $('#tx-chooseUser').datagrid('reload', obj);
+                }
+            });
+            //自定义翻页
+            var pager = $('#tx-chooseUser').datagrid('getPager');
+
+            pager.pagination({
+                showPageList:false,
+                buttons:$('#buttons'),
+                layout:['list','sep','first','prev','links','next','last']
+            });
+
+        }
+
+        function orgFormatter( value, row){
+            try {
+                if(!user_do_flag) {
+                    if (!(typeof row.organization.name == 'undefined'))
+                        user_temp_val = row.organization.name;
+                    else
+                        user_temp_val = "";
+                }
+                else
+                {
+                    user_temp_val = init_val;
+                    user_do_flag = false;
+                    if(init_id!=null && init_id.length>0) {
+                        row.orgId = init_id;
+                        row.organization.name = init_val;
+                    }
+                }
+            }
+            catch (exception) {
+                user_temp_val = init_val;
+            }
+            return user_temp_val;
+        }
+
+    </script>
+
+<div id="y-chooseUser" class="easyui-window"  closed="true" title="数据选择" data-options="iconCls:'icon-filter',resizable: false" style="width:600px;height:300px;">
+    <div id="dd-chooseUser" class="easyui-layout" style="width:97%;height:100%;"><!--
+        <div data-options="region:'north',split:true" style="width:100%;height:45px;vertical-align:middle;text-align: center">
+
+        </div>-->
+        <div data-options="region:'center'" style="width:100%;height:90%;">
+            <table id="tx-chooseUser" title="">
+            </table>
+        </div>
+    </div>
+
+    <div id="mm-chooseUser">
+        <div name="search_username">登录名</div>
+        <div name="search_realname">姓名</div>
+        <div name="search_email">邮箱</div>
+        <div name="search_phone">电话</div>
+    </div>
+
+    <div id="user_buttons">
+        <table style="border-spacing:0">
+            <tr>
+                <td>
+                    <input id="searchbox-chooseUser" type="text"/>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

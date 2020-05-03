@@ -1,0 +1,210 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>主页</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <#include "/include/common.html"/>
+
+    <script type="text/javascript" src="${base}/styles/js/portal/jquery.gridster.js"></script>
+    <script type="text/javascript" src="${base}/styles/js/jquery.jsonp.js"></script>
+    <script type="text/javascript" src="${base}/styles/js/newsScroll.js"></script>
+    <link rel="stylesheet" type="text/css" href="${base}/styles/css/jquery.gridster.min.css">
+    <style type="text/css">
+        ul, ol {
+            list-style: none;
+        }
+
+        .demo {
+            margin: 5px;
+        }
+
+        .demo:hover .gridster {
+            opacity: 1;
+        }
+
+        .gridster {
+            width: 100%;
+            margin: 0 auto;
+            opacity: .8;
+            -webkit-transition: opacity .6s;
+            -moz-transition: opacity .6s;
+            -o-transition: opacity .6s;
+            -ms-transition: opacity .6s;
+            transition: opacity .6s;
+        }
+
+        .gridster .gs_w {
+            background: #FFF;
+            cursor: pointer;
+            -webkit-box-shadow: 0 0 5px rgba(0,0,0,0.3);
+            box-shadow: 0 0 5px rgba(0,0,0,0.3);
+        }
+
+        .gridster .player {
+            -webkit-box-shadow: 3px 3px 5px rgba(0,0,0,0.3);
+            box-shadow: 3px 3px 5px rgba(0,0,0,0.3);
+        }
+
+
+        .gridster {
+            background-repeat: no-repeat;
+            background-position: 37px -169px;
+
+        }
+
+        #news_rolling{ height:96px; overflow:hidden;}/*这个高度设置配合每次滚动的行数可实现多行滚动*/
+        #news_rolling li{ line-height:24px; height:24px; border-bottom:1px #CCCCCC dashed;}
+
+    </style>
+</head>
+
+<body>
+
+<div id="container">
+    <section class="demo">
+        <div class="gridster">
+            <ul>
+                <li data-row="1" data-col="1" data-sizex="4" data-sizey="1">
+                    <div id="p1" class="easyui-panel" title="投诉任务" style="width:100%;height:150px;padding:0px;"
+                         data-options="iconCls:'icon-man'">
+                        <div class="content content-inner">
+                            <table id="complaint"></table>
+                        </div>
+                    </div>
+                </li><!--
+                <li data-row="2" data-col="1" data-sizex="4" data-sizey="1">
+                    <div id="weather" class="easyui-panel" title="天气" style="width:100%;height:150px;padding:5px;"
+                         data-options="iconCls:'icon-tip'">
+                    </div>
+                </li>-->
+            </ul>
+        </div>
+
+    </section>
+</div>
+
+
+</body>
+<script type="text/javascript">
+    var gridster;
+    $(function(){
+        gridster = $(".gridster > ul").gridster({
+            widget_margins: [1, 1],
+            widget_base_dimensions: [200, 150],
+            min_cols: 4,
+            min_rows: 3
+        }).data('gridster');
+    });
+
+    businessType  = 'complaint';
+    $(function() {
+        $("#complaint").datagrid({
+            url : '${base}/business/'+businessType+'/getTaskList/'+businessType,
+            idField:'id',
+            width: 798,
+            singleSelect:true,
+            columns : [[
+                {field:'description',title:'任务描述',width:200},
+                {field:'name',title:'当前进度',width:200},
+                {field:'createTime',title:'创建时间',width:200,formatter:toLocaleDateString},
+                {field:'processDefinitionId',title:'前往处理',width:100,formatter:function(value,rowData){
+                    var btn = '<a class="easyui-linkbutton"onclick="goDeal()"  href="javascript:void(0)"></a>';
+                    return btn;
+                }
+                }
+            ]],
+            toolbar: '#tb',
+            onLoadSuccess:function(){
+                $('#p1 .easyui-linkbutton').linkbutton({text:'',plain:true,iconCls:'icon-new'});
+            }
+        });
+    });
+
+    function goDeal() {
+        parent.addTab("投诉处理||icon-sys||${base}/business/" + businessType + "/taskList");
+    }
+    var weather;
+    function getWeather(city, type, key) {
+        var url = "http://api.map.baidu.com/telematics/v3/weather?location=" + city + "&output=" + type + "&ak=" + key;
+        $.jsonp({
+            url: url,
+            data: '',
+            callbackParameter: "callback",
+            timeout: 3000,
+            dataFilter: function (json) {
+                console.log("jsonp.filter:" + json);
+                console.log("jsonp.status:" + json.date);
+                console.log("jsonp.results" + json.results[0].pm25);
+                var pm25 = json.results[0].pm25;
+                var currentCity = json.results[0].currentCity;
+                var weather = json.results[0].weather_data[0].weather;
+                console.log("jsonp.weather" + weather);
+                var wind = json.results[0].weather_data[0].wind;
+                console.log("jsonp.wind" + wind);
+                var temperature = json.results[0].weather_data[0].temperature;
+                console.log("jsonp.temperature" + temperature);
+                var dayPictureUrl = json.results[0].weather_data[0].dayPictureUrl;
+                console.log("jsonp.dayPictureUrl" + dayPictureUrl);
+                var nightPictureUrl = json.results[0].weather_data[0].nightPictureUrl;
+                console.log("jsonp.nightPictureUrl" + nightPictureUrl);
+                var div_inner = "<div>" + currentCity + "&nbsp;/&nbsp;" + weather + "&nbsp;/&nbsp;" + wind + "&nbsp;/&nbsp;" + temperature;
+                div_inner += "&nbsp;/&nbsp;PM2.5" + pm25C(pm25) + "<br>" + "</div>";
+
+                var msg = "<div id='news_rolling' style='margin:0; padding:0;'><ul>" + msgC(json.results[0].index) + "</ul></div>";
+
+                $('#weather').append('<div class="content content-inner">' + div_inner + msg + '</div>');
+
+                $("#news_rolling").Scroll({line: 2, speed: 100, timer: 4000, up: "", down: ""});
+
+            },
+            success: function () {
+                console.log("jsonp.success:");
+            },
+            error: function (xOptions, textStatus) {
+                console.log("jsonp.error:" + textStatus + ", rel=" + xOptions.data.rel);
+            }
+        });
+    }
+
+    function initWeather() {
+        getWeather("金华", "json", "1L5aqpafGW6Yu76pMGEaRCuq");
+    }
+
+    function pm25C(number) {
+        if (number >= 0 && number <= 50) {
+            return "<img src='${base}/styles/images/pm25/pm25green.png' />优";
+        } else if (number >= 51 && number <= 100) {
+            return "<img src='${base}/styles/images/pm25/pm25green.png' />良";
+        } else if (number >= 101 && number <= 150) {
+            return "<img src='${base}/styles/images/pm25/pm25green.png' />轻度污染";
+        } else if (number >= 151 && number <= 200) {
+            return "<img src='${base}/styles/images/pm25/pm25green.png' />中度污染";
+        } else if (number >= 201 && number <= 300) {
+            return "<img src='${base}/styles/images/pm25/pm25green.png' />重度污染";
+        } else {
+            return "<img src='${base}/styles/images/pm25/pm25green.png' />严重污染";
+        }
+    }
+
+    function msgC(tipts) {
+        var temp = "";
+        for (var o in tipts) {
+            var index = tipts[o];
+            temp += "<li><b>" + index.tipt + "</b>:" + index.des + "</li>";
+        }
+        return temp;
+    }
+    initWeather();
+
+    //可定义一次滚动的行数 滚动速度 时间延迟 还有向上滚动按钮 向下滚动按钮
+
+
+</script>
+
+</html>

@@ -1,0 +1,89 @@
+    <script type="text/javascript">
+        $(function () {
+            info();
+        });
+        function info() {
+            $.post("${base}/management/security/user/userinfo", function (rsp) {
+                if (rsp.username != '') {
+                    $('#ff').form('load', JSON.parse(JSON.stringify(rsp)));
+                } else {
+                    showMsg("提示", "查询数据失败!");
+                }
+            }).error(function () {
+                showMsg("提示", "查询数据失败,请重新登陆!");
+            });
+        }
+        function save()
+        {
+            if (! $("#ff").form('validate'))  return false;
+            $('#add').linkbutton({disabled:true});
+            var params = $("#ff").serialize();
+            $.post("${base}/management/security/user/editinfo/"+$('#id').val(),params, function (rsp) {
+                if (rsp.successful) {
+                    showMsg("提示", "更新成功!");
+                    userInfoWindow.window("destroy");
+                } else {
+                    showMsg("提示", "更新失败!");
+                }
+            }).error(function () {
+                showMsg("提示", "更新失败,请重新登陆!");
+            });
+
+        }
+    </script>
+
+  <div class="easyui-panel" title="" style="width:384px">
+
+
+    <div style="padding:10px 60px 20px 60px">
+        <form id="ff" method="post" commandName="user">
+            <table cellpadding="5">
+                <input type="hidden" name="id"  id="id" >
+                <input type="hidden" name="salt"  id="salt" >
+                <input type="hidden" name="professionId"  id="professionId" >
+                <tr>
+                    <td>姓名:</td>
+                    <td><input class="easyui-textbox"  name="realname" id="realname" data-options="required:true,validType: 'length[2,50]'"/></td>
+                </tr>
+                <tr>
+                    <td>账号:</td>
+                    <td><input class="easyui-textbox"  name="username" id="username" readonly="true"/></td>
+                </tr>
+                <tr>
+                    <td>密码:</td>
+                    <td><input class="easyui-textbox" type="password" name="plainPassword" id="plainPassword"/></td>
+                </tr>
+                <tr>
+                    <td>电话:</td>
+                    <td><input class="easyui-textbox"  name="phone" id="phone" data-options="required:true,validType: 'phone,number'"/></td>
+                </tr>
+                <tr>
+                    <td>邮箱:</td>
+                    <td><input class="easyui-textbox"  name="email" id="email" data-options="required:true,validType: 'email'"/></td>
+                </tr>
+            </table>
+        </form>
+        <div style="text-align:center;padding:5px">
+            <a href="javascript:void(0)"  id="add" class="easyui-linkbutton" onclick="submitForm()">提交</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="reset()">重置</a>
+        </div>
+    </div>
+      </div>
+<style scoped="scoped">
+    .textbox{
+        height:20px;
+        margin:0;
+        padding:0 2px;
+        box-sizing:content-box;
+    }
+</style>
+<script>
+    $('#ff').find('input').on('keyup',function(event){
+        if(event.keyCode == '13'){
+           submitForm();
+        }
+    });
+    function submitForm(){
+        save();
+    }
+</script>

@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+	<head>
+		<title>权限管理</title>
+		<base href="${base}/">
+		<meta http-equiv="pragma" content="no-cache">
+		<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+		<meta http-equiv="description" content="this is my page">
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<#include "/include/common.html"/>
+	</head>
+
+	<body >
+
+        <div class="well">
+            <div style="margin:10px 0 10px 0;">
+                <label>角色名称：</label>
+                <select id="role_id_select" name="role_id_select" class="easyui-combobox" data-options="panelHeight:'auto'" style="width:120px;"></select>
+                <input name = "role_id" id = "role_id" hidden value="${role_id}">
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-save" onclick="saveRolePerm();">保存</a>
+            </div>
+            <div class="easyui-panel" title="权限列表" style="width:1000px;height:600px;padding:10px;" >
+                <ul id="myTree" checkbox="true">
+
+                </ul>
+            </div>
+        </div>
+
+
+	</body>
+	<script type="text/javascript">
+        Array.prototype.contains = function(obj) {
+            var i = this.length;
+            while (i--) {
+                if (this[i] === obj) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        $(function() {
+            var role_id = "${role_id}";
+            createTree(role_id);
+            $.post( '${base}/newSysmgr/security/permission/selectRoleAll', function(data) {
+                $('#role_id_select').combobox({
+                    data: data,
+                    valueField: 'id',
+                    textField: 'description',
+                    editable: false, //不可编辑
+                    panelHeight: 'auto'
+                });
+                $('#role_id_select').combobox('select',role_id);
+            });
+
+        });
+        function createTree(roleId){
+            $('#myTree').tree({
+                method: 'post',
+                url: '${base}/newSysmgr/security/permission/rolePermList',
+                lines:true,
+                dnd:true,
+                queryParams: {},
+                onBeforeLoad: function (node, param) {
+                    param.roleId = roleId;
+                },
+                onCheck: function(node,checked){
+                    if(node.textCode=="show"){
+                        if(checked == false){
+                            var parentNode = $('#myTree').tree('getParent', node.target);
+                            var childNodes = $('#myTree').tree('getChildren', parentNode.target);
+                            if (childNodes.length > 0) {
+                                for (var i = 0; i < childNodes.length; i++) {
+                                    $('#myTree').tree('uncheck', childNodes[i].target);
+                                }
+                            }
+                            $('#myTree').tree('uncheck', parentNode.target);
+                        }
+                    }
+                    if(node.textCode=="save"||node.textCode=="edit"||node.textCode=="delete"||node.textCode=="control1"||node.textCode=="control2"){
+                        if(checked == true){
+                            var parentNode = $('#myTree').tree('getParent', node.target);
+                            var childNodes = $('#myTree').tree('getChildren', parentNode.target);
+                            if (childNodes.length > 0){
+                                for (var i = 0; i < childNodes.length; i++){
+                                    if(childNodes[i].textCode =="show"){
+                                        $('#myTree').tree('check', childNodes[i].target);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        $(function(){
+            $("#role_id_select").combobox({
+                onChange:function(record){
+                    var comValue=$('#role_id_select').combobox('getValue');
+
+                    if(comValue == undefined ||comValue ==""||comValue ==null){
+
+                    }else{
+                        $("#myTree").empty();
+                        createTree(comValue);
+                    }
+                }
+            });
+        });
+
+        function saveRolePerm(){
+            var newArr = new Array();
+            var nodes = $('#myTree').tree('getChecked');
+            for(var i=0;i < nodes.length;i++){
+                var childrenNodes = nodes[i].children
+                if(childrenNodes==null){
+                    newArr.push(nodes[i])
+                }
+            }
+            for(var i=0;i < newArr.length;i++){
+                if(newArr[i].parentId==null){
+                    var nodePar = $('#myTree').tree("getParent",newArr[i].target);
+                    if(nodePar){
+                        newArr[i].parentId = nodePar.id;
+                    }
+
+
+                }
+            }
+
+            var parParIdSet = new Array();
+            for(var i=0;i < newArr.length;i++){
+                var nodePar = $('#myTree').tree("getParent",newArr[i].target);
+                var nodeParPar = $('#myTree').tree("getParent",nodePar.target);
+                if(parParIdSet.contains(nodeParPar.id)==false){
+                    parParIdSet.push(nodeParPar.id);
+                }
+            }
+            for(var i=0;i < parParIdSet.length;i++){
+                var obj = new Object();
+                obj.id = "n";
+                obj.text ="查看";
+                obj.textCode ="show";
+                obj.parentId = parParIdSet[i];
+                obj.iconCls ="";
+                newArr.push(obj)
+            }
+           // alert(parParIdSet);
+
+            var params = new Object();
+            params["nodes"] = JSON.stringify(newArr);
+            params["role_id"] = $('#role_id_select').combobox('getValue');
+            $.post("${base}/newSysmgr/security/permission/saveRolePerm", params, function(rsp) {
+                if(rsp.successful) {
+                    showMsg("提示", "修改成功！");
+                } else {
+                    showMsg("提示", "修改失败！");
+                }
+            }, "JSON").error(function() {
+                        showMsg("提示", "提交错误了！");
+            });
+
+        }
+	</script>
+
+</html>

@@ -1,0 +1,341 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>主页</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <#include "/include/common.html"/>
+
+    <script type="text/javascript" src="${base}/styles/js/portal/jquery.gridster.js"></script>
+    <script type="text/javascript" src="${base}/styles/js/jquery.jsonp.js"></script>
+    <script type="text/javascript" src="${base}/styles/js/newsScroll.js"></script>
+    <script type="text/javascript" src="${base}/styles/highcharts/highcharts.js"></script>
+    <script type="text/javascript" src="${base}/styles/highcharts/highcharts-3d.js"></script>
+    <script type="text/javascript" src="${base}/styles/highcharts/highcharts-more.js"></script>
+    <script type="text/javascript" src="${base}/styles/highcharts/modules/exporting.js"></script>
+    <script type="text/javascript" src="${base}/styles/highcharts/modules/solid-gauge.js"></script>
+    <script type="text/javascript" src="${base}/styles/js/portal/portal.js"></script>
+    <script type="text/javascript" src="${base}/styles/highcharts/modules/data.js"></script>
+    <link rel="stylesheet" type="text/css" href="${base}/styles/css/jquery.gridster.min.css">
+    <style type="text/css">
+
+        #news_rolling{ height:196px; overflow:hidden;}/*这个高度设置配合每次滚动的行数可实现多行滚动*/
+        #news_rolling li{ line-height:24px; height:24px; border-bottom:1px #CCCCCC dashed;}
+
+    </style>
+</head>
+
+<body id="bodyI">
+
+<div id="container">
+    <section class="portalGridster">
+        <div class="gridster">
+            <ul id="ulMain">
+                <li data-row="1" data-col="1" data-sizex="2" data-sizey="2">
+                    <div id="information" class="easyui-panel" title="系统公告"
+                         data-options="iconCls:'icon-tip'">
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+    </section>
+</div>
+
+
+</body>
+<script type="text/javascript">
+var taskCount = 0;
+var msgCount = 0;
+var gridster;
+var titleLists;
+var data_col = 3; //排版以至列
+var data_row = 1; //排版以至行
+var id_index = 0;
+//排版逻辑
+var c_li = "";
+
+$(function() {
+    $.ajax({
+        async: false,
+        cache: false,
+        type: 'POST',
+        url: WEB_GLOBAL_CTX+ '/portal/information',
+        error: function () {// 请求失败处理函数
+            showMsg("提示", "查询数据失败,请重新登陆!");
+        },
+        success: function (json) {
+            titleLists =  json.results;
+            var msg = "<div id='news_rolling' style='width:400px;height:258px;padding:0px;margin: 0px'><ul>" + msgEach(titleLists) + "</ul></div>";
+            $('#information').append('<div class="content content-inner" style="background: #FFFFFF">' + msg + '</div>');
+            $("#news_rolling").Scroll({line: 2, speed: 100, timer: 4000, up: "", down: ""});
+            msgCount = titleLists.length;
+
+            $.ajax({
+                async: false,
+                cache: false,
+                type: 'POST',
+                url: WEB_GLOBAL_CTX+ '/portal/portalConfig',
+                error: function () {// 请求失败处理函数
+                    showMsg("提示", "查询数据失败,请重新登陆!");
+                },
+                success: function (jsonme) {
+                    titleLists =  jsonme.results;
+                    initTip();
+                }
+            });
+        }
+    });
+});
+
+function goDeal(name,url) {
+    parent.addTab(name+"||icon-sys||"+WEB_GLOBAL_CTX+ url);
+}
+
+function msgEach(tipts) {
+    var temp = "";
+    for (var o in tipts) {
+        var index = tipts[o];
+        temp += "<li><a href='"+WEB_GLOBAL_CTX+"/business/msg/viewOnly/"+index.msgId+"' target='_blank' ><b>" + index.msgTitle + "</b></a></li>";
+    }
+    return temp;
+}
+var old_showType = "";
+function AddColRow(showType) {
+    if (showType == 1) {
+        data_row = data_row + 1;
+    }
+    if (showType == 2) {
+        if(data_col!=3) {
+            //data_row = data_row + 2;
+            data_col = 3;
+        }
+        else
+        {
+            data_row = data_row + 2;
+            data_col = 1;
+        }
+    }
+    if (showType == 3) {
+        if (data_col != 4) {
+            //data_row = data_row + 2;
+            data_col = 4;
+        }
+        else {
+            data_row = data_row + 2;
+            data_col = 1;
+        }
+    }
+    if (showType == 4) {
+            data_row = data_row + 1;
+            data_col = 6;
+    }
+    if (showType == 5) {
+            data_row = data_row + 2;
+            data_col = 4;
+    }
+    if (showType == 6) {
+            data_row = data_row + 2;
+            data_col = 4;
+    }
+}
+
+function AddDiv(showType,titleName)
+{
+    c_li = "";
+    if(showType==1)
+    {
+        c_li = '<li data-row="'+data_row+'" data-col="'+data_col+'" data-sizex="2" data-sizey="2"> <div id="TabChar"'+id_index+' class="easyui-panel" title="'+titleName+'">';
+        c_li +='<div class="content content-inner"><table id="tab'+id_index+'"></table></div></div></li>';
+    }
+    if(showType==2)
+    {
+        c_li = '<li data-row="'+data_row+'" data-col="'+data_col+'" data-sizex="2" data-sizey="2"> <div id="PieChar"'+id_index+' class="easyui-panel" title="'+titleName+'" >';
+        c_li +='<div id="Pie'+id_index+'" style="width:400px;height:258px;padding:0px;margin: 0px"></div></div></li>';
+
+    }
+    if(showType==3)
+    {
+        c_li = '<li data-row="'+data_row+'" data-col="'+data_col+'" data-sizex="3" data-sizey="2"> <div id="ColumnChar"'+id_index+' class="easyui-panel" title="'+titleName+'" >';
+        c_li +='<div id="Column'+id_index+'" style="width:605px;height:258px;padding:0px;margin: 0px"></div></div></li>';
+    }
+    if(showType==4)
+    {
+        c_li = '<li data-row="'+data_row+'" data-col="'+data_col+'" data-sizex="1" data-sizey="1"> <div id="SolidgaugeChar"'+id_index+' class="easyui-panel" title="'+titleName+'" >';
+        c_li +='<div id="Solidgauge'+id_index+'" style="width:200px;height:121px;padding:0px;margin: 0px"></div></div></li>';
+    }
+    if(showType==5)
+    {
+        c_li = '<li data-row="'+data_row+'" data-col="'+data_col+'" data-sizex="3" data-sizey="2"> <div id="LineChar"'+id_index+' class="easyui-panel" title="'+titleName+'" >';
+        c_li +='<div id="Line'+id_index+'" style="width:605px;height:258px;padding:0px;margin: 0px"></div></div></li>';
+    }
+    if(showType==6)
+    {
+        c_li = '<li data-row="'+data_row+'" data-col="'+data_col+'" data-sizex="3" data-sizey="2"> <div id="ColumnPChar"'+id_index+' class="easyui-panel" title="'+titleName+'" >';
+        c_li +='<div id="ColumnP'+id_index+'" style="width:605px;height:258px;padding:0px;margin: 0px"></div></div></li>';
+    }
+}
+
+function initTip()
+{
+    for (var o in titleLists) { //循环角色首页数据列表
+        id_index +=1;
+        var index = titleLists[o];
+        if (index.showType == 1)//1表格
+        {
+            AddDiv(1,index.title);
+            $("#ulMain").append(c_li);
+            initChartTable('tab'+id_index, index.jsonUrl, index.tableHead);
+            AddColRow(1);
+        }
+        else {
+            if (index.showType == 2)//2饼图
+            {
+                AddDiv(2,index.title);
+                $("#ulMain").append(c_li);
+
+                $.ajax({
+                    async: false,
+                    cache: false,
+                    type: 'POST',
+                    url: WEB_GLOBAL_CTX+ index.jsonUrl,
+                    error: function () {// 请求失败处理函数
+                        showMsg("提示", "查询数据失败,请重新登陆!");
+                    },
+                    success: function (json) {
+                        var portalReport = json.results;//portal_report元素
+                        var jsonArrayData= new Array();
+                        for (var o in portalReport) {
+                            var temp_val = "";
+                            var thisObj = portalReport[o];
+                            temp_val = eval('["'+thisObj.title+'",'+thisObj.colValue+']');
+                                jsonArrayData.push(temp_val);
+                        }
+                        initChartPie('Pie'+id_index, index.title, jsonArrayData,index.linkUrl);
+                    }
+                });
+
+                AddColRow(2);
+            }
+            else if (index.showType == 3)//3柱图
+            {
+                data_row = old_showType==5||old_showType==6||old_showType==3? data_row - 2: data_row;
+                AddDiv(3,index.title);
+                $("#ulMain").append(c_li);
+
+
+                $.ajax({
+                    async: false,
+                    cache: false,
+                    type: 'POST',
+                    url: WEB_GLOBAL_CTX+ index.jsonUrl,
+                    error: function () {// 请求失败处理函数
+                        showMsg("提示", "查询数据失败,请重新登陆!");
+                    },
+                    success: function (json) {
+                        var jsonArrayName= new Array();
+                        var jsonArrayData= new Array();
+                        var portalReport = json.results;//portal_report元素
+                        for (var o in portalReport) {
+                            var thisObj = portalReport[o];
+                            jsonArrayName.push(thisObj.title);
+                            jsonArrayData.push(thisObj.colValue);
+                        }
+                        initChartColumn('Column' + id_index, index.title, jsonArrayName, jsonArrayData,index.linkUrl);
+                    }
+                });
+                AddColRow(3);
+            }
+            else if (index.showType == 4)//占比速度
+            {
+                AddDiv(4,index.title);
+                $("#ulMain").append(c_li);
+                $.ajax({
+                    async: false,
+                    cache: false,
+                    type: 'POST',
+                    url: WEB_GLOBAL_CTX+ index.jsonUrl,
+                    error: function () {// 请求失败处理函数
+                        showMsg("提示", "查询数据失败,请重新登陆!");
+                    },
+                    success: function (json) {
+                        var maxNum = 0;
+                        var nowNum = 0;
+                        var portalReport = json.results;//portal_report元素
+                        for (var o in portalReport) {
+                            var thisObj = portalReport[o];
+                            nowNum = Number(thisObj.title);
+                            maxNum  = thisObj.colValue;
+                        }
+
+                        initSolidgauge('Solidgauge' + id_index, index.title, maxNum, nowNum,index.linkUrl);
+                    }
+                });
+                AddColRow(4);
+            }
+            else if (index.showType == 5)//折线
+            {
+                data_row = old_showType==5||old_showType==6||old_showType==3? data_row - 2: data_row;
+                AddDiv(5,index.title);
+                $("#ulMain").append(c_li);
+                $.ajax({
+                    async: false,
+                    cache: false,
+                    type: 'POST',
+                    url: WEB_GLOBAL_CTX+ index.jsonUrl,
+                    error: function () {// 请求失败处理函数
+                        showMsg("提示", "查询数据失败,请重新登陆!");
+                    },
+                    success: function (json) {
+                        initLine('Line' + id_index,index.title,json,index.linkUrl);
+                    }
+                });
+                AddColRow(5);
+            }
+            else if (index.showType == 6)//排序柱
+            {
+                data_row = old_showType==5||old_showType==6||old_showType==3? data_row - 2: data_row;
+                AddDiv(6,index.title);
+                $("#ulMain").append(c_li);
+                $.ajax({
+                    async: false,
+                    cache: false,
+                    type: 'POST',
+                    url: WEB_GLOBAL_CTX+ index.jsonUrl,
+                    error: function () {// 请求失败处理函数
+                        showMsg("提示", "查询数据失败,请重新登陆!");
+                    },
+                    success: function (json) {
+                        initColumn('ColumnP' + id_index,index.title,'近一年销售',json,index.linkUrl);
+                    }
+                });
+                AddColRow(6);
+            }
+            else
+                showMsg("提示", "展现格式不支持!");
+        }
+        old_showType =  index.showType ;
+    }
+    setTimeout(initGridster,500);
+}
+
+function initGridster()
+{
+    gridster = $(".gridster > ul").gridster({
+        widget_margins: [5, 4],
+        widget_base_dimensions: [200, 139],
+        min_cols: 4,
+        min_rows: 3
+    }).data('gridster');
+    //showMsg("提示", "您有<b><font style='color: red'>"+msgCount+"</font></b>条公告未阅，<b><font style='color: red'>"+taskCount+"</font></b>条工单待处理！");
+}
+
+
+</script>
+
+</html>

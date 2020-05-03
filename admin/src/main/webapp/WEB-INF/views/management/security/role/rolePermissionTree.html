@@ -1,0 +1,118 @@
+
+<form id="roleForm" method="post" commandName="rolePermission">
+    <input type="hidden" id="roleId" value="${roleid}">
+    <input type="hidden" id="rolePermission" value="">
+
+    <div class="form-div" style="height: 370px;width: 485px">
+        <div id="menuAccordion">
+
+        </div>
+    </div>
+</form>
+<div  class="submit-div">
+    <a href="javascript:void(0)" id="add" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm()">提交</a>
+</div>
+<script type="text/javascript">
+
+    var operation = [{"name":"show","value":"查"},{"name":"save","value":"增"},{"name":"edit","value":"改"},{"name":"delete","value":"删"},{"name":"control1","value":"控制"}];
+
+    var $ma=$("#menuAccordion");
+
+    $ma.accordion({animate:true,fit:true,border:false});
+
+    $(function() {
+
+        $.ajax({
+            async: false,
+            cache: false,
+            type: 'POST',
+            url: WEB_GLOBAL_CTX + '/management/index/getMenuModule',
+            error: function () {// 请求失败处理函数
+                showMsg("提示", "查询数据失败,请重新登陆!");
+            },
+            success: function (rsp) {
+                initP(rsp);
+            }
+        });
+    })
+
+
+    function initP(rsp)
+    {
+        if(rsp.children && rsp.children != ''){
+            $.each(rsp.children,function(i,e){
+
+                var id_i = "div_"+i;
+                var menulist ="<div style='height: 80px' id="+id_i+"><table >";
+
+                menulist+="<tr><td></td><td><input type='checkbox' id='show' name='show000' onclick='selectAll(\""+id_i+"\",\"show\")'>全选</input></td>" +
+                                        "<td><input type='checkbox' id='save' name='save000' onclick='selectAll(\""+id_i+"\",\"save\")'>全选</input></td>" +
+                                        "<td><input id='edit' name='edit000' type='checkbox' onclick='selectAll(\""+id_i+"\",\"edit\")'>全选</input></td>" +
+                                        "<td><input type='checkbox' name='delete000' id='delete' onclick='selectAll(\""+id_i+"\",\"delete\")'>全选</input></td>"+
+                                        "<td><input type='checkbox' name='control1000' id='control1' onclick='selectAll(\""+id_i+"\",\"control1\")'>全选</input></td>";
+                                        //"<td><input type='checkbox' name='control2000' id='control2' onclick='selectAll(\""+id_i+"\",\"control2\")'>全选</input></td>";
+                menulist+="<tr><td><span class=\"badge\">"+e.name+"</span></td>";
+                for (var thisO in operation)
+                {
+                    menulist+= '<td><input type="checkbox" id="'+operation[thisO].name+'_'+e.id+'" value="'+operation[thisO].name+'_'+e.id+'_'+operation[thisO].name+'">'+operation[thisO].value+'</input></td>';
+                }
+                menulist+="</tr>";
+
+                if(e.children && e.children.length>0){
+                    $.each(e.children,function(ci,ce){
+                        menulist+="<tr><td><span class=\"badge\">"+ce.name+"</span></td>";
+                        for (var thisO in operation)
+                        {
+                            menulist+= '<td><input type="checkbox" id="'+operation[thisO].name+'_'+ce.id+'" value="'+operation[thisO].name+'_'+ce.id+'_'+operation[thisO].name+'">'+operation[thisO].value+'</input></td>';
+                        }
+                        menulist+="</tr>";
+                    });
+                }
+                menulist+="</table ></div>";
+                $ma.accordion('add', {
+                    title: e.name,
+                    content: menulist,
+                    border:false,
+                    iconCls: e.className,
+                    selected: false
+                });
+            });
+            var permissionMe = JSON.parse(JSON.stringify(${PermissionList}));
+            for (var thisO in permissionMe)
+            {
+                $("#"+permissionMe[thisO].shortName+"_"+permissionMe[thisO].moduleId).attr("checked",'true');
+            }
+
+        }else{
+            showMsg("提示", "暂无菜单数据,请初始化菜单!");
+        }
+    }
+
+
+
+</script >
+<script type="text/javascript">
+    function save()
+    {
+        var chk_value =[];//定义一个数组
+        $('input[id*="_"]:checked').each(function(){//遍历每一个名字为interest的复选框，其中选中的执行函数
+            if($(this).val().length!=0)
+            chk_value.push($(this).val());//将选中的值添加到数组chk_value中
+        });
+        $("#rolePermission").val(chk_value);
+        $.post("${base}/management/security/role/saveRolePermission/"+$("#roleId").val()+"?rolePermissionStr="+$("#rolePermission").val() , function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示",rsp.msg);
+                closeWin();
+            } else {
+                showMsg("提示", rsp.msg);
+            }
+        });
+    }
+
+    function submitForm(){
+        if (! $("#roleForm").form('validate'))  return false;
+        $('#add').linkbutton({disabled:true});
+        save();
+    }
+</script >

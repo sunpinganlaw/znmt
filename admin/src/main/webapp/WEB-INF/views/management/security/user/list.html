@@ -1,0 +1,315 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>用户管理</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+
+<body>
+
+<@shiro.hasPermission name="User:save">
+<div class="well" >
+    <span class="badge">提示</span>
+    在此你可以对<span class="label-info"><strong>用户</strong></span>进行编辑!
+</div>
+</@shiro.hasPermission>
+<div id="tb" >
+    <table>
+        <tr>
+            <td >
+                <@shiro.hasPermission name="User:save">
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add"
+                   onclick="addUser();">添加</a>
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit"
+                   onclick="editUser();">修改</a>
+            </@shiro.hasPermission>
+
+        <@shiro.hasPermission name="User:delete:User拥有的资源">
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove"
+           onclick="delRows();">删除</a>
+    </@shiro.hasPermission>
+    </td>
+    <td >
+        <input id="searchbox" type="text"/>
+    </td>
+    </tr>
+    </table>
+</div>
+<div id="mm">
+    <div name="search_username">登录名</div>
+    <div name="search_realname">姓名</div>
+    <div name="search_email">邮箱</div>
+    <div name="search_phone">电话</div>
+</div>
+<div id="tx" style="margin: 5px;">
+<table id="dg" title="账号清单" ></table>
+</div>
+<div id="win" ></div>
+</body>
+<script type="text/javascript">
+
+var statusList= [ {id:'enabled',name:'可用'},{id:'disabled',name:'不可用'}];
+var rolesList;
+
+function getRolesList()
+{
+    $.post("${base}/management/security/user/findAllRole/1", function (rsp) {
+        rolesList = rsp;
+    }).error(function () {
+        showMsg("提示", "查询数据失败,请重新登陆!");
+    });
+}
+getRolesList();
+var $dg;
+var $temp;
+var $grid;
+var lastIndex;
+
+$(function () {
+    $dg = $("#dg");
+    $grid = $dg.datagrid({
+        url: "${base}/management/security/user/userList",
+        pagination: true,
+        pagenumber:true,
+        pageSize:10,
+        pageList: [10, 15, 20],
+        fitColumns: true,
+        height: $(this).height() - 46,
+        width: $(this).width() - 10,
+        idField:'id',
+        singleSelect:true,
+        columns: [
+            [
+                {field: 'id', title: 'ID', width: 30},
+                {field: 'username', title: '登录名', width:100, editor: {type: "validatebox", options: {required: true, validType: 'length[4,20]'}}},
+                {field: 'realname', title: '姓名', width:100, editor: {type: "validatebox", options: {required: true, validType: 'length[4,20]'}}},
+                {field: 'email', title: '邮箱', width: 150},
+                {field: 'phone', title: '电话', width:100},
+                {field: 'tel', title: '角色', width: 100,
+                    formatter: roleFormatter
+                },
+                {field: 'orgId', title: '所在组织', width: 100,
+                    formatter: orgFormatter
+                },
+                {field: 'professionId', title: '职称', width: 100,formatter:professionFormatter},
+                {field: 'status', title: '账户状态', width: 80,
+                    formatter: statusFormatter
+                },
+                {
+                    field: 'createTime', title: '创建时间', width: 120
+                }
+
+            ]
+        ],
+        toolbar: '#tb'
+    });
+
+    var init_val;
+    var init_id;
+    var temp_val;
+    var do_flag = false;
+
+
+    function statusFormatter(values,row){
+        for(var i=0; !(i >= statusList.length); i++){
+            if (statusList[i].id == values) return statusList[i].name;
+        }
+        return values;
+    }
+
+    function roleFormatter(values, row)
+    {
+        if(typeof values=='undefined') {
+            var roles = "";
+            var values = "";
+            var data = row.userRoles;
+            for (var x in data) {
+                if(x==data.length-1) {
+                    roles += data[x].role.description;
+                    values += data[x].role.id;
+                }
+                else{
+                    roles +=data[x].role.description+ ',';
+                    values += data[x].role.id+',';
+                }
+            }
+            //row.userRoles = values;
+            return roles;
+        }
+        return values;
+    }
+
+    function professionFormatter(value, row) {
+        var rv = "";
+        try {
+            rv = row.profession.name;
+        }
+        catch (exception) {
+            rv = "";
+        }
+        return rv;
+    }
+
+    function orgFormatter( value, row){
+        try {
+            if(!do_flag) {
+                if (!(typeof row.organization.name == 'undefined'))
+                    temp_val = row.organization.name;
+                else
+                    temp_val = "";
+            }
+            else
+            {
+                temp_val = init_val;
+                do_flag = false;
+                if(init_id!=null && init_id.length>0) {
+                    row.orgId = init_id;
+                    row.organization.name = init_val;
+                }
+            }
+        }
+        catch (exception) {
+            temp_val = init_val;
+        }
+        return temp_val;
+    }
+
+    //搜索框
+    $("#searchbox").searchbox({
+        menu: "#mm",
+        prompt: '模糊查询',
+        searcher: function (value, name) {
+            var str = "{\"" + name + "\":\"" + value + "\"}";
+            var obj = eval('(' + str + ')');
+            $dg.datagrid('reload', obj);
+        }
+    });
+
+});
+
+function addUser()
+{
+    var win = $('#win').window({
+            modal : true,
+            title : '添加用户信息',
+            width : 550,
+            height : 400,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/management/security/user/userEdit',
+            onClose : function() {
+                $dg.datagrid('reload');
+            }
+    });
+}
+
+function closeWin()
+{
+    $('#win').window('close',true);
+}
+
+function editUser()
+{
+    var row = $dg.datagrid('getSelected');
+    if (row) {
+        var id  = row.id
+        $('#win').window({
+            modal: true,
+            title: '编辑用户信息',
+            width : 550,
+            height : 400,
+            collapsible: false,
+            minimizable: false,
+            maximizable: true,
+            href: '${base}/management/security/user/editUser/'+id,
+            onClose: function () {
+                $dg.datagrid('reload');
+            }
+        });
+    }
+    else
+    {
+        showMsg("提示", "请选择一行");
+        return;
+    }
+}
+
+
+//function delRows() {
+//    var row = $dg.datagrid('getSelected');
+//    if (row) {
+//        $.messager.confirm('提示', '确定进行操作?', function (r) {
+//            if (r) {
+//                var index = $dg.datagrid('getRowIndex', row);
+//                $dg.datagrid('deleteRow', index);
+//            }
+//        });
+//    }
+//}
+function delRows() {
+    var row = $dg.datagrid('getSelected');
+    if (row) {
+        $.messager.confirm('提示', '确定进行操作?', function (r) {
+            if (r) {
+                var index = $dg.datagrid('getRowIndex', row);
+                var id  = row.id;
+                $.post("${base}/management/security/user/deleteInfo/"+id, function (rsp) {
+//                    if (rsp.successful) {
+//                        showMsg("提示",rsp.msg);
+//                        closeWin();
+//                    } else {
+//                        showMsg("提示", rsp.msg);
+//                    }
+                    $dg.datagrid('reload');
+                }).error(function () {
+                    showMsg("提示", "更新失败,请重新登陆!");
+                });
+            }
+        });
+    }
+}
+function saveRows() {
+    if ($dg.datagrid('getChanges').length) {
+        var inserted = $dg.datagrid('getChanges', "inserted");
+        var deleted = $dg.datagrid('getChanges', "deleted");
+        var updated = $dg.datagrid('getChanges', "updated");
+        var effectRow = new Object();
+        if (inserted.length) {
+            effectRow["inserted"] = JSON.stringify(inserted);
+        }
+        if (deleted.length) {
+            effectRow["deleted"] = JSON.stringify(deleted);
+        }
+        if (updated.length) {
+            effectRow["updated"] = JSON.stringify(updated);
+        }
+        $.post("${base}/management/security/user/saveUserList", effectRow, function(rsp) {
+            if(rsp.successful){
+                showMsg("提示", rsp.msg);
+                $dg.datagrid('acceptChanges');
+            }
+            else
+            {
+                showMsg("提示", rsp.msg);
+                $dg.datagrid('rejectChanges');
+            }
+        }, "JSON").error(function() {
+            showMsg("提示", "提交错误了！");
+        });
+    }
+
+}
+function rejectRows() {
+    $dg.datagrid('rejectChanges');
+}
+
+
+
+</script>
+</html>

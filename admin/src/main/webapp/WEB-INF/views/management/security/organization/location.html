@@ -1,0 +1,59 @@
+﻿<#include "/include/common.html"/>
+
+
+<style type="text/css">
+</style>
+<div class="easyui-panel" title="处理" style="width:100%">
+
+    <div data-options="region:'north',split:true" title="信息" style="height:260px;">
+
+        <table id="example" width="100%">
+            <thead>
+            <tr>
+                <th>编码</th>
+                <th>名称</th>
+                <th>地址</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+
+
+</div>
+<script type="application/javascript">
+    TableTools.DEFAULTS.sSwfPath= "${base}/styles/swf/copy_csv_xls_pdf.swf";
+    TableTools.DEFAULTS.aButtons = [ {
+        "sExtends": "pdf",
+        "sButtonText": "PDF"
+        },
+        {
+            "sExtends": "xls",
+            "sButtonText": "Excel"
+        },
+        {
+            "sExtends": "print",
+            "sButtonText": "打印"
+        }];
+    $(document).ready(function () {
+        var print_title="custCode|custName|custAddr"; //打印页面table表头数组
+        var print_temp_str = "";
+        var print_array = print_title.split("|");
+        for (x in print_array)
+        {
+            print_temp_str = print_temp_str +  "{\"data\":\""+print_array[x]+"\"},";
+        }
+        alert(print_temp_str);
+        var array_columns = eval("["+print_temp_str+"]");
+        alert(array_columns);
+        var table = $('#example').dataTable({
+            'bPaginate': false,
+            "bProcessing": true,
+            "bFilter": false,
+            "bInfo": false,
+            "ajax": "${base}/business/custom/dataListJosnObject",
+            "columns": array_columns
+        });
+        var tt = new $.fn.dataTable.TableTools( table );
+        $( tt.fnContainer() ).insertBefore('div.dataTables_wrapper');
+    });
+</script>

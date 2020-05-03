@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html>
+    <head>
+        <title>动态流程管理</title>
+        <base href="${base}/">
+        <meta http-equiv="pragma" content="no-cache">
+        <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+        <meta http-equiv="description" content="this is my page">
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+        <#include "/include/common.html"/>
+
+</head>
+
+
+<body>
+
+    <@shiro.hasPermission name="User:save">
+    <div class="well well-small" style="margin-left: 5px;margin-top: 5px;margin-right: 5px">
+        <span class="badge">提示</span>
+        在此你可以对<span class="label-info"><strong>流程模块</strong></span>进行编辑!
+    </div>
+    </@shiro.hasPermission>
+
+    <div id="tb" >
+        <table>
+            <tr>
+                <td >
+                <@shiro.hasPermission name="workflow:save">
+                <input type="hidden" name="add_role" id="add_role" value="1"/>
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-no"
+                   onclick="updateProcess();">挂起</a>
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-ok"
+                   onclick="updateProcess();">激活</a>
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add"
+                   onclick="deployProcess();">部署流程</a>
+                </@shiro.hasPermission>
+            </td>
+        </tr>
+        </table>
+    </div>
+    <div id="tx" style="margin: 5px;">
+        <table id="tt" title="流程引擎管理"></table>
+    </div>
+    <div id="w" class="easyui-window" closed="true">
+        <div class="easyui-layout" data-options="fit:true">
+            <div id="formContent" data-options="region:'center',border:false" style="padding:0px;border:1px solid #ccc;">
+                <div><b>支持文件格式：</b>zip、bar、bpmn、bpmn20.xml</div>
+                <form class="formkey-form" action="${base}/activiti/workflow/deploy" method="post" enctype="multipart/form-data">
+                    <input type="file" name="file" />
+                </form>
+            </div>
+            <div data-options="region:'south',border:false" style="text-align:right;padding:5px 0;">
+                <a class="easyui-linkbutton" data-options="iconCls:'icon-ok'" href="javascript:void(0)" onclick="sendStartupRequest()">发布</a>
+            </div>
+        </div>
+    </div>
+</body>
+
+    <script type="text/javascript">
+        $(function() {
+            $("#tt").datagrid({
+                url : "${base}/activiti/workflow/getprocesslist",
+                pagination: true,
+                pagenumber:true,
+                pageSize:15,
+                pageList: [15, 20, 30],
+                fitColumns: true,
+                height: $(this).height() - 46,
+                width: $(this).width() - 10,
+                idField:'id',
+                singleSelect:true,
+
+                columns : [[
+                    {field:'deploymentId',title:'DeploymentId',width:80},
+                    {field:'name',title:'name',width:80},
+                    {field:'key',title:'key',width:80},
+                    {field:'version',title:'version',width:80},/*
+                    {field:'deploymentTime',title:'deploymentTime',width:100},*/
+                    {field : 'resourceName',title : 'xml',align : 'left',
+                        formatter:function(value,rowData){
+                            var e = '<a href="${base}/activiti/workflow/resource/read?processDefinitionId='+rowData.id+'&resourceType=xml" target="_blank" >'+value+'</a> ';
+                            return e;
+                        }
+                    },
+                    {field:'diagramResourceName',title:'图片',width:20,formatter:function(value,rowData){
+                        var e = '<a href="${base}/diagram-viewer/index.html?processDefinitionId='+rowData.id+'" target="_blank" >查看</a> ';
+                        return e;
+                    }
+                    },
+                    {field : 'suspended',title : '状态',align : 'left',
+                        formatter:function(value,rowData){
+                            if (value){
+                                var e = '<a href="${base}/activiti/workflow/updateState/active/'+rowData.id+'" target="_self" >激活</a> ';
+                                return e;
+                            } else {
+                                var d = '';
+                                var d = '<a href="${base}/activiti/workflow/updateState/suspend/'+rowData.id+'" target="_self" >挂起</a> ';
+                                return d;
+                            }
+                        }
+                    },
+                    {field : 'id',title : '操作',align : 'left',
+                        formatter:function(value,rowData){
+                            var e = '<a href="${base}/activiti/workflow/process/delete?deploymentId='+rowData.deploymentId+'" target="_self" >删除</a> ';
+                            var d = '<a href="${base}/activiti/workflow/process/convert-to-modelNew/'+rowData.id+'" target="_self" >转为Model</a> ';
+                            return e+'&nbsp;'+d;
+                        }
+                    }
+                ]],
+                toolbar: '#tb',
+                onLoadSuccess:function(){
+                    $('#tt .easyui-linkbutton').linkbutton({text:'查看',plain:true,iconCls:'icon-search'});
+                }
+            });
+        });
+
+
+        function show(value,type)
+        {
+            parent.addTab(value+"||icon-sys||${base}/activiti/workflow/resource/read?processDefinitionId="+value+"&resourceType="+type);
+        }
+
+        function updateProcess()
+        {
+            var selectedRow = $('#tt').datagrid('getSelected');
+            var suspended = selectedRow.suspended;
+            var id = selectedRow.id;
+            if(suspended) {
+                $.post("${base}/activiti/workflow/updateState/active/" + id, function (rsp) {
+                    if(rsp.successful)
+                        showMsg("提示", rsp.msg);
+                    else
+                        showMsg("提示", rsp.msg);
+                });
+            }
+            else
+            {
+                $.post("${base}/activiti/workflow/updateState/suspend/" + id, function (rsp) {
+                    if(rsp.successful)
+                        showMsg("提示", rsp.msg);
+                    else
+                        showMsg("提示", rsp.msg);
+                });
+            }
+            $('#tt').datagrid('reload');
+        }
+
+
+        function deployProcess() {
+
+                $('#w').window({
+                    title: '部署流程',
+                    modal: true,
+                    closed: true,
+                    height: 200,
+                    width: 300,
+                    iconCls: 'icon-save'
+                });
+                $('#w').window('open');
+                $('#w').window('move',{ left:document.body.clientWidth/2-300,top:document.body.scrollTop+150});
+
+        }
+        function sendStartupRequest() {
+            $('.formkey-form').submit();
+        }
+
+    </script>
+
+</html>

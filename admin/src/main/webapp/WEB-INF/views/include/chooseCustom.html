@@ -1,0 +1,147 @@
+    <script type="text/javascript">
+
+        var return_id;
+        var return_code;
+        var return_value;
+        var return_man;
+
+        function chooseCustom(in_id,in_value) {
+            return_id = "#" + in_id;
+            return_value = "#" + in_value;
+            $('#y-chooseCustom').window({
+                        onClose: function () {
+                            $('#tx-chooseCustom').datagrid('loadData', { total: 0, rows: [] });
+                        }
+                    }
+            );
+            $('#y-chooseCustom').window('open');
+            $('#y-chooseCustom').window('move', { left: 350, top: document.body.scrollTop + 250});
+            searchGo();
+        }
+
+        function chooseCustomCode(in_id,in_code,in_value,in_man) {
+            return_id = "#" + in_id;
+            return_code = "#" + in_code;
+            return_value = "#" + in_value;
+            return_man = "#" + in_man;
+            $('#y-chooseCustom').window({
+                        onClose: function () {
+                            $('#tx-chooseCustom').datagrid('loadData', { total: 0, rows: [] });
+                        }
+                    }
+            );
+            $('#y-chooseCustom').window('open');
+            $('#y-chooseCustom').window('move', { left: 350, top: document.body.scrollTop + 250});
+            searchGoCode();
+        }
+
+        function searchGo(){
+            $("#tx-chooseCustom").datagrid({
+                //encodeURI("中文")   防止中文乱码   encodeURI($("#searchValue").val())
+                url: "${base}/business/custom/dataList",
+                iconCls: 'icon-edit',
+                width: 'auto',
+                height: 300,
+                singleSelect: true,
+                idField: 'custId',
+                pagination: true,
+                rownumbers: true,
+                columns: [
+                    [
+                        {field: 'custId', title: 'ID', width: 60},
+                        {field: 'custName', title: '名称', width: 200, sortable: true},
+                        {field: 'custAddr', title: '地址', width: 160}
+                    ]
+                ],
+                onClickRow: function (rowIndex, rowData) {
+                    $(return_id).val(rowData.custId);
+                    $(return_value).val(rowData.custName);
+                    if($(return_id).hasClass("easyui-textbox"))
+                    $(return_id).textbox('setValue',rowData.custId);
+                    if($(return_value).hasClass("easyui-textbox"))
+                    $(return_value).textbox('setValue',rowData.custName);
+                    $('#y-chooseCustom').window('close');
+                }
+            });
+
+
+
+            //搜索框
+            $("#searchbox-chooseCustom").searchbox({
+                menu: "#mm-chooseCustom",
+                prompt: '模糊查询',
+                searcher: function (value, name) {
+                    var str = "{\"" + name + "\":\"" + value + "\"}";
+                    var obj = eval('(' + str + ')');
+                    $('#tx-chooseCustom').datagrid('reload', obj);
+                }
+            });
+        }
+
+        function searchGoCode() {
+            $("#tx-chooseCustom").datagrid({
+                url: "${base}/business/custom/dataList",
+                iconCls: 'icon-edit',
+                width: 'auto',
+                height: 300,
+                singleSelect: true,
+                idField: 'custId',
+                pagination: true,
+                rownumbers: true,
+                columns: [
+                    [
+                        {field: 'custCode', title: 'CODE', width: 60},
+                        {field: 'custName', title: '名称', width: 200, sortable: true},
+                        {field: 'custAddr', title: '地址', width: 150}
+                    ]
+                ],
+                onClickRow: function (rowIndex, rowData) {
+                    $(return_id).val(rowData.custId);
+                    $(return_code).val(rowData.custCode);
+                    $(return_value).val(rowData.custName);
+                    $(return_man).val(rowData.contactMan);
+                    if($(return_id).hasClass("easyui-textbox"))
+                        $(return_id).textbox('setValue',rowData.custId);
+                    if ($(return_code).hasClass("easyui-textbox"))
+                        $(return_code).textbox('setValue', rowData.custCode);
+                    if ($(return_value).hasClass("easyui-textbox"))
+                        $(return_value).textbox('setValue', rowData.custName);
+                    if($(return_man).hasClass("easyui-textbox"))
+                        $(return_man).textbox('setValue',rowData.contactMan);
+                    $('#y-chooseCustom').window('close');
+                }
+            });
+
+            //搜索框
+            $("#searchbox-chooseCustom").searchbox({
+                menu: "#mm-chooseCustom",
+                prompt: '模糊查询',
+                searcher: function (value, name) {
+                    var str = "{\"" + name + "\":\"" + value + "\"}";
+                    var obj = eval('(' + str + ')');
+                    $('#tx-chooseCustom').datagrid('reload', obj);
+                }
+            });
+        }
+
+    </script>
+
+
+<div id="y-chooseCustom" class="easyui-window"  closed="true" title="数据选择" data-options="iconCls:'icon-filter',resizable: false" style="width:500px;height:400px;padding:0px;">
+    <div id="dd-chooseCustom" class="easyui-layout" style="width:100%;height:95%;">
+        <div data-options="region:'north',split:true" style="width:100%;height:30px;vertical-align:middle;padding:0px;text-align: center">
+            <input id="searchbox-chooseCustom" type="text"/>
+        </div>
+        <div data-options="region:'center'" style="padding:5px;width:100%;height:80%;">
+            <table id="tx-chooseCustom" title="单击选中数据">
+            </table>
+        </div>
+    </div>
+
+    <div id="mm-chooseCustom">
+        <div name="search_custName">客户名称</div>
+        <div name="search_custCode">客户编号</div>
+        <div name="search_custAddr">客户地址</div>
+    </div>
+
+</div>
