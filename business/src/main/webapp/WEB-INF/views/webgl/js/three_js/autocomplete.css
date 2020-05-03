@@ -1,0 +1,186 @@
+@CHARSET "UTF-8";
+
+/********************************
+A jQuery plugin for search hints
+
+Author: Lorenzo Cioni 
+https://github.com/lorecioni
+********************************/
+html{
+	height:100%;
+}
+
+body {
+	font-family: Monospace;
+	background-color: #f0f0f0;
+	margin: 0px;
+	height:100%;
+}
+
+#info {
+	position: absolute;
+	top: 0px; width: 100%;
+	color: #ffffff;
+	padding: 5px;
+	font-family:Monospace;
+	font-size:13px;
+	font-weight: bold;
+	text-align:center;
+}
+
+a{
+	color: #ffffff;
+}
+
+#container{
+	width: 100%;
+	height: 100%;
+	margin:0px;
+	padding:0px;
+}
+
+.viewHandover{
+	position: absolute;
+	top:0px;
+	left:0px;
+	display: none;
+}
+
+#wait {
+	width: 100%;
+	height: 100%;
+	position:absolute;
+	top:0px;
+	left:0px;
+	z-index:1000;
+	background-color: #3e3e3e;
+	display: -webkit-box;
+	display: -moz-box;
+	display: box;
+	-webkit-box-orient: horizontal;
+	-moz-box-orient: horizontal;
+	box-orient: horizontal;
+	-webkit-box-pack: center;
+	-moz-box-pack: center;
+	box-pack: center;
+	-webkit-box-align: center;
+	-moz-box-align: center;
+	box-align: center;
+	color: #ffffff;
+	text-align: center;
+	cursor: pointer;
+}
+
+.progress {
+	width:280px;
+	height:5px;
+	display: inline-block;
+	position:relative;
+	background:#000;
+	border-radius:3px;
+	border-left:1px solid #111;
+	border-top:1px solid #111;
+	border-right:1px solid #333;
+	border-bottom:1px solid #333;
+}
+
+.progress .bar {
+	height:4px;
+	margin:0;
+	left:0;
+	background:#2187e7;
+	position:absolute;
+	box-shadow:0px 0px 10px 1px rgba(0,198,255,0.4);
+	width:0%;
+	-moz-animation:html5 2s ease-out;
+	-webkit-animation:html5 2s ease-out;
+}
+
+#height{
+	opacity:1;
+	height:0px;
+	position:absolute;
+	width:0px;
+	top:30px;
+	z-index:1
+}
+
+#speed{
+	opacity:1;
+	height:0px;
+	position:absolute;
+	width:0px;
+	top:30px;
+	right:30px;
+	z-index:1;
+}
+
+.autocomplete-container {
+	position: relative;
+	width: 283px;
+	height: 32px;
+	margin: 0 auto;
+}
+
+.autocomplete-input {
+	padding: 9px;
+	border-radius: 3px;
+	font-family: inherit;
+	float: left;
+	font-size: 1em;
+	border: 1px solid rgba(0, 0, 0, 0.19);
+	margin: 0;
+}
+
+.autocomplete-button {
+	font-family: inherit;
+	border: none;
+	background-color: #990101;
+	color: white;
+	padding: 8px;
+	float: left;
+	cursor: pointer;
+	border-radius: 0px 3px 3px 0px;
+	transition: all 0.2s ease-out 0s;
+	margin: 0.5px 0px 0px -1px;
+}
+
+.autocomplete-button:HOVER {
+	background-color: #D11E1E;
+}
+
+.proposal-box {
+	position: absolute;
+	height: auto;
+	max-height: 300px;
+	overflow :auto;
+	border-left: 1px solid rgba(0, 0, 0, 0.11);
+	border-right: 1px solid rgba(0, 0, 0, 0.11);
+	left: 0px;
+}
+
+.proposal-list {
+	list-style: none;
+	box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.44);
+	-webkit-margin-before: 0em;
+	-webkit-margin-after: 0em;
+	-webkit-margin-start: 0px;
+	-webkit-margin-end: 0px;
+	-webkit-padding-start: 0px;
+}
+
+.proposal-list li {
+	text-align: left;
+	padding: 5px;
+	font-family: inherit;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.16);
+	height: 25px;
+	line-height: 25px;
+	background-color: rgba(255, 255, 255, 0.8);
+	cursor: pointer;
+}
+
+li.proposal.selected {
+	background-color: rgba(175, 42, 0, 0.52);
+	color: white;
+}
