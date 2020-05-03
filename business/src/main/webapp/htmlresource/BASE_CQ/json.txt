@@ -1,0 +1,7 @@
+[ {"measurePoint":"CQ1DB001","flashId":"truckNo","tagType":"CP"},
+  {"measurePoint":"CQ1HL001","flashId":"signaLight","tagType":"COLOR"},
+  {"measurePoint":"CQ1DZ001","flashId":"brakeIn","tagType":"SWITCH"},
+  {"measurePoint":"CQ1DZ001","flashId":"fullTruck","tagType":"SIMPLE_ANIMATION","frameNum":"2","dependValue":"1"},
+  {"measurePoint":"CC1DZ001","flashId":"brakeOut","tagType":"SWITCH"},
+  {"measurePoint":"CC1DZ001","flashId":"fullTruck","tagType":"SIMPLE_ANIMATION","frameNum":"101","dependValue":"1"}
+ ]

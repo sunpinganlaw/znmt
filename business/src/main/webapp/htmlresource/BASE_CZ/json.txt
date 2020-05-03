@@ -1,0 +1,9 @@
+[{"measurePoint":"XM1PD001","flashId":"truckTime","tagType":"VALUE"},
+ {"measurePoint":"CZ1DB001","flashId":"totalWeight","tagType":"VALUE"},
+ {"measurePoint":"CZ1DB001","flashId":"truckNo","tagType":"CP"},
+ {"measurePoint":"CZ1HL001","flashId":"signaLight","tagType":"COLOR"},
+ {"measurePoint":"CY1DZ002","flashId":"brakeIn","tagType":"SWITCH"},
+ {"measurePoint":"CY1DZ002","flashId":"fullTruck","tagType":"SIMPLE_ANIMATION","frameNum":"2","dependValue":"1"},
+ {"measurePoint":"CZ1DZ001","flashId":"brakeOut","tagType":"SWITCH"},
+ {"measurePoint":"CZ1DZ001","flashId":"fullTruck","tagType":"SIMPLE_ANIMATION","frameNum":"101","dependValue":"1"}
+ ]

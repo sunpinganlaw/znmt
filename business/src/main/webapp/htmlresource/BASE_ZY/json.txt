@@ -1,0 +1,11 @@
+[{"measurePoint":"ZY1CS001","flashId":"comingWeight","tagType":"COLOR"},
+ {"measurePoint":"ZY1ZY006","flashId":"crush6mm","tagType":"COLOR"},
+ {"measurePoint":"ZY1ZY007","flashId":"shrinkSplit6mm1","tagType":"COLOR"},
+ {"measurePoint":"ZY1ZY008","flashId":"crush3mm","tagType":"COLOR"},
+ {"measurePoint":"ZY1ZY009","flashId":"shrinkSplit3mm1","tagType":"COLOR"},
+ {"measurePoint":"ZY1ZY011","flashId":"dry","tagType":"COLOR"},
+ {"measurePoint":"ZY1ZY014","flashId":"crush02mm","tagType":"COLOR"},
+ {"measurePoint":"ZY1ZY015","flashId":"removeDust","tagType":"COLOR"},
+ {"measurePoint":"ZY1ZY016","flashId":"waste3","tagType":"COLOR"},
+ {"measurePoint":"ZY1ZY017","flashId":"packageMachine","tagType":"COLOR"}
+ ]

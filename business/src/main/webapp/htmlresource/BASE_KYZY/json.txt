@@ -1,0 +1,17 @@
+[{"measurePoint":"ZY1ZY001","flashId":"materialOfMachine","tagType":"COLOR"},
+ {"measurePoint":"ZY1ZY005","flashId":"materialOfManual","tagType":"COLOR"},
+ {"measurePoint":"ZY1ZY004","flashId":"cylinder","tagType":"COLOR"},
+ {"measurePoint":"ZY1ZY005","flashId":"hoister","tagType":"COLOR"},
+ {"measurePoint":"ZY1ZY006","flashId":"crush6mm","tagType":"COLOR"},
+ {"measurePoint":"ZY1ZY007","flashId":"shrinkSplit6mm","tagType":"COLOR"},
+ {"measurePoint":"ZY1ZY008","flashId":"crush3mm","tagType":"COLOR"},
+ {"measurePoint":"ZY1ZY009","flashId":"shrinkSplit3mm","tagType":"COLOR"},
+ {"measurePoint":"ZY1ZY010","flashId":"splitter8","tagType":"COLOR"},
+ {"measurePoint":"ZY1ZY011","flashId":"dry","tagType":"COLOR"},
+ {"measurePoint":"ZY1ZY012","flashId":"hoister3mm","tagType":"COLOR"},
+ {"measurePoint":"ZY1ZY013","flashId":"splitter23mm","tagType":"COLOR"},
+ {"measurePoint":"ZY1ZY015","flashId":"removeDust","tagType":"COLOR"},
+ {"measurePoint":"ZY1ZY014","flashId":"grind3mm","tagType":"COLOR"},
+ {"measurePoint":"ZY1CS001","flashId":"comingWeight","tagType":"VALUE"},
+ {"measurePoint":"ZY1CS006","flashId":"outWeight","tagType":"VALUE"}
+ ]
