@@ -1,0 +1,15 @@
+﻿工程概要说明：
+1，core为开源核心mok
+2，admin为初始demo资源管理模块
+3，business为工程业务模块
+4，file为数据访问jar包
+5，sql为数据初始demo导入文件
+6，工程支持mysql和oracle两种数据库，切换时修改以下三个文件即可
+   jdbc.properties
+   mybatis.xml
+   spring-context-common.xml 
+   将三个文件中的注释的mysql或者oracle切换注释即可
+7，flash目录为存放flash的源文件目录，源文件包括（*.fla,*.as），编译后的文件为（*.swf）
+   发布文件目录对应关系实例如下：
+   base_cq.as(.fla)->\business\src\main\webapp\htmlresource\BASE_CQ\index.swf
+   dy_index.as(.fla)->\business-dy\src\main\webapp\htmlresource\DY_INDEX\index.swf
