@@ -1,0 +1,195 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>{moduleName}管理</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <#include "/include/common.html"/>
+
+</head>
+
+<body>
+<div class="well well-small" style="margin-left: 5px;margin-top: 5px">
+    <span class="badge">提示</span>
+    在此你可以对<span class="label-info"><strong>{moduleName}</strong></span>进行编辑，修改和删除请先选择下面的记录。
+</div>
+<form id="print_form">
+    <div id="tb" >
+        <table>
+            <tr>
+                <td >
+                    <@shiro.hasPermission name="{moduleCode}:save">
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add"  onclick="add();">添加</a>
+                    </@shiro.hasPermission>
+                    <@shiro.hasPermission name="{moduleCode}:edit">
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit"  onclick="edit();">修改</a>
+                    </@shiro.hasPermission>
+                    <@shiro.hasPermission name="{moduleCode}:view">
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-search"  onclick="viewRow();">查看</a>
+                    </@shiro.hasPermission>
+                    <@shiro.hasPermission name="{moduleCode}:delete">
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove"  onclick="deleteRow();">删除</a>
+                    </@shiro.hasPermission>
+                </td>
+                <td >
+                    {searchColumnsList}
+                    {searchColumns}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+</form>
+
+<div id="tx" style="margin: 5px;" >
+    <table id="{lowerModuleCode}_table" class="print" title="{moduleName}管理" >
+        <thead>
+        <tr>
+{columnsShowDiv}
+        </tr>
+        </thead>
+    </table>
+</div>
+<div id="win" ></div>
+<div id="mm">
+    {searchTypeDiv}
+</div>
+<input type="hidden" id="print_url" name="print_url" value="/business/{lowerModuleCode}/print"/>
+</body>
+
+<script type="text/javascript">
+
+    {comboboxJavaScript}
+
+    {columnsFormatterComboboxJavaScript}
+
+    $dg = $("#{lowerModuleCode}_table");
+    var url  = '${base}/business/{lowerModuleCode}/list';
+    $(function(){
+        $dg.datagrid({
+            iconCls: 'icon-edit',
+            height: $(this).height() - 46,
+            width: $(this).width() - 10,
+            singleSelect: true,
+            animate: true,
+            fitColumns: true,
+            idField: 'id',
+            url: url,
+            pagination: true,
+            rownumbers: true,
+            toolbar: '#tb'
+        });
+
+        //搜索框
+        $("#searchbox").searchbox({
+            menu:"#mm",
+            prompt :'模糊查询',
+            searcher:function(value,name){
+                var str1="\"" + name + "\":\"" + value + "\"";
+                {searchTypeDivText}
+                var obj = JSON.parse("{"+str1+"}");
+                $dg.datagrid('reload',obj);
+            }
+        });
+    });
+
+    function add()
+    {
+        var win = $('#win').window({
+            modal : true,
+            title : '新增{moduleName}',
+            width: 500,
+            height: 500,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/{lowerModuleCode}/add',
+            onClose : function() {
+                $dg.datagrid('reload');
+            }
+        });
+    }
+
+
+    function edit()
+    {
+        var row = $dg.datagrid('getSelected');
+        if (row) {
+            var id  = row.{tableKeyColumn};
+            var win = $('#win').window({
+                modal: true,
+                title: '编辑{moduleName}',
+                width: 500,
+                height: 500,
+                collapsible: false,
+                minimizable: false,
+                maximizable: true,
+                href: '${base}/business/{lowerModuleCode}/edit/'+id,
+                onClose: function () {
+                    $dg.datagrid('reload');
+                }
+            });
+        }
+        else
+        {
+            showMsg("提示", "请选择一行");
+            return;
+        }
+    }
+
+    function viewRow()
+    {
+        var row = $dg.datagrid('getSelected');
+        if (row) {
+            var id  = row.{tableKeyColumn};
+            var win = $('#win').window({
+                modal: true,
+                title: '查看{moduleName}',
+                width: 500,
+                height: 500,
+                collapsible: false,
+                minimizable: false,
+                maximizable: true,
+                href: '${base}/business/{lowerModuleCode}/view/'+id,
+                onClose: function () {
+                    $dg.datagrid('reload');
+                }
+            });
+        }
+        else
+        {
+            showMsg("提示", "请选择一行");
+            return;
+        }
+    }
+
+    function deleteRow()
+    {
+        var row = $dg.datagrid('getSelected');
+        if (row){
+            $.messager.confirm('提示', '确定进行操作?', function(r){
+                if (r){
+                    $.post("${base}/business/{lowerModuleCode}/delete/"+row.{tableKeyColumn}, function (rsp) {
+                        if (rsp.successful) {
+                            showMsg("提示", "更新成功!");
+                        } else {
+                            showMsg("提示", "更新失败!");
+                        }
+                    });
+                    var index = $dg.datagrid('getRowIndex', row);
+                    $dg.datagrid('deleteRow', index);
+                }
+            });
+        }
+    }
+
+    function closeWin()
+    {
+        $('#win').window('close',true);
+    }
+</script>
+</html>

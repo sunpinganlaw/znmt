@@ -1,0 +1,215 @@
+package {javaPath}.controller;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonEncoding;
+import {javaPath}.entity.{moduleCode};
+import {javaPath}.service.{serviceName};
+import org.gxz.znrl.common.baseaction.BaseAction;
+import org.gxz.znrl.common.mybatis.Page;
+import org.gxz.znrl.common.util.JacksonMapper;
+import org.gxz.znrl.common.util.Result;
+import org.gxz.znrl.viewModel.GridModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+
+import java.util.List;
+
+/**
+ * Created by IMANON on {Sysdate}.
+ */
+@Controller
+@SuppressWarnings("unchecked")
+@RequestMapping(value = "/business/{lowerModuleCode}")
+public class {controllerName} extends BaseAction {
+    protected Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    {serviceName} {lowerModuleCode}Service;
+
+    private static final String INDEX = "/business/{lowerModuleCode}/{indexPage}";
+    private static final String EDIT = "/business/{lowerModuleCode}/{editPage}";
+
+    @RequestMapping(value="/index", method= RequestMethod.GET)
+    public String index() {
+        return INDEX;
+    }
+
+
+    /**
+     * 表格{moduleName}
+     * @return GridModel
+     */
+    @RequestMapping(value="/list")
+    @ResponseBody
+    public GridModel list() {
+        {moduleCode} {lowerModuleCode} = SearchForm({moduleCode}.class);
+        Page info = {lowerModuleCode}Service.findByPage(page(), {lowerModuleCode});
+        GridModel m = new GridModel();
+        m.setRows(info.getRows());
+        m.setTotal(info.getCount());
+        return m;
+    }
+
+    /**
+     * 打印{moduleName}
+     * @return JSONObject
+     */
+    @RequestMapping(value="/print")
+    @ResponseBody
+    public JSONObject print(){
+        {moduleCode} {lowerModuleCode} = SearchForm({moduleCode}.class);
+        JSONObject jsonobject = new JSONObject();
+        Page info = {lowerModuleCode}Service.findByPage(page(), {lowerModuleCode});
+        List<{moduleCode}> {lowerModuleCode}s = info.getRows();
+        try {
+            JSONArray jarray = new JSONArray();
+            for({moduleCode} c : {lowerModuleCode}s)
+            {
+                jarray.add(c);
+            }
+            jsonobject.put("data",jarray);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return jsonobject;
+    }
+
+    /**
+     * 添加{moduleName}
+     * @return ModelAndView
+     */
+    @RequestMapping(value="/add")
+    @ResponseBody
+    public ModelAndView add() {
+        ModelAndView mav = new ModelAndView(EDIT);
+        {moduleCode} {lowerModuleCode} = new {moduleCode}();
+        try {
+            ObjectMapper mapper = JacksonMapper.getInstance();
+            String json =mapper.writeValueAsString({lowerModuleCode});
+            mav.addObject("doWhat", "add");
+            mav.addObject("{lowerModuleCode}",json);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return mav;
+    }
+
+    /**
+     * 编辑{moduleName}
+     * @return ModelAndView
+     */
+    @RequestMapping(value="/edit/{id}")
+    @ResponseBody
+    public ModelAndView edit(@PathVariable Integer id) {
+        logger.debug("edit id = " + id);
+        ModelAndView mav = new ModelAndView(EDIT);
+        try {
+            {moduleCode} {lowerModuleCode} =  {lowerModuleCode}Service.get(id);
+            ObjectMapper mapper = JacksonMapper.getInstance();
+            String json =mapper.writeValueAsString({lowerModuleCode});
+            mav.addObject("doWhat", "edit");
+            mav.addObject("{lowerModuleCode}",json);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return mav;
+    }
+
+    /**
+     * 查看{moduleName}
+     * @return ModelAndView
+     */
+    @RequestMapping(value="/view/{id}")
+    @ResponseBody
+    public ModelAndView view(@PathVariable Integer id) {
+        ModelAndView mav = new ModelAndView(EDIT);
+        try {
+            {moduleCode} {lowerModuleCode} = {lowerModuleCode}Service.get(id);
+            ObjectMapper mapper = JacksonMapper.getInstance();
+            String json =mapper.writeValueAsString({lowerModuleCode});
+            mav.addObject("doWhat", "view");
+            mav.addObject("{lowerModuleCode}", json);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return mav;
+    }
+
+    /**
+     * 保存{moduleName}
+     * @param {lowerModuleCode}
+     * @return Result
+     */
+    @RequestMapping(value="/saveAdd")
+    @ResponseBody
+    public Result saveAdd{moduleCode}(@ModelAttribute {moduleCode} {lowerModuleCode}) {
+        Result result = new Result();
+        try {
+            {lowerModuleCode}Service.save({lowerModuleCode});
+            result.setMsg("successful");
+            result.setSuccessful(true);
+        } finally {
+
+        }
+        return result;
+    }
+
+    /**
+         * 保存{moduleName}
+         * @param {lowerModuleCode}
+         * @return Result
+         */
+        @RequestMapping(value="/saveEdit")
+        @ResponseBody
+        public Result saveEdit{moduleCode}(@ModelAttribute {moduleCode} {lowerModuleCode}) {
+            Result result = new Result();
+            try {
+                {lowerModuleCode}Service.update({lowerModuleCode});
+                result.setMsg("successful");
+                result.setSuccessful(true);
+            } finally {
+
+            }
+            return result;
+        }
+
+    /**
+     * 查询单个{moduleName}
+     * @param id
+     * @return
+     */
+    @RequestMapping(value="/get/{id}")
+    @ResponseBody
+    public {moduleCode} getInfo(@PathVariable Integer id) {
+        return  {lowerModuleCode}Service.get(id);
+    }
+
+    /**
+     * 删除{moduleName}
+     * @param id
+     * @return
+     */
+    @RequestMapping(value="/delete/{id}")
+    @ResponseBody
+    public Result deleteInfo(@PathVariable Integer id) {
+        Result result = new Result();
+        {lowerModuleCode}Service.delete(id);
+        result.setSuccessful(true);
+        result.setMsg("删除成功");
+        return result;
+    }
+}
