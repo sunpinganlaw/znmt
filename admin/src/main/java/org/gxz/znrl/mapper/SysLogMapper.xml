@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.gxz.znrl.mapper.SysLogMapper" >
+    <insert id="insertSysLog" parameterType="java.util.HashMap">
+        insert into log_mod_info
+        (
+        log_id,
+        host_ip,
+        log_op_code,
+        log_op_name,
+        oper_menu,
+        oper_button,
+        request_params,
+        request_method,
+        log_dt,
+        SYS_LOG_TYPE
+        )
+        values (
+        SEQ_log_mod_info.Nextval,
+        #{host_ip, jdbcType=VARCHAR},
+        #{log_op_code, jdbcType=VARCHAR},
+        #{log_op_name, jdbcType=VARCHAR},
+        #{oper_menu, jdbcType=VARCHAR},
+        #{oper_button, jdbcType=INTEGER},
+        #{request_params, jdbcType=VARCHAR},
+        #{request_method, jdbcType=VARCHAR},
+        sysdate,
+        '1'
+        )
+    </insert>
+
+</mapper>

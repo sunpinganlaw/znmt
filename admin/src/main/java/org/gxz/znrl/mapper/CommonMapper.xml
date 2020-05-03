@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.gxz.znrl.mapper.CommonMapper">
+	<select id="getSysdate" resultType="java.sql.Timestamp">
+		SELECT SYSDATE FROM DUAL
+	</select>
+	<select id="getNextval" parameterType="Map" resultType="java.lang.Long">
+		SELECT ${seqName}.NEXTVAL FROM DUAL
+	</select>
+	<select id="getTableColumnByColumn" parameterType="org.gxz.znrl.entity.TableColumnByColumn" resultType="java.lang.String">
+		SELECT GET_TABLE_COLUMN_BY_COLUMN(#{showCol,jdbcType=VARCHAR}, #{tableName,jdbcType=VARCHAR}, #{condCol,jdbcType=VARCHAR}, #{condValue,jdbcType=VARCHAR}, #{condOperate,jdbcType=VARCHAR}, #{condType,jdbcType=VARCHAR}, #{condCnt,jdbcType=INTEGER})FROM DUAL
+	</select>
+
+    <resultMap id="ConstResultMap" type="org.gxz.znrl.entity.ConstantEntity">
+        <result column="const_key" jdbcType="VARCHAR" property="key" />
+        <result column="const_value" jdbcType="VARCHAR" property="value" />
+    </resultMap>
+    <select id="qryConstantCfgData" resultMap="ConstResultMap" >
+          select a.const_key, a.const_value from constant_data_config a where a.is_effective = 'Y'
+  	</select>
+
+	<select id="qryLogMenuButtonInfo"  resultType="org.gxz.znrl.entity.ConstantEntity" >
+		select request_method key,oper_menu||','||oper_button value  from LOG_MENU_BUTTON_INFO
+	</select>
+</mapper>
