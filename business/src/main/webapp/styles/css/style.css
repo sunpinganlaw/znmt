@@ -1,0 +1,214 @@
+html,
+body,
+p {
+    margin : 0;
+    padding: 0;
+}
+
+body {
+    background: #000116;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    font-size  : 14px;
+    font-family: Arial, 苹方, 微软雅黑;
+}
+
+.clearfix:after {
+    content: '';
+    display: table;
+    clear  : both;
+}
+
+.app {
+    position        : absolute;
+    width           : 1920px;
+    height          : 1080px;
+    transform-origin: left top;
+    color           : #fff;
+}
+
+
+.home {
+    position  : relative;
+    height    : 100%;
+    background: url(../images/bg.jpg) center/cover no-repeat;
+}
+
+.home .title {
+    width         : 550px;
+    padding-bottom: 10px;
+    left          : 50%;
+    transform     : translateX(-50%);
+    top           : 17px;
+    font-size     : 36px;
+    text-align    : center;
+    text-shadow   : rgba(50, 123, 250, 0.6) 0px 0px 10px,
+        rgba(50, 123, 250, 0.6) 0px 0px 15px, 1px 0 rgba(50, 123, 250, 0.6),
+        2px 0 rgba(50, 123, 250, 0.6), 3px 0 rgba(50, 123, 250, 0.6),
+        4px 0 rgba(50, 123, 250, 0.6), 5px 0 rgba(50, 123, 250, 0.6),
+        rgba(50, 123, 250, 0.6) 0px 0px 5px;
+    background: linear-gradient(to right,
+            transparent 0,
+            #93c9fa 50%,
+            transparent 100%) no-repeat;
+    background-position: bottom;
+    background-size    : 100% 2px;
+}
+
+.home>div {
+    position: absolute;
+}
+
+.borderImg {
+    overflow    : hidden;
+    box-sizing  : border-box;
+    border      : 26px solid rgba(255, 255, 255, 0);
+    border-image: url("../images/border.png") 26 fill stretch;
+}
+
+.borderImg1 {
+    border-image: url("../images/border1.png") 26 fill stretch;
+}
+
+.text {
+    text-align: center;
+    font-size : 20px;
+    text-shadow: rgba(50, 123, 250, 0) 0px 0px 5px,
+        rgba(50, 123, 250, 0) 0px 0px 10px, rgba(50, 123, 250, 0) 0px 0px 15px;
+}
+
+.count {
+    font-size: 40px;
+    text-shadow: rgba(50, 123, 250, 0.6) 0px 0px 8px,
+        rgba(50, 123, 250, 0.6) 0px 0px 13px;
+}
+
+.cart-title {
+    text-align: center;
+    font-size : 20px;
+    text-shadow: rgba(50, 123, 250, 0.6) 0px 0px 5px,
+        rgba(50, 123, 250, 0.6) 0px 0px 10px, rgba(50, 123, 250, 0.6) 0px 0px 15px;
+}
+
+.date span {
+    font-size  : 20px;
+    text-shadow: rgb(140, 207, 255) 1px 1px 5px;
+}
+
+.order-text {
+    left     : 1370px;
+    font-size: 20px;
+    text-shadow: rgba(50, 123, 250, 0.6) 0px 0px 5px,
+        rgba(50, 123, 250, 0.6) 0px 0px 10px, rgba(50, 123, 250, 0.6) 0px 0px 15px;
+}
+
+.order-text span {
+    margin-left : 10px;
+    margin-right: 10px;
+    font-size   : 45px;
+}
+
+.item-container {
+    margin-left: 30px;
+    margin-top : 10px;
+    display    : inline-flex;
+    align-items: center;
+}
+
+.item-container .ratio {
+    background   : rgb(0, 79, 231);
+    width        : 15px;
+    height       : 15px;
+    border-radius: 50%;
+    display      : inline-block;
+}
+
+.item-container:last-child .ratio {
+    background: rgb(23, 216, 161);
+}
+
+.item-container .ratio-text {
+    margin-left: 10px;
+    font-size  : 16px;
+}
+
+.tap-head span {
+    padding    : 0 20px 10px;
+    font-size  : 18px;
+    font-weight: bold;
+    width      : 100px;
+    height     : 50px;
+    color      : rgba(255, 255, 255, 0.5);
+    background : linear-gradient(to right,
+            transparent 0,
+            #7d7d7d 50%,
+            transparent 100%) no-repeat;
+    background-position: bottom;
+    background-size    : 100% 2px;
+}
+
+.tap-head span.active {
+    color: #fff;
+    background: linear-gradient(to right,
+            transparent 0,
+            #fff 50%,
+            transparent 100%) no-repeat;
+    background-position: bottom;
+    background-size    : 100% 2px;
+}
+
+.tap-head {
+    margin-top: 13px;
+}
+
+.tap-body {
+    position: relative;
+}
+
+.tap-head span {
+    cursor: pointer;
+}
+
+.tap-head span:last-child {
+    margin-left: 20px;
+}
+
+.top-total {
+    position : absolute;
+    top      : 82px;
+    left     : 25px;
+    font-size: 20px;
+    text-shadow: rgba(50, 123, 250, 0.6) 0px 0px 5px,
+        rgba(50, 123, 250, 0.6) 0px 0px 10px, rgba(50, 123, 250, 0.6) 0px 0px 15px;
+}
+
+.top-total span {
+    line-height: 44px;
+    font-size  : 45px;
+    margin-left: 27px;
+    text-shadow: rgba(50, 123, 250, 0.6) 0px 0px 8px,
+        rgba(50, 123, 250, 0.6) 0px 0px 13px, rgba(50, 123, 250, 0.6) 0px 0px 18px;
+}
+
+.swiper-item:not(:last-child) {
+    margin-bottom: 15px;
+}
+
+.swiper-container {
+    height: 100%;
+}
+
+.swiper-title {
+    width        : 100%;
+    display      : flex;
+    align-items  : center;
+    margin-bottom: 8px;
+    box-sizing   : border-box;
+}

@@ -1,0 +1,61 @@
+/* CSS Document */
+* {
+    padding: 0;
+    margin: 0;
+}
+
+/*body { font-size:12px; padding:100px;}*/
+.dublelist {
+    font-size: 12px;
+    padding-left: 1%;
+    padding-top: 1%
+}
+
+select {
+    width: 250px;
+    height: 250px;
+    padding: 5px;
+    border-radius: 5px; /* 所有角都使用半径为5px的圆角，此属性为CSS3标准属性 */
+    -moz-border-radius: 5px; /* Mozilla浏览器的私有属性 */
+    -webkit-border-radius: 5px; /* Webkit浏览器的私有属性 */
+    /*border-radius: 5px 4px 3px 2px; *//* 四个半径值分别是左上角、右上角、右下角和左下角 */
+}
+
+.content {
+    float: left;
+    text-align: center;
+    margin-right: 10px;
+}
+
+.rightMoveBtn {
+      display: block;
+      width: 100px;
+      background: #eee;
+      cursor: pointer;
+      border: 1px solid #ccc;
+      padding: 5px;
+      margin: 5px;
+      float: left;
+      text-align: center;
+      cursor:pointer;
+      border-radius: 5px; /* 所有角都使用半径为5px的圆角，此属性为CSS3标准属性 */
+      -moz-border-radius: 5px; /* Mozilla浏览器的私有属性 */
+      -webkit-border-radius: 5px; /* Webkit浏览器的私有属性 */
+  }
+
+.leftMoveBtn {
+    display: block;
+    width: 100px;
+    background: #eee;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    padding: 5px;
+    margin: 5px;
+    float: left;
+    text-align: center;
+    cursor:pointer;
+    border-radius: 5px; /* 所有角都使用半径为5px的圆角，此属性为CSS3标准属性 */
+    -moz-border-radius: 5px; /* Mozilla浏览器的私有属性 */
+    -webkit-border-radius: 5px; /* Webkit浏览器的私有属性 */
+}
+
