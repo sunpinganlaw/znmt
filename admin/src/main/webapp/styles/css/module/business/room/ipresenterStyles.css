@@ -1,0 +1,63 @@
+* {
+	margin: 0px;
+	padding: 0px;
+}
+
+body {
+	font-family: 'PT Sans Narrow', Aller;
+    overflow-x:hidden ; /*隐藏水平滚动条*/
+    overflow-y:hidden ; /*隐藏水平滚动条*/
+}
+
+h2 {
+	font-size: 38px
+}
+
+p {
+	line-height: 150%;
+	font-size: 13pt;
+}
+
+a {
+	color: #39f;
+	text-decoration: none;
+	outline: none;
+	cursor: pointer;
+}
+
+a:hover {
+	color: #C00;
+	text-decoration: none;
+}
+
+p.copy {
+	display: block;
+	font-size: 16px;
+	font-weight: normal;
+	color: #999;
+	margin-top: 10px;
+}
+
+/*ul.examples {*/
+	/*list-style: none;*/
+	/*display: block;*/
+	/*width: 100%;*/
+	/*height: 56px;*/
+	/*margin: 10px 5px auto 5px;*/
+/*}*/
+
+/*ul.examples li.logo {*/
+	/*float: left;*/
+	/*font-size: 24px;*/
+	/*text-shadow: #BBB 1px 1px 3px;*/
+    /*padding-top: 5%;*/
+/*}*/
+
+/*ul.examples li {*/
+     /*float: right;*/
+     /*padding: 0 5px 0 0;*/
+ /*}*/
+
+/*ul.examples li img {*/
+    /*padding: 0 5px 0 0;*/
+/*}*/

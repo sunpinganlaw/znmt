@@ -1,0 +1,119 @@
+.productsExp{
+    overflow:hidden;
+    height:100%;
+    background:#fafafa;
+
+    /*list-style: none;*/
+    display: block;
+    width: 99%;
+    /*height: 56px;*/
+    /*margin: 10px 5px auto 5px;*/
+    margin: 0px  /*加入layout后修改*/
+}
+.productsExp ul{
+    list-style:none;
+    margin:0;
+    padding:0px;
+}
+.productsExp li.logo{
+    display:inline;
+    float:left;
+    margin:0px auto;
+    position: absolute;
+    left: 5px;
+    vertical-align: middle;
+    font-size: 24px;
+    text-shadow: #BBB 1px 1px 3px;
+    padding-top: 3%;
+}
+.productsExp li{
+    display:inline;
+    /*float:left;*/
+    margin:0px;
+
+    float: right;
+    padding: 0px;
+}
+.productsExp li img{
+    padding: 0 5px 0 0;
+}
+.products{
+    overflow:auto;
+    /*height:100%;*/
+    height:500px;
+    background:#fafafa;
+}
+.products ul{
+    list-style:none;
+    margin:0;
+    padding:0px;
+}
+.products li{
+    display:inline;
+    float:left;
+    margin:10px;
+}
+.item{
+    display:inline-block;
+    text-decoration:none;
+    height: 100px;
+    padding: 0 15px 0 0;/*加入layout后修改*/
+}
+.item img{
+    border:0px solid #333;
+    width: 120px;
+    height: 100px;
+    box-shadow: inset 0px 0px 5px rgba(200,200,200,1);
+}
+.item p{
+    margin:0;
+    /*font-weight:bold;*/
+    text-align:center;
+    /*color:#c3c3c3;*/
+}
+.item .layer{
+    z-index: 99;
+    color: #ffffff;
+    text-align:center;
+    height: 30px;
+    font-size: 25px;
+    position:relative;left:0;top:-35px;
+    background-color: rgb(73, 61, 39);
+    filter: alpha(opacity=50);
+    -moz-opacity: 0.50;
+    opacity: 0.50;
+}
+
+.iteminner{
+    display:block;
+    text-decoration:none;
+}
+.iteminner img{
+    border:0px solid #333;
+    width: 120px;
+    height: 100px;
+    box-shadow: inset 0px 0px 5px rgba(200,200,200,1);
+}
+.iteminner p{
+    margin:0;
+    font-weight:bold;
+    text-align:center;
+    color:#c3c3c3;
+}
+
+.iteminnerSelect{
+    display:block;
+    text-decoration:none;
+}
+.iteminnerSelect img{
+    border:0px solid #333;
+    width: 120px;
+    height: 100px;
+    box-shadow: inset 0px 0px 15px rgba(200,200,200,1);
+}
+.iteminnerSelect p{
+    margin:0;
+    font-weight:bold;
+    text-align:center;
+    color:#c3c3c3;
+}

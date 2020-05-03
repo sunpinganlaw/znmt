@@ -1,0 +1,187 @@
+/*body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;}*/
+/*#otherInfos{height:100%;width:100%;float:left;}*/
+/****************************************
+��CSSԲ�ǿ�
+���ԭ��
+�����������ʣ�http://binyong.cnblogs.com/
+*****************************************/
+
+* {
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+}
+
+.wrapper {
+    width: 80%;
+    margin: 0 auto;
+}
+
+/*ͨ����ʽ--�������ֵ*/
+.sharp {
+    width: 33%;
+    margin: 0px 30%;
+    float: left;
+    margin-right: 2%;
+}
+
+.sharp .content div {
+    /*padding: 4px 0px 4px 4px;*/
+    /*text-indent: 2em;*/ /*����������Ӻ�ɾ��ť�䳤��*/
+}
+
+.content {
+    height: 500px;
+}
+
+h3 {
+    height: 50px;
+    line-height: 50px;
+    font-size: 30px;
+    text-indent: 10px;
+}
+
+a:link, a:visited {
+    color: #999;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: none;
+    border-bottom: 1px orange solid;
+    color: orange;
+}
+
+/*��Բ�ǿ�ͨ��������ʽ�����Ҫ���ö����ͬ��ɫ������6�䲻�����±仯--------------------------------*/
+.b1, .b2, .b3, .b4, .b5, .b6, .b7, .b8 {
+    height: 1px;
+    font-size: 1px;
+    overflow: hidden;
+    display: block;
+}
+
+.b1, .b8 {
+    margin: 0 5px;
+}
+
+.b2, .b7 {
+    margin: 0 3px;
+    border-right: 2px solid;
+    border-left: 2px solid;
+}
+
+.b3, .b6 {
+    margin: 0 2px;
+    border-right: 1px solid;
+    border-left: 1px solid;
+}
+
+.b4, .b5 {
+    margin: 0 1px;
+    border-right: 1px solid;
+    border-left: 1px solid;
+    height: 2px;
+}
+
+.content {
+    border-right: 1px solid;
+    border-left: 1px solid;
+    overflow: hidden;
+}
+
+/*��ɫ����һ,��ɫ�߿�----------------------------------------*/
+/*�����һ����������߿���ɫ����������������ɫ*/
+/*�߿�ɫ*/
+.color1 .b2, .color1 .b3, .color1 .b4, .color1 .b5, .color1 .b6, .color1 .b7, .color1 .content {
+    border-color: #96C2F1;
+}
+
+.color1 .b1, .color1 .b8 {
+    background: #96C2F1;
+}
+
+/*����ɫ*/
+.color1 .b2, .color1 .b3, .color1 .b4, .color1 .b5, .color1 .b6, .color1 .b7, .color1 .content {
+    background: #EFF7FF;
+}
+
+/*��ɫ������,��ɫ�߿�----------------------------------------*/
+/*�����һ����������߿���ɫ����������������ɫ*/
+/*�߿�ɫ*/
+.color2 .b2, .color2 .b3, .color2 .b4, .color2 .b5, .color2 .b6, .color2 .b7, .color2 .content {
+    border-color: #9BDF70;
+}
+
+.color2 .b1, .color2 .b8 {
+    background: #9BDF70;
+}
+
+/*����ɫ*/
+.color2 .b2, .color2 .b3, .color2 .b4, .color2 .b5, .color2 .b6, .color2 .b7, .color2 .content {
+    background: #F0FBEB;
+}
+
+/*��ɫ������,��ɫ�߿�----------------------------------------*/
+/*�����һ����������߿���ɫ����������������ɫ*/
+/*�߿�ɫ*/
+.color3 .b2, .color3 .b3, .color3 .b4, .color3 .b5, .color3 .b6, .color3 .b7, .color3 .content {
+    border-color: #BBE1F1;
+}
+
+.color3 .b1, .color3 .b8 {
+    background: #BBE1F1;
+}
+
+/*����ɫ*/
+.color3 .b2, .color3 .b3, .color3 .b4, .color3 .b5, .color3 .b6, .color3 .b7, .color3 .content {
+    background: #EEFAFF;
+}
+
+/*��ɫ������,��ɫ�߿�----------------------------------------*/
+/*�����һ����������߿���ɫ����������������ɫ*/
+/*�߿�ɫ*/
+.color4 .b2, .color4 .b3, .color4 .b4, .color4 .b5, .color4 .b6, .color4 .b7, .color4 .content {
+    border-color: #E3E197;
+}
+
+.color4 .b1, .color4 .b8 {
+    background: #E3E197;
+}
+
+/*����ɫ*/
+.color4 .b2, .color4 .b3, .color4 .b4, .color4 .b5, .color4 .b6, .color4 .b7, .color4 .content {
+    background: #FFFFDD;
+}
+
+/*��ɫ������,��ɫ�߿�----------------------------------------*/
+/*�����һ����������߿���ɫ����������������ɫ*/
+/*�߿�ɫ*/
+.color5 .b2, .color5 .b3, .color5 .b4, .color5 .b5, .color5 .b6, .color5 .b7, .color5 .content {
+    border-color: #F8B3D0;
+}
+
+.color5 .b1, .color5 .b8 {
+    background: #F8B3D0;
+}
+
+/*����ɫ*/
+.color5 .b2, .color5 .b3, .color5 .b4, .color5 .b5, .color5 .b6, .color5 .b7, .color5 .content {
+    background: #FFF5FA;
+}
+
+/*��ɫ������,��ɫ�߿�----------------------------------------*/
+/*�����һ����������߿���ɫ����������������ɫ*/
+/*�߿�ɫ*/
+.color6 .b2, .color6 .b3, .color6 .b4, .color6 .b5, .color6 .b6, .color6 .b7, .color6 .content {
+    border-color: #FFCC00;
+}
+
+.color6 .b1, .color6 .b8 {
+    background: #FFCC00;
+}
+
+/*����ɫ*/
+.color6 .b2, .color6 .b3, .color6 .b4, .color6 .b5, .color6 .b6, .color6 .b7, .color6 .content {
+    background: #FFFFF7;
+}
