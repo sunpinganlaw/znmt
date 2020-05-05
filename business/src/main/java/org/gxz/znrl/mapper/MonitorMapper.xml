@@ -2160,6 +2160,12 @@
         <if test="endDate != null" >
             and a.record_dtm <![CDATA[     <     ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1
         </if>
+        <if test="beginLeaveDate != null" >
+            and a.LEAVE_DTM <![CDATA[     >=     ]]> to_date(#{beginLeaveDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+        <if test="endLeaveDate != null" >
+            and a.LEAVE_DTM <![CDATA[     <     ]]> to_date(#{endLeaveDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1
+        </if>
 
         <if test="batchNo != null" >
             and a.car_batch_no like #{batchNo,jdbcType=VARCHAR}
@@ -2179,18 +2185,12 @@
             and a.good_no = #{goodNo,jdbcType=VARCHAR}
         </if>
         <if test="inDoorNo != null" >
-            and a.IN_DOOR_NO = #{inDoorNo,jdbcType=VARCHAR}
-        </if>
-        <if test="outDoorNo != null" >
-            and a.OUT_DOOR_NO = #{outDoorNo,jdbcType=VARCHAR}
-        </if>
-        <if test="contactIdFront != null" >
-            AND a.CONTA_ID_F like #{contactIdFront,jdbcType=VARCHAR}
-        </if>
-        <if test="contactIdBack != null" >
-            OR a.CONTA_ID_B like #{contactIdFront,jdbcType=VARCHAR}
+            and ((a.IN_DOOR_NO = #{inDoorNo,jdbcType=VARCHAR})OR (a.OUT_DOOR_NO = #{inDoorNo,jdbcType=VARCHAR}))
         </if>
 
+        <if test="contactIdFront != null" >
+            AND ((a.CONTA_ID_F like #{contactIdFront,jdbcType=VARCHAR})OR (a.CONTA_ID_B like #{contactIdFront,jdbcType=VARCHAR}))
+        </if>
 
         <if test='order != null and sort == "batchNo"' >
             order by  car_batch_no  ${order}
@@ -2382,6 +2382,12 @@
         <if test="endDate != null" >
             and a.record_dtm <![CDATA[     <     ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1
         </if>
+        <if test="beginLeaveDate != null" >
+            and a.LEAVE_DTM <![CDATA[     >=     ]]> to_date(#{beginLeaveDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+        </if>
+        <if test="endLeaveDate != null" >
+            and a.LEAVE_DTM <![CDATA[     <     ]]> to_date(#{endLeaveDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1
+        </if>
 
         <if test="venNo != null" >
             and a.ven_no = #{venNo,jdbcType=VARCHAR}
@@ -2397,18 +2403,12 @@
             and a.good_no = #{goodNo,jdbcType=VARCHAR}
         </if>
         <if test="inDoorNo != null" >
-            and a.IN_DOOR_NO = #{inDoorNo,jdbcType=VARCHAR}
-        </if>
-        <if test="outDoorNo != null" >
-            and a.OUT_DOOR_NO = #{outDoorNo,jdbcType=VARCHAR}
-        </if>
-        <if test="contactIdFront != null" >
-            AND a.CONTA_ID_F like #{contactIdFront,jdbcType=VARCHAR}
-        </if>
-        <if test="contactIdBack != null" >
-            OR a.CONTA_ID_B like #{contactIdFront,jdbcType=VARCHAR}
+            and ((a.IN_DOOR_NO = #{inDoorNo,jdbcType=VARCHAR})OR (a.OUT_DOOR_NO = #{inDoorNo,jdbcType=VARCHAR}))
         </if>
 
+        <if test="contactIdFront != null" >
+            AND ((a.CONTA_ID_F like #{contactIdFront,jdbcType=VARCHAR})OR (a.CONTA_ID_B like #{contactIdFront,jdbcType=VARCHAR}))
+        </if>
 
     </select>
 
