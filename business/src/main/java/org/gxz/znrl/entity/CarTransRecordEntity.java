@@ -47,6 +47,17 @@ public class CarTransRecordEntity extends BaseEntity{
     public String beginDate;
     public String endDate;
 
+
+
+    public String beginLeaveDate;
+    public String endLeaveDate;
+
+
+
+
+
+
+
     public String insertTime;//插入数据时间
     public String opCode;//操作人员
 
@@ -755,4 +766,20 @@ public class CarTransRecordEntity extends BaseEntity{
     public void setJqDtm(String jqDtm) {
         this.jqDtm = jqDtm;
     }
+    public String getBeginLeaveDate() {
+        return beginLeaveDate;
+    }
+
+    public void setBeginLeaveDate(String beginLeaveDate) {
+        this.beginLeaveDate = beginLeaveDate;
+    }
+
+    public String getEndLeaveDate() {
+        return endLeaveDate;
+    }
+
+    public void setEndLeaveDate(String endLeaveDate) {
+        this.endLeaveDate = endLeaveDate;
+    }
+
 }
