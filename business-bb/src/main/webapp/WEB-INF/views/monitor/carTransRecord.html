@@ -19,8 +19,8 @@
             <td>
 
                 <label for="beginDate">出场日期：</label>
-                <input class="easyui-datebox" id="beginDate" style="width:120px">&nbsp;—&nbsp;
-                <input class="easyui-datebox" id="endDate"  style="width:120px">
+                <input class="easyui-datetimebox" id="beginDate" style="width:145px">&nbsp;—&nbsp;
+                <input class="easyui-datetimebox" id="endDate"  style="width:145px">
                 <label for="shipId">船名：</label>
                 <input id="shipId" class="easyui-combobox" style="width:120px;"
                        data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/SHIP_INFO'" />
@@ -70,8 +70,8 @@
 
     function qry(){
         var paramO = new Object();
-        var beginDate = $("#beginDate").datebox("getValue");
-        var endDate = $("#endDate").datebox("getValue");
+        var beginDate = $("#beginDate").datetimebox("getValue");
+        var endDate = $("#endDate").datetimebox("getValue");
         var carIdQry = $("#carIdQry").textbox("getValue");
         var shipId = $("#shipId").combobox("getValue");
         var tickNo = $("#tickNo").textbox("getValue");
@@ -280,8 +280,8 @@
     function qryEXL() {
 
         var paramO = new Object();
-        var beginDate = $("#beginDate").datebox("getValue");
-        var endDate = $("#endDate").datebox("getValue");
+        var beginDate = $("#beginDate").datetimebox("getValue");
+        var endDate = $("#endDate").datetimebox("getValue");
         var carIdQry = $("#carIdQry").textbox("getValue");
         var shipId = $("#shipId").combobox("getValue");
         var tickNo = $("#tickNo").textbox("getValue");
