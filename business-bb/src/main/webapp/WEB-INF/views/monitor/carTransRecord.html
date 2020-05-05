@@ -18,7 +18,7 @@
         <tr>
             <td>
 
-                <label for="beginDate">进场日期：</label>
+                <label for="beginDate">出场日期：</label>
                 <input class="easyui-datebox" id="beginDate" style="width:120px">&nbsp;—&nbsp;
                 <input class="easyui-datebox" id="endDate"  style="width:120px">
                 <label for="shipId">船名：</label>
@@ -79,11 +79,12 @@
         // var doorNo = $("#doorNo").combobox("getValue");
         // var contactIdFront = $("#contactIdFront").textbox("getValue");
         //查询条件的，都必须带上 search_ 这个前缀，才能让后台的beanUtil里捕获到这个参数并映射到entity条件里。。 xieyt
+
         if (beginDate != null && beginDate != "" && beginDate.length > 0) {
-            paramO.search_beginDate = beginDate;
+            paramO.search_beginLeaveDate = beginDate;
         }
         if (endDate != null && endDate != "" && endDate.length > 0) {
-            paramO.search_endDate = endDate;
+            paramO.search_endLeaveDate = endDate;
         }
 
         if (carIdQry != null && carIdQry != "" && carIdQry.length > 0) {
@@ -287,8 +288,8 @@
         var venNo= $("#venNo").combobox("getValue");
         // var doorNo = $("#doorNo").combobox("getValue");
         // var contactIdFront = $("#contactIdFront").textbox("getValue");
-        var inputObj =  {beginDate:beginDate,
-            endDate:endDate,
+        var inputObj =  {beginLeaveDate:beginDate,
+            endLeaveDate:endDate,
             carId:carIdQry,
             shipId:shipId,
             tickNo:tickNo,
