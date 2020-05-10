@@ -133,6 +133,8 @@ public class ToolServiceImpl implements IToolService {
             r = toolMapper.getStockInfoOption();
         }else if (tag.equals("CHANNEL_INFO")) {
             r = toolMapper.getChannelInfoOption();
+        }else if (tag.equals("CUSTOMER_INFO")) {
+            r = toolMapper.getCustomerInfoOption();
         }
 
         return r;
