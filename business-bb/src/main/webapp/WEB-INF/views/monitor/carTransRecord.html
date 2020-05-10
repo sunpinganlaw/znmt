@@ -43,7 +43,10 @@
                  <!--</select>-->
 
                 <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>
+                <@shiro.hasPermission name="carTransRecord:edit">
                 <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit" onclick="modifyRec();">修改</a>
+                </@shiro.hasPermission>
+
                 <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-excel"  onclick="qryEXL()">导出</a>
                 <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-print" onclick="printRec();">补打</a>
                <!--<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="deleteRec();">删除</a>-->
