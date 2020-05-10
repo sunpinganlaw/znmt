@@ -697,6 +697,67 @@ public class ConfigServiceImpl extends BaseService implements IConfigService {
     public void updateStockInfoEntity(StockInfoEntity stockInfo) {
         baseDao.getMapper(StockInfoMapper.class).updateByPrimaryKey(stockInfo);
     }
+    //-----------------------------------------------------------------------------------------------------cutomerInfo_start----------------
+    @Override
+    public Page customerInfoFindList(Page page, CustomerInfo customerInfo) {
+        CustomerInfoCriteria criteria = new CustomerInfoCriteria();
+        CustomerInfoCriteria.Criteria cri = criteria.createCriteria();
+        if(customerInfo != null){
+            if(StringUtils.isNotBlank(customerInfo.getCustomerNo())){
+                cri.andCusNoEqualTo(customerInfo.getCustomerNo());
+            }
+            if(StringUtils.isNotBlank(customerInfo.getCustomerName())){
+                cri.addCriterion(" CUSTOMER_NAME LIKE '%"+customerInfo.getCustomerName()+"%' ");
+            }
+            if(StringUtils.isNotBlank(customerInfo.getForShort())){
+                cri.addCriterion(" FOR_SHORT LIKE '%"+customerInfo.getForShort()+"%' ");
+            }
+        }
+        if(page != null && page.getSort() != null && page.getOrder() != null){
+            criteria.setOrderByClause(page.getSort() + " " + page.getOrder());
+        }
+        page.setCount(baseDao.getMapper(CustomerInfoMapper.class).countByExample(criteria));
+        List<CustomerInfo> list = baseDao.selectByPage("org.gxz.znrl.mapper.CustomerInfoMapper." + BaseDao.SELECT_BY_EXAMPLE, criteria, page);
+        return page.setRows(list);
+    }
 
+    @Override
+    public CustomerInfo getByCusNo(String code) {
+        CustomerInfoCriteria criteria = new CustomerInfoCriteria();
+        CustomerInfoCriteria.Criteria cri = criteria.createCriteria();
+        if(StringUtils.isNotBlank(code)){
+            cri.andCusNoEqualTo(code);
+        }
+
+
+        CustomerInfo customerInfo =  baseDao.selectOne("org.gxz.znrl.mapper.CustomerInfoMapper."+BaseDao.SELECT_BY_EXAMPLE, criteria);
+        return customerInfo;
+    }
+
+    @Override
+    public CustomerInfo getByCusName(String name) {
+        CustomerInfoCriteria criteria = new CustomerInfoCriteria();
+        CustomerInfoCriteria.Criteria cri = criteria.createCriteria();
+        if(StringUtils.isNotBlank(name)){
+            cri.andCusNameEqualTo(name);
+        }
+
+
+        CustomerInfo customerInfo =  baseDao.selectOne("org.gxz.znrl.mapper.CustomerInfoMapper."+BaseDao.SELECT_BY_EXAMPLE, criteria);
+        return customerInfo;
+    }
+
+    @Override
+    public void saveCustomerInfo(CustomerInfo customerInfo) {
+        baseDao.getMapper(CustomerInfoMapper.class).insertSelective(customerInfo);
+    }
+
+    @Override
+    public void updateCustomerInfo(CustomerInfo customerInfo) {
+        baseDao.getMapper(CustomerInfoMapper.class).updateByPrimaryKey(customerInfo);
+    }
+    public void customerInfoDelete(String id) {
+        baseDao.getMapper(CustomerInfoMapper.class).deleteByPrimaryKey(id);
+    }
 
 }
