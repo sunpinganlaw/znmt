@@ -70,6 +70,14 @@ public interface IConfigService {
     Page stockInfoFindList(Page page, StockInfoEntity stockInfo);
 
 
+    Page customerInfoFindList(Page page, CustomerInfo customerInfo);
+    void customerInfoDelete(String id);
+    CustomerInfo getByCusNo(String code);
+    CustomerInfo getByCusName(String name);
+    void saveCustomerInfo(CustomerInfo customerInfo);
+    void updateCustomerInfo(CustomerInfo customerInfo);
+
+
     CoalMine getByMineNo(String code);
 
     CoalMine getByMineName(String name);
