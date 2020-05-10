@@ -1,0 +1,128 @@
+    <div class="form-div">
+        <form id="shipInfoForm" method="post">
+                <table>
+                    <tr>
+                        <td>船名</td>
+                        <td><input class="easyui-textbox"  id="shipName" name="shipName" data-options="required:true" style="width:145px"></td>
+                        <td>船英文名</td>
+                        <td><input class="easyui-textbox"  id="shipEngName" name="shipEngName" data-options="required:true" style="width:145px"></td>
+                    </tr>
+                    <tr>
+                        <td>船号</td>
+                        <td><input class="easyui-textbox"  id="shipCode" name="shipCode" data-options="required:true" style="width:145px"></td>
+                        <td>班次</td>
+                        <td><input class="easyui-textbox"  id="fixShipNo" name="fixShipNo" style="width:145px"></td>
+                    </tr>
+
+                    <tr>
+                        <td>舱位数</td>
+                        <td><select id="cabinCnt" name="cabinCnt" class="easyui-combobox" data-options="panelHeight:'auto'"  style="width:145px;" >
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option selected value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                        </select></td>
+                        <td>状态</td>
+                        <td><select id="status" name="status" class="easyui-combobox" data-options="panelHeight:'auto'"  style="width:145px;" >
+                            <option selected value="1">正常</option>
+                            <option value="2">失效</option>
+                        </select></td>
+                    </tr>
+                    <tr>
+                        <td>额定载重</td>
+                        <td><input class="easyui-numberbox" data-options="min:0, max:1000000"  id="loadTun" name="loadTun" style="width:145px;"/></td>
+                        <td>总排水量</td>
+                        <td><input class="easyui-numberbox" data-options="min:0, max:1000000"  id="totalTun" name="totalTun" style="width:145px;"/></td>
+                    </tr>
+                    <tr>
+                        <td>船宽(m)</td>
+                        <td><input class="easyui-numberbox" data-options="min:0, max:200, precision:2"  id="width" name="width" style="width:145px;"/></td>
+                        <td>船长(m)</td>
+                        <td><input class="easyui-numberbox" data-options="min:0, max:1000, precision:2"  id="length" name="length" style="width:145px;"/></td>
+                    </tr>
+                    <tr>
+                        <td>国籍</td>
+                        <td><input class="easyui-textbox"  id="nationCd" name="nationCd" style="width:145px"></td>
+                        <td>运输公司</td>
+                        <td><input id="companyNo" name="companyNo" class="easyui-combobox" style="width:145px;"
+                                   data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/CARRIER_INFO'" /></td>
+                    </tr>
+                    <tr>
+                        <td>备注</td>
+                        <td colspan="3"><input class="easyui-textbox"  id="remark" name="remark" style="width:361px"></td>
+                    </tr>
+
+                    <tr id="opTR">
+                        <td style="text-align: center" colspan="4">
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm()">保存</a>
+                        </td>
+                    </tr>
+                </table>
+
+        </form>
+    </div>
+
+<script type="text/javascript">
+
+    $(function () {
+        var shipInfoActionTag = document.getElementById("shipInfoActionTag").value;
+
+        //修改时加载数据到控件
+        if (shipInfoActionTag == 'MOD'){
+            var qryObj = {};
+            qryObj.search_shipId = document.getElementById("shipIdHidden").value;
+            $.post("${base}/business/monitor/qryShipInfo", qryObj, function (rsp) {
+                if (rsp) {
+                    if (rsp.rows.length > 0) {
+                        $('#shipInfoForm').form('load',rsp.rows[0]);
+
+                        $("#shipName").textbox({editable:false});
+                    }
+                }
+            });
+        }
+    });
+
+
+    //提交表单
+    function submitForm(){
+        if (! $("#shipInfoForm").form('validate')) {
+            showMsg("提示", "有必填项未输入值!");
+            return false;
+        }
+
+        $.messager.confirm('提示', '确定保存?', function (r) {
+            if (r) {
+                //提交保存
+                save();
+            }
+        });
+    }
+
+    //保存
+    function save(){
+        var params = $("#shipInfoForm").serialize();
+        var actionTag = document.getElementById("shipInfoActionTag").value;
+        var shipId = document.getElementById("shipIdHidden").value;
+
+        if (actionTag == "MOD") {
+            params = params + "&shipId=" + shipId;
+        }
+
+        $.post("${base}/business/monitor/submitEditShipInfo/"+actionTag, params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示",rsp.msg);
+                $('#editShipInfoWin').window('close');
+                $shipInfoDg.datagrid('reload');
+            } else {
+                showMsg("提示", rsp.msg);
+            }
+        }).error(function () {
+            showMsg("提示", "新增失败!");
+        });
+    }
+
+</script>
