@@ -47,16 +47,8 @@ public class CarTransRecordEntity extends BaseEntity{
     public String beginDate;
     public String endDate;
 
-
-
     public String beginLeaveDate;
     public String endLeaveDate;
-
-
-
-
-
-
 
     public String insertTime;//插入数据时间
     public String opCode;//操作人员
@@ -118,6 +110,28 @@ public class CarTransRecordEntity extends BaseEntity{
     public String czBalanceNo;//称重通道号
 
     public String jqBalanceNo;//称轻通道号
+
+
+
+    public String customerNo;//供应商
+    public String customerName;//供应商名称
+
+    public String getCustomerNo() {
+        return customerNo;
+    }
+
+    public void setCustomerNo(String customerNo) {
+        this.customerNo = customerNo;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
 
     public String getLeaveFlag() {
         return leaveFlag;
