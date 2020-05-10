@@ -644,4 +644,10 @@
         select channel_no||'' id, channel_name name from CHANNEL_INFO
     </select>
 
+    <select id="getCustomerInfoOption" resultMap="comboboxOptResultMap" >
+        select '' id, '全部' name from dual
+        union all
+        select customer_no||'' id, customer_name name from CUSTOMER_INFO
+    </select>
+
 </mapper>

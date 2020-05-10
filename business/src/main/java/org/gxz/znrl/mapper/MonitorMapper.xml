@@ -2085,7 +2085,8 @@
         <result column="CONTA_TYPE" jdbcType="VARCHAR" property="contactType" />
         <result column="CFM_FLG" jdbcType="VARCHAR" property="cfmFlag" />
         <result column="LEAVE_FLG" jdbcType="VARCHAR" property="leaveFlag" />
-
+        <result column="cutomer_no" jdbcType="VARCHAR" property="customerNo" />
+        <result column="customer_name" jdbcType="VARCHAR" property="customerName" />
     </resultMap>
     <!--汽车来煤记录明细查询-->
     <select id="qryCarTransRecordList" parameterType="org.gxz.znrl.entity.CarTransRecordEntity"  resultMap="CarTransRecordResultMap" >
@@ -2108,6 +2109,10 @@
         (select vi.ven_name
         from VENDOR_INFO vi
         where vi.ven_no = a.ven_no) ven_nam,
+        a.customer_no,
+        (select ci.customer_name
+        from CUSTOMER_INFO ci
+        where ci.customer_no = a.customer_no) customer_name,
         a.tick_no,
         a.tick_qty/1000 tick_qty,
         to_char(a.record_dtm,'yyyy-mm-dd hh24:mi:ss') record_dtm,
@@ -2174,6 +2179,9 @@
         <if test="venNo != null" >
             and a.ven_no = #{venNo,jdbcType=VARCHAR}
         </if>
+        <if test="customerNo != null" >
+            and a.customer_no = #{customerNo,jdbcType=VARCHAR}
+        </if>
 
         <if test="tickNo != null" >
             and a.tick_no like #{tickNo,jdbcType=VARCHAR}
@@ -2191,6 +2199,7 @@
         <if test="contactIdFront != null" >
             AND ((a.CONTA_ID_F like #{contactIdFront,jdbcType=VARCHAR})OR (a.CONTA_ID_B like #{contactIdFront,jdbcType=VARCHAR}))
         </if>
+
 
         <if test='order != null and sort == "batchNo"' >
             order by  car_batch_no  ${order}
@@ -2391,6 +2400,10 @@
 
         <if test="venNo != null" >
             and a.ven_no = #{venNo,jdbcType=VARCHAR}
+        </if>
+
+        <if test="customerNo != null" >
+            and a.customer_no = #{customerNo,jdbcType=VARCHAR}
         </if>
 
         <if test="tickNo != null" >
@@ -4277,6 +4290,8 @@
         <result column="STORAGE_NAME" jdbcType="VARCHAR" property="storageName" />
         <result column="NET_QTY" jdbcType="VARCHAR" property="netQty" />
         <result column="LEFT_QTY" jdbcType="VARCHAR" property="leftQty" />
+        <result column="customer_no" jdbcType="VARCHAR" property="customerNo" />
+        <result column="customer_name" jdbcType="VARCHAR" property="customerName" />
 
     </resultMap>
 
@@ -4360,6 +4375,8 @@
         (select v.ven_name from vendor_info v where v.ven_no = a.ven_no) ven_name,
         a.carrier_no,
         (select ci.carrier_name from carrier_info ci where ci.carrier_no = a.carrier_no) carrier_name,
+        a.customer_no,
+        (select v.customer_name from customer_info v where v.customer_no = a.customer_no) customer_name,
         a.tick_qty,
         a.sample_type,
         decode(a.sample_type, '0','出库','1','入库','2','直提') sample_type_name,

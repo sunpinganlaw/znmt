@@ -178,4 +178,6 @@ public interface ToolMapper {
 
     public List<ComboboxOptionEntity> getStockInfoOption();
     public List<ComboboxOptionEntity> getChannelInfoOption();
+    public List<ComboboxOptionEntity> getCustomerInfoOption();
+
 }
