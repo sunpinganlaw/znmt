@@ -82,6 +82,9 @@ public class ConfigController extends BaseAction {
     private static final String STOCKINFOLIST = "/config/stockInfo/list";
     private static final String STOCKINFOEDIT = "/config/stockInfo/stockInfoEdit";
 
+    private static final String CUSTOMERINFOLIST = "/config/customerInfo/list";
+    private static final String CUSTOMERINFOEDIT = "/config/customerInfo/customerInfoEdit";
+
     private static final String WORKMODETTPELIST4DWK = "/config/workModeType/list4DWK"; //用于大武口参数配置的权限分离
 
     //flash测试纵览页面实例
@@ -108,6 +111,11 @@ public class ConfigController extends BaseAction {
     @RequestMapping(value="/stockInfo/list", method= RequestMethod.GET)
     public String stockInfoList(HttpServletRequest request) {
         return STOCKINFOLIST;
+    }
+
+    @RequestMapping(value="/customerInfo/list", method= RequestMethod.GET)
+    public String customerInfoList(HttpServletRequest request) {
+        return CUSTOMERINFOLIST;
     }
 
     @RequestMapping(value="/channelInfo/list", method= RequestMethod.GET)
@@ -2161,5 +2169,146 @@ public class ConfigController extends BaseAction {
         }
         return result;
     }
+    //-----------------------------------------------------------------------------------------------------customerInfo_start----------------------------------------------------------------------
+    @RequestMapping(value="/customerInfo/listShow")
+    @ResponseBody
+    public GridModel customerInfoListShow() {
+        GridModel m = new GridModel();
+        CustomerInfo customerInfo = form(CustomerInfo.class);
+        Page info = null;
+        try {
+            info = configService.customerInfoFindList(page(), customerInfo);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        m.setRows(info.getRows());
+        m.setTotal(info.getCount());
+        return m;
+    }
 
+    @RequestMapping(value="/customerInfo/delete/{id}", method=RequestMethod.POST)
+    @ResponseBody
+    public Result customerInfoDelete(@PathVariable String id) {
+        Result result = new Result();
+        TableColumnByColumn tableColumnByColumn = new TableColumnByColumn();
+        tableColumnByColumn.setShowCol("COUNT(1)");
+        tableColumnByColumn.setTableName("rlrecordmstqy");
+        tableColumnByColumn.setCondCol("customer_no");
+        tableColumnByColumn.setCondValue(id);
+        tableColumnByColumn.setCondOperate("=");
+        tableColumnByColumn.setCondType("1");
+        tableColumnByColumn.setCondCnt(1);
+        try {
+            String tmp = commonService.getTableColumnByColumn(tableColumnByColumn);
+            if (tmp != null && Integer.parseInt(tmp) > 0 ) {
+                result.setSuccessful(false);
+                result.setMsg("该收货单位编号正在被使用，不能删除！");
+                return result;
+            }
+            tableColumnByColumn.setTableName("rlrecordmstqy");
+            tmp = commonService.getTableColumnByColumn(tableColumnByColumn);
+            if (tmp != null && Integer.parseInt(tmp) > 0 ) {
+                result.setSuccessful(false);
+                result.setMsg("该收货编号正在被使用，不能删除！");
+                return result;
+            }
+            configService.customerInfoDelete(id);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
+        result.setSuccessful(true);
+        result.setMsg("删除成功");
+        return result;
+    }
+
+    @RequestMapping(value="/customerInfoEdit")
+    @ResponseBody
+    public ModelAndView customerInfoEdit() {
+        ModelAndView mav = new ModelAndView(CUSTOMERINFOEDIT);
+        CustomerInfo customerInfo = new CustomerInfo();
+        try {
+            ObjectMapper mapper = JacksonMapper.getInstance();
+            String json =mapper.writeValueAsString(customerInfo);
+            mav.addObject("message", "success");
+            mav.addObject("customerInfo",json);
+            mav.addObject("doWhat","add");
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return mav;
+    }
+
+    @RequestMapping(value="/customerInfoEdit/{code}")
+    @ResponseBody
+    public ModelAndView editCustomerInfo(@PathVariable String code) {
+        ModelAndView mav = new ModelAndView(CUSTOMERINFOEDIT);
+        try {
+            CustomerInfo  customerInfo = configService.getByCusNo(code);
+            ObjectMapper mapper = JacksonMapper.getInstance();
+            String json =mapper.writeValueAsString(customerInfo);
+            mav.addObject("message", "success");
+            mav.addObject("customerInfo",json);
+            mav.addObject("doWhat","edit");
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return mav;
+    }
+
+    @RequestMapping(value="/customerInfo/add")
+    @ResponseBody
+    public Result saveUser(@ModelAttribute CustomerInfo customerInfo) {
+        Result result = new Result();
+        try {
+
+            if (configService.getByCusName(customerInfo.getCustomerName()) != null) {
+                result.setSuccessful(false);
+                result.setMsg("收货单位添加失败，收货单位名称：" + customerInfo.getCustomerName() + "已存在。");
+                return result;
+            }
+            configService.saveCustomerInfo(customerInfo);
+
+            result.setSuccessful(true);
+            result.setMsg("保存成功");
+        }
+        catch (Exception e)
+        {
+            result.setSuccessful(false);
+            result.setMsg("保存失败");
+            e.printStackTrace();
+        }
+        return result;
+    }
+    @RequestMapping(value="/customerInfo/edit/{customerNo}")
+    @ResponseBody
+    public Result editUser(@ModelAttribute CustomerInfo customerInfo, @PathVariable String customerNo) {
+        Result result = new Result();
+        try {
+            customerInfo.setCustomerNo(customerNo);
+            if(customerInfo.getCustomerNo()!=null) {
+                CustomerInfo customerInfoTmp = configService.getByCusName(customerInfo.getCustomerName());
+                if (customerInfoTmp != null) {
+                    if (!customerInfo.getCustomerNo().equals(customerInfoTmp.getCustomerNo())) {
+                        result.setSuccessful(false);
+                        result.setMsg("收货单位修改失败，收货单位名称：" + customerInfoTmp.getCustomerName() + "已存在。");
+                        return result;
+                    }
+                }
+                configService.updateCustomerInfo(customerInfo);
+            }
+            result.setSuccessful(true);
+            result.setMsg("保存成功");
+        }
+        catch (Exception e)
+        {
+            result.setSuccessful(false);
+            result.setMsg("保存失败");
+            e.printStackTrace();
+        }
+        return result;
+    }
 }

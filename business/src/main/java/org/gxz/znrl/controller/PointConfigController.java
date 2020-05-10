@@ -145,6 +145,7 @@ public class PointConfigController  extends BaseAction {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("pointTag",String.valueOf(lo.get(0)));
                 jsonObject.put("pointName",String.valueOf(lo.get(1)));
+                jsonObject.put("pointInfo",String.valueOf(lo.get(2)));
                 list.add(jsonObject);
             }
             System.out.println(JSONArray.fromObject(list));
