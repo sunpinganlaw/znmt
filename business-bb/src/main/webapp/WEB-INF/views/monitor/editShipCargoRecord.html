@@ -69,7 +69,10 @@
 
                     </select>
                 </td>
-                <td style="text-align: center" colspan="4">
+                <td>收货单位</td>
+                <td><input id="customerNo" name="customerNo" class="easyui-combobox" style="width:145px;"
+                           data-options="required:true,valueField:'id',textField:'name',panelHeight:'300',url:'${base}/business/tool/getComboboxOpt/CUSTOMER_INFO'" /></td>
+                <td style="text-align: center" colspan="3">
                     <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm()">保存</a>
                 </td>
             </tr>
