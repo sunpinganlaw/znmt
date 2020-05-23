@@ -93,11 +93,11 @@ $(function () {
             [
                 {field: 'goodName', title: '货物名称',align:'center', width:18},
                 {field: 'goodTypeName', title: '货物类型',align:'center', width: 18},
-                {field: 'tickQty', title: '提单重量(KG)',align:'center', width:20,formatter: function (value, row, index){
+                {field: 'tickQty', title: '提单重量(吨)',align:'center', width:20,formatter: function (value, row, index){
                         return row.tickQty /1000;
                     }},
                 {field: 'venName', title: '客户信息',align:'center', width:20},
-                {field: 'tradeName', title: '贸易类型',align:'center', width:20},
+                // {field: 'tradeName', title: '贸易类型',align:'center', width:20},
                 {field: 'billNo', title: '提货单号',align:'center', width:20},
                 {field: 'factTime', title: '操作时间',align:'center', width:20},
                 {field: 'isBatch', title: '作业状态代码',align:'center',hidden:'true', width:18},
@@ -161,7 +161,7 @@ $(function () {
             [
                 {field: 'recId', title: '流水号',align:'center', width:25, checkbox:true},
                 {field: 'carId', title: '车牌号', sortable:true,align:'center', width: 25},
-                {field: 'tradeName', title: '贸易类型', sortable:true,align:'center', width:20},
+                // {field: 'tradeName', title: '贸易类型', sortable:true,align:'center', width:20},
                 {field: 'orgName', title: '运输单位',align:'center', width:40},
                 {field: 'regDtm', title: '绑定时间',align:'center', width:40}
 
