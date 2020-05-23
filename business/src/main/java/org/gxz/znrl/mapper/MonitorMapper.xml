@@ -4397,8 +4397,8 @@
          a.STOCK_NO,
          a.STORAGE_CODE,
          a.STORAGE_NAME,
-        (SELECT SUM(B.NET_QTY) FROM RLRECORDMSTQY B WHERE B.TICK_NO= a.bill_no) NET_QTY,
-        (SELECT  a.tick_qty-SUM(B.NET_QTY) FROM RLRECORDMSTQY B WHERE B.TICK_NO= a.bill_no) LEFT_QTY
+        (SELECT NVL(SUM(B.NET_QTY),0) FROM RLRECORDMSTQY B WHERE B.TICK_NO= a.bill_no and B.CFM_FLG='Y'and B.LEAVE_FLG='Y') NET_QTY,
+        (SELECT  a.tick_qty-NVL(SUM(B.NET_QTY),0) FROM RLRECORDMSTQY B WHERE B.TICK_NO= a.bill_no and B.CFM_FLG='Y'and B.LEAVE_FLG='Y') LEFT_QTY
         from ship_cargo_record a
         where 1 = 1
          and a.rec_status in ( '1','0','2','3')
