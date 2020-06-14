@@ -27,7 +27,7 @@
                     <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="addTrains();">绑定车辆</a><!--可批量新增车，公共信息只需输入一次-->
                     <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="startTrains();">发布任务</a>
                     <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="pauseTrains();">暂停任务</a>
-
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="stopTrains();">结束提单</a>
 
                     <input type="hidden" id="hiddenRecordNo"/>
                     <input type="hidden" id="hideTrainNo">
@@ -37,6 +37,22 @@
                 </td>
             </tr>
         </table>
+    </div>
+
+
+    <div id="detailtb">
+        <table>
+            <tr>
+                <td>
+
+                    <label for="carIdQry">车牌号：</label>
+                    <input class="easyui-textbox" id="carIdQry" style="width:130px;" value=""/>
+                    <a href="javascript:void(0)" id="qryBtnDetail" class="easyui-linkbutton" iconCls="icon-search"  onclick="qryCar()">查询</a>
+
+                </td>
+            </tr>
+        </table>
+
     </div>
 
     <div id="tx" style="margin: 5px;width: 90%">
@@ -167,6 +183,7 @@ $(function () {
 
             ]
         ],
+        toolbar: '#detailtb',
         onLoadSuccess:function(data){
         }
     })
@@ -319,6 +336,49 @@ function pauseTrains(){
     }
 }
 
+function stopTrains(){
+    //处理之前先清理下；
+    selectedTrains = null;
+
+    var paramObj = new Object();
+    var commonObj = new Object();
+    var arrayTrainCars = [];
+
+    var trainrow = $basicdg.datagrid('getSelected');
+    if (trainrow == null ) {
+        showMsg("提示", "选择要操作的提单信息");
+        return false;}
+
+
+    commonObj.recordNo = trainrow.recordNo;
+    commonObj.doActionTag = "STOP";
+    paramObj["publicInfo"] = JSON.stringify(commonObj);
+    paramObj["updateInfo"] = JSON.stringify(arrayTrainCars);
+
+
+    if (trainrow) {
+        $.messager.confirm('提示', '暂停作业任务，确定继续操作?', function (r) {
+            if (r) {
+                //提交数据
+                $.post("${base}/business/monitor/operateTrains/", paramObj,function(rsp) {
+                    if(rsp.successful){
+                        showMsg("提示", rsp.msg);
+                        var qryObj = {};
+                        $basicdg.datagrid('load', qryObj);
+                    } else {
+                        showMsg("提示", rsp.msg);
+                    }
+                }, "JSON").error(function() {
+                    showMsg("提示", "暂停作业任务失败！");
+                });
+
+            }
+        });
+    } else {
+        showMsg("提示", "请先选择要作业的信息！");
+        return false;
+    }
+}
 
 
 
@@ -340,11 +400,11 @@ function addTrains(){
         paramObj["publicInfo"] = JSON.stringify(commonObj);
 
     }
-   if(trainrow.isBatch=='1')
-   {
-       showMsg("提示", "请先暂停该提单任务");
-       return false;
-   }
+   // if(trainrow.isBatch=='1')
+   // {
+   //     showMsg("提示", "请先暂停该提单任务");
+   //     return false;
+   // }
 
 
     $('#addNewTrainWin').window({
@@ -359,7 +419,30 @@ function addTrains(){
     });
 }
 
+//查询
+function qryCar(){
+    var o = {};
+    var carId = $("#carIdQry").textbox("getValue");
 
+    if (carId != null && carId != "" && carId.length > 0) {
+        o.search_carId = carId;
+    }else {
+        showMsg("提示", "请输入车牌信息");
+        return false;
+    }
+
+    var trainrow = $basicdg.datagrid('getSelected');
+    if (trainrow == null ) {
+        showMsg("提示", "选择要操作的提单信息");
+        return false;}
+    o.search_batchNo = trainrow.recordNo;
+
+    $detaildg.datagrid('clearSelections');
+    $detaildg.datagrid('load', o);
+
+
+
+}
 
 </script>
 </html>
