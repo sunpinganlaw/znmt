@@ -441,56 +441,56 @@
         parent.parent.addTab("故障信息查询||icon-sys||${base}/business/monitor/deviceErr/list");
         $messager.window('close');
     }
-    var tt;
-    var txt;
-    var $messager;
-    var rowNum = 0;
-    window.setInterval(function () {
-        $.ajax({
-            async: false,
-            cache: false,
-            type: 'POST',
-            url: '${base}/business/monitor/deviceErrLists',
-            error: function () {// 请求失败处理函数
-                showMsg("提示", "查询数据失败,请重新登陆!");
-            },
-            success: function (json) {
-//                alert(JSON.stringify(json));
-                if (json.length > 0) {
-                    rowNum = 1;
-                    tt = json;
-                    //txt = '<div class="mianbox"><div class="tablebox"><table width="100%" border="0" cellspacing="0" cellpadding="0" class="Fsttable" ><tr class="title"><td>故障描述</td></tr><tr class="mod001"><td>故障故障故障哈哈</td></tr><tr class="mod002"><td>故障故障故障哈哈</td></tr></tr><tr class="mod001"><td>故障故障故障哈哈</td></tr><tr class="mod002"><td>故障故障故障哈哈</td></tr></tr><tr class="mod001"><td>故障故障故障哈哈</td></tr><tr class="mod002"><td>故障故障故障哈哈</td></tr></tr><tr class="mod001"><td>故障故障故障哈哈</td></tr><tr class="mod002"><td>故障故障故障哈哈</td></tr></table></div></div>';
-//                    txt = '<div class="mianbox" onclick="openDeviceErr();"><div class="tablebox"><table width="100%" border="0" cellspacing="0" cellpadding="0" class="Fsttable" ><tr class="title"><td><b>故障描述</b></td></tr>';
-                    txt = '<div class="mianbox" onclick="openDeviceErr();"><div class="tablebox"><table width="100%" border="0" cellspacing="0" cellpadding="0" class="Fsttable" >';
-                    for (x in tt) {
-                        if (rowNum%2 == 1){
-                            txt += '<tr class="mod001"><td><font color="red">'+tt[x].errorDec+'</font></td></tr>';
-                        } else {
-                            txt += '<tr class="mod002"><td><font color="red">'+tt[x].errorDec+'</font></td></tr>';
-                        }
-                        rowNum ++;
-                    }
-                    txt +="</table></div></div>";
-                    if ($messager == null) {
-                        $messager = $.messager.show({
-                            title: '故障信息',
-                            msg: txt,
-                            timeout: 0,
-                            showType: 'show',
-                            width:300,
-                            height:150,
-                            onBeforeClose: function () {
-                                $messager = null;
-                            }
-                        });
-                    }
-//                                    setTimeout(function(){
-//                                        $messager.window('destroy');
-//                                    }, 5000);
-                }
-            }
-        });
-    }, 30*1000);
+//     var tt;
+//     var txt;
+//     var $messager;
+//     var rowNum = 0;
+//     window.setInterval(function () {
+//         $.ajax({
+//             async: false,
+//             cache: false,
+//             type: 'POST',
+//             url: '${base}/business/monitor/deviceErrLists',
+//             error: function () {// 请求失败处理函数
+//                 showMsg("提示", "查询数据失败,请重新登陆!");
+//             },
+//             success: function (json) {
+// //                alert(JSON.stringify(json));
+//                 if (json.length > 0) {
+//                     rowNum = 1;
+//                     tt = json;
+//                     //txt = '<div class="mianbox"><div class="tablebox"><table width="100%" border="0" cellspacing="0" cellpadding="0" class="Fsttable" ><tr class="title"><td>故障描述</td></tr><tr class="mod001"><td>故障故障故障哈哈</td></tr><tr class="mod002"><td>故障故障故障哈哈</td></tr></tr><tr class="mod001"><td>故障故障故障哈哈</td></tr><tr class="mod002"><td>故障故障故障哈哈</td></tr></tr><tr class="mod001"><td>故障故障故障哈哈</td></tr><tr class="mod002"><td>故障故障故障哈哈</td></tr></tr><tr class="mod001"><td>故障故障故障哈哈</td></tr><tr class="mod002"><td>故障故障故障哈哈</td></tr></table></div></div>';
+// //                    txt = '<div class="mianbox" onclick="openDeviceErr();"><div class="tablebox"><table width="100%" border="0" cellspacing="0" cellpadding="0" class="Fsttable" ><tr class="title"><td><b>故障描述</b></td></tr>';
+//                     txt = '<div class="mianbox" onclick="openDeviceErr();"><div class="tablebox"><table width="100%" border="0" cellspacing="0" cellpadding="0" class="Fsttable" >';
+//                     for (x in tt) {
+//                         if (rowNum%2 == 1){
+//                             txt += '<tr class="mod001"><td><font color="red">'+tt[x].errorDec+'</font></td></tr>';
+//                         } else {
+//                             txt += '<tr class="mod002"><td><font color="red">'+tt[x].errorDec+'</font></td></tr>';
+//                         }
+//                         rowNum ++;
+//                     }
+//                     txt +="</table></div></div>";
+//                     if ($messager == null) {
+//                         $messager = $.messager.show({
+//                             title: '故障信息',
+//                             msg: txt,
+//                             timeout: 0,
+//                             showType: 'show',
+//                             width:300,
+//                             height:150,
+//                             onBeforeClose: function () {
+//                                 $messager = null;
+//                             }
+//                         });
+//                     }
+// //                                    setTimeout(function(){
+// //                                        $messager.window('destroy');
+// //                                    }, 5000);
+//                 }
+//             }
+//         });
+//     }, 30*1000);
 
 
 </script>
