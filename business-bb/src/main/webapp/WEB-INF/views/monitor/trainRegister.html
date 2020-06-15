@@ -410,7 +410,7 @@ function addTrains(){
     $('#addNewTrainWin').window({
         modal : true,
         title : '新增车辆信息',
-        width : 1200,//1755
+        width : 1000,//1755
         height : 600,//740
         collapsible : false,
         minimizable : false,
@@ -422,19 +422,26 @@ function addTrains(){
 //查询
 function qryCar(){
     var o = {};
-    var carId = $("#carIdQry").textbox("getValue");
-
-    if (carId != null && carId != "" && carId.length > 0) {
-        o.search_carId = carId;
-    }else {
-        showMsg("提示", "请输入车牌信息");
-        return false;
-    }
 
     var trainrow = $basicdg.datagrid('getSelected');
     if (trainrow == null ) {
         showMsg("提示", "选择要操作的提单信息");
         return false;}
+
+    var carId = $("#carIdQry").textbox("getValue");
+    if (carId != null && carId != "" && carId.length > 0) {
+        o.search_carId =  "%"+ carId+"%";
+
+    }else {
+        o.search_batchNo = trainrow.recordNo;
+        o.search_uploadStatus = '-1';
+        $detaildg.datagrid('clearSelections');
+        $detaildg.datagrid('load', o);
+        // showMsg("提示", "请输入车牌信息");
+        return false;
+    }
+
+
     o.search_batchNo = trainrow.recordNo;
 
     $detaildg.datagrid('clearSelections');
