@@ -31,10 +31,22 @@
 
                     <a href="javascript:void(0)" id="qryBtn" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>
 
+
                 </td>
+                <!--<td>-->
+                    <!--<form  enctype="multipart/form-data" id="importCsv" >-->
+                        <!--<input type="file" name="file" id="file" accept=".xlsx" />-->
+                        <!--<input type="hidden" id="prefix" name="prefix"/>-->
+                        <!--<input type="hidden" id="actionType" name="actionType"/>-->
+                        <!--<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="uploadExcel();">批量导入车辆</a>-->
+                    <!--</form>-->
+
+                <!--</td>-->
             </tr>
         </table>
     </div>
+
+
     <div id="det" style="margin: 5px;width: 90%">
         <table id="trainDetailDg" ></table>
     </div>
@@ -72,6 +84,8 @@ function qry(){
     if (billNoQry != null && billNoQry != "" && billNoQry.length > 0) {
         qryObj.search_billNo= billNoQry;
     }
+
+    qryObj.search_recType = '1';
     $detaildg.datagrid('load', qryObj);
 }
 
@@ -95,7 +109,8 @@ $(function () {
         pageSize:100,
         pageList: [100, 200, 300],
         queryParams: {//默认进来查不到数据
-            search_beginDate:defaultBeginTime
+            search_beginDate:defaultBeginTime,
+            search_recType:'1'
         },
         columns: [
             [
@@ -118,7 +133,35 @@ $(function () {
 
 });
 
+function uploadExcel() {
 
+    document.getElementById("prefix").value ='carRegister';
+    $('#actionType').val('add');
+
+    var formData = new FormData($("#importCsv")[0]);
+    $.ajax({
+        url: '${base}/business/pointConfig/importCsv4car',
+        type: 'POST',
+        data: formData,
+        async: false,
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function (data) {
+            if (data.successful) {
+                $.messager.alert('系统提示', data.msg, 'success');
+                reload(prefix);
+            } else {
+                $.messager.alert('错误！', data.msg, 'error');
+            }
+        },
+        error: function (XmlHttpRequest) {
+            $.messager.alert('错误！',"处理异常，服务器状态 ："+XmlHttpRequest.status+",信息："+XmlHttpRequest.statusText, 'error');
+        }
+    });
+
+    $("#importCsv")[0].reset();
+}
 
 
 

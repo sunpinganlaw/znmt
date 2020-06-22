@@ -54,7 +54,7 @@
                 <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="delShipCargoRec();">删除</a>
                 <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="uploadExcel();">上传条码</a>
                 <form  enctype="multipart/form-data" id="importCsv" >
-                    <input type="file" name="file" id="file" accept=".xlsx" onchange="importCsv4zt()"/>
+                    <input type="file" name="file" id="file" accept=".xlsx"/>
                     <input type="hidden" id="prefix" name="prefix"/>
                     <input type="hidden" id="actionType" name="actionType"/>
                 </form>
@@ -397,7 +397,7 @@
 
         var formData = new FormData($("#importCsv")[0]);
         $.ajax({
-            url: '${base}/business/pointConfig/importCsv4zt',
+            url: '${base}/business/pointConfig/importCsv4barRegister',
             type: 'POST',
             data: formData,
             async: false,

@@ -3,7 +3,7 @@
                 <table>
                     <tr>
                         <td>车号：</td>
-                        <td><input class="easyui-textbox" data-options="missingMessage:'ceshi'" id="carIdQry" style="width: 145px;" /></td>
+                        <td><input class="easyui-textbox" data-options="missingMessage:'ceshi'" id="carIdQryStr" style="width: 145px;" /></td>
                         <td colspan="2"><input type="button" value="搜索" onclick="qry()"/>
                         <td colspan="4"><input type="button"  value="完成选择" onclick="saveNewTrainInfo()"/>
                             <span style="color: #0099FF;">&nbsp;&nbsp;&nbsp;全部选择完毕后，点击【完成选择】按钮。</span></td>
@@ -40,11 +40,9 @@
 
     function qry(){
         var paramO = new Object();
-
-        var carIdQry = $("#carIdQry").textbox("getValue");
-
-        if (carIdQry != null && carIdQry != "" && carIdQry.length > 0) {
-            paramO.search_carId ="%"+ carIdQry+"%";
+        var carIdQryStr = $("#carIdQryStr").textbox("getValue");
+        if (carIdQryStr != null && carIdQryStr != "" && carIdQryStr.length > 0) {
+            paramO.search_carId ="%"+ carIdQryStr+"%";
         }
 
         $carRegDg.datagrid("load",paramO);
@@ -57,7 +55,7 @@
             animate: true,
             border:true,
             height: $(this).height() - 50,
-            width: $(this).width() - 2,
+            width: $(this).width() - 5,
             idField:'recId',
             singleSelect:false,
             rownumbers:true,
@@ -70,11 +68,11 @@
             },
             columns: [
                 [
-                    {field: 'cardId', title: '卡号',align:'center', width:20,checkbox:true},
-                    {field: 'carId', title: '前车牌号',align:'center', width: 20},
-                    {field: 'orgName', title: '运输单位',align:'center', width:20},
-                    {field: 'transTypeName', title: '运输类型',align:'center', width:20},
-                    {field: 'endDtm', title: '失效时间',align:'center', width:20}
+                    {field: 'cardId', title: '卡号',align:'center', width:5,checkbox:true},
+                    {field: 'carId', title: '前车牌号',align:'center', width: 5},
+                    {field: 'orgName', title: '运输单位',align:'center', width:5},
+                    {field: 'transTypeName', title: '运输类型',align:'center', width:5}
+                    // {field: 'endDtm', title: '失效时间',align:'center', width:20}
                 ]
             ],
 
@@ -98,7 +96,7 @@
                 var rows =  $carRegDg.datagrid('getSelections');
 
                 if (rows.length == 0) {
-                    showMsg("提示", "值守需要选择一个车辆信息");
+                    showMsg("提示", "至少需要选择一个车辆信息");
                     return false;
                 }else
                 {
