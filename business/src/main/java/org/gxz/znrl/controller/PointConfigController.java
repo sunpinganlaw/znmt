@@ -59,9 +59,9 @@ public class PointConfigController  extends BaseAction {
         return gridModel;
     }
     //导入
-    @RequestMapping(value = "/importCsv4zt", method = RequestMethod.POST)
+    @RequestMapping(value = "/importCsv4barRegister", method = RequestMethod.POST)
     @ResponseBody
-    public Result importCsv4zt(@RequestParam CommonsMultipartFile file,
+    public Result importCsv4barRegister(@RequestParam CommonsMultipartFile file,
                                  HttpServletRequest request) throws Exception {
 
         request.setCharacterEncoding("utf-8");//客户端网页我们控制为UTF-8
@@ -84,16 +84,19 @@ public class PointConfigController  extends BaseAction {
                 List<Object> lo = listob.get(i);
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("pointTag",String.valueOf(lo.get(0)));
+                jsonObject.put("pointName",prexfix);
                 list.add(jsonObject);
             }
-            System.out.println(JSONArray.fromObject(list));
+
+
             if(list==null && list.isEmpty()){
                 result.setSuccessful(false);
                 result.setMsg("文件内容为空，请重新选择！");
                 return result;
             }
          PointConfigEntity pointCfgEntity=new PointConfigEntity();
-        pointCfgEntity.setPrefix(prexfix);
+//        pointCfgEntity.setPrefix(prexfix);
+        pointCfgEntity.setPrefix("barRegister");
         pointCfgEntity.setActionType(actionType);
         ShiroUser shiroUser = org.gxz.znrl.shiro.SecurityUtils.getShiroUser();
         String opCode = shiroUser.getUser().getId().toString();
@@ -180,6 +183,67 @@ public class PointConfigController  extends BaseAction {
         return result;
     }
 
+    //导入
+    @RequestMapping(value = "/importCsv4boxCarRegister", method = RequestMethod.POST)
+    @ResponseBody
+    public Result importCsv4boxCarRegister(@RequestParam CommonsMultipartFile file,
+                                HttpServletRequest request) throws Exception {
+
+        request.setCharacterEncoding("utf-8");//客户端网页我们控制为UTF-8
+        String prexfix = request.getParameter("prefix");
+        String actionType = request.getParameter("actionType");
+        Result result = new Result();
+        result.setSuccessful(true);
+        result.setMsg("文件导入成功！");
+        try {
+
+            InputStream in =null;
+            List<List<Object>> listob = null;
+            in = file.getInputStream();
+            listob = new ImportExcelUtil().getBankListByExcel(in,file.getOriginalFilename());
+            in.close();
+            List<JSONObject> list = new ArrayList<>();
+
+            //该处可调用service相应方法进行数据保存到数据库中，现只对数据输出
+            for (int i = 0; i < listob.size(); i++) {
+                List<Object> lo = listob.get(i);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("pointTag",String.valueOf(lo.get(0)));
+                jsonObject.put("pointName",String.valueOf(lo.get(1)));
+                jsonObject.put("pointInfo",String.valueOf(lo.get(2)));
+                list.add(jsonObject);
+            }
+            System.out.println(JSONArray.fromObject(list));
+            if(list==null && list.isEmpty()){
+                result.setSuccessful(false);
+                result.setMsg("文件内容为空，请重新选择！");
+                return result;
+            }
+            PointConfigEntity pointCfgEntity=new PointConfigEntity();
+            pointCfgEntity.setPrefix(prexfix);
+            pointCfgEntity.setActionType(actionType);
+            ShiroUser shiroUser = org.gxz.znrl.shiro.SecurityUtils.getShiroUser();
+            String opCode = shiroUser.getUser().getId().toString();
+            pointCfgEntity.setOpCode(opCode);
+            JSONObject json = new JSONObject();
+            json.put("pointList", JSONArray.fromObject(list));
+            pointCfgEntity.setJsonString(json.toString());
+            pointCfgService.operaPointCfg(pointCfgEntity);
+            //设置返回结果
+            if (pointCfgEntity.getResCode() != null && pointCfgEntity.getResCode().equals("0")) {
+                result.setSuccessful(true);
+                result.setMsg(pointCfgEntity.getResMsg());
+            } else {
+                result.setSuccessful(false);
+                result.setMsg("文件导入失败：" + pointCfgEntity.getResMsg());
+            }
+        }catch(Exception e){
+            result.setSuccessful(false);
+            result.setMsg("上传文件信息异常:"+e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
+    }
 
 
     //获取下拉框里的数据

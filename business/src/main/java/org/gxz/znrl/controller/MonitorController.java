@@ -140,6 +140,12 @@ public class MonitorController extends BaseAction {
         return "/monitor/transmstRegister";
     }
 
+
+    @RequestMapping(value = "/transmstRegisterBoxCar/page", method = RequestMethod.GET)
+    public String transmstRegisterBoxCar() {
+        return "/monitor/transmstRegisterBoxCar";
+    }
+
     //菜单跳转到船运登记页面
     @RequestMapping(value = "/shipRegister/page", method = RequestMethod.GET)
     public String gotoShipRegisterPage() {
@@ -217,6 +223,12 @@ public class MonitorController extends BaseAction {
     @RequestMapping(value = "/gotoAddNewTrain", method = RequestMethod.GET)
     public String gotoAddNewTrain() {
         return "/monitor/addNewTrain";
+    }
+
+
+    @RequestMapping(value = "/gotoAddNewTrain4BoxCar", method = RequestMethod.GET)
+    public String gotoAddNewTrain4BoxCar() {
+        return "/monitor/addNewTrain4BoxCar";
     }
 
     //菜单跳转到称重监控页面
