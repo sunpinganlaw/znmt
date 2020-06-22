@@ -28,6 +28,9 @@ public class TransmstEntity extends  BaseEntity{
     public String tradeName;
     public String areaCode;
 
+    public String recType;
+
+
 
 
     public String getShipName() {
@@ -208,7 +211,13 @@ public class TransmstEntity extends  BaseEntity{
         this.orgName = orgName;
     }
 
+    public String getRecType() {
+        return recType;
+    }
 
+    public void setRecType(String recType) {
+        this.recType = recType;
+    }
 
 
 }
