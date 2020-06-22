@@ -1,0 +1,223 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>集装箱运输车辆管理</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+
+<body>
+
+    <div id="tb">
+        <table>
+            <tr>
+                <td>
+                    <label for="beginTime">注册日期：</label>
+                    <input class="easyui-datebox" id="beginTime" style="width:120px">&nbsp;—&nbsp;
+                    <input class="easyui-datebox" id="endTime"  style="width:120px">
+
+                    <label for="carIdQry">车牌号：</label>
+                    <input class="easyui-textbox" id="carIdQry" style="width:130px;" value=""/>
+
+                    <a href="javascript:void(0)" id="qryBtn" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="deleteTrainbody();">删除车辆</a>
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="addTrains();">绑定车辆</a><!--可批量新增车，公共信息只需输入一次-->
+
+                </td>
+                <!--<td>-->
+                    <!--<form  enctype="multipart/form-data" id="importCsv" >-->
+                        <!--<input type="file" name="file" id="file" accept=".xlsx" />-->
+                        <!--<input type="hidden" id="prefix" name="prefix"/>-->
+                        <!--<input type="hidden" id="actionType" name="actionType"/>-->
+                        <!--<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="uploadExcel();">批量导入车辆</a>-->
+
+                        <!--<input type="hidden" id="hiddenRecordNo"/>-->
+                        <!--<input type="hidden" id="hideTrainNo">-->
+                        <!--<input type="hidden" id="trainModifyTag">&lt;!&ndash;修改标识，1修改  2大票录入&ndash;&gt;-->
+                        <!--<input type="hidden" id="hideIsBatchTag">&lt;!&ndash;批量录入大票后是否进行分批标志&ndash;&gt;-->
+                        <!--<input type="hidden" id="hideTrackNo">-->
+                    <!--</form>-->
+
+                <!--</td>-->
+            </tr>
+        </table>
+    </div>
+
+
+    <div id="det" style="margin: 5px;width: 90%">
+        <table id="trainDetailDg" ></table>
+    </div>
+    <div id="addNewTrainWin4BoxCar" ></div>
+
+</body>
+<script type="text/javascript">
+//全局变量
+
+$detaildg = $("#trainDetailDg");
+
+
+//查询
+function qry(){
+    var beginTime = $("#beginTime").datebox("getValue");
+    var carIdQry = $("#carIdQry").textbox("getValue");
+
+    var qryObj = {};
+    if (beginTime != null && beginTime != "" && beginTime.length > 0) {
+        qryObj.search_beginTime = beginTime;
+    }
+
+    if (carIdQry != null && carIdQry != "" && carIdQry.length > 0) {
+        qryObj.search_carId = "%"+ carIdQry+"%";
+    }
+
+    qryObj.search_recType = '2';
+    $detaildg.datagrid('load', qryObj);
+}
+
+
+$(function () {
+    var myDate = new Date();
+    var defaultBeginTime = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+    var defaultEndTime =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+    $detaildg.datagrid({
+        url:  '${base}/business/monitor/TransmstRegistList',
+        fitColumns: true,
+        animate: true,
+        border:true,
+        height: $(this).height() - 5,
+        width: $(this).width() - 5,
+        idField:'recId',
+        rownumbers:true,
+        pagination: true,
+        pagenumber:true,
+        pageSize:100,
+        pageList: [100, 200, 300],
+        queryParams: {//默认进来查不到数据
+            search_beginDate:defaultBeginTime,
+            search_recType:'2'
+        },
+        columns: [
+            [
+                {field: 'recId', title: '流水号',align:'center', width:25, checkbox:true},
+                {field: 'carId', title: '车牌号', sortable:true,align:'center', width: 25},
+                {field: 'regDtm', title: '注册时间',align:'center', width:40}
+          ]
+        ],
+        onLoadSuccess:function(data){
+        }
+    })
+
+
+});
+
+function uploadExcel() {
+
+    document.getElementById("prefix").value ='carRegister';
+    $('#actionType').val('add');
+
+    var formData = new FormData($("#importCsv")[0]);
+    $.ajax({
+        url: '${base}/business/pointConfig/importCsv4boxCarRegister',
+        type: 'POST',
+        data: formData,
+        async: false,
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function (data) {
+            if (data.successful) {
+                $.messager.alert('系统提示', data.msg, 'success');
+                reload(prefix);
+            } else {
+                $.messager.alert('错误！', data.msg, 'error');
+            }
+        },
+        error: function (XmlHttpRequest) {
+            $.messager.alert('错误！',"处理异常，服务器状态 ："+XmlHttpRequest.status+",信息："+XmlHttpRequest.statusText, 'error');
+        }
+    });
+
+    $("#importCsv")[0].reset();
+}
+
+function deleteTrainbody(){
+    //处理之前先清理下；
+    selectedTrains = null;
+
+    var paramObj = new Object();
+    var commonObj = new Object();
+    var arrayTrainCars = [];
+
+    var rows =  $detaildg.datagrid('getSelections');
+    var trainrow = '';
+
+    if (rows.length == 0) {
+        showMsg("提示", "选择要删除的车厢记录数据");
+        return false;
+    } else {
+        selectedTrains = rows;
+        for ( var i = 0; i < selectedTrains.length; i++) {
+            var o = {};
+            o.carId = selectedTrains[i].carId;
+            arrayTrainCars[i] = o;
+        }
+        commonObj.recordNo ='boxCarDel';
+        paramObj["publicInfo"] = JSON.stringify(commonObj);
+        paramObj["updateInfo"] = JSON.stringify(arrayTrainCars);
+
+
+        if (selectedTrains) {
+            $.messager.confirm('提示', '数据将删除，确定继续操作?', function (r) {
+                if (r) {
+                    //提交数据
+                    $.post("${base}/business/monitor/deleteMassTrainBody/", paramObj,function(rsp) {
+                        if(rsp.successful){
+                            showMsg("提示", rsp.msg);
+                            $detaildg.datagrid("reload");
+                            $detaildg.datagrid('clearSelections');
+                        } else {
+                            showMsg("提示", rsp.msg);
+                        }
+                    }, "JSON").error(function() {
+                        showMsg("提示", "删除数据失败！");
+                    });
+                }
+            });
+        } else {
+            showMsg("提示", "请先选择要删除的车节信息！");
+            return false;
+        }
+    }
+}
+
+
+//批量新增火车车厢，可以在原车上增，也可完全新增
+function addTrains(){
+
+    selectedTrains = null;
+    var commonObj = new Object();
+    var paramObj = new Object();
+    var isbtchName=new Object();
+
+
+    commonObj.billNo = 'boxCarDel';
+    paramObj["publicInfo"] = JSON.stringify(commonObj);
+
+    $('#addNewTrainWin4BoxCar').window({
+        modal : true,
+        title : '新增车辆信息',
+        width : 1000,//1755
+        height : 600,//740
+        collapsible : false,
+        minimizable : false,
+        maximizable : true,
+        href : '${base}/business/monitor/gotoAddNewTrain4BoxCar'
+    });
+}
+
+</script>
+</html>
