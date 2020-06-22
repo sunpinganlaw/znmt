@@ -1460,6 +1460,7 @@
         <result column="fix_ship_no" jdbcType="VARCHAR" property="fixShipNo" />
         <result column="bill_no" jdbcType="VARCHAR" property="billNo" />
         <result column="area_code" jdbcType="VARCHAR" property="areaCode" />
+        <result column="rec_type" jdbcType="VARCHAR" property="recType" />
 
     </resultMap>
 
@@ -1503,7 +1504,7 @@
         </if>
 
         <if test="carId != null" >
-            and a.car_id like  #{carId,jdbcType=VARCHAR}
+            and a.car_id like #{carId,jdbcType=VARCHAR}
 
         </if>
 
@@ -1552,7 +1553,8 @@
         a.ship_name,
         a.bill_no,
         a.fix_ship_no,
-        a.area_code
+        a.area_code,
+        a.rec_type
         FROM TRANSMST a
         where 1=1
         <if test="batchNo != null" >
@@ -1575,6 +1577,9 @@
         </if>
         <if test="tradeType != null" >
             and a.trade_type = #{tradeType,jdbcType=VARCHAR}
+        </if>
+        <if test="recType != null" >
+            and a.rec_type = #{recType,jdbcType=VARCHAR}
         </if>
 
         <if test="beginDate != null" >
@@ -1831,6 +1836,9 @@
         </if>
         <if test="tradeType != null" >
             and a.trade_type = #{tradeType,jdbcType=VARCHAR}
+        </if>
+        <if test="recType != null" >
+            and a.rec_type = #{recType,jdbcType=VARCHAR}
         </if>
         <if test="beginDate != null" >
             and a.reg_dtm <![CDATA[     >=     ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
