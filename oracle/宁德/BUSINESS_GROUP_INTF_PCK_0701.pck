@@ -5,6 +5,10 @@ create or replace package BUSINESS_GROUP_INTF_PCK is
 
   BUSI_TYPE CONSTANT VARCHAR2(40) := '1'; --该码头固定为1(集装箱）
 
+  BUSI_TYPE_CAR CONSTANT VARCHAR2(2) := '0'; --散货业务代码
+  
+  BUSI_TYPE_BOX CONSTANT VARCHAR2(2) := '1'; --集装箱业务代码
+
   procedure P_PROCESS_0X21(v_dataInfo in varchar2,
                            v_cmdInfo  out varchar2,
                            v_resCode  out varchar2,
@@ -326,6 +330,9 @@ create or replace package body BUSINESS_GROUP_INTF_PCK is
         iv_cardID  := iv_BAR_CODE;
         iv_cardTyp := 'BAR';
       END IF;
+      
+       ---进入散货业务，直接将类型写死为散货业务
+       iv_cardTyp :=BUSI_TYPE_CAR;
     
       ---进场通道 如果重复的序列号 要求能删除原来车辆信息
       if iv_I_E_TYPE = 'I' then
@@ -1629,6 +1636,10 @@ create or replace package body BUSINESS_GROUP_INTF_PCK is
         iv_cardID  := iv_BAR_CODE;
         iv_cardTyp := 'BAR';
       END IF;
+      
+      
+       ---进入集装箱业务，直接将类型写死为集装箱业务
+       iv_cardTyp :=BUSI_TYPE_BOX;
     
       ---进场通道 如果重复的序列号 要求能删除原来车辆信息
       if iv_I_E_TYPE = 'I' then
@@ -1676,7 +1687,7 @@ create or replace package body BUSINESS_GROUP_INTF_PCK is
            iv_VE_NAME,
            iv_ship_name,
            iv_carrierNo,
-           to_number(iv_GROSS_WT) * 1000,
+           to_number(iv_GROSS_WT),
            iv_CHNL_NO,
            to_date(iv_FILE_TIME, 'yyyy-mm-dd hh24:mi:ss'),
            iv_CHNL_NO,
@@ -1716,8 +1727,8 @@ create or replace package body BUSINESS_GROUP_INTF_PCK is
         end if;*/
       
         update RLRECORDMSTQY
-           set PZ_QTY        = to_number(iv_GROSS_WT) * 1000,
-               NET_QTY       = iv_temWeight - to_number(iv_GROSS_WT) * 1000,
+           set PZ_QTY        = to_number(iv_GROSS_WT),
+               NET_QTY       = iv_temWeight - to_number(iv_GROSS_WT),
                JQ_BALANCE_NO = iv_CHNL_NO,
                JQ_DTM        = to_date(iv_FILE_TIME, 'yyyy-mm-dd hh24:mi:ss'),
                OUT_DOOR_NO   = iv_CHNL_NO,
@@ -1761,7 +1772,7 @@ create or replace package body BUSINESS_GROUP_INTF_PCK is
            iv_VE_NAME,
            iv_ship_name,
            iv_carrierNo,
-           to_number(iv_GROSS_WT) * 1000,
+           to_number(iv_GROSS_WT),
            iv_CHNL_NO,
            to_date(iv_FILE_TIME, 'yyyy-mm-dd hh24:mi:ss'),
            iv_CHNL_NO,
@@ -1802,8 +1813,8 @@ create or replace package body BUSINESS_GROUP_INTF_PCK is
         end if;*/
       
         update RLRECORDMSTQY
-           set MZ_QTY        = to_number(iv_GROSS_WT) * 1000,
-               NET_QTY       = to_number(iv_GROSS_WT) * 1000 - iv_temWeight,
+           set MZ_QTY        = to_number(iv_GROSS_WT),
+               NET_QTY       = to_number(iv_GROSS_WT) - iv_temWeight,
                CZ_BALANCE_NO = iv_CHNL_NO,
                CZ_DTM        = to_date(iv_FILE_TIME, 'yyyy-mm-dd hh24:mi:ss'),
                OUT_DOOR_NO   = iv_CHNL_NO,
