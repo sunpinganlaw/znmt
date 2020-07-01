@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-    <title>过磅信息</title>
+    <title>散货过卡信息</title>
     <base href="${base}/">
     <meta http-equiv="pragma" content="no-cache">
     <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
@@ -114,13 +114,8 @@
         if (customerNo != null && customerNo != "" && customerNo.length > 0) {
             paramO.search_customerNo = customerNo;
         }
-        // if (contactIdFront != null && contactIdFront != "" && contactIdFront.length > 0) {
-        //     paramO.search_contactIdFront = '%'+contactIdFront+'%';
-        // }
-        // if (doorNo != null && doorNo != "" && doorNo.length > 0) {
-        //     paramO.search_inDoorNo = doorNo;
-        // }
 
+        paramO.search_cardTyp = '0';
         $("#carTransRecordDg").datagrid("load",paramO);
     }
 
@@ -139,6 +134,9 @@
             pagenumber:true,
             pageSize:100,
             pageList: [100, 200, 300],
+            queryParams: {//默认进来查不到数据
+                search_cardTyp: '0'
+            },
             columns: [
                 [
                     {field: 'recordNo', title: '流水号',align:'center', width:25, checkbox:true},
@@ -303,13 +301,15 @@
         var customerNo= $("#customerNo").combobox("getValue");
         // var doorNo = $("#doorNo").combobox("getValue");
         // var contactIdFront = $("#contactIdFront").textbox("getValue");
+        var cardTyp= '0';
         var inputObj =  {beginLeaveDate:beginDate,
             endLeaveDate:endDate,
             carId:carIdQry,
             shipId:shipId,
             tickNo:tickNo,
             customerNo:customerNo,
-            venNo:venNo
+            venNo:venNo,
+            cardTyp:cardTyp
             // contactIdFront:contactIdFront,
             // inDoorNo:doorNo,
 
