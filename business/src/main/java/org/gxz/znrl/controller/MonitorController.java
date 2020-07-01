@@ -176,6 +176,12 @@ public class MonitorController extends BaseAction {
         return "/monitor/carTransRecord";
     }
 
+    //菜单跳转到汽车来煤入厂记录页面
+    @RequestMapping(value = "/record/boxtransrecord", method = RequestMethod.GET)
+    public String gotoBoxTransRecord() {
+        return "/monitor/boxTransRecord";
+    }
+
     //菜单跳转到汽车来煤记录新增页面
     @RequestMapping(value = "/record/addCarTransRec", method = RequestMethod.GET)
     public String gotoAddCarTransRecord() {
