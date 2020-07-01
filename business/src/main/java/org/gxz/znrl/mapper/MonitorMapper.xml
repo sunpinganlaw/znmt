@@ -2104,8 +2104,8 @@
         select a.record_no,
         a.car_batch_no,
         a.card_id,
-        (select b.card_typ from rlcarmst b where b.card_id=a.card_id and rownum=1) card_typ,
-        decode((select b.card_typ from rlcarmst b where b.card_id=a.card_id and rownum=1), '1', '普通卡', '2', '临时卡') card_type_name,
+        a.card_typ,
+        decode(A.card_typ,'0','散货业务','1','集装箱业务') card_type_name,
         (select b.car_typ from rlcarmst b where b.card_id=a.card_id and rownum=1) car_typ,
         decode((select b.car_typ from rlcarmst b where b.card_id=a.card_id and rownum=1), '0', '半挂', '1', '外挂') car_type_name,
         a.car_id,
@@ -2164,6 +2164,9 @@
 
         <if test="cardId != null" >
             and a.card_id like #{cardId,jdbcType=VARCHAR}
+        </if>
+        <if test="cardTyp != null" >
+            and a.card_typ = #{cardTyp,jdbcType=VARCHAR}
         </if>
 
         <if test="beginDate != null" >
@@ -2391,6 +2394,10 @@
         <if test="cardId != null" >
             and a.card_id like #{cardId,jdbcType=VARCHAR}
         </if>
+        <if test="cardTyp != null" >
+            and a.card_typ = #{cardTyp,jdbcType=VARCHAR}
+        </if>
+
 
         <if test="beginDate != null" >
             and a.record_dtm <![CDATA[     >=     ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
