@@ -1,0 +1,126 @@
+    <div class="form-div">
+        <form id="qryForm" method="post">
+            <div>
+                <table>
+
+                </table>
+            </div>
+        </form>
+
+        <form id="carTransRecordForm" method="post">
+            <fieldset>
+                <legend style="text-align: left;border:none;">车辆过磅信息</legend>
+                <table>
+                    <!--<tr>-->
+                        <!--<td>卡类型</td>-->
+                        <!--<td><select id="cardTyp" name="cardTyp" class="easyui-combobox" data-options="panelHeight:'auto'" readonly="readonly" style="width:145px;" >-->
+                            <!--<option value="1">普通卡</option>-->
+                            <!--<option value="2">临时卡</option>-->
+                        <!--</select></td>-->
+                        <!--<td>卡号</td>-->
+                        <!--<td><input class="easyui-textbox"   id="cardId" name="cardId"  readonly="readonly" style="width:145px;"/></td>-->
+                    <!--</tr>-->
+                    <tr>
+                        <td>运输单位</td>
+                        <td><input id="orgNo" name="orgNo" class="easyui-combobox" style="width:145px;" readonly="readonly"
+                                   data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/CARRIER_INFO'" /></td>
+                        <td>车牌号</td>
+                        <td><input class="easyui-textbox"   id="carId" name="carId" style="width:145px;"/></td>
+                    </tr>
+                </table>
+
+                <hr>
+
+                <table>
+                    <tr>
+                        <td> 毛重(t)</td>
+                        <td><input id="mzQty" name="mzQty"class="easyui-numberbox"  data-options="required:true,min:0, precision:3"/></td>
+                        <td>皮重(t)</td>
+                        <td><input id="pzQty" name="pzQty" class="easyui-numberbox" data-options="required:true,min:0, precision:3" /></td>
+                    </tr>
+
+                    <tr>
+                        <td>毛重时间</td>
+                        <td><input class="easyui-datetimebox" id="czDtm" name="czDtm" style="width:145px"></td>
+                        <td>皮重时间</td>
+                        <td><input class="easyui-datetimebox"  id="jqDtm" name="jqDtm" style="width:145px"></td>
+                    </tr>
+
+                    <tr>
+                        <td>称重通道号</td>
+                        <td><input class="easyui-textbox"   id="czBalanceNo" name="czBalanceNo"  style="width:145px;"/></td>
+                        <td>称轻通道号</td>
+                        <td><input class="easyui-textbox"   name="jqBalanceNo" id="jqBalanceNo" style="width:145px;"/></td>
+                    </tr>
+                    <tr>
+                        <td>备注<input type="hidden" id="recordNo" name="recordNo"/></td>
+                        <td colspan="3"><input class="easyui-textbox"   id="remark" name="remark" style="width:362px;"/></td>
+                    </tr>
+
+                    <tr>
+
+                        <td  style="text-align: center"  id="buttonTD" colspan="3">
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm();"> 保存</a></td>
+                    </tr>
+                </table>
+            </fieldset>
+
+        </form>
+    </div>
+
+<script type="text/javascript">
+    var doActionTag = document.getElementById("doActionTag").value;
+
+    //修改时加载数据到控件
+    if (doActionTag == 'MOD'){
+        $("#carTransRecordForm").form('load',selectedRowObj);
+    }
+
+
+
+    //提交表单
+    function submitForm(){
+
+        if (! $("#carTransRecordForm").form('validate')) {
+            showMsg("提示", "有必填项未输入值!");
+            return false;
+        }
+
+        $.messager.confirm('提示', '确定保存?', function (r) {
+            if (r) {
+                //提交保存
+                save();
+            }
+        });
+    }
+
+    //保存
+    function save(){
+        var params = $("#carTransRecordForm").serialize();
+        var postUrl = "";
+        if (doActionTag == "ADD") {
+            postUrl = "${base}/business/monitor/carTransRecNew/add";
+        } else if(doActionTag == "MOD") {
+            postUrl = "${base}/business/monitor/carTransRecNew/mod";
+        } else {
+        }
+
+        $.post(postUrl, params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示",rsp.msg);
+                $('#addCarTransRecordWin').window('close');
+            } else {
+                showMsg("提示", rsp.msg);
+            }
+        }).error(function () {
+            showMsg("提示", "新增失败!");
+        });
+    }
+
+    $('#qryForm').find('input').on('keyup',function(event){
+        if(event.keyCode == '13'){
+            focusCar();
+        }
+    });
+
+</script>

@@ -1,0 +1,359 @@
+<div class="form-div">
+    <form id="carDetailForm" method="post">
+        <fieldset>
+            <legend style="text-align: left;border:none;">基本信息</legend>
+            <table >
+                <!--<tr>-->
+                    <!--<td >卡类型</td>-->
+                    <!--<td><select id="cardTyp" name="cardTyp" style="width:126px;" class="easyui-combobox" data-options="required:true,panelHeight:'auto'" style="width:126px;" >-->
+                        <!--<option value="1">普通卡</option>-->
+                        <!--<option value="2">临时卡</option>-->
+                    <!--</select></td>-->
+                    <!--<td >卡号</td>-->
+                    <!--<td colspan="2"><input class="easyui-textbox" style="width:178px;"  name="cardId" id="cardId" data-options="required:false"/></td>-->
+                    <!--<td id="buttonTD" colspan="3">-->
+                        <!--&lt;!&ndash;<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="getCard();">扫描卡</a>&ndash;&gt;-->
+                        <!--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel"  onclick="formReset()">重置</a>-->
+                        <!--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm();">保存</a></td>-->
+                <!--</tr>-->
+                <tr>
+                    <td >前车牌号</td>
+                    <td><input class="easyui-validatebox"  style="width:126px;" id="carId" name="carId" onblur="blurCar()" data-options="required:true"/></td>
+                    <td >后车牌号</td>
+                    <td><input class="easyui-textbox" style="width:126px;"  id="backCarId" name="backCarId"  /></td>
+                    <td >标准载重(吨)</td>
+                    <td><input class="easyui-numberbox" style="width:126px;" data-options="required:true,min:0, precision:3"  name="stdQty" id="stdQty" /></td>
+                    <td >浮动皮重(吨)</td>
+                    <td><input class="easyui-numberbox" style="width:126px;" data-options="precision:3"  name="floatQty" id="floatQty"/></td>
+                </tr>
+                <tr>
+                    <td >车型</td>
+                    <td ><input id="carTyp"  name="carTyp"  style="width:126px;"/></td>
+                    <td >失效日期</td>
+                    <td><input class="easyui-datebox" style="width:126px;" id="endDtm" name="endDtm" data-options="required:false"/></td>
+                    <td >运输单位</td>
+                    <td><input id="orgNo" name="orgNo" class="easyui-combobox" style="width:126px;"
+                               data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/CARRIER_INFO'" /></td>
+                    <td >车辆类型</td>
+                    <td><select id="transTyp" name="transTyp" class="easyui-combobox" data-options="required:true,panelHeight:'auto'" style="width:126px;" >
+                        <option value="0">集装箱车</option>
+                        <option value="1">普通货车</option>
+                        <option value="2">行政车</option>
+                        <option value="5">其他</option>
+                    </select></td>
+                </tr>
+                <tr>
+                    <td >状态</td>
+                    <td><select id="validSta" name="validSta" class="easyui-combobox" data-options="required:true,panelHeight:'auto'" style="width:126px;" >
+                        <option value="1">有效</option>
+                        <option value="0">无效</option>
+                    </select></td>
+                    <td>备注</td>
+                    <td colspan="3"><input class="easyui-textbox" id="rmtNot" name="rmtNot" style="width:330px;"/></td>
+                    <td ><input id="blkLstFlg" type="hidden" value="0" /></td>
+                    <td id="buttonTD" colspan="3">
+                        <!--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="getCard();">扫描卡</a>-->
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel"  onclick="formReset()">重置</a>
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm();">保存</a></td>
+                    <td>&nbsp;</td>
+                </tr>
+            </table>
+        </fieldset>
+
+        <fieldset id="fieldone" hidden="true">
+            <legend style="text-align: left;border:none;">车厢1信息 (单位：mm)</legend>
+            <table >
+                <tr>
+                    <td>车厢长度</td>
+                    <td><input class="easyui-numberbox"  name="car1Length" id="car1Length" style="width:65px;" data-options="required:false,min:0"/></td>
+                    <td>车厢宽度</td>
+                    <td><input class="easyui-numberbox"  name="car1Width" id="car1Width" style="width:65px;" data-options="required:false,min:0"/></td>
+                    <td>车厢底离地高度</td>
+                    <td><input class="easyui-numberbox"  name="car1ToFLength" id="car1ToFLength" style="width:65px;" data-options="required:false,min:0"/></td>
+                    <td>拉筋1离车厢后内壁</td>
+                    <td><input class="easyui-numberbox"  name="car1L1TWLenght" id="car1L1TWLenght" style="width:65px;" data-options="min:0"/></td>
+                    <td>拉筋2离车厢后内壁</td>
+                    <td><input class="easyui-numberbox"  name="car1L2TL1Length" id="car1L2TL1Length" style="width:65px;" data-options="min:0"/></td>
+                </tr>
+                <tr>
+                    <td>拉筋3离车厢后内壁</td>
+                    <td><input class="easyui-numberbox"  name="car1L3TL2Length" id="car1L3TL2Length" style="width:65px;" data-options="min:0"/></td>
+                    <td>拉筋4离车厢后内壁</td>
+                    <td><input class="easyui-numberbox"  name="car1L4TL3Length" id="car1L4TL3Length" style="width:65px;" data-options="min:0"/></td>
+                    <td>拉筋5离车厢后内壁</td>
+                    <td><input class="easyui-numberbox"  name="car1L5TL4Length" id="car1L5TL4Length" style="width:65px;" data-options="min:0"/></td>
+                    <td>拉筋6离车厢后内壁</td>
+                    <td><input class="easyui-numberbox"  name="car1L6TL5Length" id="car1L6TL5Length" style="width:65px;" data-options="min:0"/></td>
+                    <td>钢丝1离车厢后内壁</td>
+                    <td><input class="easyui-numberbox"  name="car1G1TWLength" id="car1G1TWLength" style="width:65px;" data-options="min:0"/></td>
+                </tr>
+                <tr>
+                    <td>钢丝2离车厢后内壁</td>
+                    <td><input class="easyui-numberbox"  name="car1G2TG1Length" id="car1G2TG1Length" style="width:65px;" data-options="min:0"/></td>
+                    <td>钢丝3离车厢后内壁</td>
+                    <td><input class="easyui-numberbox"  name="car1G3TG2Length" id="car1G3TG2Length" style="width:65px;" data-options="min:0"/></td>
+                    <td>钢丝4离车厢后内壁</td>
+                    <td><input class="easyui-numberbox"  name="car1G4TG3Length" id="car1G4TG3Length" style="width:65px;" data-options="min:0"/></td>
+                    <td>钢丝5离车厢后内壁</td>
+                    <td><input class="easyui-numberbox"  name="car1G5TG4Length" id="car1G5TG4Length" style="width:65px;" data-options="min:0"/></td>
+                    <td>钢丝6离车厢后内壁</td>
+                    <td><input class="easyui-numberbox"  name="car1G6TG5Length" id="car1G6TG5Length" style="width:65px;" data-options="min:0"/></td>
+                </tr>
+            </table>
+        </fieldset>
+
+
+        <fieldset  id="fieldtwo" hidden="true">
+            <legend style="text-align: left;border:none;">车厢2信息 (单位：mm)</legend>
+            <table >
+                <tr>
+                    <td>车厢长度</td>
+                    <td><input class="easyui-numberbox"  name="car2Length" id="car2Length" style="width:65px;" data-options="min:0"/></td>
+                    <td>车厢宽度</td>
+                    <td><input class="easyui-numberbox"  name="car2Width" id="car2Width" style="width:65px;" data-options="min:0"/></td>
+                    <td>车厢底离地高度</td>
+                    <td><input class="easyui-numberbox"  name="car2ToFLength" id="car2ToFLength" style="width:65px;" data-options="min:0"/></td>
+                    <td>拉筋1离车厢后内壁</td>
+                    <td><input class="easyui-numberbox"  name="car2L1TWLenght" id="car2L1TWLenght" style="width:65px;" data-options="min:0"/></td>
+                    <td>拉筋2离车厢后内壁</td>
+                    <td><input class="easyui-numberbox"  name="car2L2TL1Length" id="car2L2TL1Length" style="width:65px;" data-options="min:0"/></td>
+                </tr>
+                <tr>
+                    <td>拉筋3离车厢后内壁</td>
+                    <td><input class="easyui-numberbox"  name="car2L3TL2Length" id="car2L3TL2Length" style="width:65px;" data-options="min:0"/></td>
+                    <td>拉筋4离车厢后内壁</td>
+                    <td><input class="easyui-numberbox"  name="car2L4TL3Length" id="car2L4TL3Length" style="width:65px;" data-options="min:0"/></td>
+                    <td>拉筋5离车厢后内壁</td>
+                    <td><input class="easyui-numberbox"  name="car2L5TL4Length" id="car2L5TL4Length" style="width:65px;" data-options="min:0"/></td>
+                    <td>拉筋6离车厢后内壁</td>
+                    <td><input class="easyui-numberbox"  name="car2L6TL5Length" id="car2L6TL5Length" style="width:65px;" data-options="min:0"/></td>
+                    <td>钢丝1离车厢后内壁</td>
+                    <td><input class="easyui-numberbox"  name="car2G1TWLength" id="car2G1TWLength" style="width:65px;" data-options="min:0"/></td>
+                </tr>
+                <tr>
+                    <td>钢丝2离车厢后内壁</td>
+                    <td><input class="easyui-numberbox"  name="car2G2TG1Length" id="car2G2TG1Length" style="width:65px;" data-options="min:0"/></td>
+                    <td>钢丝3离车厢后内壁</td>
+                    <td><input class="easyui-numberbox"  name="car2G3TG2Length" id="car2G3TG2Length" style="width:65px;" data-options="min:0"/></td>
+                    <td>钢丝4离车厢后内壁</td>
+                    <td><input class="easyui-numberbox"  name="car2G4TG3Length" id="car2G4TG3Length" style="width:65px;" data-options="min:0"/></td>
+                    <td>钢丝5离车厢后内壁</td>
+                    <td><input class="easyui-numberbox"  name="car2G5TG4Length" id="car2G5TG4Length" style="width:65px;" data-options="min:0"/></td>
+                    <td>钢丝6离车厢后内壁</td>
+                    <td><input class="easyui-numberbox"  name="car2G6TG5Length" id="car2G6TG5Length" style="width:65px;" data-options="min:0"/>
+                        <input type="hidden" id="recId"  name="recId"/></td>
+                </tr>
+            </table>
+        </fieldset>
+    </form>
+</div>
+
+<script type="text/javascript">
+
+    $("#carTyp").combobox({
+        panelHeight:'auto',
+        valueField:'id',
+        textField:'name',
+        data: [
+            {id: '0', name: '半挂',selected:true},
+            {id: '1',name: '外挂'}
+        ],
+        onSelect:function () {
+            if ($(this).combobox("getValue") == "1") {
+
+            }
+            if ($(this).combobox("getValue") == "0") {
+
+            }
+        }
+    });
+
+    $(document).ready(function(){
+        //加载读取的详情信息
+        var respEntity = JSON.parse(JSON.stringify(${carInfoEntity}));
+        if(respEntity != undefined && respEntity != null && respEntity != "") {
+            $('#carDetailForm').form('load', respEntity);
+        }
+        if (($("#carTyp").combobox("getValue")) == "1") {
+
+        }
+        if (($("#carTyp").combobox("getValue")) == "0") {
+
+        }
+    });
+
+    function blurCar(){
+        var paramO = {};
+        var carIdStr = $("#carId").val();
+        if (carIdStr != null && carIdStr != "" && carIdStr.length > 0) {
+            paramO.search_carId = carIdStr;
+            $.post("${base}/business/monitor/registeredCarList", paramO, function (rsp) {
+                if (rsp) {
+                    if (isValid(rsp.rows)) {
+                        alert("该车已经存在有效再用的卡");
+                        $("#carId").val("");
+                        return false;
+                    }
+                }
+            });
+        }
+    }
+
+
+    //判断车辆信息是否存在有效在用卡，如果有效true， 否则false
+    function isValid(objs){
+        var res = false;
+        for (var i = 0; i < objs.length; i++) {
+            if ('1' == objs[i].validSta) {
+                res = true;
+                return res;
+            }
+        }
+        return res;
+    }
+
+
+    var doActionTag = document.getElementById("doAction").value
+
+    //查看需要禁用编辑
+    if (doActionTag == "VIEW") {
+        document.getElementById("buttonTD").innerHTML = "";
+        $("input").attr("readonly", "readonly");
+        $("select").attr("readonly", "readonly");
+        $("#validSta").attr('readonly',true);
+    } else if(doActionTag == "MOD") {
+        // $("#cardId").textbox({editable:false});
+        $("#carId").attr('readonly',true);
+        $("#backCarId").attr('readonly',true);
+
+        $("#validSta").attr('readonly',true);
+    }
+
+    //重置表单
+    function formReset(){
+        $.messager.confirm('提示', '确定需要重置输入表单?', function (r) {
+            if (r) {
+                $('#carDetailForm').form('clear');
+            }
+        });
+    }
+
+
+    //提交表单
+    function submitForm(){
+        if (! $("#carDetailForm").form('validate')) {
+            showMsg("提示", "有必填项未输入值!");
+            return false;
+        }
+
+
+        if (($("#stdQty").numberbox("getValue")) > 99)
+        {
+            showMsg("提示", "标准载重大于99吨？请检查");
+            return false;
+
+        }
+
+
+        // var today = getThisDate();
+        // var endDtm =  $("#endDtm").textbox("getValue");
+        // if(endDtm < today){
+        //     showMsg("提示", "失效日期不能小于今天!");
+        //     return false;
+        // }
+
+        var reg = /^[冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤川青藏琼宁渝京津沪][A-Z][\dA-Z]{5}$/;
+        var cid = $("#carId").val();
+        var bcid = $("#backCarId").textbox("getValue");
+        var ok = reg.test(cid);
+        if (ok == false){
+            showMsg("提示", "前车牌号输入格式不正确! （参考格式： 京A8888A）");
+            return false;
+        }
+        if(bcid!=null&&bcid!=""){
+            ok = reg.test(bcid);
+            if (ok == false){
+                showMsg("提示", "后车牌号输入格式不正确! （参考格式： 京A8888A）");
+                return false;
+            }
+        }
+
+        $.messager.confirm('提示', '确定保存?', function (r) {
+            if (r) {
+                //提交保存
+                save();
+            }
+        });
+    }
+
+    //保存
+    function save(){
+        var params = $("#carDetailForm").serialize();
+        var postUrl = "";
+        if (doActionTag == "ADD") {
+            postUrl = "${base}/business/monitor/editCarInfo/add";
+        } else if(doActionTag == "MOD") {
+            postUrl = "${base}/business/monitor/editCarInfo/mod";
+        } else {
+        }
+
+        $.post(postUrl, params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示",rsp.msg);
+                $('#carRegEditWin').window('close');
+            } else {
+                showMsg("提示", rsp.msg);
+            }
+        }).error(function () {
+            showMsg("提示", "新增失败!");
+        });
+    }
+
+    //得到card
+    function getCard() {
+        $("#cardId").textbox('setValue',"");
+        var recId = "-1";
+        $.post("${base}/business/monitor/editCarInfo/"+recId, function(rsp) {
+            if(rsp.successful){
+                $("#cardId").textbox('setValue',rsp.msg);
+                document.getElementById("carId").focus();
+
+                if (rsp.msg != null && rsp.msg != "") {
+                    var paramO = {};
+                    var cardIdStr = $("#cardId").textbox("getValue");
+                    if (cardIdStr != null && cardIdStr != "" && cardIdStr.length > 0) {
+                        paramO.search_cardId = cardIdStr;
+                        $.post("${base}/business/monitor/registeredCarList", paramO, function (rsp) {
+                            if (rsp) {
+                                if (rsp.rows.length > 0) {
+                                    $('#carDetailForm').form('load',rsp.rows[0]);
+                                    alert("该卡号已经存在");
+                                    $('#carDetailForm').form('clear');
+                                }
+                            }
+                        });
+                    }
+                }
+            } else {
+                showMsg("提示", rsp.msg);
+            }
+        }, "JSON").error(function() {
+            showMsg("提示", "获得卡号失败，请查看连接线是否正常连接！");
+        });
+    }
+
+    function getThisDate(){
+        var myDate = new Date();
+        var year = myDate.getFullYear();
+        var month = myDate.getMonth()+1;
+        if (month < 10){
+            month = "0"+month;
+        }
+        var date = myDate.getDate();
+
+        if (date < 10){
+            date = "0"+date;
+        }
+        return year+"-"+month+"-"+date;
+    }
+</script>

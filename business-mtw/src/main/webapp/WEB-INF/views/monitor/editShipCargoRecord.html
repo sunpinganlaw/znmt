@@ -1,0 +1,181 @@
+<div class="form-div">
+    <form id="shipCargoRecordForm" method="post">
+        <table>
+            <tr>
+                <td>货物信息</td>
+                <!--<td><input id="goodInfo" style="width:145px;"/>-->
+                    <!--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="match()"></a>-->
+                <td><input id="goodNo" name="goodNo" class="easyui-combobox" style="width:145px;"
+                           data-options="required:true,valueField:'id',textField:'name',panelHeight:'300',url:'${base}/business/tool/getComboboxOpt/GOOD_INFO'" /></td>
+                <td>客户信息</td>
+                <td><input id="venNo" name="venNo" class="easyui-combobox" style="width:145px;"
+                           data-options="required:true,valueField:'id',textField:'name',panelHeight:'300',url:'${base}/business/tool/getComboboxOpt/VENDOR_INFO'" /></td>
+                <td>贸易类型</td>
+                <td>
+                    <select id="tradeType" name="tradeType" class="easyui-combobox" data-options="required:true, panelHeight:'auto'"  style="width:145px;" >
+                        <option selected value="0">外贸进口</option>
+                        <option value="1">外贸出口</option>
+                        <option value="2">内贸进口</option>
+                        <option value="3">内贸出口</option>
+                    </select>
+                </td>
+
+            </tr>
+
+            <tr>
+                <td>进出方向</td>
+                <td>
+                    <select id="sampleType" name="sampleType" class="easyui-combobox" data-options="required:true, panelHeight:'auto'"  style="width:145px;" >
+                        <option selected value="0">出库</option>
+                        <option value="1">入库</option>
+                        <option value="2">直提</option>
+                    </select>
+                </td>
+
+                <td>提单重量(吨)</td>
+                <td><input class="easyui-numberbox" data-options="required:true, min:0, precision:3"  id="tickQty" name="tickQty" style="width:145px;"/></td>
+
+                <td>提单号：</td>
+                <td><input class="easyui-textbox"  data-options="required:true" id="billNo" name="billNo" style="width:145px;"/></td>
+            </tr>
+            <tr>
+
+                <td>跺位名称</td>
+                <td><input id="areaNo" name="areaNo" class="easyui-combobox" style="width:145px;"
+                           data-options="required:true,valueField:'id',textField:'name',panelHeight:'300',url:'${base}/business/tool/getComboboxOpt/STOCK_INFO'" /></td>
+
+                <td>跺位高度</td>
+                <td><input class="easyui-textbox"  data-options="required:true" id="areaHeight" name="areaHeight" style="width:145px;"/></td>
+
+                <td>提单占堆垛尺寸</td>
+                <td><input class="easyui-textbox"  data-options="required:true" id="storageName" name="storageName" style="width:145px;"/></td>
+            </tr>
+
+            <!--<tr>-->
+                <!--<td>提单类型</td>-->
+                <!--<td><input class="easyui-textbox"  data-options="required:true" id="areaHeiht" name="areaHeiht" style="width:145px;"/></td>-->
+                <!--<td>堆场编码</td>-->
+                <!--<td><input class="easyui-textbox"  data-options="required:true" id="storageCode" name="storageCode" style="width:145px;"/></td>-->
+                <!--<td>堆场名称</td>-->
+                <!--<td><input class="easyui-textbox"  data-options="required:true" id="storageName" name="storageName" style="width:145px;"/></td>-->
+            <!--</tr>-->
+
+            <tr id="opTR1">
+                <td>提单类型</td>
+                <td>
+                    <select id="goodType" name="goodType" class="easyui-combobox" data-options="required:true, panelHeight:'auto'"  style="width:145px;" >
+                        <option selected value="2">散货</option>
+                        <option value="1">集装箱</option>
+
+                    </select>
+                </td>
+                <td>收货单位</td>
+                <td><input id="customerNo" name="customerNo" class="easyui-combobox" style="width:145px;"
+                           data-options="required:true,valueField:'id',textField:'name',panelHeight:'300',url:'${base}/business/tool/getComboboxOpt/CUSTOMER_INFO'" /></td>
+                <td style="text-align: center" colspan="3">
+                    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm()">保存</a>
+                </td>
+            </tr>
+            <input type="hidden" id="comboboxInputVal1"/></td>
+            <input type="hidden" id="finalVal2"/></td>
+        </table>
+    </form>
+</div>
+
+<script type="text/javascript">
+
+    // $('#goodInfo').combogrid({
+    //     url: '${base}/business/tool/getComboboxOpt/goodInfo/all',
+    //     panelHeight:300,
+    //     panelWidth:300,
+    //     valueField:'id',
+    //     textField:'goodName',
+    //     columns:[[
+    //         {field:'goodName',title:'货物名称',width:150},
+    //         {field:'goodTypeName',title:'货物类型',width:150}
+    //
+    //     ]],
+    //     onChange: function (n, o) {
+    //         if (n != undefined) {
+    //             document.getElementById("comboboxInputVal1").value = n;
+    //         }
+    //     },
+    //     onSelect:function(index,row){
+    //         if(row !=undefined){
+    //             document.getElementById("finalVal2").val = row.id;
+    //         }
+    //     }
+    // });
+
+    $(function () {
+
+        if ( document.getElementById("shipCargoActionTag").value == 'MOD'){
+            $("#billNo").attr('readonly',true);
+            var qryObj = {};
+            qryObj.search_recordNo = document.getElementById("shipCargoIdHidden").value;
+            $.post("${base}/business/monitor/qryShipCargoInfo", qryObj, function (rsp) {
+                if (rsp) {
+                    if (rsp.rows.length > 0) {
+                        $('#shipCargoRecordForm').form('load',rsp.rows[0]);
+                        document.getElementById("finalVal2").value = document.getElementById("goodNoHidden").value;
+                        document.getElementById("comboboxInputVal1").value =document.getElementById("goodNameHidden").value;
+                        var tickQtyOrg= $("#tickQty").numberbox("getValue");
+
+                        $("#tickQty").numberbox('setValue',tickQtyOrg/1000);
+                    }
+                }
+            });
+        }
+    });
+
+
+
+
+
+    function match(){
+        var inputVal = document.getElementById("comboboxInputVal1").value;
+        $('#goodInfo').combogrid('grid').datagrid("reload",'${base}/business/tool/getComboboxOpt/goodInfo/'+inputVal);
+    }
+
+
+    //提交表单
+    function submitForm(){
+        if (! $("#shipCargoRecordForm").form('validate')) {
+            showMsg("提示", "有必填项未输入值!");
+            return false;
+        }
+
+        $.messager.confirm('提示', '确定保存?', function (r) {
+            if (r) {
+                //提交保存
+                save();
+            }
+        });
+    }
+
+    //保存
+    function save(){
+        var params = $("#shipCargoRecordForm").serialize();
+        var actionTag = document.getElementById("shipCargoActionTag").value;
+
+        if ( document.getElementById("shipCargoActionTag").value == 'MOD'){
+            params= params + "&recordNo=" + document.getElementById("shipCargoIdHidden").value;
+        }
+        if ( document.getElementById("shipCargoActionTag").value == 'ADD'){
+            params= params + "&recordNo=" + document.getElementById("shipRecIdHidden").value;
+        }
+        $.post("${base}/business/monitor/editShipCargoRec/"+actionTag, params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示",rsp.msg);
+                $('#editShipCargoRecWin').window('close');
+                var o = {};
+                o.search_shipRecID = document.getElementById("shipRecIdHidden").value;
+
+                $shipCargolDg.datagrid('reload', o );
+            } else {
+                showMsg("提示", rsp.msg);
+            }
+        });
+    }
+
+</script>

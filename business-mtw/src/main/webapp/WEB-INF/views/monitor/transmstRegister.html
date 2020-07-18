@@ -1,0 +1,169 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>注册集装箱管理</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+
+<body>
+
+    <div id="tb">
+        <table>
+            <tr>
+                <td>
+                    <label for="beginTime">注册日期：</label>
+                    <input class="easyui-datebox" id="beginTime" style="width:120px">&nbsp;—&nbsp;
+                    <input class="easyui-datebox" id="endTime"  style="width:120px">
+
+                    <label for="shipNameQry">船名：</label>
+                    <input class="easyui-textbox" id="shipNameQry" style="width:130px;" value=""/>
+
+                    <label for="carIdQry">集装箱号：</label>
+                    <input class="easyui-textbox" id="carIdQry" style="width:130px;" value=""/>
+
+                    <label for="billNoQry">提单号：</label>
+                    <input class="easyui-textbox" id="billNoQry" style="width:130px;" value=""/>
+
+                    <a href="javascript:void(0)" id="qryBtn" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>
+
+
+                </td>
+                <!--<td>-->
+                    <!--<form  enctype="multipart/form-data" id="importCsv" >-->
+                        <!--<input type="file" name="file" id="file" accept=".xlsx" />-->
+                        <!--<input type="hidden" id="prefix" name="prefix"/>-->
+                        <!--<input type="hidden" id="actionType" name="actionType"/>-->
+                        <!--<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="uploadExcel();">批量导入车辆</a>-->
+                    <!--</form>-->
+
+                <!--</td>-->
+            </tr>
+        </table>
+    </div>
+
+
+    <div id="det" style="margin: 5px;width: 90%">
+        <table id="trainDetailDg" ></table>
+    </div>
+
+
+</body>
+<script type="text/javascript">
+//全局变量
+
+$detaildg = $("#trainDetailDg");
+
+
+//查询
+function qry(){
+    var beginTime = $("#beginTime").datebox("getValue");
+
+    var carIdQry = $("#carIdQry").textbox("getValue");
+    var shipNameQry = $("#shipNameQry").textbox("getValue");
+
+    var billNoQry = $("#billNoQry").textbox("getValue");
+
+    var qryObj = {};
+    if (beginTime != null && beginTime != "" && beginTime.length > 0) {
+        qryObj.search_beginTime = beginTime;
+    }
+
+    if (carIdQry != null && carIdQry != "" && carIdQry.length > 0) {
+        qryObj.search_carId = carIdQry;
+    }
+
+    if (shipNameQry != null && shipNameQry != "" && shipNameQry.length > 0) {
+        qryObj.search_shipName = shipNameQry;
+    }
+
+    if (billNoQry != null && billNoQry != "" && billNoQry.length > 0) {
+        qryObj.search_billNo= billNoQry;
+    }
+
+    qryObj.search_recType = '1';
+    $detaildg.datagrid('load', qryObj);
+}
+
+
+$(function () {
+    var myDate = new Date();
+    var defaultBeginTime = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+    var defaultEndTime =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+    $detaildg.datagrid({
+        url:  '${base}/business/monitor/TransmstRegistList',
+        fitColumns: true,
+        animate: true,
+        border:true,
+        height: $(this).height() - 5,
+        width: $(this).width() - 5,
+        idField:'recordNo',
+        rownumbers:true,
+        pagination: true,
+        pagenumber:true,
+        singleSelect:true,
+        pageSize:100,
+        pageList: [100, 200, 300],
+        queryParams: {//默认进来查不到数据
+            search_beginDate:defaultBeginTime,
+            search_recType:'1'
+        },
+        columns: [
+            [
+
+                {field: 'shipName', title: '船名',align:'center', width:20},
+                {field: 'fixShipNo', title: '航次',align:'center', width:20},
+                {field: 'carId', title: '集装箱号', sortable:true,align:'center', width: 25},
+                {field: 'tradeName', title: '贸易类型', sortable:true,align:'center', width:20},
+                {field: 'billNo', title: '提单号',align:'center', width:20},
+                {field: 'areaCode', title: '厂位',align:'center', width:20},
+                {field: 'regDtm', title: '注册时间',align:'center', width:40}
+
+
+            ]
+        ],
+        onLoadSuccess:function(data){
+        }
+    })
+
+
+});
+
+function uploadExcel() {
+
+    document.getElementById("prefix").value ='carRegister';
+    $('#actionType').val('add');
+
+    var formData = new FormData($("#importCsv")[0]);
+    $.ajax({
+        url: '${base}/business/pointConfig/importCsv4car',
+        type: 'POST',
+        data: formData,
+        async: false,
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function (data) {
+            if (data.successful) {
+                $.messager.alert('系统提示', data.msg, 'success');
+                reload(prefix);
+            } else {
+                $.messager.alert('错误！', data.msg, 'error');
+            }
+        },
+        error: function (XmlHttpRequest) {
+            $.messager.alert('错误！',"处理异常，服务器状态 ："+XmlHttpRequest.status+",信息："+XmlHttpRequest.statusText, 'error');
+        }
+    });
+
+    $("#importCsv")[0].reset();
+}
+
+
+
+</script>
+</html>

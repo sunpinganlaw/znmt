@@ -1,0 +1,324 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>集装箱过卡信息</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+    <#include "/include/exportExcel.html"/>
+</head>
+
+<body>
+
+<div id="tb">
+    <table>
+        <tr>
+            <td>
+
+                <label for="beginDate">出场日期：</label>
+                <input class="easyui-datetimebox" id="beginDate" style="width:145px">&nbsp;—&nbsp;
+                <input class="easyui-datetimebox" id="endDate"  style="width:145px">
+                <label for="shipId">船名：</label>
+                <input id="shipId" class="easyui-combobox" style="width:120px;"
+                       data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/SHIP_INFO'" />
+                <label for="carIdQry">车牌号：</label>
+                <input class="easyui-textbox" id="carIdQry" style="width:120px;" value=""/>
+
+                <label for="tickNo">提单号：</label>
+                <input class="easyui-textbox" id="tickNo" style="width:120px;" value=""/>
+                <label for="venNo">客户：</label>
+                <input id="venNo" name="venNo" class="easyui-combobox" style="width:145px;"
+                       data-options="valueField:'id',textField:'name',panelHeight:'300',url:'${base}/business/tool/getComboboxOpt/VENDOR_INFO'" />
+                <label for="customerNo">收货单位：</label>
+                <input id="customerNo" name="customerNo" class="easyui-combobox" style="width:145px;"
+                       data-options="valueField:'id',textField:'name',panelHeight:'300',url:'${base}/business/tool/getComboboxOpt/CUSTOMER_INFO'" />
+
+
+                <label for="contactIdFront"  >集装箱号：</label>
+                <input class="easyui-textbox" id="contactIdFront" type="hidden" style="width:126px;" value=""/>
+
+                <!--<label for="doorNo">通道号：</label>-->
+                 <!--<select id="doorNo" name="doorNo" style="width:126px;" class="easyui-combobox"  data-options="required:false,panelHeight:'auto'" style="width:126px;" >-->
+                     <!--<option value="">请选择</option>-->
+                     <!--<option value="22">进通道</option>-->
+                    <!--<option value="55">出通道</option>-->
+                 <!--</select>-->
+
+                <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>
+                <!--<@shiro.hasPermission name="carTransRecord:edit">-->
+                <!--<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit" onclick="modifyRec();">修改</a>-->
+                <!--</@shiro.hasPermission>-->
+
+                <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-excel"  onclick="qryEXL()">导出</a>
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-print" onclick="printRec();">补打</a>
+               <!--<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="deleteRec();">删除</a>-->
+
+<input type="hidden" id="doActionTag"/>
+</td>
+</tr>
+</table>
+</div>
+
+<div  style="width: 100%">
+    <table id="carTransRecordDg" ></table>
+</div>
+
+<!--新增窗口-->
+<div id="addCarTransRecordWin" ></div>
+
+</body>
+</html>
+<script type="text/javascript">
+    var selectedRowObj;
+    $carTransRecordDg = $("#carTransRecordDg");
+
+
+    function qry(){
+        var paramO = new Object();
+        var beginDate = $("#beginDate").datetimebox("getValue");
+        var endDate = $("#endDate").datetimebox("getValue");
+        var carIdQry = $("#carIdQry").textbox("getValue");
+        var shipId = $("#shipId").combobox("getValue");
+        var tickNo = $("#tickNo").textbox("getValue");
+        var venNo= $("#venNo").combobox("getValue");
+        var customerNo= $("#customerNo").combobox("getValue");
+        // var doorNo = $("#doorNo").combobox("getValue");
+        var contactIdFront = $("#contactIdFront").textbox("getValue");
+        //查询条件的，都必须带上 search_ 这个前缀，才能让后台的beanUtil里捕获到这个参数并映射到entity条件里。。 xieyt
+
+        if (beginDate != null && beginDate != "" && beginDate.length > 0) {
+            paramO.search_beginLeaveDate = beginDate;
+        }
+        if (endDate != null && endDate != "" && endDate.length > 0) {
+            paramO.search_endLeaveDate = endDate;
+        }
+
+        if (carIdQry != null && carIdQry != "" && carIdQry.length > 0) {
+            paramO.search_carId = '%'+carIdQry+'%';
+        }
+
+        if (shipId != null && shipId != "" && shipId.length > 0) {
+            paramO.search_shipId = shipId;
+        }
+
+        if (tickNo != null && tickNo != "" && tickNo.length > 0) {
+            paramO.search_tickNo = '%'+tickNo+'%';
+        }
+
+        if (venNo != null && venNo != "" && venNo.length > 0) {
+            paramO.search_venNo = venNo;
+        }
+        if (customerNo != null && customerNo != "" && customerNo.length > 0) {
+            paramO.search_customerNo = customerNo;
+        }
+        if (contactIdFront != null && contactIdFront != "" && contactIdFront.length > 0) {
+            paramO.search_contactIdFront = '%'+contactIdFront+'%';
+        }
+
+        paramO.search_cardTyp = '1';
+        $("#carTransRecordDg").datagrid("load",paramO);
+    }
+
+    $(function () {
+        $("#carTransRecordDg").datagrid({
+            url:  '${base}/business/monitor/carTransRecordList',
+            fitColumns: true,
+            animate: true,
+            border:true,
+            singleSelect:true,
+            height: $(this).height() - 5,
+            width: $(this).width() - 5,
+            idField:'recordNo',
+            rownumbers:true,
+            pagination: true,
+            pagenumber:true,
+            pageSize:100,
+            pageList: [100, 200, 300],
+            queryParams: {//默认进来查不到数据
+                search_cardTyp: '1'
+            },
+            columns: [
+                [
+                    {field: 'recordNo', title: '流水号',align:'center', width:25, checkbox:true},
+                    {field: 'shipName', title: '船名称',align:'center', width:25},
+                    {field: 'goodName', title: '货物名称',align:'center', width:25},
+                    // {field: 'venName', title: '客户单位',align:'center', width:45},
+                    {field: 'customerName', title: '收货单位',align:'center', width:40},
+                    {field: 'tickNo', title: '提货单号',align:'center', width:25},
+                    {field: 'carId', title: '车牌号',align:'center', width: 25},
+
+                    {field: 'contactIdFront', title: '前箱号',align:'center', width: 30},
+                    {field: 'contactIdBack', title: '后箱号',align:'center', width:30},
+                    {field: 'cfmFlag', title: '进场确认',align:'center', width:20},
+                    {field: 'attachBatchNo', title: '进场LED提示',align:'center', width:40},
+                    {field: 'leaveFlag', title: '出场确认',align:'center', width:20},
+                    {field: 'remark', title: '出场LED提示',align:'center', width:40},
+                    {field: 'mzQty', title: '毛重(t)', sortable:true,align:'center', width:20},
+                    {field: 'czDtm', title: '毛重时间', sortable:true,align:'center', width:40},
+                    // {field: 'czBalanceNo', title: '称重通道', sortable:true,align:'center', width:20},
+                    {field: 'pzQty', title: '皮重(t)', sortable:true,align:'center', width:20},
+                    {field: 'jqDtm', title: '皮重时间', sortable:true,align:'center', width:40}
+                    // {field: 'jqBalanceNo', title: '称轻通道', sortable:true,align:'center', width:20},
+                    // {field: 'netQty', title: '净重(t)', sortable:true,align:'center', width:20}
+
+                ]
+            ],
+            toolbar: '#tb',
+            onLoadSuccess:function(data){
+            }
+        })
+    });
+
+
+    //新增
+    function addRec(){
+        document.getElementById("doActionTag").value = "ADD";
+        $('#addCarTransRecordWin').window({
+            modal : true,
+            title : '过卡信息录入',
+            width : 530,
+            height : 330,
+            collapsible : false,
+            minimizable : false,
+            maximizable : true,
+            href : '${base}/business/monitor/record/addCarTransRec',
+            onClose : function() {
+                refreshDg();
+            }
+        });
+    }
+
+    //修改记录
+    function modifyRec(){
+        if ($("#carTransRecordDg").datagrid('getSelections').length > 1) {
+            showMsg("提示", "请先选择一条要修改的汽车过卡信息进行修改！");
+            return false;
+        }
+        var selectedRow = $("#carTransRecordDg").datagrid('getSelected');
+        if (selectedRow) {
+            document.getElementById("doActionTag").value = "MOD";
+            selectedRowObj = selectedRow;
+
+            $('#addCarTransRecordWin').window({
+                modal : true,
+                title : '过卡信息修改',
+                width : 530,
+                height : 330,
+                collapsible : false,
+                minimizable : false,
+                maximizable : true,
+                href : '${base}/business/monitor/record/addCarTransRec',
+                onClose : function() {
+                    refreshDg();
+                }
+            });
+        } else {
+            showMsg("提示", "请先选择要修改的汽车过卡过磅信息！");
+        }
+    }
+
+    //删除一行
+    function deleteRec() {
+        if ($("#carTransRecordDg").datagrid('getSelections').length > 1) {
+            showMsg("提示", "请先选择一条要修改的汽车过卡信息进行删除！");
+            return false;
+        }
+        var selectedRow = $("#carTransRecordDg").datagrid('getSelected');
+        if (selectedRow) {
+            $.messager.confirm('提示', '数据将删除，确定继续操作?', function (r) {
+                if (r) {
+                    //提交数据
+                    var recordNo = selectedRow.recordNo;
+                    $.post("${base}/business/monitor/deleteCarTransRec/"+recordNo, function(rsp) {
+                        if(rsp.successful){
+                            showMsg("提示", rsp.msg);
+                            refreshDg();
+                        } else {
+                            showMsg("提示", rsp.msg);
+                        }
+                    }, "JSON").error(function() {
+                        showMsg("提示", "删除数据失败！");
+                    });
+                }
+            });
+        } else {
+            showMsg("提示", "请先选择要删除的汽车过磅信息！");
+        }
+    }
+
+
+    //删除一行
+    function printRec() {
+        if ($("#carTransRecordDg").datagrid('getSelections').length > 1) {
+            showMsg("提示", "请先选择一条要打印的汽车过卡信息进行补打！");
+            return false;
+        }
+        var selectedRow = $("#carTransRecordDg").datagrid('getSelected');
+        if (selectedRow) {
+            postUrl = "${base}/business/monitor/carTransRecNew/print";
+            $.post(postUrl, selectedRow, function (rsp) {
+                if (rsp.successful) {
+                    showMsg("提示",rsp.msg);
+                } else {
+                    showMsg("提示", rsp.msg);
+                }
+            }).error(function () {
+                showMsg("提示", "新增失败!");
+            });
+        } else {
+            showMsg("提示", "请先选择要补打的汽车过卡信息！");
+        }
+    }
+
+
+
+
+
+
+
+    function showMsg(title,msg)
+    {
+        $.messager.show({
+            title:title,
+            msg:msg
+        });
+    }
+
+    function refreshDg(){
+        $("#carTransRecordDg").datagrid("reload");
+        $("#carTransRecordDg").datagrid('getSelections').length=0;
+    }
+
+    function qryEXL() {
+
+        var paramO = new Object();
+        var beginDate = $("#beginDate").datetimebox("getValue");
+        var endDate = $("#endDate").datetimebox("getValue");
+        var carIdQry = $("#carIdQry").textbox("getValue");
+        var shipId = $("#shipId").combobox("getValue");
+        var tickNo = $("#tickNo").textbox("getValue");
+        var venNo= $("#venNo").combobox("getValue");
+        var customerNo= $("#customerNo").combobox("getValue");
+        // var doorNo = $("#doorNo").combobox("getValue");
+        var contactIdFront = $("#contactIdFront").textbox("getValue");
+        var cardTyp= '1';
+        var inputObj =  {beginLeaveDate:beginDate,
+            endLeaveDate:endDate,
+            carId:carIdQry,
+            shipId:shipId,
+            tickNo:tickNo,
+            customerNo:customerNo,
+            venNo:venNo,
+            contactIdFront:contactIdFront,
+            cardTyp:cardTyp
+            // inDoorNo:doorNo,
+
+        };
+        exportExcel($carTransRecordDg,"org.gxz.znrl.mapper","MonitorMapper","qryCarTransRecordListCnt","qryCarTransRecordList",inputObj,"","","");
+    }
+
+
+</script>

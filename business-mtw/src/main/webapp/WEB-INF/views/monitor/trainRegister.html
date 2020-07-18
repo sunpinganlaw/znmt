@@ -1,0 +1,457 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>作业管理</title>
+    <base href="${base}/">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <#include "/include/common.html"/>
+</head>
+
+<body>
+
+    <div id="tb">
+        <table>
+            <tr>
+                <td>
+                    <label for="beginTime">作业日期：</label>
+                    <input class="easyui-datebox" id="beginTime" style="width:120px">&nbsp;—&nbsp;
+                    <input class="easyui-datebox" id="endTime"  style="width:120px">
+                    <label for="qrybillNo">提单号：</label>
+                    <input class="easyui-textbox" id="qrybillNo" style="width:130px;" value=""/>
+
+                    <a href="javascript:void(0)" id="qryBtn" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="deleteTrainbody();">删除车辆</a>
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="addTrains();">绑定车辆</a><!--可批量新增车，公共信息只需输入一次-->
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="startTrains();">发布任务</a>
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="pauseTrains();">暂停任务</a>
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="stopTrains();">结束提单</a>
+
+                    <input type="hidden" id="hiddenRecordNo"/>
+                    <input type="hidden" id="hideTrainNo">
+                    <input type="hidden" id="trainModifyTag"><!--修改标识，1修改  2大票录入-->
+                    <input type="hidden" id="hideIsBatchTag"><!--批量录入大票后是否进行分批标志-->
+                    <input type="hidden" id="hideTrackNo">
+                </td>
+            </tr>
+        </table>
+    </div>
+
+
+    <div id="detailtb">
+        <table>
+            <tr>
+                <td>
+
+                    <label for="carIdQry">车牌号：</label>
+                    <input class="easyui-textbox" id="carIdQry" style="width:130px;" value=""/>
+                    <a href="javascript:void(0)" id="qryBtnDetail" class="easyui-linkbutton" iconCls="icon-search"  onclick="qryCar()">查询</a>
+
+                </td>
+            </tr>
+        </table>
+
+    </div>
+
+    <div id="tx" style="margin: 5px;width: 90%">
+        <table id="trainBasicDg" ></table>
+    </div>
+
+    <div id="det" style="margin: 5px;width: 90%">
+        <table id="trainDetailDg" ></table>
+    </div>
+
+    <div id="editTrainWin" ></div>
+
+    <div id="modifyOneTrainInfoWin" ></div>
+
+    <div id="batchTrainDPRecordWin" ></div>
+
+    <div id="printFcListWin" ></div>
+
+    <div id="adjustTrainOrderWin" ></div>
+
+    <div id="addNewTrainWin" ></div>
+
+    <div id="trainRebuildWin" ></div>
+
+    <div id="uploadToMisWin" ></div>
+
+</body>
+<script type="text/javascript">
+//全局变量
+$basicdg = $("#trainBasicDg");
+$detaildg = $("#trainDetailDg");
+var oneTrainInfo;
+var selectedTrains;
+var selectRows='';
+
+$(function () {
+    //刚进入页面时，查询日期默认取当前日的
+    var myDate = new Date();
+    var defaultBeginTime = myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+(myDate.getDate()-1);
+    var defaultEndTime =  myDate.getFullYear()+"-"+(parseInt(myDate.getMonth())+1)+"-"+myDate.getDate();
+
+    $basicdg.datagrid({
+        url:  "${base}/business/monitor/qryRegistShipCargoInfo",
+        fitColumns: true,
+        height: $(this).height()/2-60,
+        width: $(this).width()-25,
+        idField:'recordNo',
+        singleSelect:true,
+        rownumbers:true,
+        queryParams: {//默认进来查不到数据
+            search_shipRecID:'-1'
+        },
+        columns: [
+            [
+                {field: 'goodName', title: '货物名称',align:'center', width:18},
+                {field: 'goodTypeName', title: '货物类型',align:'center', width: 18},
+                {field: 'tickQty', title: '提单重量(吨)',align:'center', width:20,formatter: function (value, row, index){
+                        return row.tickQty /1000;
+                    }},
+                {field: 'venName', title: '客户信息',align:'center', width:20},
+                // {field: 'tradeName', title: '贸易类型',align:'center', width:20},
+                {field: 'billNo', title: '提货单号',align:'center', width:20},
+                {field: 'factTime', title: '操作时间',align:'center', width:20},
+                {field: 'isBatch', title: '作业状态代码',align:'center',hidden:'true', width:18},
+                {field: 'isBatchName', title: '作业状态',align:'center', width:18}
+            ]
+        ],
+        toolbar: '#tb',
+        onClickRow:function(rowIndex, rowData){
+            var o = {};
+            // o.search_tickNo = rowData.billNo;
+            o.search_batchNo = rowData.recordNo;
+            o.search_uploadStatus = '-1';
+            $detaildg.datagrid('clearSelections');
+            $detaildg.datagrid('load', o);
+        }
+    })
+});
+
+
+//查询
+function qry(){
+    var beginTime = $("#beginTime").datebox("getValue");
+    var endTime = $("#endTime").datebox("getValue");
+    var billNo = $("#qrybillNo").textbox("getValue");
+
+    var qryObj = {};
+    if (beginTime != null && beginTime != "" && beginTime.length > 0) {
+        qryObj.search_beginDate = beginTime;
+    }
+
+    if (endTime != null && endTime != "" && endTime.length > 0) {
+        qryObj.search_endDate = endTime;
+    }
+
+    if (billNo != null && billNo != "" && billNo.length > 0) {
+        qryObj.search_billNo = billNo;
+    }
+
+        qryObj.search_recType = '0';
+
+    $basicdg.datagrid('load', qryObj);
+}
+
+
+$(function () {
+    $detaildg.datagrid({
+        url:  '${base}/business/monitor/TransmstRegistList',
+        fitColumns: true,
+        animate: true,
+        border:true,
+        height: $(this).height() - 5,
+        width: $(this).width() - 5,
+        idField:'recId',
+        rownumbers:true,
+        pagination: true,
+        pagenumber:true,
+        pageSize:100,
+        pageList: [100, 200, 300],
+        queryParams: {//默认进来查不到数据
+            search_batchNo:'-1'
+        },
+        columns: [
+            [
+                {field: 'recId', title: '流水号',align:'center', width:25, checkbox:true},
+                {field: 'carId', title: '车牌号', sortable:true,align:'center', width: 25},
+                // {field: 'tradeName', title: '贸易类型', sortable:true,align:'center', width:20},
+                {field: 'orgName', title: '运输单位',align:'center', width:40},
+                {field: 'regDtm', title: '绑定时间',align:'center', width:40}
+
+            ]
+        ],
+        toolbar: '#detailtb',
+        onLoadSuccess:function(data){
+        }
+    })
+
+
+});
+
+
+function deleteTrainbody(){
+    //处理之前先清理下；
+    selectedTrains = null;
+
+    var paramObj = new Object();
+    var commonObj = new Object();
+    var arrayTrainCars = [];
+
+    var rows =  $detaildg.datagrid('getSelections');
+    var trainrow = $basicdg.datagrid('getSelected');
+
+    if (rows.length == 0) {
+        showMsg("提示", "选择要删除的车厢记录数据");
+        return false;
+    } else {
+        selectedTrains = rows;
+        for ( var i = 0; i < selectedTrains.length; i++) {
+            var o = {};
+            o.carId = selectedTrains[i].carId;
+            arrayTrainCars[i] = o;
+        }
+        commonObj.recordNo = trainrow.recordNo;
+        paramObj["publicInfo"] = JSON.stringify(commonObj);
+        paramObj["updateInfo"] = JSON.stringify(arrayTrainCars);
+
+
+        if (selectedTrains) {
+            $.messager.confirm('提示', '数据将删除，确定继续操作?', function (r) {
+                if (r) {
+                    //提交数据
+                    $.post("${base}/business/monitor/deleteMassTrainBody/", paramObj,function(rsp) {
+                        if(rsp.successful){
+                            showMsg("提示", rsp.msg);
+                            $detaildg.datagrid("reload");
+                            $detaildg.datagrid('clearSelections');
+                        } else {
+                            showMsg("提示", rsp.msg);
+                        }
+                    }, "JSON").error(function() {
+                        showMsg("提示", "删除数据失败！");
+                    });
+                }
+            });
+        } else {
+            showMsg("提示", "请先选择要删除的车节信息！");
+            return false;
+        }
+    }
+}
+
+
+
+
+function startTrains(){
+    //处理之前先清理下；
+    selectedTrains = null;
+
+    var paramObj = new Object();
+    var commonObj = new Object();
+    var arrayTrainCars = [];
+
+    var trainrow = $basicdg.datagrid('getSelected');
+
+    if (trainrow == null ) {
+        showMsg("提示", "选择要操作的提单信息");
+        return false;}
+
+        commonObj.recordNo = trainrow.recordNo;
+        commonObj.doActionTag = "START";
+        paramObj["publicInfo"] = JSON.stringify(commonObj);
+        paramObj["updateInfo"] = JSON.stringify(arrayTrainCars);
+
+
+        if (trainrow) {
+            $.messager.confirm('提示', '开始作业任务，确定继续操作?', function (r) {
+                if (r) {
+                    //提交数据
+                    $.post("${base}/business/monitor/operateTrains/", paramObj,function(rsp) {
+                        if(rsp.successful){
+                            showMsg("提示", rsp.msg);
+
+                            var qryObj = {};
+                            $basicdg.datagrid('load', qryObj);
+
+                        } else {
+                            showMsg("提示", rsp.msg);
+                        }
+                    }, "JSON").error(function() {
+                        showMsg("提示", "开始作业信息失败！");
+                    });
+                }
+            });
+        } else {
+            showMsg("提示", "请先选择要发布的作业信息！");
+            return false;
+        }
+    }
+
+
+
+function pauseTrains(){
+    //处理之前先清理下；
+    selectedTrains = null;
+
+    var paramObj = new Object();
+    var commonObj = new Object();
+    var arrayTrainCars = [];
+
+    var trainrow = $basicdg.datagrid('getSelected');
+    if (trainrow == null ) {
+        showMsg("提示", "选择要操作的提单信息");
+        return false;}
+
+
+    commonObj.recordNo = trainrow.recordNo;
+    commonObj.doActionTag = "PAUSE";
+    paramObj["publicInfo"] = JSON.stringify(commonObj);
+    paramObj["updateInfo"] = JSON.stringify(arrayTrainCars);
+
+
+    if (trainrow) {
+        $.messager.confirm('提示', '暂停作业任务，确定继续操作?', function (r) {
+            if (r) {
+                //提交数据
+                $.post("${base}/business/monitor/operateTrains/", paramObj,function(rsp) {
+                    if(rsp.successful){
+                        showMsg("提示", rsp.msg);
+                        var qryObj = {};
+                        $basicdg.datagrid('load', qryObj);
+                    } else {
+                        showMsg("提示", rsp.msg);
+                    }
+                }, "JSON").error(function() {
+                    showMsg("提示", "暂停作业任务失败！");
+                });
+
+            }
+        });
+    } else {
+        showMsg("提示", "请先选择要作业的信息！");
+        return false;
+    }
+}
+
+function stopTrains(){
+    //处理之前先清理下；
+    selectedTrains = null;
+
+    var paramObj = new Object();
+    var commonObj = new Object();
+    var arrayTrainCars = [];
+
+    var trainrow = $basicdg.datagrid('getSelected');
+    if (trainrow == null ) {
+        showMsg("提示", "选择要操作的提单信息");
+        return false;}
+
+
+    commonObj.recordNo = trainrow.recordNo;
+    commonObj.doActionTag = "STOP";
+    paramObj["publicInfo"] = JSON.stringify(commonObj);
+    paramObj["updateInfo"] = JSON.stringify(arrayTrainCars);
+
+
+    if (trainrow) {
+        $.messager.confirm('提示', '暂停作业任务，确定继续操作?', function (r) {
+            if (r) {
+                //提交数据
+                $.post("${base}/business/monitor/operateTrains/", paramObj,function(rsp) {
+                    if(rsp.successful){
+                        showMsg("提示", rsp.msg);
+                        var qryObj = {};
+                        $basicdg.datagrid('load', qryObj);
+                    } else {
+                        showMsg("提示", rsp.msg);
+                    }
+                }, "JSON").error(function() {
+                    showMsg("提示", "暂停作业任务失败！");
+                });
+
+            }
+        });
+    } else {
+        showMsg("提示", "请先选择要作业的信息！");
+        return false;
+    }
+}
+
+
+
+
+
+//批量新增火车车厢，可以在原车上增，也可完全新增
+function addTrains(){
+    selectedTrains = null;
+    var commonObj = new Object();
+    var paramObj = new Object();
+    var trainrow = $basicdg.datagrid('getSelected');
+    var isbtchName=new Object();
+
+    if (trainrow == null ) {
+        showMsg("提示", "选择要添加车辆的货物信息");
+        return false;
+    }else {
+        commonObj.billNo = trainrow.billNo;
+        paramObj["publicInfo"] = JSON.stringify(commonObj);
+
+    }
+   // if(trainrow.isBatch=='1')
+   // {
+   //     showMsg("提示", "请先暂停该提单任务");
+   //     return false;
+   // }
+
+
+    $('#addNewTrainWin').window({
+        modal : true,
+        title : '新增车辆信息',
+        width : 1000,//1755
+        height : 600,//740
+        collapsible : false,
+        minimizable : false,
+        maximizable : true,
+        href : '${base}/business/monitor/gotoAddNewTrain'
+    });
+}
+
+//查询
+function qryCar(){
+    var o = {};
+
+    var trainrow = $basicdg.datagrid('getSelected');
+    if (trainrow == null ) {
+        showMsg("提示", "选择要操作的提单信息");
+        return false;}
+
+    var carId = $("#carIdQry").textbox("getValue");
+    if (carId != null && carId != "" && carId.length > 0) {
+        o.search_carId =  "%"+ carId+"%";
+
+    }else {
+        o.search_batchNo = trainrow.recordNo;
+        o.search_uploadStatus = '-1';
+        $detaildg.datagrid('clearSelections');
+        $detaildg.datagrid('load', o);
+        // showMsg("提示", "请输入车牌信息");
+        return false;
+    }
+
+
+    o.search_batchNo = trainrow.recordNo;
+
+    $detaildg.datagrid('clearSelections');
+    $detaildg.datagrid('load', o);
+
+
+
+}
+
+</script>
+</html>
