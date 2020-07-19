@@ -2170,11 +2170,11 @@
         </if>
 
         <if test="beginDate != null" >
-            and a.record_dtm <![CDATA[     >=     ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+            and a.record_dtm <![CDATA[     >=     ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'YYYY-MM-DD hh24:mi:ss')
         </if>
 
         <if test="endDate != null" >
-            and a.record_dtm <![CDATA[     <     ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1
+            and a.record_dtm <![CDATA[     <     ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'YYYY-MM-DD hh24:mi:ss')+1-0.00001
         </if>
         <if test="beginLeaveDate != null" >
             and a.LEAVE_DTM <![CDATA[     >=     ]]> to_date(#{beginLeaveDate,jdbcType=VARCHAR}, 'YYYY-MM-DD hh24:mi:ss')
@@ -2400,11 +2400,11 @@
 
 
         <if test="beginDate != null" >
-            and a.record_dtm <![CDATA[     >=     ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')
+            and a.record_dtm <![CDATA[     >=     ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'YYYY-MM-DD hh24:mi:ss')
         </if>
 
         <if test="endDate != null" >
-            and a.record_dtm <![CDATA[     <     ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1
+            and a.record_dtm <![CDATA[     <     ]]> to_date(#{endDate,jdbcType=VARCHAR},'YYYY-MM-DD hh24:mi:ss')+1-0.00001
         </if>
         <if test="beginLeaveDate != null" >
             and a.LEAVE_DTM <![CDATA[     >=     ]]> to_date(#{beginLeaveDate,jdbcType=VARCHAR}, 'YYYY-MM-DD hh24:mi:ss')
