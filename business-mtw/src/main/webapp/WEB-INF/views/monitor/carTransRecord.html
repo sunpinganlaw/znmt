@@ -17,8 +17,12 @@
     <table>
         <tr>
             <td>
+                <label for="dateType">日期类型：</label>
+                <select id="dateType" name="dateType" style="width:126px;" class="easyui-combobox"  data-options="required:false,panelHeight:'auto'" style="width:126px;" >
+                <option value="1">进场时间</option>
+                <option value="2">出厂时间</option>
+                </select>
 
-                <label for="beginDate">出场日期：</label>
                 <input class="easyui-datetimebox" id="beginDate" style="width:145px">&nbsp;—&nbsp;
                 <input class="easyui-datetimebox" id="endDate"  style="width:145px">
                 <label for="shipId">船名：</label>
@@ -85,16 +89,32 @@
         var tickNo = $("#tickNo").textbox("getValue");
         var venNo= $("#venNo").combobox("getValue");
         var customerNo= $("#customerNo").combobox("getValue");
+        var dateType= $("#dateType").combobox("getValue");
         // var doorNo = $("#doorNo").combobox("getValue");
         // var contactIdFront = $("#contactIdFront").textbox("getValue");
         //查询条件的，都必须带上 search_ 这个前缀，才能让后台的beanUtil里捕获到这个参数并映射到entity条件里。。 xieyt
+        if(dateType==1)
+        {
+            if (beginDate != null && beginDate != "" && beginDate.length > 0) {
+                paramO.search_beginDate = beginDate;
+            }
+            if (endDate != null && endDate != "" && endDate.length > 0) {
+                paramO.search_endDate = endDate;
+            }
+        }
 
-        if (beginDate != null && beginDate != "" && beginDate.length > 0) {
-            paramO.search_beginLeaveDate = beginDate;
-        }
-        if (endDate != null && endDate != "" && endDate.length > 0) {
-            paramO.search_endLeaveDate = endDate;
-        }
+
+        if(dateType==2)
+         {
+
+             if (beginDate != null && beginDate != "" && beginDate.length > 0) {
+                 paramO.search_beginLeaveDate = beginDate;
+             }
+             if (endDate != null && endDate != "" && endDate.length > 0) {
+                 paramO.search_endLeaveDate = endDate;
+             }
+
+         }
 
         if (carIdQry != null && carIdQry != "" && carIdQry.length > 0) {
             paramO.search_carId = '%'+carIdQry+'%';
@@ -115,7 +135,7 @@
             paramO.search_customerNo = customerNo;
         }
 
-        paramO.search_cardTyp = '0';
+        // paramO.search_cardTyp = '0';
         $("#carTransRecordDg").datagrid("load",paramO);
     }
 
@@ -271,11 +291,6 @@
     }
 
 
-
-
-
-
-
     function showMsg(title,msg)
     {
         $.messager.show({
@@ -299,22 +314,51 @@
         var tickNo = $("#tickNo").textbox("getValue");
         var venNo= $("#venNo").combobox("getValue");
         var customerNo= $("#customerNo").combobox("getValue");
+        var dateType= $("#dateType").combobox("getValue");
         // var doorNo = $("#doorNo").combobox("getValue");
         // var contactIdFront = $("#contactIdFront").textbox("getValue");
-        var cardTyp= '0';
-        var inputObj =  {beginLeaveDate:beginDate,
-            endLeaveDate:endDate,
-            carId:carIdQry,
-            shipId:shipId,
-            tickNo:tickNo,
-            customerNo:customerNo,
-            venNo:venNo,
-            cardTyp:cardTyp
-            // contactIdFront:contactIdFront,
-            // inDoorNo:doorNo,
 
-        };
-        exportExcel($carTransRecordDg,"org.gxz.znrl.mapper","MonitorMapper","qryCarTransRecordListCnt","qryCarTransRecordList",inputObj,"","","");
+        if(dateType==1)
+        {
+            var cardTyp= '0';
+            var inputObj =  {beginDate:beginDate,
+                endDate:endDate,
+                carId:carIdQry,
+                shipId:shipId,
+                tickNo:tickNo,
+                customerNo:customerNo,
+                venNo:venNo
+                // cardTyp:cardTyp
+                // contactIdFront:contactIdFront,
+                // inDoorNo:doorNo,
+
+            };
+            exportExcel($carTransRecordDg,"org.gxz.znrl.mapper","MonitorMapper","qryCarTransRecordListCnt","qryCarTransRecordList",inputObj,"","","");
+
+
+        }
+
+
+        if(dateType==2)
+        {
+            var cardTyp= '0';
+            var inputObj =  {beginLeaveDate:beginDate,
+                endLeaveDate:endDate,
+                carId:carIdQry,
+                shipId:shipId,
+                tickNo:tickNo,
+                customerNo:customerNo,
+                venNo:venNo
+                // cardTyp:cardTyp
+                // contactIdFront:contactIdFront,
+                // inDoorNo:doorNo,
+
+            };
+            exportExcel($carTransRecordDg,"org.gxz.znrl.mapper","MonitorMapper","qryCarTransRecordListCnt","qryCarTransRecordList",inputObj,"","","");
+
+        }
+
+
     }
 
 
