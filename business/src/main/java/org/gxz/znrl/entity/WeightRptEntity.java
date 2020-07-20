@@ -4,101 +4,308 @@ package org.gxz.znrl.entity;
  * Created by xieyt on 14-12-5.
  */
 public class WeightRptEntity extends BaseEntity {
-    public String recordNo;//入厂序号
-    public String beginTime; //开始时间
-    public String endTime; //结束时间
+    public String recordId;//主键ID
+    public String recordNo;//入厂序号，也做流水号
+    public String cardId;//卡号
+    public String cardTyp;//卡类型
+    public String cardTypeName;//卡类型
+    public String carId;//前车牌号
+    public String backCarId;//后车牌号
+    public String inNo;//入场序列号
+    public String outNo;//出场序列号
 
-    public String leaveBeginTime; //出厂开始时间
-    public String leaveEndTime; //出厂结束时间
-    public String czBeginTime; //称重开始时间
-    public String czEndTime; //称重结束时间
 
-    public String venNo;//供煤单位ID
-    public String venNam;//供煤单位
-    public String carrierNo;//运输单位ID
-    public String carrierNam;//运输单位
-    public String carId;//车牌号
-    public String carTyp;//车型编码   0半挂  1外挂
-    public String carTypeName;//车型
-    public String transTyp;//车辆类型 0煤车 1灰车 2其他 5厂内倒运煤
-    public String transTypeName;//车辆类型
-    public String planMktNo;//计划口径ID ？
-    public String planMktName;//计划口径 ？
-    public String positionNo;//位置
-    public String positionNam;//位置
-    public String coalNo;//煤种
-    public String coalNam;//煤种名称
-    public String colryNam;//矿点
-    public String startPlace;//始发站
-    public String startPlaceName;//始发站
 
-    public String bottomHeight;//车底高度
-    public String maxLoad;//最大载重
-    public String entryOrder;//入厂顺序
-    public String doorNo;//入厂位置
-    public String recordDtm;//入厂时间
-    public String curPos;//车的当前位置
-    public String nextPos;//车的下一个位置
+    public String inDoorNo;//入厂通道号
+    public String outDoorNo;//出厂通道号
 
-    public String smplStartTime;//采样开始时间
-    public String smplEndTime;//采样结束时间
-    public String machineCode;//采样机
-    public String sampleUserName;//采样人
+    public String stationNo;//场站号
 
-    public String czDtm;//称重时间
-    public String jqDtm;//称轻时间
-    public String mzQty;//毛重
-    public String kdQty;//扣吨
-    public String kgQty;//扣吨
-    public String pzQty;//皮重
-    public String netQty;//净重
+    public String contactIdFront;//集装箱前箱号
+
+    public String contactIdBack;//集装箱后箱号
+    public String contactSize;//集装箱尺寸
+    public String contactType;//集装箱类型
+
+    public String carTyp;//车型
+    public String carTypeName;//车型名称
+
+
+    public String carrierNo;//运输单位id
+    public String orgNo;
+    public String carrierName;//运输单位
+    public String venNo;//供应商
+    public String venName;//供应商名称
+
+    public String tickNo;//提货单号
     public String tickQty;//票重
-    public String ykQty;//盈亏
-    public String ysQty;//验收重量
-    public String jqBalaNo;//回皮位置
-    public String czBalaNo;//称重位置
-    public String status;//1采样未称重  2称重未称轻  3已经称轻
+
+
+    public String recordDtm;//记录时间
+    public String czDtm;//称重时间
+    public String remark;//备注
     public String batchNo;//批次号
-    public String xhNum;//车厢序号
-    public String balanceNo;//火车过衡序号
 
+    public String beginDate;
+    public String endDate;
 
-    /////////////////////汇总报表数据
+    public String beginLeaveDate;
+    public String endLeaveDate;
+
+    public String insertTime;//插入数据时间
+    public String opCode;//操作人员
+
+    public String doActionTag;//动作标识 ADD, MOD
+    public String jsonString;//json字符串
+
+    //返回操作结果
+    public String resCode;
+    public String resMsg;
+
+    private String mzQty;//毛重
+    private String pzQty;//皮重
+    private String netQty;//净重
+    private String kdQty;//扣吨
+    private String attachBatchNo;//采集序号 卡扣上传过来的唯一编码
+
+    private String doorNo;//通道号
+    private String channel;
+    private String actionTag;
+    private String readTag;
+
+    private String ghIndex;
+
+    private String startPlace;
+    private String finalPlace;
+    private String startName;
+    private String finalName;
+
+    private String sampleType;
+    public String sampleDtm;//采样厂时间
+    public String jqDtm;//称轻时间
+    public String carStatus;//车辆状态
+    public String sampleCode;
+    public String updateString;
+    public String publicString;
+    private String batchNoType;
     public String totalEntryCnt;//入厂车数
-    public String totalCZCnt;//称重车数
-    public String totalJQCnt;//称轻车数
-    public String totalSampleCnt;//采样车数
-    public String totalDenyCnt;//拒收车数
-    public String totalCheckInCnt;//验收车数
-    public String totalCheckInTunCnt;//回皮位置
-
     public String totalMzQty;//总毛重
-    public String totalKdQty;//总扣吨
     public String totalPzQty;//总皮重
+    public String totalKdQty;//总扣吨
     public String totalNetQty;//总净重
     public String totalTickQty;//总票重(矿发数量)
-    public String totalHpQty;//回皮总重量
+    public String apprEventTypeCd;
 
-    public String carCount;//当天发货商车辆总数
-
-    public String coalMine;
-
-    public String tickNo;
-
-    public String kdOpName;//扣吨人
-    public String kdStatus;//扣吨状态 0-未扣吨  1-已扣吨
     public String mineCardType;//矿卡类型
-    public String noKdNetQty;
-    public String diffQty;
-    public String totalDiffQty;
-    public String totalNoKdNetQty;
-    public String diffRatio;
-    public String batchNoType;//批次类型}
-    public String powerFactory;//电厂    ZJ织金
-
-    public String shipNo;//船名ID
-    public String shipName;//船名名称
     public String trainNo;
+
+    public String shipName;//船名称
+    public String goodTypeName;//货物类型名称
+
+    public String shipNo;//航次
+    public String goodName;//货物名称
+
+    public String goodNo;//货物编号
+
+    public String shipId;//船ID
+
+    public String czBalanceNo;//称重通道号
+
+    public String jqBalanceNo;//称轻通道号
+
+
+
+    public String customerNo;//供应商
+    public String customerName;//供应商名称
+
+    public String getCustomerNo() {
+        return customerNo;
+    }
+
+    public void setCustomerNo(String customerNo) {
+        this.customerNo = customerNo;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+
+    public String getLeaveFlag() {
+        return leaveFlag;
+    }
+
+    public void setLeaveFlag(String leaveFlag) {
+        this.leaveFlag = leaveFlag;
+    }
+
+    public String leaveFlag ;//出厂海关确认
+
+    public String getCfmFlag() {
+        return cfmFlag;
+    }
+
+    public void setCfmFlag(String cfmFlag) {
+        this.cfmFlag = cfmFlag;
+    }
+
+    public String cfmFlag ;//进场厂海关确认
+
+
+    public String getInNo() {
+        return inNo;
+    }
+
+    public void setInNo(String inNo) {
+        this.inNo = inNo;
+    }
+
+    public String getOutNo() {
+        return outNo;
+    }
+
+    public void setOutNo(String outNo) {
+        this.outNo = outNo;
+    }
+
+    public String getInDoorNo() {
+        return inDoorNo;
+    }
+
+    public void setInDoorNo(String inDoorNo) {
+        this.inDoorNo = inDoorNo;
+    }
+
+    public String getOutDoorNo() {
+        return outDoorNo;
+    }
+
+    public void setOutDoorNo(String outDoorNo) {
+        this.outDoorNo = outDoorNo;
+    }
+
+    public String getStationNo() {
+        return stationNo;
+    }
+
+    public void setStationNo(String stationNo) {
+        this.stationNo = stationNo;
+    }
+
+    public String getContactIdFront() {
+        return contactIdFront;
+    }
+
+    public void setContactIdFront(String contactIdFront) {
+        this.contactIdFront = contactIdFront;
+    }
+
+    public String getContactIdBack() {
+        return contactIdBack;
+    }
+
+    public void setContactIdBack(String contactIdBack) {
+        this.contactIdBack = contactIdBack;
+    }
+
+    public String getContactSize() {
+        return contactSize;
+    }
+
+    public void setContactSize(String contactSize) {
+        this.contactSize = contactSize;
+    }
+
+    public String getContactType() {
+        return contactType;
+    }
+
+    public void setContactType(String contactType) {
+        this.contactType = contactType;
+    }
+
+
+    public String getDoorNo() {
+        return doorNo;
+    }
+
+    public void setDoorNo(String doorNo) {
+        this.doorNo = doorNo;
+    }
+
+    public String getShipName() {
+        return shipName;
+    }
+
+    public void setShipName(String shipName) {
+        this.shipName = shipName;
+    }
+
+    public String getGoodName() {
+        return goodName;
+    }
+
+    public void setGoodName(String goodName) {
+        this.goodName = goodName;
+    }
+
+    public String getGoodNo() {
+        return goodNo;
+    }
+
+    public void setGoodNo(String goodNo) {
+        this.goodNo = goodNo;
+    }
+
+    public String getShipNo() {
+        return shipNo;
+    }
+
+    public void setShipNo(String shipNo) {
+        this.shipNo = shipNo;
+    }
+
+
+
+    public String getGoodTypeName() {
+        return goodTypeName;
+    }
+
+    public void setGoodTypeName(String goodTypeName) {
+        this.goodTypeName = goodTypeName;
+    }
+
+
+
+
+    public String getShipId() {
+        return shipId;
+    }
+
+    public void setShipId(String shipId) {
+        this.shipId = shipId;
+    }
+
+
+    public String getCzBalanceNo() {
+        return czBalanceNo;
+    }
+
+    public void setCzBalanceNo(String czBalanceNo) {
+        this.czBalanceNo = czBalanceNo;
+    }
+
+    public String getJqBalanceNo() {
+        return jqBalanceNo;
+    }
+
+    public void setJqBalanceNo(String jqBalanceNo) {
+        this.jqBalanceNo = jqBalanceNo;
+    }
 
     public String getTrainNo() {
         return trainNo;
@@ -108,182 +315,28 @@ public class WeightRptEntity extends BaseEntity {
         this.trainNo = trainNo;
     }
 
-
-    public String getPowerFactory() {
-        return powerFactory;
+    public String getMineCardType() {
+        return mineCardType;
     }
 
-    public void setPowerFactory(String powerFactory) {
-        this.powerFactory = powerFactory;
+    public void setMineCardType(String mineCardType) {
+        this.mineCardType = mineCardType;
     }
 
-    public String getKgQty() {
-        return kgQty;
+    public String getApprEventTypeCd() {
+        return apprEventTypeCd;
     }
 
-    public void setKgQty(String kgQty) {
-        this.kgQty = kgQty;
+    public void setApprEventTypeCd(String apprEventTypeCd) {
+        this.apprEventTypeCd = apprEventTypeCd;
     }
 
-    public String getBatchNoType() {
-        return batchNoType;
+    public String getTotalEntryCnt() {
+        return totalEntryCnt;
     }
 
-    public void setBatchNoType(String batchNoType) {
-        this.batchNoType = batchNoType;
-    }
-
-    public String getDiffRatio() {
-        return diffRatio;
-    }
-
-    public void setDiffRatio(String diffRatio) {
-        this.diffRatio = diffRatio;
-    }
-
-    public String getTotalDiffQty() {
-        return totalDiffQty;
-    }
-
-    public void setTotalDiffQty(String totalDiffQty) {
-        this.totalDiffQty = totalDiffQty;
-    }
-
-    public String getDiffQty() {
-        return diffQty;
-    }
-
-    public void setDiffQty(String diffQty) {
-        this.diffQty = diffQty;
-    }
-
-    public String getTotalNoKdNetQty() {
-        return totalNoKdNetQty;
-    }
-
-    public void setTotalNoKdNetQty(String totalNoKdNetQty) {
-        this.totalNoKdNetQty = totalNoKdNetQty;
-    }
-
-
-    public String getNoKdNetQty() {
-        return noKdNetQty;
-    }
-
-    public void setNoKdNetQty(String noKdNetQty) {
-        this.noKdNetQty = noKdNetQty;
-    }
-
-    public String getTickNo() {
-        return tickNo;
-    }
-
-    public void setTickNo(String tickNo) {
-        this.tickNo = tickNo;
-    }
-
-    public String getYsQty() {
-        return ysQty;
-    }
-
-    public void setYsQty(String ysQty) {
-        this.ysQty = ysQty;
-    }
-
-    public String getCarCount() {
-        return carCount;
-    }
-
-    public void setCarCount(String carCount) {
-        this.carCount = carCount;
-    }
-
-    public String getXhNum() {
-        return xhNum;
-    }
-
-    public void setXhNum(String xhNum) {
-        this.xhNum = xhNum;
-    }
-
-    public String getBalanceNo() {
-        return balanceNo;
-    }
-
-    public void setBalanceNo(String balanceNo) {
-        this.balanceNo = balanceNo;
-    }
-
-    public String getCoalMine() {
-        return coalMine;
-    }
-
-    public void setCoalMine(String coalMine) {
-        this.coalMine = coalMine;
-    }
-
-    public String getStartPlace() {
-        return startPlace;
-    }
-
-    public void setStartPlace(String startPlace) {
-        this.startPlace = startPlace;
-    }
-
-    public String getStartPlaceName() {
-        return startPlaceName;
-    }
-
-    public void setStartPlaceName(String startPlaceName) {
-        this.startPlaceName = startPlaceName;
-    }
-
-    public String getCurPos() {
-        return curPos;
-    }
-
-    public void setCurPos(String curPos) {
-        this.curPos = curPos;
-    }
-
-    public String getNextPos() {
-        return nextPos;
-    }
-
-    public void setNextPos(String nextPos) {
-        this.nextPos = nextPos;
-    }
-
-    public String getSmplStartTime() {
-        return smplStartTime;
-    }
-
-    public void setSmplStartTime(String smplStartTime) {
-        this.smplStartTime = smplStartTime;
-    }
-
-    public String getSmplEndTime() {
-        return smplEndTime;
-    }
-
-    public void setSmplEndTime(String smplEndTime) {
-        this.smplEndTime = smplEndTime;
-    }
-
-    public String getMachineCode() {
-        return machineCode;
-    }
-
-    public void setMachineCode(String machineCode) {
-        this.machineCode = machineCode;
-    }
-
-    public String getSampleUserName() {
-        return sampleUserName;
-    }
-
-    public void setSampleUserName(String sampleUserName) {
-        this.sampleUserName = sampleUserName;
+    public void setTotalEntryCnt(String totalEntryCnt) {
+        this.totalEntryCnt = totalEntryCnt;
     }
 
     public String getTotalMzQty() {
@@ -318,287 +371,104 @@ public class WeightRptEntity extends BaseEntity {
         this.totalNetQty = totalNetQty;
     }
 
-    public String getBatchNo() {
-        return batchNo;
+    public String getTotalTickQty() {
+        return totalTickQty;
     }
 
-    public void setBatchNo(String batchNo) {
-        this.batchNo = batchNo;
+    public void setTotalTickQty(String totalTickQty) {
+        this.totalTickQty = totalTickQty;
     }
 
-    public String getStatus() {
-        return status;
+    public String getSampleCode() {
+        return sampleCode;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setSampleCode(String sampleCode) {
+        this.sampleCode = sampleCode;
     }
 
-    public String getTotalEntryCnt() {
-        return totalEntryCnt;
+    public String getUpdateString() {
+        return updateString;
     }
 
-    public void setTotalEntryCnt(String totalEntryCnt) {
-        this.totalEntryCnt = totalEntryCnt;
+    public void setUpdateString(String updateString) {
+        this.updateString = updateString;
     }
 
-    public String getTotalCZCnt() {
-        return totalCZCnt;
+    public String getPublicString() {
+        return publicString;
     }
 
-    public void setTotalCZCnt(String totalCZCnt) {
-        this.totalCZCnt = totalCZCnt;
+    public void setPublicString(String publicString) {
+        this.publicString = publicString;
     }
 
-    public String getTotalJQCnt() {
-        return totalJQCnt;
+    public String getBatchNoType() {
+        return batchNoType;
     }
 
-    public void setTotalJQCnt(String totalJQCnt) {
-        this.totalJQCnt = totalJQCnt;
+    public void setBatchNoType(String batchNoType) {
+        this.batchNoType = batchNoType;
     }
 
-    public String getTotalSampleCnt() {
-        return totalSampleCnt;
+    public String getCarStatus() {
+        return carStatus;
     }
 
-    public void setTotalSampleCnt(String totalSampleCnt) {
-        this.totalSampleCnt = totalSampleCnt;
+    public void setCarStatus(String carStatus) {
+        this.carStatus = carStatus;
     }
 
-    public String getTotalDenyCnt() {
-        return totalDenyCnt;
+    public String getSampleType() {
+        return sampleType;
     }
 
-    public void setTotalDenyCnt(String totalDenyCnt) {
-        this.totalDenyCnt = totalDenyCnt;
+    public void setSampleType(String sampleType) {
+        this.sampleType = sampleType;
     }
 
-    public String getTotalCheckInCnt() {
-        return totalCheckInCnt;
+    public String getStartPlace() {
+        return startPlace;
     }
 
-    public void setTotalCheckInCnt(String totalCheckInCnt) {
-        this.totalCheckInCnt = totalCheckInCnt;
+    public void setStartPlace(String startPlace) {
+        this.startPlace = startPlace;
     }
 
-    public String getTotalCheckInTunCnt() {
-        return totalCheckInTunCnt;
+    public String getFinalPlace() {
+        return finalPlace;
     }
 
-    public void setTotalCheckInTunCnt(String totalCheckInTunCnt) {
-        this.totalCheckInTunCnt = totalCheckInTunCnt;
+    public void setFinalPlace(String finalPlace) {
+        this.finalPlace = finalPlace;
     }
 
-    public String getRecordNo() {
-        return recordNo;
+    public String getStartName() {
+        return startName;
     }
 
-    public void setRecordNo(String recordNo) {
-        this.recordNo = recordNo;
+    public void setStartName(String startName) {
+        this.startName = startName;
     }
 
-    public String getBeginTime() {
-        return beginTime;
+    public String getFinalName() {
+        return finalName;
     }
 
-    public void setBeginTime(String beginTime) {
-        this.beginTime = beginTime;
+    public void setFinalName(String finalName) {
+        this.finalName = finalName;
     }
 
-    public String getEndTime() {
-        return endTime;
+    public String getChannel() {
+        return channel;
     }
 
-    public void setEndTime(String endTime) {
-        this.endTime = endTime;
+    public void setChannel(String channel) {
+        this.channel = channel;
     }
 
-    public String getVenNo() {
-        return venNo;
-    }
-
-    public void setVenNo(String venNo) {
-        this.venNo = venNo;
-    }
-
-    public String getVenNam() {
-        return venNam;
-    }
-
-    public void setVenNam(String venNam) {
-        this.venNam = venNam;
-    }
-
-    public String getCarrierNo() {
-        return carrierNo;
-    }
-
-    public void setCarrierNo(String carrierNo) {
-        this.carrierNo = carrierNo;
-    }
-
-    public String getCarrierNam() {
-        return carrierNam;
-    }
-
-    public void setCarrierNam(String carrierNam) {
-        this.carrierNam = carrierNam;
-    }
-
-    public String getCarId() {
-        return carId;
-    }
-
-    public void setCarId(String carId) {
-        this.carId = carId;
-    }
-
-    public String getCarTyp() {
-        return carTyp;
-    }
-
-    public void setCarTyp(String carTyp) {
-        this.carTyp = carTyp;
-    }
-
-    public String getCarTypeName() {
-        return carTypeName;
-    }
-
-    public void setCarTypeName(String carTypeName) {
-        this.carTypeName = carTypeName;
-    }
-
-    public String getTransTyp() {
-        return transTyp;
-    }
-
-    public void setTransTyp(String transTyp) {
-        this.transTyp = transTyp;
-    }
-
-    public String getTransTypeName() {
-        return transTypeName;
-    }
-
-    public void setTransTypeName(String transTypeName) {
-        this.transTypeName = transTypeName;
-    }
-
-    public String getPlanMktNo() {
-        return planMktNo;
-    }
-
-    public void setPlanMktNo(String planMktNo) {
-        this.planMktNo = planMktNo;
-    }
-
-    public String getPlanMktName() {
-        return planMktName;
-    }
-
-    public void setPlanMktName(String planMktName) {
-        this.planMktName = planMktName;
-    }
-
-    public String getPositionNo() {
-        return positionNo;
-    }
 
-    public void setPositionNo(String positionNo) {
-        this.positionNo = positionNo;
-    }
-
-    public String getPositionNam() {
-        return positionNam;
-    }
-
-    public void setPositionNam(String positionNam) {
-        this.positionNam = positionNam;
-    }
-
-    public String getCoalNo() {
-        return coalNo;
-    }
-
-    public String getColryNam() {
-        return colryNam;
-    }
-
-    public void setColryNam(String colryNam) {
-        this.colryNam = colryNam;
-    }
-
-    public void setCoalNo(String coalNo) {
-        this.coalNo = coalNo;
-    }
-
-    public String getCoalNam() {
-        return coalNam;
-    }
-
-    public void setCoalNam(String coalNam) {
-        this.coalNam = coalNam;
-    }
-
-
-
-    public String getBottomHeight() {
-        return bottomHeight;
-    }
-
-    public void setBottomHeight(String bottomHeight) {
-        this.bottomHeight = bottomHeight;
-    }
 
-    public String getMaxLoad() {
-        return maxLoad;
-    }
-
-    public void setMaxLoad(String maxLoad) {
-        this.maxLoad = maxLoad;
-    }
-
-    public String getEntryOrder() {
-        return entryOrder;
-    }
-
-    public void setEntryOrder(String entryOrder) {
-        this.entryOrder = entryOrder;
-    }
-
-    public String getDoorNo() {
-        return doorNo;
-    }
-
-    public void setDoorNo(String doorNo) {
-        this.doorNo = doorNo;
-    }
-
-    public String getRecordDtm() {
-        return recordDtm;
-    }
-
-    public void setRecordDtm(String recordDtm) {
-        this.recordDtm = recordDtm;
-    }
-
-    public String getCzDtm() {
-        return czDtm;
-    }
-
-    public void setCzDtm(String czDtm) {
-        this.czDtm = czDtm;
-    }
-
-    public String getJqDtm() {
-        return jqDtm;
-    }
-
-    public void setJqDtm(String jqDtm) {
-        this.jqDtm = jqDtm;
-    }
 
     public String getMzQty() {
         return mzQty;
@@ -606,14 +476,6 @@ public class WeightRptEntity extends BaseEntity {
 
     public void setMzQty(String mzQty) {
         this.mzQty = mzQty;
-    }
-
-    public String getKdQty() {
-        return kdQty;
-    }
-
-    public void setKdQty(String kdQty) {
-        this.kdQty = kdQty;
     }
 
     public String getPzQty() {
@@ -632,20 +494,219 @@ public class WeightRptEntity extends BaseEntity {
         this.netQty = netQty;
     }
 
-    public String getTotalTickQty() {
-        return totalTickQty;
+    public String getKdQty() {
+        return kdQty;
     }
 
-    public void setTotalTickQty(String totalTickQty) {
-        this.totalTickQty = totalTickQty;
+    public void setKdQty(String kdQty) {
+        this.kdQty = kdQty;
     }
 
-    public String getJqBalaNo() {
-        return jqBalaNo;
+    public String getBeginDate() {
+        return beginDate;
     }
 
-    public void setJqBalaNo(String jqBalaNo) {
-        this.jqBalaNo = jqBalaNo;
+    public void setBeginDate(String beginDate) {
+        this.beginDate = beginDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getBatchNo() {
+        return batchNo;
+    }
+
+    public void setBatchNo(String batchNo) {
+        this.batchNo = batchNo;
+    }
+
+    public String getOrgNo() {
+        return orgNo;
+    }
+
+    public void setOrgNo(String orgNo) {
+        this.orgNo = orgNo;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public String getDoActionTag() {
+        return doActionTag;
+    }
+
+    public void setDoActionTag(String doActionTag) {
+        this.doActionTag = doActionTag;
+    }
+
+    public String getJsonString() {
+        return jsonString;
+    }
+
+    public void setJsonString(String jsonString) {
+        this.jsonString = jsonString;
+    }
+
+    public String getResCode() {
+        return resCode;
+    }
+
+    public void setResCode(String resCode) {
+        this.resCode = resCode;
+    }
+
+    public String getResMsg() {
+        return resMsg;
+    }
+
+    public void setResMsg(String resMsg) {
+        this.resMsg = resMsg;
+    }
+
+    public String getInsertTime() {
+        return insertTime;
+    }
+
+    public void setInsertTime(String insertTime) {
+        this.insertTime = insertTime;
+    }
+
+    public String getOpCode() {
+        return opCode;
+    }
+
+    public void setOpCode(String opCode) {
+        this.opCode = opCode;
+    }
+
+
+
+    public String getBackCarId() {
+        return backCarId;
+    }
+
+    public void setBackCarId(String backCarId) {
+        this.backCarId = backCarId;
+    }
+
+    public String getRecordId() {
+        return recordId;
+    }
+
+    public void setRecordId(String recordId) {
+        this.recordId = recordId;
+    }
+
+    public String getRecordNo() {
+        return recordNo;
+    }
+
+    public void setRecordNo(String recordNo) {
+        this.recordNo = recordNo;
+    }
+
+    public String getCardId() {
+        return cardId;
+    }
+
+    public void setCardId(String cardId) {
+        this.cardId = cardId;
+    }
+
+    public String getCardTyp() {
+        return cardTyp;
+    }
+
+    public void setCardTyp(String cardTyp) {
+        this.cardTyp = cardTyp;
+    }
+
+    public String getCardTypeName() {
+        return cardTypeName;
+    }
+
+    public void setCardTypeName(String cardTypeName) {
+        this.cardTypeName = cardTypeName;
+    }
+
+    public String getCarId() {
+        return carId;
+    }
+
+    public void setCarId(String carId) {
+        this.carId = carId;
+    }
+
+
+
+    public String getCarTyp() {
+        return carTyp;
+    }
+
+    public void setCarTyp(String carTyp) {
+        this.carTyp = carTyp;
+    }
+
+    public String getCarTypeName() {
+        return carTypeName;
+    }
+
+    public void setCarTypeName(String carTypeName) {
+        this.carTypeName = carTypeName;
+    }
+
+
+
+    public String getCarrierNo() {
+        return carrierNo;
+    }
+
+    public void setCarrierNo(String carrierNo) {
+        this.carrierNo = carrierNo;
+    }
+
+    public String getCarrierName() {
+        return carrierName;
+    }
+
+    public void setCarrierName(String carrierName) {
+        this.carrierName = carrierName;
+    }
+
+    public String getVenNo() {
+        return venNo;
+    }
+
+    public void setVenNo(String venNo) {
+        this.venNo = venNo;
+    }
+
+    public String getVenName() {
+        return venName;
+    }
+
+    public void setVenName(String venName) {
+        this.venName = venName;
+    }
+
+
+    public String getTickNo() {
+        return tickNo;
+    }
+
+    public void setTickNo(String tickNo) {
+        this.tickNo = tickNo;
     }
 
     public String getTickQty() {
@@ -656,100 +717,84 @@ public class WeightRptEntity extends BaseEntity {
         this.tickQty = tickQty;
     }
 
-    public String getYkQty() {
-        return ykQty;
+    public String getRecordDtm() {
+        return recordDtm;
     }
 
-    public void setYkQty(String ykQty) {
-        this.ykQty = ykQty;
+    public void setRecordDtm(String recordDtm) {
+        this.recordDtm = recordDtm;
     }
 
-    public String getLeaveBeginTime() {
-        return leaveBeginTime;
+    public String getAttachBatchNo() {
+        return attachBatchNo;
     }
 
-    public void setLeaveBeginTime(String leaveBeginTime) {
-        this.leaveBeginTime = leaveBeginTime;
+    public void setAttachBatchNo(String attachBatchNo) {
+        this.attachBatchNo = attachBatchNo;
     }
 
-    public String getLeaveEndTime() {
-        return leaveEndTime;
+
+
+    public String getCzDtm() {
+        return czDtm;
     }
 
-    public void setLeaveEndTime(String leaveEndTime) {
-        this.leaveEndTime = leaveEndTime;
+    public void setCzDtm(String czDtm) {
+        this.czDtm = czDtm;
     }
 
-    public String getCzBeginTime() {
-        return czBeginTime;
+    public String getActionTag() {
+        return actionTag;
     }
 
-    public void setCzBeginTime(String czBeginTime) {
-        this.czBeginTime = czBeginTime;
+    public void setActionTag(String actionTag) {
+        this.actionTag = actionTag;
     }
 
-    public String getCzEndTime() {
-        return czEndTime;
+    public String getReadTag() {
+        return readTag;
     }
 
-    public void setCzEndTime(String czEndTime) {
-        this.czEndTime = czEndTime;
+    public void setReadTag(String readTag) {
+        this.readTag = readTag;
     }
 
-    public String getCzBalaNo() {
-        return czBalaNo;
+    public String getGhIndex() {
+        return ghIndex;
     }
 
-    public void setCzBalaNo(String czBalaNo) {
-        this.czBalaNo = czBalaNo;
+    public void setGhIndex(String ghIndex) {
+        this.ghIndex = ghIndex;
     }
 
-    public String getKdOpName() {
-        return kdOpName;
+    public String getSampleDtm() {
+        return sampleDtm;
     }
 
-    public void setKdOpName(String kdOpName) {
-        this.kdOpName = kdOpName;
+    public void setSampleDtm(String sampleDtm) {
+        this.sampleDtm = sampleDtm;
     }
 
-    public String getKdStatus() {
-        return kdStatus;
+    public String getJqDtm() {
+        return jqDtm;
     }
 
-    public void setKdStatus(String kdStatus) {
-        this.kdStatus = kdStatus;
+    public void setJqDtm(String jqDtm) {
+        this.jqDtm = jqDtm;
+    }
+    public String getBeginLeaveDate() {
+        return beginLeaveDate;
     }
 
-    public String getMineCardType() {
-        return mineCardType;
+    public void setBeginLeaveDate(String beginLeaveDate) {
+        this.beginLeaveDate = beginLeaveDate;
     }
 
-    public void setMineCardType(String mineCardType) {
-        this.mineCardType = mineCardType;
-    }
-	
-	    public String getTotalHpQty() {
-        return totalHpQty;
+    public String getEndLeaveDate() {
+        return endLeaveDate;
     }
 
-    public void setTotalHpQty(String totalHpQty) {
-        this.totalHpQty = totalHpQty;
+    public void setEndLeaveDate(String endLeaveDate) {
+        this.endLeaveDate = endLeaveDate;
     }
-
-    public String getShipNo() {
-        return shipNo;
-    }
-
-    public void setShipNo(String shipNo) {
-        this.shipNo = shipNo;
-    }
-
-    public String getShipName() {
-        return shipName;
-    }
-
-    public void setShipName(String shipName) {
-        this.shipName = shipName;
-    }
-
 }
