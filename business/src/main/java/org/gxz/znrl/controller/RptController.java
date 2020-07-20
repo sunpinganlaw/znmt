@@ -218,6 +218,46 @@ public class RptController extends BaseAction {
         return mav;
     }
 
+    /**
+     * 直接调用打印汽车过卡记录
+     * 码头
+     *
+     * @author zhoulu
+     * 2017-06-01 13：26
+     */
+    @RequestMapping(value = "/gotoPrintCarsWeightPagemt")
+    @ResponseBody
+    public ModelAndView gotoPrintCarsWeightPagemt(HttpServletRequest request) {
+        ModelAndView mav = new ModelAndView("/report/weightRptPrintList");
+        String beginTime = request.getParameter("beginTime") == null ? "" : request.getParameter("beginTime");
+        String endTime = request.getParameter("endTime") == null ? "" : request.getParameter("endTime");
+        String venNo = request.getParameter("venNo") == null ? "" : request.getParameter("venNo");
+        String carId= request.getParameter("carId") == null ? "" : request.getParameter("carId");
+        String shipId= request.getParameter("shipId") == null ? "" : request.getParameter("shipId");
+        String customerNo= request.getParameter("customerNo") == null ? "" : request.getParameter("customerNo");
+        String dateType= request.getParameter("dateType") == null ? "" : request.getParameter("dateType");
+        String tickNo= request.getParameter("tickNo") == null ? "" : request.getParameter("tickNo");
+        mav.addObject("beginTime", beginTime);
+        mav.addObject("endTime", endTime);
+        mav.addObject("venNo", venNo);
+        mav.addObject("carId", carId);
+        mav.addObject("shipId", shipId);
+        mav.addObject("customerNo", customerNo);
+        mav.addObject("dateType", dateType);
+        mav.addObject("tickNo", tickNo);
+        return mav;
+    }
+    //查询汽车来煤信息
+    @RequestMapping(value = "/gotoPrintCarsWeightPagemtnew")
+    @ResponseBody
+    public ModelAndView gotoPrintCarsWeightPagemtnew() {
+        //需要分页的实体bean都用父类定义，方便设置page相关参数 xieyt
+        BaseEntity carTransRecordEntity = SearchForm(CarTransRecordEntity.class);
+        ModelAndView mav = new ModelAndView("/report/weightRptPrintListSum");
+
+        return mav;
+    }
+
 
     //页面跳转到采样机集样罐记录表（织金）
     @RequestMapping(value = "/sampleBarrelRpt", method = RequestMethod.GET)
