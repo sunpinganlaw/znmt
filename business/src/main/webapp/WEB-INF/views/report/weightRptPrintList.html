@@ -9,7 +9,7 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 
     <#include "/include/common.html"/>
-<title>打印汽车计量单</title>
+<title>打印汽车过卡单</title>
 <style type="text/css">
     body{ background-color:#fff; color:#000; font-size:0.9em; width:1000px; margin:0 auto;}
     h1{ font-size:2em; text-align:center; line-height:2em;}
@@ -28,41 +28,41 @@
 
 <body>
 <!--startprint-->
-<h1>哈尔滨热电有限公司汽车计量单</h1>
+<h1>国投湄洲湾码头散货车辆过卡报表</h1>
 
 <div style=" width: 98%">
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;批次号：<span id="batchNoPrnt">&nbsp;</span>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;打印时间：<span id="DtmPrnt">&nbsp;</span>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;重量单位：<span>吨</span>
+
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="DtmPrnt"  style="font-size:20px">&nbsp;</span>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="totalCarCnt" style="font-size:20px">&nbsp;</span>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="totalNet"  style="font-size:20px">&nbsp;</span>
+</div>
+<div style=" width: 98%">
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="beginDate"  style="font-size:20px">&nbsp;</span>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="to"  style="font-size:20px">&nbsp;</span>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="endDate" style="font-size:20px">&nbsp;</span>
 </div>
 <div style=" width: 10%">&nbsp;</div>
 
 <table id="printTable" width="98%" border="0" cellspacing="0" cellpadding="0" class="table01">
     <tr>
         <td style="text-align:center;font-size:1.5em;" width="7%">序号</td>
-        <td style="text-align:center;font-size:1.5em;" width="7%">磅单号</td>
         <td style="text-align:center;font-size:1.5em;" width="7%">车号</td>
         <td style="text-align:center;font-size:1.5em;" width="7%">毛重</td>
         <td style="text-align:center;font-size:1.5em;" width="7%">皮重</td>
         <td style="text-align:center;font-size:1.5em;" width="7%">净重</td>
-        <td style="text-align:center;font-size:1.5em;" width="7%">扣重</td>
-        <td style="text-align:center;font-size:1.5em;" width="7%">实重</td>
-        <td style="text-align:center;font-size:1.5em;" width="13%">发货单位</td>
         <td style="text-align:center;font-size:1.5em;" width="7%">货名</td>
-        <td style="text-align:center;font-size:1.5em;" width="12%">毛重时间</td>
-        <td style="text-align:center;font-size:1.5em;" width="12%">皮重时间</td>
+        <td style="text-align:center;font-size:1.5em;" width="13%">进港时间</td>
+        <td style="text-align:center;font-size:1.5em;" width="13%">出港时间</td>
+        <td style="text-align:center;font-size:1.5em;" width="17%">收货单位</td>
+        <td style="text-align:center;font-size:1.5em;" width="17%">发货单位</td>
+
     </tr>
 </table>
 
 <div style=" width: 10%">&nbsp;</div>
-<div style=" width: 98%">
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;制表：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;审核：
-</div>
 
-<!--endprint-->
 
 <div>&nbsp;</div>
 <div style="text-align: right; width: 90%">
@@ -74,68 +74,95 @@
 
 <script type="text/javascript">
     $(function(){
-        var batchNo = JSON.stringify("${batchNo}").replaceAll("\"","");
-        var paramsObj = {};
-        paramsObj.search_batchNo = batchNo;
-
-        var czDtm = " ";
+        var totalCarCnt = 0;
         var totalMz = 0;
         var totalPz = 0;
         var totalNet = 0;
-        var totalYk = 0;
-        var totalSz = 0;
 
-        $.post("${base}/business/report/weightRptListNoPage", paramsObj, function(rsp) {
+        var paramO =  new Object();
+        var beginDate ="${beginTime}";
+        var endDate =  "${endTime}";
+        var carIdQry = "${carId}";
+        var shipId = "${shipId}";
+        var tickNo ="${tickNo}";
+        var venNo= "${venNo}";
+        var customerNo="${customerNo}";
+        var dateType="${dateType}";
+
+
+        if(dateType==1)
+        {
+            if (beginDate != null && beginDate != "" && beginDate.length > 0) {
+                paramO.search_beginDate = beginDate;
+            }
+            if (endDate != null && endDate != "" && endDate.length > 0) {
+                paramO.search_endDate = endDate;
+            }
+        }
+        if(dateType==2)
+        {
+            if (beginDate != null && beginDate != "" && beginDate.length > 0) {
+                paramO.search_beginLeaveDate = beginDate;
+            }
+            if (endDate != null && endDate != "" && endDate.length > 0) {
+                paramO.search_endLeaveDate = endDate;
+            }
+        }
+
+        if (carIdQry != null && carIdQry != "" && carIdQry.length > 0) {
+            paramO.search_carId = '%'+carIdQry+'%';
+        }
+        if (shipId != null && shipId != "" && shipId.length > 0) {
+            paramO.search_shipId = shipId;
+        }
+        if (tickNo != null && tickNo != "" && tickNo.length > 0) {
+            paramO.search_tickNo = '%'+tickNo+'%';
+        }
+        if (venNo != null && venNo != "" && venNo.length > 0) {
+            paramO.search_venNo = venNo;
+        }
+        if (customerNo != null && customerNo != "" && customerNo.length > 0) {
+            paramO.search_customerNo = customerNo;
+        }
+
+
+        $.post("${base}/business/monitor/carTransRecordList", paramO, function(rsp) {
             var arr = rsp.rows;
+            alert(arr.length);
             var table1 = $('#printTable');
             for (var i=0; i<arr.length; i++) {
                 var row = $("<tr></tr>");
-                var td = $("<td style='text-align:center;'>"+
-                        (i+1)+"</td><td style='text-align:center;'>"+
-                        (arr[i].recordNo==null?"&nbsp;":arr[i].recordNo)+"</td><td style='text-align:center;'>"+
-                        (arr[i].carId==null?"&nbsp;":arr[i].carId)+"</td><td style='text-align:center;'>"+
-                        (arr[i].mzQty==null?"&nbsp;":arr[i].mzQty)+"</td><td style='text-align:center;'>"+
-                        (arr[i].pzQty==null?"&nbsp;":arr[i].pzQty)+"</td><td style='text-align:center;'>"+
-                        (arr[i].netQty==null?"&nbsp;":arr[i].netQty)+"</td><td style='text-align:center;'>"+
-                        (arr[i].ydQty==null?"&nbsp;":arr[i].ydQty)+"</td><td style='text-align:center;'>"+
-                        (arr[i].netQty==null?"&nbsp;":arr[i].netQty)+"</td><td style='text-align:center;'>"+
-                        (arr[i].venNam==null?"&nbsp;":arr[i].venNam)+"</td><td style='text-align:center;'>"+
-                        (arr[i].coalNam==null?"&nbsp;":arr[i].coalNam)+"</td><td style='text-align:center;'>"+
-                        (arr[i].czDtm==null?"&nbsp;":arr[i].czDtm)+"</td><td style='text-align:center;'>"+
-                        (arr[i].jqDtm==null?"&nbsp;":arr[i].jqDtm)+"</td>");
+                var td = $("<td style='text-align:center;font-size:1.5em;'>"+
+                        (i+1)+"</td><td style='text-align:center;font-size:1.5em;'>"+
+                        (arr[i].carId==null?"&nbsp;":arr[i].carId)+"</td><td style='text-align:center;font-size:1.5em;'>"+
+                        (arr[i].mzQty==null?"&nbsp;":arr[i].mzQty)+"</td><td style='text-align:center;font-size:1.5em;'>"+
+                        (arr[i].pzQty==null?"&nbsp;":arr[i].pzQty)+"</td><td style='text-align:center;font-size:1.5em;'>"+
+                        (arr[i].netQty==null?"&nbsp;":arr[i].netQty)+"</td><td style='text-align:center;font-size:1.5em;'>"+
+                        (arr[i].goodName==null?"&nbsp;":arr[i].customerName)+"</td><td style='text-align:center;font-size:1.5em;'>"+
+                        (arr[i].recordDtm==null?"&nbsp;":arr[i].recordDtm)+"</td><td style='text-align:center;font-size:1.5em;'>"+
+                        (arr[i].czDtm==null?"&nbsp;":arr[i].czDtm)+"</td><td style='text-align:center;font-size:1.5em;'>"+
+                        (arr[i].customerName==null?"&nbsp;":arr[i].customerName)+"</td><td style='text-align:center;font-size:1.5em;'>"+
+                        (arr[i].venName==null?"&nbsp;":arr[i].venName)+"</td>");
                 row.append(td);
                 table1.append(row);
 
+                totalCarCnt=arr.length;
                 totalMz = totalMz + parseFloat(arr[i].mzQty==null?"0":arr[i].mzQty);
-                totalPz = totalPz + parseFloat(arr[i].pzQty==null?"0":arr[i].pzQty);
+                totalPz = totalNet + parseFloat(arr[i].pzQty==null?"0":arr[i].pzQty);
                 totalNet = totalNet + parseFloat(arr[i].netQty==null?"0":arr[i].netQty);
-                totalYk = totalYk + parseFloat(arr[i].ydQty==null?"0":arr[i].ydQty);
-                totalSz = totalSz + parseFloat(arr[i].netQty==null?"0":arr[i].netQty);
+
             }
 
+            document.getElementById("totalCarCnt").innerText='总车数：'+arr.length;
+            document.getElementById("totalNet").innerText='总吨数：'+totalNet;
 
-            var row = $("<tr></tr>");
-            var td = $("<td style='text-align:center;font-size:1.5em;'>合计</td>"+
-                    "<td style='text-align:center;'>&nbsp;</td>"+
-                    "<td style='text-align:center;'>&nbsp;</td>"+
-                    "<td style='text-align:center;font-size:1.5em;'>"+totalMz.toFixed(2)+"</td>"+
-                    "<td style='text-align:center;font-size:1.5em;'>"+totalPz.toFixed(2)+"</td>"+
-                    "<td style='text-align:center;font-size:1.5em;'>"+totalNet.toFixed(2)+"</td>"+
-                    "<td style='text-align:center;font-size:1.5em;'>"+totalYk.toFixed(2)+"</td>"+
-                    "<td style='text-align:center;font-size:1.5em;'>"+totalSz.toFixed(2)+"</td>"+
-                    "<td style='text-align:center;'>&nbsp;</td>"+
-                    "<td style='text-align:center;'>&nbsp;</td>"+
-                    "<td style='text-align:center;'>&nbsp;</td>"+
-                    "<td style='text-align:center;'>&nbsp;</td>");
-            row.append(td);
-            table1.append(row);
-
-            document.getElementById("batchNoPrnt").innerText =  batchNo;
-
+            document.getElementById("beginDate").innerText='统计时间：'+beginDate;
+            document.getElementById("to").innerText='到'
+            document.getElementById("endDate").innerText=endDate;
             //从服务器取打印时间
             $.post("${base}/business/tool/getCurrentTime", function (rsp) {
                 if (rsp) {
-                    document.getElementById("DtmPrnt").innerText =  new Date(parseInt(parseInt(rsp)) * 1000).toLocaleString();
+                    document.getElementById("DtmPrnt").innerText = '打印时间：'+ new Date(parseInt(parseInt(rsp)) * 1000).toLocaleString();
                 } else {
                     showMsg("提示", "获取服务器当前时间失败!");
                     return false;
