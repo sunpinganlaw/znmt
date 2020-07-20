@@ -90,60 +90,55 @@
         select count(1)
         from RLRECORDMSTQY a
         where 1 = 1
-        <if test="beginTime != null" >
-            <![CDATA[
-             and a.record_dtm >= to_date(#{beginTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
-             ]]>
+        <if test="carId != null" >
+            and a.car_id like #{carId,jdbcType=VARCHAR}
         </if>
 
-        <if test="endTime != null" >
-            <![CDATA[
-             and a.record_dtm <= to_date(#{endTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')+1-0.00001
-             ]]>
+        <if test="cardId != null" >
+            and a.card_id like #{cardId,jdbcType=VARCHAR}
+        </if>
+        <if test="cardTyp != null" >
+            and a.card_typ = #{cardTyp,jdbcType=VARCHAR}
+        </if>
+
+
+        <if test="beginDate != null" >
+            and a.record_dtm <![CDATA[     >=     ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'YYYY-MM-DD hh24:mi:ss')
+        </if>
+
+        <if test="endDate != null" >
+            and a.record_dtm <![CDATA[     <     ]]> to_date(#{endDate,jdbcType=VARCHAR},'YYYY-MM-DD hh24:mi:ss')+1-0.00001
+        </if>
+        <if test="beginLeaveDate != null" >
+            and a.LEAVE_DTM <![CDATA[     >=     ]]> to_date(#{beginLeaveDate,jdbcType=VARCHAR}, 'YYYY-MM-DD hh24:mi:ss')
+        </if>
+        <if test="endLeaveDate != null" >
+            and a.LEAVE_DTM <![CDATA[    <=    ]]> to_date(#{endLeaveDate,jdbcType=VARCHAR}, 'YYYY-MM-DD hh24:mi:ss')+1-0.00001
         </if>
 
         <if test="venNo != null" >
             and a.ven_no = #{venNo,jdbcType=VARCHAR}
         </if>
 
-        <if test="carrierNo != null" >
-            and a.carrier_no = #{carrierNo,jdbcType=VARCHAR}
+        <if test="customerNo != null" >
+            and a.customer_no = #{customerNo,jdbcType=VARCHAR}
         </if>
 
-        <if test="carId != null" >
-            and a.car_id like #{carId,jdbcType=VARCHAR}
+        <if test="tickNo != null" >
+            and a.tick_no = #{tickNo,jdbcType=VARCHAR}
+        </if>
+        <if test="shipId != null" >
+            and a.ship_id = #{shipId,jdbcType=VARCHAR}
+        </if>
+        <if test="goodNo != null" >
+            and a.good_no = #{goodNo,jdbcType=VARCHAR}
+        </if>
+        <if test="inDoorNo != null" >
+            and ((a.IN_DOOR_NO = #{inDoorNo,jdbcType=VARCHAR})OR (a.OUT_DOOR_NO = #{inDoorNo,jdbcType=VARCHAR}))
         </if>
 
-        <if test="coalNo != null" >
-            and a.coal_no = #{coalNo,jdbcType=VARCHAR}
-        </if>
-
-        <if test="batchNo != null" >
-            and a.car_batch_no = #{batchNo,jdbcType=VARCHAR}
-        </if>
-
-        <if test="status != null" >
-            and getCarStatusInfo(a.record_no) = #{status,jdbcType=VARCHAR}
-        </if>
-
-        <if test="coalMine != null" >
-            and a.colry_no = #{coalMine,jdbcType=VARCHAR}
-        </if>
-
-        <if test="kdStatus != null" >
-            and getCarKdSta(a.record_no) = #{kdStatus,jdbcType=VARCHAR}
-        </if>
-
-        <if test="mineCardType != null" >
-            and exists (select a.mine_card_id from mine_card_info cd where lower(a.mine_card_id)=lower(cd.mine_card_id) and cd.mine_card_type = #{mineCardType,jdbcType=VARCHAR})
-        </if>
-
-        <if test="shipNo != null" >
-            and exists (select a.mine_card_id from mine_card_info cd where lower(a.mine_card_id)=lower(cd.mine_card_id) and cd.ship_id = #{shipNo,jdbcType=VARCHAR})
-        </if>
-
-        <if test="transTyp != null" >
-            and exists (select 1 from rlcarmst t where t.card_id = a.card_id and t.valid_sta = '1' and t.trans_typ =  #{transTyp,jdbcType=VARCHAR})
+        <if test="contactIdFront != null" >
+            AND ((a.CONTA_ID_F like #{contactIdFront,jdbcType=VARCHAR})OR (a.CONTA_ID_B like #{contactIdFront,jdbcType=VARCHAR}))
         </if>
     </select>
 
@@ -397,114 +392,143 @@
         <include refid="paging_top_sql" />
         select m.*, rownum rownumber
         from (
-        select
-        a.record_no,
-        (select vi.ven_name from VENDOR_INFO vi where vi.ven_no = a.ven_no) ven_nam,
-        (select ci.carrier_name from CARRIER_INFO ci where ci.carrier_no = a.carrier_no) carrier_nam,
-        (select ct.coal_name from COAL_TYPE ct where ct.coal_no = a.coal_no) coal_nam,
-        (select cm.mine_name from coal_mine cm where cm.mine_no = a.colry_no) coal_mine,
-        a.car_id,
-        getCarInfo(a.car_id, 'CAR_TYPE') carTypeName,
-        getCarInfo(a.car_id, 'BOTTOM_HEIGHT') bottom_height,
+        select a.record_no,
         a.car_batch_no,
-        to_char(a.record_dtm, 'yyyy-mm-dd hh24:mi:ss') record_dtm,
-        to_char(a.cz_dtm, 'yyyy-mm-dd hh24:mi:ss') cz_dtm,
-        to_char(a.jq_dtm, 'yyyy-mm-dd hh24:mi:ss') jq_dtm,
-        to_char(a.mz_qty/1000) mz_qty,
-        getUnloadInfo(a.record_no, 'KD_QTY')/1000 kd_qty,
-        to_char(a.kg_qty/1000) kg_qty,
-        to_char(a.pz_qty/1000) pz_qty,
-        to_char(a.net_qty/1000) net_qty,
-        to_char(a.tick_qty/1000) tick_qty,
-        to_char(a.mz_qty/1000-a.pz_qty/1000) noKd_NetQty,
-        to_char(a.tick_qty/1000-(a.mz_qty/1000-a.pz_qty/1000)) diff_qty,
-        to_char(a.net_qty/1000-nvl((getUnloadInfo(a.record_no, 'KD_QTY')/1000),0)) ys_qty,
-        a.jq_balance_no,
-        a.cz_balance_no,
-        (select cy.end_time from take_sample_rec cy where cy.record_no = a.record_no) end_sample_time,
-        decode(getCarStatusInfo(a.record_no), '1','已采样已称重','2','已称重未回皮','3','已称重已回皮','4','未称重未回皮','未知状态') status,
-        (select t.realname from security_user t where t.id=a.kd_op_code) kd_op_name,
-        nvl(get_work_mode('TICK_QTY_DIFF_RATIO'), '-') diff_ratio,
-        (select decode(nvl(t.trans_typ, '0'), '0','煤车','1','灰车','2','渣车','未知') from rlcarmst t where t.card_id = a.card_id and t.valid_sta = '1') trans_type_name
+        a.card_id,
+        a.card_typ,
+        decode(A.card_typ,'0','散货业务','1','集装箱业务') card_type_name,
+        (select b.car_typ from rlcarmst b where b.card_id=a.card_id and rownum=1) car_typ,
+        decode((select b.car_typ from rlcarmst b where b.card_id=a.card_id and rownum=1), '0', '半挂', '1', '外挂') car_type_name,
+        a.car_id,
+        a.carrier_no,
+        (select ci.carrier_name
+        from CARRIER_INFO ci
+        where ci.carrier_no = a.carrier_no) carrier_nam,
+        a.ven_no,
+        (select vi.ven_name
+        from VENDOR_INFO vi
+        where vi.ven_no = a.ven_no) ven_nam,
+        a.customer_no,
+        (select ci.customer_name
+        from CUSTOMER_INFO ci
+        where ci.customer_no = a.customer_no) customer_name,
+        a.tick_no,
+        a.tick_qty/1000 tick_qty,
+        to_char(a.record_dtm,'yyyy-mm-dd hh24:mi:ss') record_dtm,
+        to_char(a.cz_dtm,'yyyy-mm-dd hh24:mi:ss') cz_dtm,
+        to_char(a.jq_dtm,'yyyy-mm-dd hh24:mi:ss') jq_dtm,
+        remark,
+        a.mz_qty/1000 mz_qty,
+        a.pz_qty/1000 pz_qty,
+        a.net_qty/1000 net_qty,
+        a.kd_qty/1000 kd_qty,
+        a.attach_batch_no,
+        a.CZ_BALANCE_NO,
+        a.JQ_BALANCE_NO,
+        a.IN_NO,
+        a.OUT_NO,
+        a.IN_DOOR_NO,
+        a.OUT_DOOR_NO,
+        a.STATION_NO,
+        a.CONTA_ID_F,
+        a.CONTA_ID_B,
+        a.CONTA_SIZE,
+        a.CONTA_TYPE,
+        decode(A.CFM_FLG,'Y','放行','N','禁行') CFM_FLG,
+        decode(A.LEAVE_FLG,'Y','放行','N','禁行') LEAVE_FLG,
+        (select sp.ship_name
+        from ship_info sp
+        where sp.ship_id = a.SHIP_ID) ship_name,
+        (select sp.FIX_SHIP_NO
+        from ship_info sp
+        where sp.ship_id = a.SHIP_ID) ship_no,
+        a.GOOD_NO,
+        (select gi.good_name
+        from good_info gi
+        where gi.good_no = a.GOOD_NO) good_name,
+        (select decode(gi.good_type,'0','空箱','1','集装箱','2','散货','3','件杂货','4','空车','5','行政车辆') from good_info gi where gi.good_no = a.GOOD_NO) good_type_name
         from RLRECORDMSTQY a
         where 1 = 1
-        <if test="beginTime != null" >
-            <![CDATA[
-             and a.record_dtm >= to_date(#{beginTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')
-             ]]>
-        </if>
-
-        <if test="endTime != null" >
-            <![CDATA[
-             and a.record_dtm <= to_date(#{endTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi:ss')+1-0.00001
-             ]]>
-        </if>
-        <if test="leaveBeginTime != null" >
-            <![CDATA[
-             and a.leave_dtm >= to_date(#{leaveBeginTime,jdbcType=VARCHAR},'yyyy-mm-dd')
-             ]]>
-        </if>
-
-        <if test="leaveEndTime != null" >
-            <![CDATA[
-             and a.leave_dtm <= to_date(#{leaveEndTime,jdbcType=VARCHAR},'yyyy-mm-dd')+1-0.00001
-             ]]>
-        </if>
-
-        <if test="venNo != null" >
-            and a.ven_no = #{venNo,jdbcType=VARCHAR}
-        </if>
-
-        <if test="carrierNo != null" >
-            and a.carrier_no = #{carrierNo,jdbcType=VARCHAR}
-        </if>
-
         <if test="carId != null" >
             and a.car_id like #{carId,jdbcType=VARCHAR}
         </if>
 
-        <if test="coalNo != null" >
-            and a.coal_no = #{coalNo,jdbcType=VARCHAR}
+        <if test="cardId != null" >
+            and a.card_id like #{cardId,jdbcType=VARCHAR}
+        </if>
+        <if test="cardTyp != null" >
+            and a.card_typ = #{cardTyp,jdbcType=VARCHAR}
+        </if>
+
+        <if test="beginDate != null" >
+            and a.record_dtm <![CDATA[     >=     ]]> to_date(#{beginDate,jdbcType=VARCHAR}, 'YYYY-MM-DD hh24:mi:ss')
+        </if>
+
+        <if test="endDate != null" >
+            and a.record_dtm <![CDATA[     <     ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'YYYY-MM-DD hh24:mi:ss')+1-0.00001
+        </if>
+        <if test="beginLeaveDate != null" >
+            and a.LEAVE_DTM <![CDATA[     >=     ]]> to_date(#{beginLeaveDate,jdbcType=VARCHAR}, 'YYYY-MM-DD hh24:mi:ss')
+        </if>
+        <if test="endLeaveDate != null" >
+            and a.LEAVE_DTM <![CDATA[     <=     ]]> to_date(#{endLeaveDate,jdbcType=VARCHAR}, 'YYYY-MM-DD hh24:mi:ss')+1-0.00001
         </if>
 
         <if test="batchNo != null" >
             and a.car_batch_no like #{batchNo,jdbcType=VARCHAR}
         </if>
 
-        <if test="status != null" >
-            and getCarStatusInfo(a.record_no) = #{status,jdbcType=VARCHAR}
+        <if test="venNo != null" >
+            and a.ven_no = #{venNo,jdbcType=VARCHAR}
+        </if>
+        <if test="customerNo != null" >
+            and a.customer_no = #{customerNo,jdbcType=VARCHAR}
         </if>
 
-        <if test="coalMine != null" >
-            and a.colry_no = #{coalMine,jdbcType=VARCHAR}
+        <if test="tickNo != null" >
+            and a.tick_no like #{tickNo,jdbcType=VARCHAR}
+        </if>
+        <if test="shipId != null" >
+            and a.ship_id = #{shipId,jdbcType=VARCHAR}
+        </if>
+        <if test="goodNo != null" >
+            and a.good_no = #{goodNo,jdbcType=VARCHAR}
+        </if>
+        <if test="inDoorNo != null" >
+            and ((a.IN_DOOR_NO = #{inDoorNo,jdbcType=VARCHAR})OR (a.OUT_DOOR_NO = #{inDoorNo,jdbcType=VARCHAR}))
         </if>
 
-        <if test="kdStatus != null" >
-            and getCarKdSta(a.record_no) = #{kdStatus,jdbcType=VARCHAR}
+        <if test="contactIdFront != null" >
+            AND ((a.CONTA_ID_F like #{contactIdFront,jdbcType=VARCHAR})OR (a.CONTA_ID_B like #{contactIdFront,jdbcType=VARCHAR}))
         </if>
 
-        <if test="mineCardType != null" >
-            and exists (select a.mine_card_id from mine_card_info cd where lower(a.mine_card_id)=lower(cd.mine_card_id) and cd.mine_card_type = #{mineCardType,jdbcType=VARCHAR})
+
+        <if test='order != null and sort == "batchNo"' >
+            order by  car_batch_no  ${order}
         </if>
 
-        <if test="shipNo != null" >
-            and exists (select a.mine_card_id from mine_card_info cd where lower(a.mine_card_id)=lower(cd.mine_card_id) and cd.ship_id = #{shipNo,jdbcType=VARCHAR})
-        </if>
-
-        <if test="transTyp != null" >
-            and exists (select 1 from rlcarmst t where t.card_id = a.card_id and t.valid_sta = '1' and t.trans_typ =  #{transTyp,jdbcType=VARCHAR})
-        </if>
-
-        <if test="order == null" >
-            order by record_dtm desc
+        <if test='order != null and sort == "carId"' >
+            order by  car_id  ${order}
         </if>
 
         <if test='order != null and sort == "mzQty"' >
             order by  mz_qty  ${order}
         </if>
 
+        <if test='order != null and sort == "pzQty"' >
+            order by  pz_qty  ${order}
+        </if>
+
         <if test='order != null and sort == "kdQty"' >
             order by  kd_qty  ${order}
+        </if>
+
+        <if test='order != null and sort == "netQty"' >
+            order by  net_qty  ${order}
+        </if>
+
+        <if test='order != null and sort == "recordDtm"' >
+            order by  record_dtm  ${order}
         </if>
 
         <if test='order != null and sort == "czDtm"' >
@@ -516,7 +540,6 @@
         </if>
 
         ) m
-
         <include refid="paging_bottom_sql" />
     </select>
 
