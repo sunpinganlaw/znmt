@@ -102,12 +102,6 @@ public class RptServiceImpl implements IRptService {
         String intTotalTick = rptMapper.qryTotalTick(weightRptEntity);
 
         String intTotalKd = "0";
-        if (weightRptEntity.getPowerFactory() != null && "ZJ".equals(weightRptEntity.getPowerFactory())){
-            intTotalKd = rptMapper.qryTotalKd4ZJ(weightRptEntity);
-        } else {
-            intTotalKd = rptMapper.qryTotalKd(weightRptEntity);
-        }
-
 
         String intTotalHpQty = rptMapper.qryTotalHpQty(weightRptEntity);
         String intTotalNoKdNetQty = rptMapper.qryTotalNoKdNetQty(weightRptEntity);
@@ -115,17 +109,13 @@ public class RptServiceImpl implements IRptService {
         //设置返回结果
         WeightRptEntity w = new WeightRptEntity();
         w.setTotalEntryCnt(intEntryTotalCnt.toString());
-        w.setTotalCZCnt(intWeightTotalCnt.toString());
-        w.setTotalJQCnt(intLightTotalCnt.toString());
 
         w.setTotalMzQty(intTotalMz);
         w.setTotalPzQty(intTotalPz);
         w.setTotalNetQty(intTotalNet);
         w.setTotalTickQty(intTotalTick);
         w.setTotalKdQty(intTotalKd);
-        w.setTotalHpQty(intTotalHpQty);
-        w.setTotalNoKdNetQty(intTotalNoKdNetQty);
-        w.setTotalDiffQty(intTotalDiffQty);
+
         return w;
     }
 
@@ -140,7 +130,7 @@ public class RptServiceImpl implements IRptService {
         //设置返回结果
         WeightRptEntity w = new WeightRptEntity();
         w.setTotalEntryCnt(intEntryTotalCnt.toString());
-        w.setTotalCZCnt(intWeightTotalCnt.toString());
+
         w.setTotalMzQty(intTotalMz);
         w.setTotalPzQty(intTotalPz);
         w.setTotalNetQty(intTotalNet);
@@ -553,8 +543,6 @@ public class RptServiceImpl implements IRptService {
         //设置返回结果
         WeightRptEntity w = new WeightRptEntity();
         w.setTotalEntryCnt(intEntryTotalCnt.toString());
-        w.setTotalCZCnt(intWeightTotalCnt.toString());
-        w.setTotalJQCnt(intLightTotalCnt.toString());
 
         w.setTotalMzQty(intTotalMz);
         w.setTotalPzQty(intTotalPz);
