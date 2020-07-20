@@ -28,7 +28,8 @@
 
 <body>
 <!--startprint-->
-<h1>国投湄洲湾码头散货车辆过卡报表</h1>
+<h1>国投湄洲湾码头</h1>
+<h1 style="font-size:17px">散货车辆过卡报表</h1>
 
 <div style=" width: 98%">
 
@@ -47,8 +48,8 @@
 
 <table id="printTable" width="98%" border="0" cellspacing="0" cellpadding="0" class="table01">
     <tr>
-        <td style="text-align:center;font-size:1.5em;" width="7%">序号</td>
-        <td style="text-align:center;font-size:1.5em;" width="7%">车号</td>
+        <td style="text-align:center;font-size:1.5em;" width="4%">序号</td>
+        <td style="text-align:center;font-size:1.5em;" width="10%">车号</td>
         <td style="text-align:center;font-size:1.5em;" width="7%">毛重</td>
         <td style="text-align:center;font-size:1.5em;" width="7%">皮重</td>
         <td style="text-align:center;font-size:1.5em;" width="7%">净重</td>
@@ -128,7 +129,7 @@
 
         $.post("${base}/business/monitor/carTransRecordList", paramO, function(rsp) {
             var arr = rsp.rows;
-           
+
             var table1 = $('#printTable');
             for (var i=0; i<arr.length; i++) {
                 var row = $("<tr></tr>");
@@ -138,7 +139,7 @@
                     (arr[i].mzQty==null?"&nbsp;":arr[i].mzQty)+"</td><td style='text-align:center;font-size:1.5em;'>"+
                     (arr[i].pzQty==null?"&nbsp;":arr[i].pzQty)+"</td><td style='text-align:center;font-size:1.5em;'>"+
                     (arr[i].netQty==null?"&nbsp;":arr[i].netQty)+"</td><td style='text-align:center;font-size:1.5em;'>"+
-                    (arr[i].goodName==null?"&nbsp;":arr[i].customerName)+"</td><td style='text-align:center;font-size:1.5em;'>"+
+                    (arr[i].goodName==null?"&nbsp;":arr[i].goodName)+"</td><td style='text-align:center;font-size:1.5em;'>"+
                     (arr[i].recordDtm==null?"&nbsp;":arr[i].recordDtm)+"</td><td style='text-align:center;font-size:1.5em;'>"+
                     (arr[i].czDtm==null?"&nbsp;":arr[i].czDtm)+"</td><td style='text-align:center;font-size:1.5em;'>"+
                     (arr[i].customerName==null?"&nbsp;":arr[i].customerName)+"</td><td style='text-align:center;font-size:1.5em;'>"+
