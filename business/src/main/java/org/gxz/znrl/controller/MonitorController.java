@@ -2447,6 +2447,34 @@ public class MonitorController extends BaseAction {
         return gridModel;
     }
 
+    //查询汽车来煤信息
+    @RequestMapping(value = "/carTransRecordListRpt")
+    @ResponseBody
+    public GridModel carTransRecordListRpt() {
+        //需要分页的实体bean都用父类定义，方便设置page相关参数 xieyt
+        BaseEntity carTransRecordEntity = SearchForm(CarTransRecordEntity.class);
+
+      //设置分页信息并计算记录开始和结束值
+        carTransRecordEntity.setPageRowIndex(1, 10000);
+
+        //用于前台页面列排序功能
+        if (null != getOrder()) {
+            carTransRecordEntity.setOrder(getOrder());
+            carTransRecordEntity.setSort(getSort());
+        }
+        //查询分页
+        GridModel gridModel = null;
+        try {
+            gridModel = monitorService.qryCarTransRecordList((CarTransRecordEntity) carTransRecordEntity);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return gridModel;
+    }
+
+
+
 
     //查询汽车来煤信息
     @RequestMapping(value = "/TransmstRegistList")
