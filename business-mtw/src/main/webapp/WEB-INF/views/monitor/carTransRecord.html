@@ -57,10 +57,12 @@
                 </@shiro.hasPermission>
 
                 <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-excel"  onclick="qryEXL()">导出</a>
-                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-print" onclick="printRec();">补打</a>
-               <!--<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="deleteRec();">删除</a>-->
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-print" onclick="printRec();">补打小票</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-print"  onclick="printWeightRpt()">打印过卡单</a>
+            <!--<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="deleteRec();">删除</a>-->
 
 <input type="hidden" id="doActionTag"/>
+            <input type="hidden" id="hiddenRecordNo"/>
 </td>
 </tr>
 </table>
@@ -69,7 +71,7 @@
 <div  style="width: 100%">
     <table id="carTransRecordDg" ></table>
 </div>
-
+<div id="PrintWin"></div>
 <!--新增窗口-->
 <div id="addCarTransRecordWin" ></div>
 
@@ -361,5 +363,66 @@
 
     }
 
+    function printWeightRpt(){
+        var paramO = new Object();
+        var beginDate = $("#beginDate").datetimebox("getValue");
+        var endDate = $("#endDate").datetimebox("getValue");
+        var carIdQry = $("#carIdQry").textbox("getValue");
+        var shipId = $("#shipId").combobox("getValue");
+        var tickNo = $("#tickNo").textbox("getValue");
+        var venNo= $("#venNo").combobox("getValue");
+        var customerNo= $("#customerNo").combobox("getValue");
+        var dateType= $("#dateType").combobox("getValue");
+        if(dateType==1)
+        {
+            if (beginDate != null && beginDate != "" && beginDate.length > 0) {
+                paramO.search_beginDate = beginDate;
+            }
+            if (endDate != null && endDate != "" && endDate.length > 0) {
+                paramO.search_endDate = endDate;
+            }
+        }
+       if(dateType==2)
+        {
+            if (beginDate != null && beginDate != "" && beginDate.length > 0) {
+                paramO.search_beginLeaveDate = beginDate;
+            }
+            if (endDate != null && endDate != "" && endDate.length > 0) {
+                paramO.search_endLeaveDate = endDate;
+            }
+        }
 
+        if (carIdQry != null && carIdQry != "" && carIdQry.length > 0) {
+            paramO.search_carId = '%'+carIdQry+'%';
+        }
+        if (shipId != null && shipId != "" && shipId.length > 0) {
+            paramO.search_shipId = shipId;
+        }
+        if (tickNo != null && tickNo != "" && tickNo.length > 0) {
+            paramO.search_tickNo = '%'+tickNo+'%';
+        }
+        if (venNo != null && venNo != "" && venNo.length > 0) {
+            paramO.search_venNo = venNo;
+        }
+        if (customerNo != null && customerNo != "" && customerNo.length > 0) {
+            paramO.search_customerNo = customerNo;
+        }
+       var qtr= JSON.stringify(paramO);
+       if(qtr.length <= 2)
+       {
+           showMsg("提示",  "请先选择打印的条件！");
+           return;
+       }
+
+        if (paramO) {
+            window.open('${base}/business/report/gotoPrintCarsWeightPagemt?beginTime=' + beginDate + '&endTime=' + endDate + '&carId=' + carIdQry+ '&shipId=' + shipId + '&venNo=' + venNo+ '&customerNo=' + customerNo+ '&dateType=' + dateType+'&tickNo=' + tickNo,
+                'newwindow',
+                'height=600,width=1000,top=0,left=0,toolbar=no,menubar=no,scrollbars=no, resizable=no,location=no, status=no');
+        } else {
+            showMsg("提示",  "请先选择要打印的批次！");
+            return;
+        }
+
+
+    }
 </script>

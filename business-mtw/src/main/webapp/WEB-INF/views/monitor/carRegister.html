@@ -84,11 +84,9 @@
         if (endDate != null && endDate != "" && endDate.length > 0) {
             paramO.search_endDate = endDate;
         }
-        // if (cardIdQry != null && cardIdQry != "" && cardIdQry.length > 0) {
-        //     paramO.search_cardId = cardIdQry;
-        // }
+
         if (carIdQry != null && carIdQry != "" && carIdQry.length > 0) {
-            paramO.search_carId = carIdQry;
+            paramO.search_carId = '%'+carIdQry+'%';
         }
         if (validStaQry != null && validStaQry != "" && validStaQry.length > 0) {
             paramO.search_validSta = validStaQry;
