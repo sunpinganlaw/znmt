@@ -156,6 +156,9 @@
             pagenumber:true,
             pageSize:100,
             pageList: [100, 200, 300],
+            remoteSort: false, //必填
+            sortName:'czDtm', //选填，排序字段。不填写的话，在最开始加载表格的时候，“商品ID”后面不会出现向下的箭头
+            sortOrder:'asc',//选填，不填的话，按照后端传回的数据是排列（本例为desc)，填写后则按在前端设置的正序asc排列,
             queryParams: {//默认进来查不到数据
                 search_cardTyp: '0'
             },
