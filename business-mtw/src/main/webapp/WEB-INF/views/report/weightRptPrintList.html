@@ -126,7 +126,8 @@
             paramO.search_customerNo = customerNo;
         }
 
-
+        paramO.search_order = 'asc';
+        paramO.search_sort = 'czDtm';
         $.post("${base}/business/monitor/carTransRecordListRpt", paramO, function(rsp) {
             var arr = rsp.rows;
 
@@ -135,14 +136,14 @@
                 var row = $("<tr></tr>");
                 var td = $("<td style='text-align:center;font-size:1.5em;'>"+
                     (i+1)+"</td><td style='text-align:center;font-size:1.5em;'>"+
-                    (arr[i].carId==null?"&nbsp;":arr[i].carId)+"</td><td style='text-align:center;font-size:1.5em;'>"+
-                    (arr[i].mzQty==null?"&nbsp;":arr[i].mzQty)+"</td><td style='text-align:center;font-size:1.5em;'>"+
-                    (arr[i].pzQty==null?"&nbsp;":arr[i].pzQty)+"</td><td style='text-align:center;font-size:1.5em;'>"+
-                    (arr[i].netQty==null?"&nbsp;":arr[i].netQty)+"</td><td style='text-align:center;font-size:1.5em;'>"+
-                    (arr[i].goodName==null?"&nbsp;":arr[i].goodName)+"</td><td style='text-align:center;font-size:1.5em;'>"+
-                    (arr[i].recordDtm==null?"&nbsp;":arr[i].recordDtm)+"</td><td style='text-align:center;font-size:1.5em;'>"+
-                    (arr[i].czDtm==null?"&nbsp;":arr[i].czDtm)+"</td><td style='text-align:center;font-size:1.5em;'>"+
-                    (arr[i].customerName==null?"&nbsp;":arr[i].customerName)+"</td><td style='text-align:center;font-size:1.5em;'>"+
+                    (arr[i].carId==null?"&nbsp;":arr[i].carId)+"</td><td style='text-align:center;font-size:1.3em;'>"+
+                    (arr[i].mzQty==null?"&nbsp;":arr[i].mzQty)+"</td><td style='text-align:center;font-size:1.3em;'>"+
+                    (arr[i].pzQty==null?"&nbsp;":arr[i].pzQty)+"</td><td style='text-align:center;font-size:1.3em;'>"+
+                    (arr[i].netQty==null?"&nbsp;":arr[i].netQty)+"</td><td style='text-align:center;font-size:1.3em;'>"+
+                    (arr[i].goodName==null?"&nbsp;":arr[i].goodName)+"</td><td style='text-align:center;font-size:1.3em;'>"+
+                    (arr[i].recordDtm==null?"&nbsp;":arr[i].recordDtm)+"</td><td style='text-align:center;font-size:1.3em;'>"+
+                    (arr[i].czDtm==null?"&nbsp;":arr[i].czDtm)+"</td><td style='text-align:center;font-size:1.3em;'>"+
+                    (arr[i].customerName==null?"&nbsp;":arr[i].customerName)+"</td><td style='text-align:center;font-size:1.3em;'>"+
                     (arr[i].venName==null?"&nbsp;":arr[i].venName)+"</td>");
                 row.append(td);
                 table1.append(row);
