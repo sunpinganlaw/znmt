@@ -154,9 +154,10 @@
                 totalNet = totalNet + parseFloat(arr[i].netQty==null?"0":arr[i].netQty);
 
             }
-
+           var totalNetStr= totalNet+"";
             document.getElementById("totalCarCnt").innerText='总车数：'+arr.length;
-            document.getElementById("totalNet").innerText='总吨数：'+totalNet;
+            document.getElementById("totalNet").innerText='总吨数：'+   totalNetStr.substring(0,totalNetStr.indexOf(".") + 3);
+
 
             document.getElementById("beginDate").innerText='统计时间：'+beginDate;
             document.getElementById("to").innerText='到'
