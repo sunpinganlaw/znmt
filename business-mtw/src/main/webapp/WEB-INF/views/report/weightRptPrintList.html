@@ -156,7 +156,17 @@
             }
            var totalNetStr= totalNet+"";
             document.getElementById("totalCarCnt").innerText='总车数：'+arr.length;
-            document.getElementById("totalNet").innerText='总吨数：'+   totalNetStr.substring(0,totalNetStr.indexOf(".") + 3);
+            if(totalNetStr.indexOf(".")>0)
+            {
+                document.getElementById("totalNet").innerText='总吨数：'+   totalNetStr.substring(0,totalNetStr.indexOf(".") + 3);
+            }else
+            {
+                document.getElementById("totalNet").innerText='总吨数：'+   totalNet;
+            }
+
+
+
+
 
 
             document.getElementById("beginDate").innerText='统计时间：'+beginDate;
