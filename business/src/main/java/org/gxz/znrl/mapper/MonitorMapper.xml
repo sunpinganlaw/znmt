@@ -2174,13 +2174,13 @@
         </if>
 
         <if test="endDate != null" >
-            and a.record_dtm <![CDATA[     <     ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'YYYY-MM-DD hh24:mi:ss')+1-0.00001
+            and a.record_dtm <![CDATA[     <     ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'YYYY-MM-DD hh24:mi:ss')
         </if>
         <if test="beginLeaveDate != null" >
             and a.LEAVE_DTM <![CDATA[     >=     ]]> to_date(#{beginLeaveDate,jdbcType=VARCHAR}, 'YYYY-MM-DD hh24:mi:ss')
         </if>
         <if test="endLeaveDate != null" >
-            and a.LEAVE_DTM <![CDATA[     <=     ]]> to_date(#{endLeaveDate,jdbcType=VARCHAR}, 'YYYY-MM-DD hh24:mi:ss')+1-0.00001
+            and a.LEAVE_DTM <![CDATA[     <    ]]> to_date(#{endLeaveDate,jdbcType=VARCHAR}, 'YYYY-MM-DD hh24:mi:ss')
         </if>
 
         <if test="batchNo != null" >
@@ -2210,7 +2210,12 @@
         <if test="contactIdFront != null" >
             AND ((a.CONTA_ID_F like #{contactIdFront,jdbcType=VARCHAR})OR (a.CONTA_ID_B like #{contactIdFront,jdbcType=VARCHAR}))
         </if>
-
+        <if test="leaveFlag != null" >
+            and a.LEAVE_FLG = #{leaveFlag,jdbcType=VARCHAR}
+        </if>
+        <if test="cfmFlag != null" >
+            and a.CFM_FLG = #{cfmFlag,jdbcType=VARCHAR}
+        </if>
 
         <if test='order != null and sort == "batchNo"' >
             order by  car_batch_no  ${order}
@@ -2404,13 +2409,13 @@
         </if>
 
         <if test="endDate != null" >
-            and a.record_dtm <![CDATA[     <     ]]> to_date(#{endDate,jdbcType=VARCHAR},'YYYY-MM-DD hh24:mi:ss')+1-0.00001
+            and a.record_dtm <![CDATA[     <     ]]> to_date(#{endDate,jdbcType=VARCHAR},'YYYY-MM-DD hh24:mi:ss')
         </if>
         <if test="beginLeaveDate != null" >
             and a.LEAVE_DTM <![CDATA[     >=     ]]> to_date(#{beginLeaveDate,jdbcType=VARCHAR}, 'YYYY-MM-DD hh24:mi:ss')
         </if>
         <if test="endLeaveDate != null" >
-            and a.LEAVE_DTM <![CDATA[    <=    ]]> to_date(#{endLeaveDate,jdbcType=VARCHAR}, 'YYYY-MM-DD hh24:mi:ss')+1-0.00001
+            and a.LEAVE_DTM <![CDATA[    <   ]]> to_date(#{endLeaveDate,jdbcType=VARCHAR}, 'YYYY-MM-DD hh24:mi:ss')
         </if>
 
         <if test="venNo != null" >
@@ -2422,7 +2427,7 @@
         </if>
 
         <if test="tickNo != null" >
-            and a.tick_no = #{tickNo,jdbcType=VARCHAR}
+            and a.tick_no like #{tickNo,jdbcType=VARCHAR}
         </if>
         <if test="shipId != null" >
             and a.ship_id = #{shipId,jdbcType=VARCHAR}
@@ -2437,6 +2442,13 @@
         <if test="contactIdFront != null" >
             AND ((a.CONTA_ID_F like #{contactIdFront,jdbcType=VARCHAR})OR (a.CONTA_ID_B like #{contactIdFront,jdbcType=VARCHAR}))
         </if>
+        <if test="leaveFlag != null" >
+            and a.LEAVE_FLG = #{leaveFlag,jdbcType=VARCHAR}
+        </if>
+        <if test="cfmFlag != null" >
+            and a.CFM_FLG = #{cfmFlag,jdbcType=VARCHAR}
+        </if>
+
 
     </select>
 
