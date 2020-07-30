@@ -188,6 +188,11 @@
 
                 ]
             ],
+            rowStyler: function(index,row){
+                if (row.leaveFlag == "禁行") {
+                    return 'background-color:#FF3030;';//超重红色
+                }
+            },
             toolbar: '#tb',
             onLoadSuccess:function(data){
             }

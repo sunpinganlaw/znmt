@@ -170,17 +170,24 @@ $(function () {
                 // {field: 'batchNo', title: '批次号', sortable:true,align:'center', width:20},
                 {field: 'tickNo', title: '提货单号',align:'center', width:20},
                 {field: 'carId', title: '车牌号', sortable:true,align:'center', width: 25},
-                {field: 'carrierName', title: '承运单位',align:'center', width:40},
+                {field: 'carrierName', title: '承运单位',align:'center', width:30},
                 {field: 'mzQty', title: '毛重(t)', sortable:true,align:'center', width:20},
-                {field: 'czDtm', title: '毛重时间', sortable:true,align:'center', width:40},
+                {field: 'czDtm', title: '毛重时间', sortable:true,align:'center', width:30},
                 {field: 'czBalanceNo', title: '称重通道', sortable:true,align:'center', width:20},
+                {field: 'leaveFlag', title: '出场确认',align:'center', width:20},
                 {field: 'pzQty', title: '皮重(t)', sortable:true,align:'center', width:20},
-                {field: 'jqDtm', title: '皮重时间', sortable:true,align:'center', width:40},
+                {field: 'jqDtm', title: '皮重时间', sortable:true,align:'center', width:30},
                 {field: 'jqBalanceNo', title: '称轻通道', sortable:true,align:'center', width:20},
+                {field: 'cfmFlag', title: '进场确认',align:'center', width:20},
                 {field: 'netQty', title: '净重(t)', sortable:true,align:'center', width:20}
 
             ]
         ],
+        rowStyler: function(index,row){
+            if (row.leaveFlag == "禁行") {
+                return 'background-color:#FF3030;';//超重红色
+            }
+        },
         onLoadSuccess:function(data){
         }
     })
