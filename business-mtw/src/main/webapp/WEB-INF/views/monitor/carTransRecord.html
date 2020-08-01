@@ -327,7 +327,8 @@
         var dateType= $("#dateType").combobox("getValue");
         // var doorNo = $("#doorNo").combobox("getValue");
         // var contactIdFront = $("#contactIdFront").textbox("getValue");
-
+        var leaveFlag= 'Y';
+        var cfmFlag= 'Y';
         if(dateType==1)
         {
             var cardTyp= '0';
@@ -337,7 +338,9 @@
                 shipId:shipId,
                 tickNo:tickNo,
                 customerNo:customerNo,
-                venNo:venNo
+                venNo:venNo,
+                leaveFlag:leaveFlag,
+                cfmFlag:cfmFlag
                 // cardTyp:cardTyp
                 // contactIdFront:contactIdFront,
                 // inDoorNo:doorNo,
@@ -358,7 +361,9 @@
                 shipId:shipId,
                 tickNo:tickNo,
                 customerNo:customerNo,
-                venNo:venNo
+                venNo:venNo,
+                leaveFlag:leaveFlag,
+                cfmFlag:cfmFlag
                 // cardTyp:cardTyp
                 // contactIdFront:contactIdFront,
                 // inDoorNo:doorNo,
