@@ -78,7 +78,7 @@
         var totalCarCnt = 0;
         var totalMz = 0;
         var totalPz = 0;
-        var totalNet = 0;
+        var totalNet = 0.00;
         var badCars=0;
 
         var paramO =  new Object();
@@ -151,10 +151,7 @@
                 row.append(td);
                 table1.append(row);
 
-                // totalCarCnt=arr.length;
-                // totalMz = totalMz + parseFloat(arr[i].mzQty==null?"0":arr[i].mzQty);
-                // totalPz = totalNet + parseFloat(arr[i].pzQty==null?"0":arr[i].pzQty);
-                totalNet = totalNet + parseFloat(arr[i].netQty==null?"0":arr[i].netQty);
+                totalNet = totalNet + (parseFloat(arr[i].netQty==null?"0":arr[i].netQty));
                 var tmp= parseFloat(arr[i].netQty==null?"0":arr[i].netQty);
                 if(tmp<5)
                 {
@@ -162,15 +159,17 @@
                 }
 
             }
-           var totalNetStr= totalNet+"";
+
+           var totalNetStr= totalNet.toFixed(2);
             document.getElementById("totalCarCnt").innerText='总车数：'+(arr.length-badCars);
-            if(totalNetStr.indexOf(".")>0)
-            {
-                document.getElementById("totalNet").innerText='总吨数：'+   totalNetStr.substring(0,totalNetStr.indexOf(".") + 3);
-            }else
-            {
-                document.getElementById("totalNet").innerText='总吨数：'+   totalNet;
-            }
+            document.getElementById("totalNet").innerText='总吨数：'+  totalNetStr;
+            // if(totalNetStr.indexOf(".")>0)
+            // {
+            //     document.getElementById("totalNet").innerText='总吨数：'+  totalNet;
+            // }else
+            // {
+            //     document.getElementById("totalNet").innerText='总吨数：'+   totalNet;
+            // }
 
             document.getElementById("beginDate").innerText='统计时间：'+beginDate;
             document.getElementById("to").innerText='到'
