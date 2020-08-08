@@ -6,20 +6,25 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="business-mtw" />
+        <module name="business-mty" />
         <module name="znrl-admin" />
         <module name="znrl-bb" />
         <module name="znrl-business" />
         <module name="znrl-core" />
-        <module name="znrl-mtw" />
+        <module name="znrlmty" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="trunk" target="1.5" />
-      <module name="znrl-admin" target="1.5" />
-      <module name="znrl-bb" target="1.5" />
-      <module name="znrl-business" target="1.5" />
-      <module name="znrl-core" target="1.5" />
-      <module name="znrl-mtw" target="1.5" />
+      <module name="business-mtw" target="1.7" />
+      <module name="business-mty" target="1.7" />
+      <module name="business_mty" target="1.7" />
+      <module name="znrl-admin" target="1.7" />
+      <module name="znrl-bb" target="1.7" />
+      <module name="znrl-business" target="1.7" />
+      <module name="znrl-core" target="1.7" />
+      <module name="znrl-main" target="1.5" />
+      <module name="znrlmty" target="1.7" />
     </bytecodeTargetLevel>
   </component>
 </project>

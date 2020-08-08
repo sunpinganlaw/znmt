@@ -2,12 +2,15 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/trunk.iml" filepath="$PROJECT_DIR$/.idea/trunk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/business-mtw/business-mtw.iml" filepath="$PROJECT_DIR$/business-mtw/business-mtw.iml" />
+      <module fileurl="file://$PROJECT_DIR$/business-mty/business-mty.iml" filepath="$PROJECT_DIR$/business-mty/business-mty.iml" />
+      <module fileurl="file://$PROJECT_DIR$/znmt_mzh.iml" filepath="$PROJECT_DIR$/znmt_mzh.iml" />
       <module fileurl="file://$PROJECT_DIR$/admin/znrl-admin.iml" filepath="$PROJECT_DIR$/admin/znrl-admin.iml" />
       <module fileurl="file://$PROJECT_DIR$/business-bb/znrl-bb.iml" filepath="$PROJECT_DIR$/business-bb/znrl-bb.iml" />
       <module fileurl="file://$PROJECT_DIR$/business/znrl-business.iml" filepath="$PROJECT_DIR$/business/znrl-business.iml" />
       <module fileurl="file://$PROJECT_DIR$/core/znrl-core.iml" filepath="$PROJECT_DIR$/core/znrl-core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/business-mtw/znrl-mtw.iml" filepath="$PROJECT_DIR$/business-mtw/znrl-mtw.iml" />
+      <module fileurl="file://$PROJECT_DIR$/znrl-main.iml" filepath="$PROJECT_DIR$/znrl-main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/business-mty/znrlmty.iml" filepath="$PROJECT_DIR$/business-mty/znrlmty.iml" />
     </modules>
   </component>
 </project>
