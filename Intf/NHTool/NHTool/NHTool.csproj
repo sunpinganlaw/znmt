@@ -1,0 +1,353 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7736A6BE-5945-4BB4-8DE2-9EBF13555157}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NHTool</RootNamespace>
+    <AssemblyName>NHTool</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>false</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DotNetSpeech">
+      <HintPath>..\DotNetSpeech.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="EasyModbus, Version=4.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Release\EasyModbus.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\..\2017\OPCTool-old\csharpPrj\OPCTool\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI, Version=2.4.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.4.1\lib\net40\NPOI.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OOXML, Version=2.4.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.4.1\lib\net40\NPOI.OOXML.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXml4Net, Version=2.4.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.4.1\lib\net40\NPOI.OpenXml4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXmlFormats, Version=2.4.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.4.1\lib\net40\NPOI.OpenXmlFormats.dll</HintPath>
+    </Reference>
+    <Reference Include="OpcNetApiChs">
+      <HintPath>..\OpcNetApiChs.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.OracleClient" />
+    <Reference Include="System.Data.SQLite">
+      <HintPath>..\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.RFID.Net, Version=5.5.2.9, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\System.RFID.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Business\BusinessBase.cs" />
+    <Compile Include="Business\CAR_CY\CarSampleBusiness.cs" />
+    <Compile Include="Business\CAR_CY\CarSampleKC.cs" />
+    <Compile Include="Business\CAR_CY\CarSampleKLMY.cs" />
+    <Compile Include="Business\CAR_CZ\CarCzBusiness.cs" />
+    <Compile Include="Business\CAR_CZ\CAR_MZ\CarMzKC.cs" />
+    <Compile Include="Business\CAR_CZ\CAR_MZ\CarMzKLMY.cs" />
+    <Compile Include="Business\CAR_CZ\CAR_MZ\CarMzSXLY.cs" />
+    <Compile Include="Business\CAR_CZ\CAR_PZ\CarPzKC.cs" />
+    <Compile Include="Business\CAR_CZ\CAR_PZ\CarPzKLMY.cs" />
+    <Compile Include="Business\CAR_IN\CarInBusiness.cs" />
+    <Compile Include="Business\CAR_IN\CarInKLMY.cs" />
+    <Compile Include="Business\CAR_OUT\CarOut.cs" />
+    <Compile Include="Business\CAR_XM\BIG_SCREEN_ZJ.cs" />
+    <Compile Include="Business\CAR_XM\CarXMZJ.cs" />
+    <Compile Include="Common\AccessDataBaseTool.cs" />
+    <Compile Include="Common\Class1.cs" />
+    <Compile Include="Common\CoalCardInfo.cs" />
+    <Compile Include="Common\Commons.cs" />
+    <Compile Include="Common\HttpDbTool.cs" />
+    <Compile Include="Common\StateEventArgs.cs" />
+    <Compile Include="Common\TcpClientTool.cs" />
+    <Compile Include="delegateDeclare\DelegateDeclare.cs" />
+    <Compile Include="Device\BY17NCReader\RfidReadrHF.cs" />
+    <Compile Include="Device\BY17NCReader\SimpleRfidReadrHF.cs" />
+    <Compile Include="Device\Camera\Camera.cs" />
+    <Compile Include="Device\Camera\CHCNetSDK.cs" />
+    <Compile Include="Device\Device.cs" />
+    <Compile Include="Device\GDZS\DataHanderTool.cs" />
+    <Compile Include="Device\GDZS\ISocketUdpServer.cs" />
+    <Compile Include="Device\GDZS\UdpHeader.cs" />
+    <Compile Include="Device\GDZS\UdpPointInfo.cs" />
+    <Compile Include="Device\GDZS\UdpServer.cs" />
+    <Compile Include="Device\LED\LED_Control.cs" />
+    <Compile Include="Device\LED\LED_Driver.cs" />
+    <Compile Include="Device\LED\Mc3000Led.cs" />
+    <Compile Include="Device\LED\Onbon_LED.cs" />
+    <Compile Include="Device\LED\SxlyBigLED.cs" />
+    <Compile Include="Device\LIMS\Bussiness\mainBussiness.cs" />
+    <Compile Include="Device\LIMS\DB\SQLiteHelper.cs" />
+    <Compile Include="Device\LIMS\EnergyMeter\energyMeter.cs" />
+    <Compile Include="Device\LIMS\FPGA\fpga.cs" />
+    <Compile Include="Device\LIMS\Laser\avaspec.cs" />
+    <Compile Include="Device\LIMS\Laser\laser.cs" />
+    <Compile Include="Device\Modbus\Modbus.cs" />
+    <Compile Include="Device\NFC\NFC_COM_Driver.cs" />
+    <Compile Include="Device\NFC\NFC_USB_Driver.cs" />
+    <Compile Include="Device\OPC\Point.cs" />
+    <Compile Include="Device\Radio\INBSVoiceDevice.cs" />
+    <Compile Include="Device\Radio\SpVoiceDevice.cs" />
+    <Compile Include="Device\RailScan\RailScanDevice.cs" />
+    <Compile Include="Device\RFID\CommondMethod.cs" />
+    <Compile Include="Device\RFID\InventoryBuffer.cs" />
+    <Compile Include="Device\RFID\ITalker.cs" />
+    <Compile Include="Device\RFID\MessageTran.cs" />
+    <Compile Include="Device\RFID\OperateTagBuffer.cs" />
+    <Compile Include="Device\RFID\OperateTagISO18000Buffer.cs" />
+    <Compile Include="Device\RFID\ReaderMethod.cs" />
+    <Compile Include="Device\RFID\ReaderSetting.cs" />
+    <Compile Include="Device\RFID\ReadRfidDevice.cs" />
+    <Compile Include="Device\RFID\Talker.cs" />
+    <Compile Include="Device\SXLYRfid\SxlyRfidDevice.cs" />
+    <Compile Include="Forms\carInForm\carInForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\carInForm\carInForm.Designer.cs">
+      <DependentUpon>carInForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\dataSendForm\dataSendForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\dataSendForm\dataSendForm.Designer.cs">
+      <DependentUpon>dataSendForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\gdzsForm\dcsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\gdzsForm\dcsForm.Designer.cs">
+      <DependentUpon>dcsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\opcForm\OpcForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\opcForm\OpcForm.Designer.cs">
+      <DependentUpon>OpcForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Common\ConfigFileTool.cs" />
+    <Compile Include="Common\DataBaseTool.cs" />
+    <Compile Include="Common\HttpTool.cs" />
+    <Compile Include="Common\Json.cs" />
+    <Compile Include="Forms\pdcForm\pdcForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\pdcForm\pdcForm.Designer.cs" />
+    <Compile Include="Forms\QuitSysForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\QuitSysForm.Designer.cs">
+      <DependentUpon>QuitSysForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\scadaForm\scadaForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\scadaForm\scadaForm.Designer.cs">
+      <DependentUpon>scadaForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SelectMineMachine\SelectMineMachineForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SelectMineMachine\SelectMineMachineForm.Designer.cs">
+      <DependentUpon>SelectMineMachineForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SelectMineMachine\SoftKeyBroad.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SelectMineMachine\SoftKeyBroad.Designer.cs">
+      <DependentUpon>SoftKeyBroad.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\userForm\dcsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\userForm\dcsForm.Designer.cs">
+      <DependentUpon>dcsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="test\TestOpc.cs" />
+    <Compile Include="Common\LogTool.cs" />
+    <Compile Include="Device\OPC\OPCTool.cs" />
+    <Compile Include="Forms\NHToolForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NHToolForm.Designer.cs">
+      <DependentUpon>NHToolForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Device\SeriPort\SerialPortTool.cs" />
+    <EmbeddedResource Include="Forms\carInForm\carInForm.resx">
+      <DependentUpon>carInForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\dataSendForm\dataSendForm.resx">
+      <DependentUpon>dataSendForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\gdzsForm\dcsForm.resx">
+      <DependentUpon>dcsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\opcForm\OpcForm.resx">
+      <DependentUpon>OpcForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NHToolForm.resx">
+      <DependentUpon>NHToolForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\QuitSysForm.resx">
+      <DependentUpon>QuitSysForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\scadaForm\scadaForm.resx">
+      <DependentUpon>scadaForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SelectMineMachine\SelectMineMachineForm.resx">
+      <DependentUpon>SelectMineMachineForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SelectMineMachine\SoftKeyBroad.resx">
+      <DependentUpon>SoftKeyBroad.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\userForm\dcsForm.resx">
+      <DependentUpon>dcsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Properties\app.manifest" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Device\RFID\Reader.csproj" />
+    <Content Include="Device\RFID\Reader.csproj.user" />
+    <Content Include="Resources\DOWN.bmp" />
+    <Content Include="Resources\GateDisable.bmp" />
+    <Content Include="Resources\GL.bmp" />
+    <Content Include="Resources\green.bmp" />
+    <Content Include="Resources\red.bmp" />
+    <Content Include="Resources\REE.bmp" />
+    <Content Include="Resources\RL.bmp" />
+    <Content Include="Resources\UP.bmp" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
