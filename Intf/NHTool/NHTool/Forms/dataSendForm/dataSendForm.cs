@@ -176,6 +176,7 @@ namespace NHTool.form.dataSendForm
                                     
 
                                 }
+                                showUI("本次发送文件结束;"+ fileName);
 
                             }
 
@@ -207,12 +208,13 @@ namespace NHTool.form.dataSendForm
         // copy all file(*.png) in folder src to dest
         private  void moveFiles(string srcFolder, string destFolder)
         {
+            showUI("准备备份文件");
             DirectoryInfo directoryInfo = new DirectoryInfo(srcFolder);
             FileInfo[] files = directoryInfo.GetFiles();
 
             foreach (FileInfo file in files) // Directory.GetFiles(srcFolder)
             {
-                if (file.Extension == ".txt")
+                if (file.Extension.ToUpper() == ".TXT")
                 {
                     string Directory = destFolder + "\\"+ "bak" + System.DateTime.Now.ToString("yyyyMMddHHmm");
                     System.IO.Directory.CreateDirectory(Directory);
