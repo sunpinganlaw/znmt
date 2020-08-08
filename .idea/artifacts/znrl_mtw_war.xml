@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="znrl-mtw:war">
+    <output-path>$PROJECT_DIR$/business-mtw/target</output-path>
+    <root id="archive" name="znrlmtw.war">
+      <element id="artifact" artifact-name="znrl-mtw:war exploded" />
+    </root>
+  </artifact>
+</component>

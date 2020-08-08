@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="znrl-bb:war">
+    <output-path>$PROJECT_DIR$/business-bb/target</output-path>
+    <root id="archive" name="znrlbb.war">
+      <element id="artifact" artifact-name="znrl-bb:war exploded" />
+    </root>
+  </artifact>
+</component>

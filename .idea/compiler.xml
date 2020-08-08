@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="znrl-admin" />
+        <module name="znrl-bb" />
+        <module name="znrl-business" />
+        <module name="znrl-core" />
+        <module name="znrl-mtw" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="trunk" target="1.5" />
+      <module name="znrl-admin" target="1.5" />
+      <module name="znrl-bb" target="1.5" />
+      <module name="znrl-business" target="1.5" />
+      <module name="znrl-core" target="1.5" />
+      <module name="znrl-mtw" target="1.5" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

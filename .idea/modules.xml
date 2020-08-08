@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/trunk.iml" filepath="$PROJECT_DIR$/.idea/trunk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/admin/znrl-admin.iml" filepath="$PROJECT_DIR$/admin/znrl-admin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/business-bb/znrl-bb.iml" filepath="$PROJECT_DIR$/business-bb/znrl-bb.iml" />
+      <module fileurl="file://$PROJECT_DIR$/business/znrl-business.iml" filepath="$PROJECT_DIR$/business/znrl-business.iml" />
+      <module fileurl="file://$PROJECT_DIR$/core/znrl-core.iml" filepath="$PROJECT_DIR$/core/znrl-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/business-mtw/znrl-mtw.iml" filepath="$PROJECT_DIR$/business-mtw/znrl-mtw.iml" />
+    </modules>
+  </component>
+</project>
