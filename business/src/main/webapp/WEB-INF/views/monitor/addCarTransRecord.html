@@ -2,38 +2,30 @@
         <form id="qryForm" method="post">
             <div>
                 <table>
-                    <tr>
-                        <td>卡号</td>
-                        <td><input class="easyui-textbox"  id="qryCardId"  style="width:140px;"/></td>
-                        <td>车牌号</td>
-                        <td><input class="easyui-textbox" style="width:90px;" id="qryCarId" /></td>
-                        <td id="buttonTD" colspan="2">
-                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="focusCar()">查找车辆</a>
-                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm();">保存</a></td>
-                    </tr>
+
                 </table>
             </div>
         </form>
 
         <form id="carTransRecordForm" method="post">
             <fieldset>
-                <legend style="text-align: left;border:none;">来煤信息</legend>
+                <legend style="text-align: left;border:none;">车辆过磅信息</legend>
                 <table>
-                    <tr>
-                        <td>卡类型</td>
-                        <td><select id="cardTyp" name="cardTyp" class="easyui-combobox" data-options="panelHeight:'auto'" readonly="readonly" style="width:145px;" >
-                            <option value="1">普通卡</option>
-                            <option value="2">临时卡</option>
-                        </select></td>
-                        <td>卡号</td>
-                        <td><input class="easyui-textbox"   id="cardId" name="cardId"  readonly="readonly" style="width:145px;"/></td>
-                    </tr>
+                    <!--<tr>-->
+                        <!--<td>卡类型</td>-->
+                        <!--<td><select id="cardTyp" name="cardTyp" class="easyui-combobox" data-options="panelHeight:'auto'" readonly="readonly" style="width:145px;" >-->
+                            <!--<option value="1">普通卡</option>-->
+                            <!--<option value="2">临时卡</option>-->
+                        <!--</select></td>-->
+                        <!--<td>卡号</td>-->
+                        <!--<td><input class="easyui-textbox"   id="cardId" name="cardId"  readonly="readonly" style="width:145px;"/></td>-->
+                    <!--</tr>-->
                     <tr>
                         <td>运输单位</td>
                         <td><input id="orgNo" name="orgNo" class="easyui-combobox" style="width:145px;" readonly="readonly"
                                    data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/CARRIER_INFO'" /></td>
                         <td>车牌号</td>
-                        <td><input class="easyui-textbox"   id="carId" name="carId" readonly="readonly"  style="width:145px;"/></td>
+                        <td><input class="easyui-textbox"   id="carId" name="carId" style="width:145px;"/></td>
                     </tr>
                 </table>
 
@@ -41,42 +33,34 @@
 
                 <table>
                     <tr>
-                        <td>煤矿</td>
-                        <td><input id="mineNo" name="mineNo" class="easyui-combobox" style="width:145px;"
-                                   data-options="valueField:'id',textField:'name',panelHeight:'300',url:'${base}/business/tool/getComboboxOpt/COAL_MINE'" /></td>
-                        <td>煤种</td>
-                        <td><input id="coalNo" name="coalNo" class="easyui-combobox" style="width:145px;"
-                                   data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/COAL_TYPE'" /></td>
+                        <td> 毛重(t)</td>
+                        <td><input id="mzQty" name="mzQty"class="easyui-numberbox"  data-options="required:true,min:0, precision:3"/></td>
+                        <td>皮重(t)</td>
+                        <td><input id="pzQty" name="pzQty" class="easyui-numberbox" data-options="required:true,min:0, precision:3" /></td>
+                    </tr>
+
+                    <tr>
+                        <td>毛重时间</td>
+                        <td><input class="easyui-datetimebox" id="czDtm" name="czDtm" style="width:145px"></td>
+                        <td>皮重时间</td>
+                        <td><input class="easyui-datetimebox"  id="jqDtm" name="jqDtm" style="width:145px"></td>
+                    </tr>
+
+                    <tr>
+                        <td>称重通道号</td>
+                        <td><input class="easyui-textbox"   id="czBalanceNo" name="czBalanceNo"  style="width:145px;"/></td>
+                        <td>称轻通道号</td>
+                        <td><input class="easyui-textbox"   name="jqBalanceNo" id="jqBalanceNo" style="width:145px;"/></td>
                     </tr>
                     <tr>
-                        <td>供应商</td>
-                        <td><input id="venNo" name="venNo" class="easyui-combobox" style="width:145px;"
-                                   data-options="required:true,valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/VENDOR_INFO'" /></td>
-                        <td>采样方式</td>
-                        <td><select id="sampleTyp" name="sampleTyp" class="easyui-combobox" data-options="required:true,panelHeight:'auto'"  style="width:145px;" >
-                            <option value="0">皮带采样</option>
-                            <option value="1">皮带大水分旁路</option>
-                            <option value="2">人工采样</option>
-                            <option value="3" selected>车厢采样</option>
-                            <option value="4">车厢大水分旁路</option>
-                        </select></td>
-                    </tr>
-                    <tr>
-                        <td>湿度</td>
-                        <td><select id="coalWater" name="coalWater" class="easyui-combobox" data-options="required:true,panelHeight:'auto'"  style="width:145px;" >
-                            <option value="1">湿煤</option>
-                            <option value="2">一般湿煤</option>
-                            <option value="3">干煤</option>
-                            <option value="4">一般干煤</option>
-                        </select></td>
-                        <td>票重</td>
-                        <td><input class="easyui-numberbox" data-options="required:true,min:0, precision:3"  name="tickQty" id="tickQty" style="width:145px;"/></td>
-                    </tr>
-                    <tr>
-                        <td>票单号</td>
-                        <td><input class="easyui-textbox"   id="tickNo" name="tickNo" data-options="required:true" style="width:145px;"/></td>
                         <td>备注<input type="hidden" id="recordNo" name="recordNo"/></td>
-                        <td><input class="easyui-textbox"   id="remark" name="remark" style="width:145px;"/></td>
+                        <td colspan="3"><input class="easyui-textbox"   id="remark" name="remark" style="width:362px;"/></td>
+                    </tr>
+
+                    <tr>
+
+                        <td  style="text-align: center"  id="buttonTD" colspan="3">
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm();"> 保存</a></td>
                     </tr>
                 </table>
             </fieldset>
@@ -92,82 +76,15 @@
         $("#carTransRecordForm").form('load',selectedRowObj);
     }
 
-    function focusCar(){
-        var obj = new Object();
-        var cardId = $("#qryCardId").textbox("getValue");
-        var carId = $("#qryCarId").textbox("getValue");
-
-        if (cardId == null || cardId == "" ) {
-            var recId = "-1";
-            $.ajax({
-                async: false,
-                cache: false,
-                type: 'POST',
-                url: "${base}/business/monitor/getCarCardId/"+recId,
-                error: function () {// 请求失败处理函数
-                    showMsg("提示", "获得卡号失败，请查看连接线是否正常连接！");
-                },
-                success: function (rsp) {
-                    if(rsp.successful){
-                        $("#qryCardId").textbox('setValue',rsp.msg);
-                        cardId = rsp.msg;
-                    } else {
-                        showMsg("提示", rsp.msg);
-                    }
-                }
-            });
-        }
-        if ((cardId == null || cardId == "" || cardId.length == 0) && (carId == null || carId == "" || carId.length == 0)) {
-            showMsg("提示", "请至少输入一个查询条件!");
-            return false;
-        }
-        if (cardId != null && cardId != "" && cardId.length > 0) {
-            obj.search_cardId = cardId;
-        }
-
-        if (carId != null && carId != "" && carId.length > 0) {
-            obj.search_carId = carId;
-        }
-        $.post("${base}/business/monitor/focusCar", obj, function (rsp) {
-            if (rsp) {
-                $("#cardTyp").combobox('setValue',rsp.cardTyp);
-                $("#cardId").textbox('setValue',rsp.cardId);
-                $("#orgNo").combobox('setValue',rsp.orgNo);
-                $("#carId").textbox('setValue',rsp.carId);
-                $("#qryCardId").textbox('setValue',rsp.cardId);
-                $("#qryCarId").textbox('setValue',rsp.carId);
-            } else {
-                showMsg("提示", "查找车辆信息失败!");
-            }
-        }).error(function () {
-                    showMsg("提示", "查找车辆信息发生异常!");
-                });
-    }
 
 
     //提交表单
     function submitForm(){
+
         if (! $("#carTransRecordForm").form('validate')) {
             showMsg("提示", "有必填项未输入值!");
             return false;
         }
-
-        var selMineNo = $("#mineNo").combobox('getValue');
-        var selCoalNo = $("#coalNo").combobox('getValue');
-        var selVenNo = $("#venNo").combobox('getValue');
-/*        if (selMineNo == null || selMineNo == ""){
-            showMsg("提示","请选择煤矿");
-            return false;
-        }
-        if (selCoalNo == null || selCoalNo == ""){
-            showMsg("提示","请选择煤种");
-            return false;
-        }*/
-        if (selVenNo == null || selVenNo == ""){
-            showMsg("提示","请选择供应商");
-            return false;
-        }
-
 
         $.messager.confirm('提示', '确定保存?', function (r) {
             if (r) {
@@ -182,9 +99,9 @@
         var params = $("#carTransRecordForm").serialize();
         var postUrl = "";
         if (doActionTag == "ADD") {
-            postUrl = "${base}/business/monitor/carTransRec/add";
+            postUrl = "${base}/business/monitor/carTransRecNew/add";
         } else if(doActionTag == "MOD") {
-            postUrl = "${base}/business/monitor/carTransRec/mod";
+            postUrl = "${base}/business/monitor/carTransRecNew/mod";
         } else {
         }
 

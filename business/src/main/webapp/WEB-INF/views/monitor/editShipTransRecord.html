@@ -5,64 +5,69 @@
                         <td>船名(船号)</td>
                         <td><input id="shipId" name="shipId" class="easyui-combobox" style="width:145px;"
                                    data-options="required:true, valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/SHIP_INFO'" /></td>
-                        <td>运输单位</td>
-                        <td><input id="carrierNo" name="carrierNo" class="easyui-combobox" style="width:145px;"
-                                   data-options="valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/CARRIER_INFO'" /></td>
-                    </tr>
-                    <tr>
-                        <td>收货单位</td>
-                        <td><input id="receiverNo" name="receiverNo" style="width:145px;"/></td>
-                        <td>货票号</td>
-                        <td><input class="easyui-textbox"   id="waybillNo" name="waybillNo" style="width:145px;"/></td>
-                    </tr>
-                    <tr>
-                        <td>状态</td>
-                        <td><select id="status" name="status" class="easyui-combobox" data-options="required:true,panelHeight:'auto'"  style="width:145px;" >
-                            <option value="">&nbsp;</option>
-                            <option value="0">待装</option>
-                            <option value="1">在装</option>
-                            <option value="2">待出发</option>
-                            <option value="3">重载在途</option>
-                            <option selected value="4">到达待卸</option>
-                            <option value="5">在卸</option>
-                            <option value="6">卸空待回</option>
-                            <option value="7">离港</option>
-                        </select></td>
-                        <!--<td>水尺吨位</td>-->
-                        <!--<td><input class="easyui-numberbox" data-options="min:0, max:1000000, precision:2"  id="waterTun" name="waterTun" style="width:145px;"/></td>-->
-                        <td>锚地时间</td>
-                        <td><input class="easyui-datetimebox" data-options="required:true" id="norTime" name="norTime" style="width:145px"></td>
-                    </tr>
-                    <tr>
-                        <td>装港用时</td>
-                        <td><input class="easyui-numberbox" data-options="min:0, max:1000, precision:1"  id="loadHours" name="loadHours" style="width:145px;"/></td>
-                        <td>卸港用时</td>
-                        <td><input class="easyui-numberbox" data-options="min:0, max:1000, precision:1"  id="unloadHours" name="unloadHours" style="width:145px;"/></td>
-                    </tr>
-                    <tr>
-                        <td>始发港口</td>
-                        <td><input id="startPortNo" name="startPortNo" style="width:145px;"/></td>
-                        <td>到达港口</td>
-                        <td><input id="finalPortNo" name="finalPortNo" style="width:145px;"/></td>
-                    </tr>
-                    <tr>
-                        <td>发港时间</td>
-                        <td><input class="easyui-datetimebox" id="startTime" name="startTime" style="width:145px"></td>
-                        <td>预计到港时间</td>
-                        <td><input class="easyui-datetimebox"  id="estimateTime" name="estimateTime" style="width:145px"></td>
-                    </tr>
-                    <tr>
-                        <td>实际到港时间</td>
-                        <td><input class="easyui-datetimebox" data-options="required:true" id="factTime" name="factTime" style="width:145px"></td>
-                        <td>接卸时间</td>
-                        <td><input class="easyui-datetimebox" id="arrangeTime" name="arrangeTime" style="width:145px"></td>
+                        <td>航次</td>
+                        <td><input class="easyui-textbox"      data-options="required:true"  id="waybillNo" name="waybillNo" style="width:145px;"/></td>
                     </tr>
                     <!--<tr>-->
-                        <!--<td>卸港完成时间</td>-->
-                        <!--<td><input class="easyui-datetimebox"  id="unloadTime" name="unloadTime" style="width:145px"></td>-->
-                        <!--<td>离港时间</td>-->
-                        <!--<td><input class="easyui-datetimebox"  id="departTime" name="departTime" style="width:145px"></td>-->
+                        <!--<td>收货单位</td>-->
+                        <!--<td><input id="receiverNo" name="receiverNo" style="width:145px;"/></td>-->
+                        <!--<td>货票号</td>-->
+                        <!--<td><input class="easyui-textbox"   id="waybillNo" name="waybillNo" style="width:145px;"/></td>-->
                     <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td>状态</td>-->
+                        <!--<td><select id="status" name="status" class="easyui-combobox" data-options="required:true,panelHeight:'auto'"  style="width:145px;" >-->
+                            <!--<option value="">&nbsp;</option>-->
+                            <!--<option value="0">待装</option>-->
+                            <!--<option value="1">在装</option>-->
+                            <!--<option value="2">待出发</option>-->
+                            <!--<option value="3">重载在途</option>-->
+                            <!--<option selected value="4">到达待卸</option>-->
+                            <!--<option value="5">在卸</option>-->
+                            <!--<option value="6">卸空待回</option>-->
+                            <!--<option value="7">离港</option>-->
+                        <!--</select></td>-->
+                        <!--&lt;!&ndash;<td>水尺吨位</td>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<td><input class="easyui-numberbox" data-options="min:0, max:1000000, precision:2"  id="waterTun" name="waterTun" style="width:145px;"/></td>&ndash;&gt;-->
+                        <!--<td>船舶类型</td>-->
+                        <!--<td><select id="shipType" name="shipType" class="easyui-combobox" data-options="required:true,panelHeight:'auto'"  style="width:145px;" >-->
+                            <!--<option value="">&nbsp;</option>-->
+                            <!--<option value="0">散货船</option>-->
+                            <!--<option value="1">件散货船</option>-->
+                            <!--<option value="2">集装箱船</option>-->
+                            <!--<option value="3">游轮</option>-->
+                        <!--</select></td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td>装港用时</td>-->
+                        <!--<td><input class="easyui-numberbox" data-options="min:0, max:1000, precision:1"  id="loadHours" name="loadHours" style="width:145px;"/></td>-->
+                        <!--<td>卸港用时</td>-->
+                        <!--<td><input class="easyui-numberbox" data-options="min:0, max:1000, precision:1"  id="unloadHours" name="unloadHours" style="width:145px;"/></td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td>始发港口</td>-->
+                        <!--<td><input id="startPortNo" name="startPortNo" style="width:145px;"/></td>-->
+                        <!--<td>到达港口</td>-->
+                        <!--<td><input id="finalPortNo" name="finalPortNo" style="width:145px;"/></td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td>发港时间</td>-->
+                        <!--<td><input class="easyui-datetimebox" id="startTime" name="startTime" style="width:145px"></td>-->
+                        <!--<td>预计到港时间</td>-->
+                        <!--<td><input class="easyui-datetimebox"  id="estimateTime" name="estimateTime" style="width:145px"></td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td>实际到港时间</td>-->
+                        <!--<td><input class="easyui-datetimebox" data-options="required:true" id="factTime" name="factTime" style="width:145px"></td>-->
+                        <!--<td>接卸时间</td>-->
+                        <!--<td><input class="easyui-datetimebox" id="arrangeTime" name="arrangeTime" style="width:145px"></td>-->
+                    <!--</tr>-->
+                    <!--&lt;!&ndash;<tr>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<td>卸港完成时间</td>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<td><input class="easyui-datetimebox"  id="unloadTime" name="unloadTime" style="width:145px"></td>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<td>离港时间</td>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<td><input class="easyui-datetimebox"  id="departTime" name="departTime" style="width:145px"></td>&ndash;&gt;-->
+                    <!--&lt;!&ndash;</tr>&ndash;&gt;-->
                     <tr>
                         <td>泊位号</td>
                         <td><select id="berthNo" name="berthNo" class="easyui-combobox" data-options="panelHeight:'auto'"  style="width:145px;" >
@@ -71,8 +76,8 @@
                             <option value="3">3号</option>
                             <option value="4">4号</option>
                         </select></td>
-                        <td>备注</td>
-                        <td><input class="easyui-textbox"  id="remark" name="remark" style="width:145px"></td>
+                        <td>实际到港时间</td>
+                        <td><input class="easyui-datetimebox" data-options="required:false" id="factTime" name="factTime" style="width:145px"></td>
                     </tr>
                     <tr id="opTR">
                         <td style="text-align: center" colspan="4">

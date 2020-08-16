@@ -21,8 +21,8 @@
         <label for="beginDate">注册日期：</label>
         <input class="easyui-datebox" id="beginDate" style="width:120px">&nbsp;—&nbsp;
         <input class="easyui-datebox" id="endDate"  style="width:120px">
-        <label for="cardIdQry">卡号：</label>
-        <input class="easyui-textbox" id="cardIdQry" style="width:260px;" value=""/>
+        <!--<label for="cardIdQry">卡号：</label>-->
+        <!--<input class="easyui-textbox" id="cardIdQry" style="width:120px;" value=""/>-->
         <label for="carIdQry">车牌号：</label>
         <input class="easyui-textbox" id="carIdQry" style="width:130px;" value=""/>
         <label for="validStaQry">状态：</label>
@@ -31,9 +31,9 @@
             <option selected value="1">有效</option>
             <option value="0">无效</option>
         </select>
-        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="getCard2()">扫描车卡</a>
+        <!--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="getCard2()">扫描车卡</a>-->
         <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="qry()">查询</a>
-        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="viewDetail()">详情</a>
+        <!--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"  onclick="viewDetail()">详情</a>-->
 
         <@shiro.hasPermission name="CARRegiste:edit">
         <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit" onclick="modify();">修改</a>
@@ -43,11 +43,18 @@
         <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="deleteCarRegInfo();">删除</a>
         </@shiro.hasPermission>
 
-        <@shiro.hasPermission name="CARRegiste:save">
-        <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="add('-1');">注册发卡</a>
-        </@shiro.hasPermission>
+
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="add('-1');">新增车辆</a>
+
         <!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
         <!--<span style="color: #0099FF">今日发卡总数:&nbsp;<strong id="strongChar"></strong>&nbsp;张</span>-->
+        <form  enctype="multipart/form-data" id="importCsv" >
+            <input type="file" name="file" id="file" accept=".xlsx" />
+            <input type="hidden" id="prefix" name="prefix"/>
+            <input type="hidden" id="actionType" name="actionType"/>
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" onclick="uploadExcel();">批量导入</a>
+        </form>
+
     </div>
 
     <div data-options="region:'center',title:'注册发卡记录',noheader:false;">
@@ -66,7 +73,7 @@
         var paramO = new Object();
         var beginDate = $("#beginDate").datebox("getValue");
         var endDate = $("#endDate").datebox("getValue");
-        var cardIdQry = $("#cardIdQry").textbox("getValue");
+        // var cardIdQry = $("#cardIdQry").textbox("getValue");
         var carIdQry = $("#carIdQry").textbox("getValue");
         var validStaQry = $("#validStaQry").combobox("getValue");
 
@@ -77,11 +84,9 @@
         if (endDate != null && endDate != "" && endDate.length > 0) {
             paramO.search_endDate = endDate;
         }
-        if (cardIdQry != null && cardIdQry != "" && cardIdQry.length > 0) {
-            paramO.search_cardId = cardIdQry;
-        }
+
         if (carIdQry != null && carIdQry != "" && carIdQry.length > 0) {
-            paramO.search_carId = carIdQry;
+            paramO.search_carId = '%'+carIdQry+'%';
         }
         if (validStaQry != null && validStaQry != "" && validStaQry.length > 0) {
             paramO.search_validSta = validStaQry;
@@ -90,62 +95,7 @@
         $carRegDg.datagrid("load",paramO);
     }
 
-    //查看车辆信息详情
-    function viewDetail(){
-        document.getElementById("doAction").value = "VIEW";
-        var selectedRow = $carRegDg.datagrid('getSelected');
-        if (selectedRow) {
-            $('#carRegEditWin').window({
-                modal : true,
-                title : '车辆详情',
-                width : 1100,
-                height : 430,
-                collapsible : false,
-                minimizable : false,
-                maximizable : true,
-                href : '${base}/business/monitor/carDetail/'+selectedRow.recId,
-                onClose : function() {
-                    $("input").attr("readonly", false);
-                    $("select").attr("readonly", false);
-                }
 
-            });
-        }else{
-            showMsg("提示", "请先选择需要查看的信息!");
-            return false;
-        }
-
-    }
-
-    //得到card
-    function getCard2() {
-        $("#cardIdQry").textbox('setValue',"");
-        var recId = "-1";
-        //var num = Math.random();
-        $.post("${base}/business/monitor/editCarInfo/"+recId, function(rsp) {
-            if(rsp.successful){
-                $("#cardIdQry").textbox('setValue',rsp.msg);
-                document.getElementById("cardIdQry").focus();
-
-                if (rsp.msg != null && rsp.msg != "") {
-                    var paramO = {};
-                    var cardIdStr = $("#cardIdQry").textbox("getValue");
-                    if (cardIdStr != null && cardIdStr != "" && cardIdStr.length > 0) {
-                        paramO.search_cardId = cardIdStr;
-                        $.post("${base}/business/monitor/registeredCarList", paramO, function (rsp) {
-                            if (rsp) {
-                                    $carRegDg.datagrid('load',paramO);
-                            }
-                        });
-                    }
-                }
-            } else {
-                showMsg("提示", rsp.msg);
-            }
-        }, "JSON").error(function() {
-            showMsg("提示", "获得卡号失败，请查看连接线是否正常连接！");
-        });
-    }
 
 
     //修改车辆详情
@@ -157,7 +107,7 @@
                 modal : true,
                 title : '车辆详情',
                 width : 1100,
-                height : 430,
+                height : 230,
                 collapsible : false,
                 minimizable : false,
                 maximizable : true,
@@ -192,15 +142,15 @@
             },
             columns: [
                 [
-                    {field: 'cardId', title: '卡号',align:'center', width:60},
-                    {field: 'cardTypeName', title: '卡类型',align:'center', width:30},
+                    // {field: 'cardId', title: '卡号',align:'center', width:30},
+                    // {field: 'cardTypeName', title: '卡类型',align:'center', width:30},
                     {field: 'carId', title: '前车牌号',align:'center', width: 30},
-                    {field: 'backCarId', title: '后车牌号',align:'center', width:30},
+                    // {field: 'backCarId', title: '后车牌号',align:'center', width:30},
                     {field: 'statusName', title: '状态',align:'center', width:20},
-                    {field: 'transTypeName', title: '运输类型',align:'center', width:30},
+                    // {field: 'transTypeName', title: '运输类型',align:'center', width:30},
                     {field: 'orgName', title: '运输单位',align:'center', width:45},
-                    {field: 'carTypeName', title: '车型',align:'center', width: 30},
-                    {field: 'stdQty', title: '皮重',align:'center', width:20},
+                    // {field: 'carTypeName', title: '车型',align:'center', width: 30},
+                    {field: 'stdQty', title: '标准载重(吨)',align:'center', width:20},
                     {field: 'regDtm', title: '注册时间',align:'center', width:50},
                     {field: 'endDtm', title: '失效时间',align:'center', width:50}
                 ]
@@ -218,7 +168,7 @@
             modal : true,
             title : '车辆新增信息',
             width : 1020,
-            height : 430,
+            height : 230,
             collapsible : false,
             minimizable : false,
             maximizable : true,
@@ -256,13 +206,34 @@
         }
     }
 
+    function uploadExcel() {
 
-    function qryTodayRegCarCnt(){
-        $.post("${base}/business/monitor/qryTodayRegisterCarCnt", function (rsp) {
-            document.getElementById("strongChar").innerHTML=rsp;
-        }).error(function () {
-            showMsg("提示", "查询今天新注册车辆数据异常！");
+        document.getElementById("prefix").value ='carRegister';
+        $('#actionType').val('add');
+
+        var formData = new FormData($("#importCsv")[0]);
+        $.ajax({
+            url: '${base}/business/pointConfig/importCsv4car',
+            type: 'POST',
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                if (data.successful) {
+                    $.messager.alert('系统提示', data.msg, 'success');
+                    reload(prefix);
+                } else {
+                    $.messager.alert('错误！', data.msg, 'error');
+                }
+            },
+            error: function (XmlHttpRequest) {
+                $.messager.alert('错误！',"处理异常，服务器状态 ："+XmlHttpRequest.status+",信息："+XmlHttpRequest.statusText, 'error');
+            }
         });
+
+        $("#importCsv")[0].reset();
     }
 
 
