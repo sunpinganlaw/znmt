@@ -17,8 +17,12 @@
     <table>
         <tr>
             <td>
+                <label for="dateType">日期类型：</label>
+                <select id="dateType" name="dateType" style="width:126px;" class="easyui-combobox"  data-options="required:false,panelHeight:'auto'" style="width:126px;" >
+                <option value="1">进场时间</option>
+                <option value="2">出场时间</option>
+                </select>
 
-                <label for="beginDate">出场日期：</label>
                 <input class="easyui-datetimebox" id="beginDate" style="width:145px">&nbsp;—&nbsp;
                 <input class="easyui-datetimebox" id="endDate"  style="width:145px">
                 <label for="shipId">船名：</label>
@@ -53,10 +57,12 @@
                 </@shiro.hasPermission>
 
                 <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-excel"  onclick="qryEXL()">导出</a>
-                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-print" onclick="printRec();">补打</a>
-               <!--<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="deleteRec();">删除</a>-->
+                <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-print" onclick="printRec();">补打小票</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-print"  onclick="printWeightRpt()">打印过卡单</a>
+            <!--<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" onclick="deleteRec();">删除</a>-->
 
 <input type="hidden" id="doActionTag"/>
+            <input type="hidden" id="hiddenRecordNo"/>
 </td>
 </tr>
 </table>
@@ -65,7 +71,7 @@
 <div  style="width: 100%">
     <table id="carTransRecordDg" ></table>
 </div>
-
+<div id="PrintWin"></div>
 <!--新增窗口-->
 <div id="addCarTransRecordWin" ></div>
 
@@ -85,16 +91,32 @@
         var tickNo = $("#tickNo").textbox("getValue");
         var venNo= $("#venNo").combobox("getValue");
         var customerNo= $("#customerNo").combobox("getValue");
+        var dateType= $("#dateType").combobox("getValue");
         // var doorNo = $("#doorNo").combobox("getValue");
         // var contactIdFront = $("#contactIdFront").textbox("getValue");
         //查询条件的，都必须带上 search_ 这个前缀，才能让后台的beanUtil里捕获到这个参数并映射到entity条件里。。 xieyt
+        if(dateType==1)
+        {
+            if (beginDate != null && beginDate != "" && beginDate.length > 0) {
+                paramO.search_beginDate = beginDate;
+            }
+            if (endDate != null && endDate != "" && endDate.length > 0) {
+                paramO.search_endDate = endDate;
+            }
+        }
 
-        if (beginDate != null && beginDate != "" && beginDate.length > 0) {
-            paramO.search_beginLeaveDate = beginDate;
-        }
-        if (endDate != null && endDate != "" && endDate.length > 0) {
-            paramO.search_endLeaveDate = endDate;
-        }
+
+        if(dateType==2)
+         {
+
+             if (beginDate != null && beginDate != "" && beginDate.length > 0) {
+                 paramO.search_beginLeaveDate = beginDate;
+             }
+             if (endDate != null && endDate != "" && endDate.length > 0) {
+                 paramO.search_endLeaveDate = endDate;
+             }
+
+         }
 
         if (carIdQry != null && carIdQry != "" && carIdQry.length > 0) {
             paramO.search_carId = '%'+carIdQry+'%';
@@ -115,7 +137,7 @@
             paramO.search_customerNo = customerNo;
         }
 
-        paramO.search_cardTyp = '0';
+        // paramO.search_cardTyp = '0';
         $("#carTransRecordDg").datagrid("load",paramO);
     }
 
@@ -134,6 +156,9 @@
             pagenumber:true,
             pageSize:100,
             pageList: [100, 200, 300],
+            remoteSort: false, //必填
+            sortName:'czDtm', //选填，排序字段。不填写的话，在最开始加载表格的时候，“商品ID”后面不会出现向下的箭头
+            sortOrder:'asc',//选填，不填的话，按照后端传回的数据是排列（本例为desc)，填写后则按在前端设置的正序asc排列,
             queryParams: {//默认进来查不到数据
                 search_cardTyp: '0'
             },
@@ -163,6 +188,11 @@
 
                 ]
             ],
+            rowStyler: function(index,row){
+                if (row.leaveFlag == "禁行") {
+                    return 'background-color:#FF3030;';//超重红色
+                }
+            },
             toolbar: '#tb',
             onLoadSuccess:function(data){
             }
@@ -271,11 +301,6 @@
     }
 
 
-
-
-
-
-
     function showMsg(title,msg)
     {
         $.messager.show({
@@ -299,23 +324,118 @@
         var tickNo = $("#tickNo").textbox("getValue");
         var venNo= $("#venNo").combobox("getValue");
         var customerNo= $("#customerNo").combobox("getValue");
+        var dateType= $("#dateType").combobox("getValue");
         // var doorNo = $("#doorNo").combobox("getValue");
         // var contactIdFront = $("#contactIdFront").textbox("getValue");
-        var cardTyp= '0';
-        var inputObj =  {beginLeaveDate:beginDate,
-            endLeaveDate:endDate,
-            carId:carIdQry,
-            shipId:shipId,
-            tickNo:tickNo,
-            customerNo:customerNo,
-            venNo:venNo,
-            cardTyp:cardTyp
-            // contactIdFront:contactIdFront,
-            // inDoorNo:doorNo,
+        var leaveFlag= 'Y';
+        var cfmFlag= 'Y';
+        if(dateType==1)
+        {
+            var cardTyp= '0';
+            var inputObj =  {beginDate:beginDate,
+                endDate:endDate,
+                carId:carIdQry,
+                shipId:shipId,
+                tickNo:tickNo,
+                customerNo:customerNo,
+                venNo:venNo,
+                leaveFlag:leaveFlag,
+                cfmFlag:cfmFlag
+                // cardTyp:cardTyp
+                // contactIdFront:contactIdFront,
+                // inDoorNo:doorNo,
 
-        };
-        exportExcel($carTransRecordDg,"org.gxz.znrl.mapper","MonitorMapper","qryCarTransRecordListCnt","qryCarTransRecordList",inputObj,"","","");
+            };
+            exportExcel($carTransRecordDg,"org.gxz.znrl.mapper","MonitorMapper","qryCarTransRecordListCnt","qryCarTransRecordList",inputObj,"","","");
+
+
+        }
+
+
+        if(dateType==2)
+        {
+            var cardTyp= '0';
+            var inputObj =  {beginLeaveDate:beginDate,
+                endLeaveDate:endDate,
+                carId:carIdQry,
+                shipId:shipId,
+                tickNo:tickNo,
+                customerNo:customerNo,
+                venNo:venNo,
+                leaveFlag:leaveFlag,
+                cfmFlag:cfmFlag
+                // cardTyp:cardTyp
+                // contactIdFront:contactIdFront,
+                // inDoorNo:doorNo,
+
+            };
+            exportExcel($carTransRecordDg,"org.gxz.znrl.mapper","MonitorMapper","qryCarTransRecordListCnt","qryCarTransRecordList",inputObj,"","","");
+
+        }
+
+
     }
 
+    function printWeightRpt(){
+        var paramO = new Object();
+        var beginDate = $("#beginDate").datetimebox("getValue");
+        var endDate = $("#endDate").datetimebox("getValue");
+        var carIdQry = $("#carIdQry").textbox("getValue");
+        var shipId = $("#shipId").combobox("getValue");
+        var tickNo = $("#tickNo").textbox("getValue");
+        var venNo= $("#venNo").combobox("getValue");
+        var customerNo= $("#customerNo").combobox("getValue");
+        var dateType= $("#dateType").combobox("getValue");
+        if(dateType==1)
+        {
+            if (beginDate != null && beginDate != "" && beginDate.length > 0) {
+                paramO.search_beginDate = beginDate;
+            }
+            if (endDate != null && endDate != "" && endDate.length > 0) {
+                paramO.search_endDate = endDate;
+            }
+        }
+       if(dateType==2)
+        {
+            if (beginDate != null && beginDate != "" && beginDate.length > 0) {
+                paramO.search_beginLeaveDate = beginDate;
+            }
+            if (endDate != null && endDate != "" && endDate.length > 0) {
+                paramO.search_endLeaveDate = endDate;
+            }
+        }
 
+        if (carIdQry != null && carIdQry != "" && carIdQry.length > 0) {
+            paramO.search_carId = '%'+carIdQry+'%';
+        }
+        if (shipId != null && shipId != "" && shipId.length > 0) {
+            paramO.search_shipId = shipId;
+        }
+        if (tickNo != null && tickNo != "" && tickNo.length > 0) {
+            paramO.search_tickNo = '%'+tickNo+'%';
+        }
+        if (venNo != null && venNo != "" && venNo.length > 0) {
+            paramO.search_venNo = venNo;
+        }
+        if (customerNo != null && customerNo != "" && customerNo.length > 0) {
+            paramO.search_customerNo = customerNo;
+        }
+       var qtr= JSON.stringify(paramO);
+       if(qtr.length <= 2)
+       {
+           showMsg("提示",  "请先选择打印的条件！");
+           return;
+       }
+
+        if (paramO) {
+            window.open('${base}/business/report/gotoPrintCarsWeightPagemt?beginTime=' + beginDate + '&endTime=' + endDate + '&carId=' + carIdQry+ '&shipId=' + shipId + '&venNo=' + venNo+ '&customerNo=' + customerNo+ '&dateType=' + dateType+'&tickNo=' + tickNo,
+                'newwindow',
+                'height=600,width=1000,top=0,left=0,toolbar=no,menubar=no,scrollbars=no, resizable=no,location=no, status=no');
+        } else {
+            showMsg("提示",  "请先选择要打印的批次！");
+            return;
+        }
+
+
+    }
 </script>
