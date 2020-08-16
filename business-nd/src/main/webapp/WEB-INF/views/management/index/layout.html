@@ -1,0 +1,496 @@
+<link rel="stylesheet" type="text/css" href="${base}/styles/css/easyme.css">
+<script type="text/javascript" src="${base}/htmlresource/commonImgJS.js"></script>
+<style type="text/css">
+		body {
+		    font-family:helvetica,tahoma,verdana,sans-serif;
+		    margin:0px 0px 0px 0px;
+		    padding:0px 0px 0px 0px;
+		}
+        .label-info{
+            background-color: #3A87AD;
+            border-radius: 3px 3px 3px 3px;
+            color: #FFFFFF;
+            display: inline-block;
+            font-size: 15px;
+            font-weight: bold;
+            padding: 2px 4px;
+            text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+            vertical-align: baseline;
+            white-space: nowrap;
+        }
+        .badge {
+            background-color: #B94A48;
+            border-radius: 9px 9px 9px 9px;
+            color: #FFFFFF;
+            display: inline-block;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 2px 4px;
+            text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+            vertical-align: baseline;
+            white-space: nowrap;
+        }
+</style>
+
+<script type="text/javascript" charset="utf-8">
+	function logout(b) {
+        if(b)
+            location.href='${base}/logout';
+        else
+		$.messager.confirm("提示", "确认退出吗?",function(r){
+			if(r){
+				location.href='${base}/logout';
+			}
+		});
+	}
+
+	var userInfoWindow;
+	function showUserInfo() {
+		userInfoWindow = $('<div/>').window({
+			modal : true,
+			title : '当前用户信息',
+			width : 400,
+			height : 250,
+			collapsible : false,
+			minimizable : false,
+			maximizable : true,
+			href : '${base}/management/security/user/show',
+			onClose : function() {
+				userInfoWindow.window("destroy");
+//				$(this).window('destroy');
+			}
+		});
+	}
+	
+	
+	function addTab(node) {
+		var nodes=node.split("||");
+		if (centerTabs.tabs('exists', nodes[0])) {
+			centerTabs.tabs('select', nodes[0]);
+		} else {
+				centerTabs.tabs('add', {
+					title : nodes[0],
+					closable : true,
+					content : "<iframe src="+nodes[2]+" frameborder=\"0\" style=\"border:0;width:100%;height:99.4%;\"></iframe>"
+
+				});
+		}
+	}
+	
+	function refreshTab(title) {
+		var tab = centerTabs.tabs('getTab', title);
+		centerTabs.tabs('update', {
+			tab : tab,
+			options : tab.panel('options')
+		});
+	}
+	
+	
+	var centerTabs;
+	var tabsMenu;
+	$(function() {
+		tabsMenu = $('#tabsMenu').menu({
+			onClick : function(item) {
+				var curTabTitle = $(this).data('tabTitle');
+				var type = $(item.target).attr('type');
+
+				if (type === 'refresh') {
+					refreshTab(curTabTitle);
+					return;
+				}
+
+				if (type === 'close') {
+					var t = centerTabs.tabs('getTab', curTabTitle);
+					if (t.panel('options').closable) {
+						centerTabs.tabs('close', curTabTitle);
+					}
+					return;
+				}
+
+				var allTabs = centerTabs.tabs('tabs');
+				var closeTabsTitle = [];
+
+				$.each(allTabs, function() {
+					var opt = $(this).panel('options');
+					if (opt.closable && opt.title != curTabTitle && type === 'closeOther') {
+						closeTabsTitle.push(opt.title);
+					} else if (opt.closable && type === 'closeAll') {
+						closeTabsTitle.push(opt.title);
+					}
+				});
+
+				for ( var i = 0; i < closeTabsTitle.length; i++) {
+					centerTabs.tabs('close', closeTabsTitle[i]);
+				}
+			}
+		});
+
+		centerTabs = $('#centerTabs').tabs({
+						tools : [{
+								iconCls : 'icon-reload',
+								handler : function() {
+									var href = $('#centerTabs').tabs('getSelected').panel('options').href;
+									if (href) {/*说明tab是以href方式引入的目标页面*/
+										var index = $('#centerTabs').tabs('getTabIndex', $('#centerTabs').tabs('getSelected'));
+										$('#centerTabs').tabs('getTab', index).panel('refresh');
+									} else {   /*说明tab是以content方式引入的目标页面*/
+										var panel = $('#centerTabs').tabs('getSelected').panel('panel');
+										var frame = panel.find('iframe');
+										try {
+											if (frame.length > 0) {
+												for ( var i = 0; i < frame.length; i++) {
+													frame[i].contentWindow.document.write('');
+													frame[i].contentWindow.close();
+													frame[i].src = frame[i].src;
+												}
+												if ($.browser.msie) {
+													CollectGarbage();
+												}
+											}
+										} catch (e) {
+										}
+									}
+								}
+							}, {
+								iconCls : 'icon-redo',
+                                handler : function() {
+                                var href = $('#centerTabs').tabs('getSelected').panel('options').href;
+                                    console.log("href"+href);
+                                if (href) {
+                                    var index = $('#centerTabs').tabs('getTabIndex', $('#centerTabs').tabs('getSelected'));
+                                    $('#centerTabs').tabs('getTab', index).panel('refresh');
+                                } else {
+                                    var panel = $('#centerTabs').tabs('getSelected').panel('panel');
+                                    var frame = panel.find('iframe');
+                                    try {
+                                        if (frame.length > 0) {
+                                            for ( var i = 0; i < frame.length; i++) {
+                                                var rv = window.open(frame[i].src);
+                                            }
+                                            if ($.browser.msie) {
+                                                CollectGarbage();
+                                            }
+                                        }
+                                    } catch (e) {
+                                    }
+                                }
+                            }
+                    		},
+                            {
+                                iconCls : 'icon-max',
+                                handler : function() {
+                                    MaxWindows();
+                                }
+                            }, {
+                            iconCls : 'icon-cancel',
+                            handler : function() {
+                                var index = $('#centerTabs').tabs('getTabIndex', $('#centerTabs').tabs('getSelected'));
+                                var tab = $('#centerTabs').tabs('getTab', index);
+                                if (tab.panel('options').closable) {
+                                    $('#centerTabs').tabs('close', index);
+                                } else {
+                                    showMsg('提示', '[' + tab.panel('options').title + ']不可以被关闭', 'error');
+                                }
+                            }
+                        }],
+			fit : true,
+			border : false,
+			onContextMenu : function(e, title) {
+				e.preventDefault();
+				tabsMenu.menu('show', {
+					left : e.pageX,
+					top : e.pageY
+				}).data('tabTitle', title);
+			}
+		});
+		
+	});
+    function changeTheme(theme){
+        changeThemeFun(theme);
+        save(theme,'theme');
+    }
+
+    function save(values,types)
+    {
+        $.post("${base}/management/extmsg/addExtMsg/"+values+"/"+types, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示", "天天好心情"+"<img src='${base}/styles/images/other/laugh.png'>");
+            } else {
+                showMsg("提示", "保存样式失败!");
+            }
+        }).error(function () {
+            showMsg("提示", "更新失败,请重新登陆!");
+        });
+
+    }
+
+    function MaxWindows() {
+        if (!($('div[class*="layout-panel-west"]').css("display") == "none")) {
+            $('div[class*="layout-panel-west"]').css("display", "none");
+            $('div[class*="layout-panel-south"]').css("display", "none");
+            $('div[class*="layout-panel-north"]').css("display", "none");
+        }
+        else {
+            $('div[class*="layout-panel-west"]').css("display", "block");
+            $('div[class*="layout-panel-south"]').css("display", "block");
+            $('div[class*="layout-panel-north"]').css("display", "block");
+        }
+        $('#layout_main_body').layout("resize");
+    }
+    ADD_TAB = addTab;
+
+
+    ////////////////////闪烁提示代码开始/////////////////////////////////////////////////////////////////
+    var flashEngine;
+    var ii;
+    var flashTag = "0";//0未闪  1已闪
+    var currentUserId;
+    var msgIdContainer=[];//发送给你的msgId累积的容器
+    function init(){
+        //获取当前用户
+        $.post("${base}/management/security/user/userinfo", function (rsp) {
+            if (rsp.username != '') {
+                currentUserId = rsp.id;
+            } else {
+                showMsg("提示", "获取登录用户信息失败!");
+            }
+        });
+
+        //连接websocket获取后台数据
+        // listen(new WebSocket(wsUri));
+    }
+
+    //页面加载时候调用
+    window.addEventListener("load", init, false);
+
+    //接收websocket后被调用的方法
+    function businessProcess(event) {
+        var obj = JSON.parse(event.data);
+        var deviceTag = obj.DEVICE;
+        var deviceValue = obj.VALUE;
+
+        switch (deviceTag.toUpperCase()){
+            case "MSG_HINT":
+                for (var i=0; i<deviceValue.length; i++) {
+                    var o = deviceValue[i];
+                    var toUserArr = o.TO_USER;
+
+                    //这个信息如果是派送给你了，那就闪
+                    if (isExist(currentUserId, toUserArr) || toUserArr[0] == "*") {
+                        startFlash();
+
+                        //如果这个msgId还没有存放进提醒容器，则新增进去
+                        if (!isExist(o.MSG_ID, msgIdContainer)) {
+                            msgIdContainer.push(o.MSG_ID);
+                        }
+                    }
+                }
+                break;
+            default:
+        }
+    }
+
+    function startFlash(){
+        //需要闪，且已经闪，则不需要再执行
+        if (flashTag == "0") {
+            ii=0;
+            flashEngine = window.setInterval(function() {
+                var imgObj = document.getElementById("hintFlashLogo");
+                if (ii%2 == 0) {
+                    imgObj.src = "${base}/styles/images/logo/msghint.png";
+                } else {
+                    imgObj.src = "${base}/styles/images/logo/msghint1.png";
+                }
+                ii++;
+            }, 0.5*1000);
+            flashTag = "1";//标志已经闪了
+        }
+    }
+
+    //停止闪烁
+    function stopFlash(){
+        if (flashTag == "1") {
+            clearInterval(flashEngine);
+            var o = document.getElementById("hintFlashLogo");
+            o.src = "${base}/styles/images/logo/msghint1.png";
+            flashTag = "0";//标志不闪了
+        }
+    }
+
+    //打开处理页面
+    function openHintDetail(){
+        stopFlash();//停止闪烁
+        var myDate = new Date();
+        var curTime = myDate.toLocaleTimeString();
+        addTab("消息提醒("+curTime+")||icon-sys||${base}/business/tool/qryPushMsgList/"+JSON.stringify(msgIdContainer));
+        msgIdContainer = [];//清空缓存的消息容器
+    }
+
+    //判断一个值是否在数组中，如果存在true， 否则false
+    function isExist(id, array){
+        var res = false;
+        for (var i = 0; i < array.length; i++) {
+            if (id == array[i]) {
+                res = true;
+                return res;
+            }
+        }
+        return res;
+    }
+
+    ////////////////////闪烁提示代码结束/////////////////////////////////////////////////////////////////
+</script>
+
+<#macro north>
+    <div class="easy-topbox">
+        <div class="easy-topbox-left">
+            <div class="easy-topbox-right">
+                <div class="easy-topbox-logo">&nbsp;</div>
+                <div class="easy_topbox_bar">
+                    <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<@shiro.authenticated>您好，<@shiro.principal/>
+                           </@shiro.authenticated>
+                    </span>
+                    <a href="javascript:void(0);" class="easyui-menubutton" menu="#layout_north_kzmbMenu">配置系统</a>
+                    <span>|</span>
+                    <a style="cursor:pointer" onclick="logout(true);">[退出系统]</a>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <!--<span>工作模式：</span><a style="cursor:pointer" id="workModeLink" href="javascript:void(0);" onclick="modWorkMode();">&nbsp;</a>&nbsp;&nbsp;-->
+                    <span id="workModeDesc"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+	<div id="layout_north_kzmbMenu" style="width: 100px; display: none;">
+        <@shiro.guest>
+        Hello guest!
+        </@shiro.guest>
+
+        <!--<div onclick="logout(false);" data-options="iconCls:'icon-back'">注销登陆</div>-->
+        <div onclick="javascript:introJs().start();" data-options="iconCls:'icon-tip'">新手引导</div>
+        <div onclick="showUserInfo();" data-options="iconCls:'icon-man'">个人信息</div>
+		<div class="menu-sep"></div>
+		<div data-options="iconCls:'icon-pro'">
+			<span >晒个心情</span>
+			<div style="width: 60px;">
+				<div onclick="changeTheme('default');" >天蓝</div>
+                <div onclick="changeTheme('green');">绿冉</div>
+				<div onclick="changeTheme('blue');" >海蓝</div>
+                <div onclick="changeTheme('pepper-grinder');" >咖啡</div>
+				<div onclick="changeTheme('cupertino');" >纯蓝</div>
+				<div onclick="changeTheme('orange');" >橙黄</div>
+				<div onclick="changeTheme('red');" >玫瑰</div>
+				<div onclick="changeTheme('gray');">银灰</div>
+                <div onclick="changeTheme('sunny');">阳光</div>
+				<div onclick="changeTheme('metro');">纯白</div>
+				<div onclick="changeTheme('black');">酷黑</div>
+                <div onclick="changeTheme('bootstrap');">酷灰</div>
+                <div onclick="changeTheme('dark-hive');" >黑白</div>
+			</div>
+		</div>
+	</div>
+</#macro>
+
+<#macro south>
+	<div style="text-align: center;">
+        &copy;2013~2014
+        <span class="tip">
+            <a href="javascript:void(0);" onclick="showMsg('版权','Intelligent control');" title="IntelCtrl">Intelligent Control</a>
+        </span>
+
+        <span style="text-align: right;">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <img id="hintFlashLogo" onclick="openHintDetail()" style="cursor:pointer" src="${base}/styles/images/logo/msghint1.png">
+        </span>
+    </div>
+</#macro>
+
+<#macro center>
+	<div id="centerTabs">
+		<div iconCls="icon-home" title="业务系统总图" border="false" style="overflow: hidden;">
+            <!--<iframe src="${base}/business/trainMonitor/trainAndCarOverview/list" frameborder="0" style="border:0;width:100%;height:99.4%;"></iframe>-->
+            <iframe src="${base}/business/monitor/shipRegister/page" frameborder="0" style="border:0;width:100%;height:99.4%;"></iframe>
+		</div>
+	</div>
+</#macro>
+<div id="modWorkModeWin" ></div>
+<script type="text/javascript">
+    function displayWorkMode(){
+        $.post("${base}/business/monitor/qryWorkModeInfo", function (rsp) {
+            var o = JSON.parse(rsp);
+            // document.getElementById("workModeLink").innerHTML = o.workModeName;
+            // document.getElementById("workModeDesc").innerHTML = o.descr;
+        })
+    }
+
+    $(function() {
+        displayWorkMode();
+    });
+
+    //每30秒刷新一次
+    // window.setInterval(displayWorkMode, 30*1000);
+
+    function modWorkMode() {
+        addTab("系统设置||icon-sys||${base}/business/config/workModeType/list/0");
+    }
+
+
+    //---------------------
+    function openDeviceErr(){
+        ///business/monitor/deviceErr/list
+        parent.parent.addTab("故障信息查询||icon-sys||${base}/business/monitor/deviceErr/list");
+        $messager.window('close');
+    }
+//     var tt;
+//     var txt;
+//     var $messager;
+//     var rowNum = 0;
+//     window.setInterval(function () {
+//         $.ajax({
+//             async: false,
+//             cache: false,
+//             type: 'POST',
+//             url: '${base}/business/monitor/deviceErrLists',
+//             error: function () {// 请求失败处理函数
+//                 showMsg("提示", "查询数据失败,请重新登陆!");
+//             },
+//             success: function (json) {
+// //                alert(JSON.stringify(json));
+//                 if (json.length > 0) {
+//                     rowNum = 1;
+//                     tt = json;
+//                     //txt = '<div class="mianbox"><div class="tablebox"><table width="100%" border="0" cellspacing="0" cellpadding="0" class="Fsttable" ><tr class="title"><td>故障描述</td></tr><tr class="mod001"><td>故障故障故障哈哈</td></tr><tr class="mod002"><td>故障故障故障哈哈</td></tr></tr><tr class="mod001"><td>故障故障故障哈哈</td></tr><tr class="mod002"><td>故障故障故障哈哈</td></tr></tr><tr class="mod001"><td>故障故障故障哈哈</td></tr><tr class="mod002"><td>故障故障故障哈哈</td></tr></tr><tr class="mod001"><td>故障故障故障哈哈</td></tr><tr class="mod002"><td>故障故障故障哈哈</td></tr></table></div></div>';
+// //                    txt = '<div class="mianbox" onclick="openDeviceErr();"><div class="tablebox"><table width="100%" border="0" cellspacing="0" cellpadding="0" class="Fsttable" ><tr class="title"><td><b>故障描述</b></td></tr>';
+//                     txt = '<div class="mianbox" onclick="openDeviceErr();"><div class="tablebox"><table width="100%" border="0" cellspacing="0" cellpadding="0" class="Fsttable" >';
+//                     for (x in tt) {
+//                         if (rowNum%2 == 1){
+//                             txt += '<tr class="mod001"><td><font color="red">'+tt[x].errorDec+'</font></td></tr>';
+//                         } else {
+//                             txt += '<tr class="mod002"><td><font color="red">'+tt[x].errorDec+'</font></td></tr>';
+//                         }
+//                         rowNum ++;
+//                     }
+//                     txt +="</table></div></div>";
+//                     if ($messager == null) {
+//                         $messager = $.messager.show({
+//                             title: '故障信息',
+//                             msg: txt,
+//                             timeout: 0,
+//                             showType: 'show',
+//                             width:300,
+//                             height:150,
+//                             onBeforeClose: function () {
+//                                 $messager = null;
+//                             }
+//                         });
+//                     }
+// //                                    setTimeout(function(){
+// //                                        $messager.window('destroy');
+// //                                    }, 5000);
+//                 }
+//             }
+//         });
+//     }, 30*1000);
+
+
+</script>
