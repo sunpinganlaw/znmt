@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/business-mtw/business-mtw.iml" filepath="$PROJECT_DIR$/business-mtw/business-mtw.iml" />
       <module fileurl="file://$PROJECT_DIR$/business-mty/business-mty.iml" filepath="$PROJECT_DIR$/business-mty/business-mty.iml" />
+      <module fileurl="file://$PROJECT_DIR$/business-nd/business-nd.iml" filepath="$PROJECT_DIR$/business-nd/business-nd.iml" />
       <module fileurl="file://$PROJECT_DIR$/znmt_mzh.iml" filepath="$PROJECT_DIR$/znmt_mzh.iml" />
       <module fileurl="file://$PROJECT_DIR$/admin/znrl-admin.iml" filepath="$PROJECT_DIR$/admin/znrl-admin.iml" />
       <module fileurl="file://$PROJECT_DIR$/business-bb/znrl-bb.iml" filepath="$PROJECT_DIR$/business-bb/znrl-bb.iml" />

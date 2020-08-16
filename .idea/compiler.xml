@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="business-mtw" />
         <module name="business-mty" />
+        <module name="business-nd" />
         <module name="znrl-admin" />
         <module name="znrl-bb" />
         <module name="znrl-business" />
@@ -18,6 +19,7 @@
     <bytecodeTargetLevel>
       <module name="business-mtw" target="1.7" />
       <module name="business-mty" target="1.7" />
+      <module name="business-nd" target="1.7" />
       <module name="business_mty" target="1.7" />
       <module name="znrl-admin" target="1.7" />
       <module name="znrl-bb" target="1.7" />
