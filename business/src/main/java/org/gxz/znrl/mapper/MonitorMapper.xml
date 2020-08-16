@@ -4398,6 +4398,7 @@
     <select id="qryShipCargoInfo" parameterType="org.gxz.znrl.entity.ShipEntity" resultMap="ShipTransInfoResultMap" >
         select a.record_no,
         a.ship_rec_id,
+        c.ship_name,
         a.ven_no,
         (select v.ven_name from vendor_info v where v.ven_no = a.ven_no) ven_name,
         a.carrier_no,
@@ -4427,9 +4428,11 @@
         (SELECT COUNT(1) FROM point_cfg T WHERE T.POINT_NAME= a.RECORD_NO and T.STATUS='0') cabin_cnt,
         (SELECT NVL(SUM(B.NET_QTY),0) FROM RLRECORDMSTQY B WHERE B.TICK_NO= a.bill_no and B.CFM_FLG='Y'and B.LEAVE_FLG='Y') NET_QTY,
         (SELECT  a.tick_qty-NVL(SUM(B.NET_QTY),0) FROM RLRECORDMSTQY B WHERE B.TICK_NO= a.bill_no and B.CFM_FLG='Y'and B.LEAVE_FLG='Y') LEFT_QTY
-        from ship_cargo_record a
+        from ship_cargo_record a,ship_record b, ship_info c
         where 1 = 1
          and a.rec_status in ( '1','0','2','3')
+         and a.ship_rec_id = b.ship_rec_id
+         and b.ship_id = c.ship_id
         <if test="recordNo != null" >
             and a.record_no = #{recordNo,jdbcType=VARCHAR}
         </if>
