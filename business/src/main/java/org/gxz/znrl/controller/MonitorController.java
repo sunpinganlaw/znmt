@@ -3560,14 +3560,15 @@ public class MonitorController extends BaseAction {
         try {
             gridModel = monitorService.qryShipCargoInfo(shipEntity);
             List<ShipEntity> RESULT=gridModel.getRows();
+            List<ShipEntity> final_RESULT= new ArrayList();
             for(int i=0;i<RESULT.size();i++)
             {
-               if(RESULT.get(i).isBatch.equals("3"))
+               if(!RESULT.get(i).isBatch.equals("3"))
                {
-                   RESULT.remove(i);
+                   final_RESULT.add(RESULT.get(i));
                }
             }
-            gridModel.setRows(RESULT);
+            gridModel.setRows(final_RESULT);
         } catch (Exception e) {
             e.printStackTrace();
         }
