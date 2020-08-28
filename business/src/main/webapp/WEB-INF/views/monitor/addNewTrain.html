@@ -44,7 +44,7 @@
         if (carIdQryStr != null && carIdQryStr != "" && carIdQryStr.length > 0) {
             paramO.search_carId ="%"+ carIdQryStr+"%";
         }
-
+        paramO.search_validSta='1';
         $carRegDg.datagrid("load",paramO);
     }
 
