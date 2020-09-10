@@ -29,8 +29,10 @@
         <!--<module>business-cz</module>-->
         <!--<module>business-bl</module>-->
         <!--<module>business-sx</module>-->
-        <module>business-bb</module>
-        <module>business-mtw</module>
+        <!--<module>business-bb</module>-->
+        <!--<module>business-mtw</module>-->
+        <module>business-nd</module>
+        <module>business-jjm</module>
 
         <!--<module>business-hpn</module>-->
         <!--<module>business-lf</module>-->
