@@ -6,13 +6,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="business-mtw" />
         <module name="business-mty" />
         <module name="business-nd" />
         <module name="znrl-admin" />
         <module name="znrl-bb" />
         <module name="znrl-business" />
         <module name="znrl-core" />
+        <module name="znrl-jjm" />
         <module name="znrlmty" />
       </profile>
     </annotationProcessing>
@@ -25,6 +25,7 @@
       <module name="znrl-bb" target="1.7" />
       <module name="znrl-business" target="1.7" />
       <module name="znrl-core" target="1.7" />
+      <module name="znrl-jjm" target="1.7" />
       <module name="znrl-main" target="1.5" />
       <module name="znrlmty" target="1.7" />
     </bytecodeTargetLevel>
