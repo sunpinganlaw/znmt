@@ -1,0 +1,18 @@
+create user erp_app identified by erp_app default tablespace TBS_ZNRL1;
+GRANT read, write ON DIRECTORY dmpdir TO erp_app;
+grant create session to erp_app;
+grant create table to erp_app;
+grant create view to erp_app;
+grant create any synonym to erp_app;
+grant create public DATABASE LINK to erp_app;
+grant create DATABASE LINK to erp_app;
+grant resource,connect to erp_app;
+grant create any index to erp_app;
+grant create any synonym to erp_app;
+grant create any sequence to erp_app;
+grant alter any table to erp_app;
+grant debug connect session to erp_app;
+grant unlimited tablespace to erp_app;
+
+
+impdp erp_app/erp_app@orcl directory=dmpdir dumpfile= ERP_APP20200908.DMP remap_schema=erp_app:erp_app logfile=imp.log;
