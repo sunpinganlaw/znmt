@@ -34,7 +34,7 @@
     <build>
         <directory>${project.basedir}/target</directory>
         <outputDirectory>${project.build.directory}/classes</outputDirectory>
-        <finalName>znrlnd</finalName>
+        <finalName>znrljjm</finalName>
         <resources>
             <resource>
                 <directory>${basedir}/src/main/resources</directory>
