@@ -1,0 +1,207 @@
+alter table CZH_INFO modify ZDYJHDH null;
+alter table CZH_INFO modify MATNR null;
+alter table CZH_INFO modify ZESD_CYRQ null;
+alter table CZH_INFO modify ZESD_CYR null;
+alter table CZH_INFO modify ZESD_CYFS null;
+alter table CZH_INFO modify ZESD_CYBZ null;
+alter table CZH_INFO modify ZESD_TQQK null;
+alter table CZH_INFO modify ZESD_WEND null;
+alter table CZH_INFO modify ZESD_DPLML null;
+alter table CZH_INFO modify ZESD_LMLD null;
+alter table CZH_INFO modify ZESD_HIYS null;
+alter table CZH_INFO modify ZESD_YPZL null;
+alter table CZH_CZ_INFO modify ZESD_YPL null;
+alter table CZH_CZ_INFO modify ZESD_CYR null;
+alter table CZH_CZ_INFO modify ZESD_ZYKSRQ null;
+alter table CZH_CZ_INFO modify ZESD_ZYJSRQ null;
+alter table CZH_CZ_INFO modify ZTSD_TIME null;
+alter table CZH_CZ_INFO modify ZESD_ZYR null;
+alter table CZH_CZ_INFO modify ZESD_CYSYDATE null;
+alter table CZH_CZ_INFO modify ZESD_CYSYR null;
+alter table CZH_CZ_INFO modify ZESD_ZYSYDATE null;
+alter table CZH_CZ_INFO modify ZESD_ZYSYR null;
+
+--追加
+alter table CZH_CZ_INFO modify ZESD_HYRQ null;
+alter table CZH_CZ_INFO modify ZESD_HYR1 null;
+alter table CZH_CZ_INFO modify ZESD_HYR2 null;
+alter table CZH_CZ_INFO modify ZESD_HYR3 null;
+alter table CZH_CZ_INFO modify ZESD_ZYSYDATE1 null;
+alter table CZH_CZ_INFO modify ZESD_ZYSYR1 null;
+alter table CZH_CZ_INFO modify ZESD_HYSYDATE null;
+alter table CZH_CZ_INFO modify ZESD_HYSYR null;
+
+alter table CZH_INFO modify ZCHAR10 VARCHAR2(500);
+alter table WEIGHT_INFO modify ZCHAR10 VARCHAR2(500);
+
+-------------新增采制化页面脚本【按需增加，不需要的不增加】
+--cz
+insert into SYS_PERM (PERM_ID, PERM_NAME, PERM_CODE, PERM_DESC, RES_TYPE, TARGET_TYPE, RES_URL, ICON, BACKGROUND_POSITION, SORT_NUM, PID, CREATED_TIME, CREATED_BY, UPDATED_TIME, UPDATED_BY, SHOW_SYS)
+values (seq_sys_perm_id.nextval, '采制数据管理', '', '', 'menu', 'frmright', 'htmlView/czh/czh_cz', '', '', '6', '100000', to_date('09-09-2020 11:30:54', 'dd-mm-yyyy hh24:mi:ss'), '1', to_date('09-09-2020 11:30:54', 'dd-mm-yyyy hh24:mi:ss'), '', 'ERP');
+--c
+insert into SYS_PERM (PERM_ID, PERM_NAME, PERM_CODE, PERM_DESC, RES_TYPE, TARGET_TYPE, RES_URL, ICON, BACKGROUND_POSITION, SORT_NUM, PID, CREATED_TIME, CREATED_BY, UPDATED_TIME, UPDATED_BY, SHOW_SYS)
+values (seq_sys_perm_id.nextval, '采样数据管理', '', '', 'menu', 'frmright', 'htmlView/czh/czh_c', '', '', '7', '100000', to_date('09-09-2020 11:31:41', 'dd-mm-yyyy hh24:mi:ss'), '1', to_date('09-09-2020 11:31:41', 'dd-mm-yyyy hh24:mi:ss'), '', 'ERP');
+--z
+insert into SYS_PERM (PERM_ID, PERM_NAME, PERM_CODE, PERM_DESC, RES_TYPE, TARGET_TYPE, RES_URL, ICON, BACKGROUND_POSITION, SORT_NUM, PID, CREATED_TIME, CREATED_BY, UPDATED_TIME, UPDATED_BY, SHOW_SYS)
+values (seq_sys_perm_id.nextval, '制样数据管理', '', '', 'menu', 'frmright', 'htmlView/czh/czh_z', '', '', '8', '100000', to_date('09-09-2020 11:32:26', 'dd-mm-yyyy hh24:mi:ss'), '1', to_date('09-09-2020 11:32:26', 'dd-mm-yyyy hh24:mi:ss'), '', 'ERP');
+--h
+insert into SYS_PERM (PERM_ID, PERM_NAME, PERM_CODE, PERM_DESC, RES_TYPE, TARGET_TYPE, RES_URL, ICON, BACKGROUND_POSITION, SORT_NUM, PID, CREATED_TIME, CREATED_BY, UPDATED_TIME, UPDATED_BY, SHOW_SYS, ROWID)
+values (seq_sys_perm_id.nextval, '化验数据管理', '', '', 'menu', 'frmright', 'htmlView/czh/czh_h', '', '', '9', '100000', to_date('09-09-2020 12:15:47', 'dd-mm-yyyy hh24:mi:ss'), '1', to_date('09-09-2020 12:15:47', 'dd-mm-yyyy hh24:mi:ss'), '', 'ERP');
+
+
+
+----------------
+insert into CONSTANT_DATA_CONFIG (CONST_KEY, CONST_VALUE, CONST_NAME, IS_EFFECTIVE, REMARK)
+values ('UPLOADPROCESS_RC_CZH', '2', 'ERP系统 入厂采制化审批配置，1为一级审批，2为二级审批，3为三级审批', 'Y', null);
+
+insert into CONSTANT_DATA_CONFIG (CONST_KEY, CONST_VALUE, CONST_NAME, IS_EFFECTIVE, REMARK)
+values ('UPLOADPROCESS_RL_CZH', '2', 'ERP系统 入炉采制化审批配置，1为一级审批，2为二级审批，3为三级审批', 'Y', null);
+
+insert into CONSTANT_DATA_CONFIG (CONST_KEY, CONST_VALUE, CONST_NAME, IS_EFFECTIVE, REMARK)
+values ('UPLOADPROCESS_RC_JL', '2', 'ERP系统 入厂计量审批配置，1为一级审批，2为二级审批，3为三级审批', 'Y', null);
+
+insert into CONSTANT_DATA_CONFIG (CONST_KEY, CONST_VALUE, CONST_NAME, IS_EFFECTIVE, REMARK)
+values ('UPLOADPROCESS_RL_JL', '2', 'ERP系统 入炉计量审批配置，1为一级审批，2为二级审批，3为三级审批', 'Y', null);
+
+
+
+
+
+--增加czh上传按钮位置配置项
+insert into CONSTANT_DATA_CONFIG (CONST_KEY, CONST_VALUE, CONST_NAME, IS_EFFECTIVE, REMARK)
+values ('ERP_UPLOAD_CZH_TYPE', 'cz', 'ERP系统 CZH四个分支页面(cz,c,z,h) 在哪些页面上开放上传按钮 用英文逗号,分割 未设置则默认开放CZ页面', 'Y', '');
+
+--增加直接上传配置项
+insert into CONSTANT_DATA_CONFIG (CONST_KEY, CONST_VALUE, CONST_NAME, IS_EFFECTIVE, REMARK)
+values ('ERP_DIRECT_UPLOAD', 'FALSE', 'ERP系统 是否显示直接上传按钮 TRUE显示 FALSE不显示', 'Y', '');
+
+
+--新建常量查询sql
+insert into config_sql(
+  sql_key,
+  sql_str,
+  sql_str_cnt,
+  is_page,
+  sql_version,
+  sql_area,
+  sql_function,
+  sql_first_add_date,
+  sql_state
+) values(
+  'erp.queryConstant',
+  'select t.const_key key, t.const_value value from CONSTANT_DATA_CONFIG t where t.is_effective = ''Y''',
+  '',
+  'N',
+  '1',
+  'ERP',
+  '查询系统常量配置',
+  to_date('2020-09-09','yyyy-mm-dd'),
+  'N'
+);
+
+
+
+
+
+----------------------------------------------------erp.queryHInfo
+update config_sql
+    set sql_str ='SELECT a.* FROM czh_h_info a WHERE a.czh_id = #{main_id}'
+  where sql_key ='erp.queryHInfo';
+
+-------------------------------------------------erp.queryConstant
+update config_sql
+    set sql_str ='select t.const_key key, t.const_value value from CONSTANT_DATA_CONFIG t where t.is_effective = ''Y'''
+  where sql_key ='erp.queryConstant';
+
+----------------------------------------------erp.queryWeightDetailInfo
+update config_sql
+    set sql_str ='SELECT a.* FROM weight_detail_info a WHERE a.weight_id = #{main_id}'
+  where sql_key ='erp.queryWeightDetailInfo';
+
+---------------------------erp.queryCZInfo
+--修改cz表查询sql
+update config_sql
+    set sql_str ='SELECT a.*,
+       (SELECT b.erp_hybm FROM czh_h_info b WHERE b.czh_id = #{main_id}) erp_hybm
+  FROM czh_cz_info a
+ WHERE a.czh_id = #{main_id}'
+  where sql_key ='erp.queryCZInfo';
+
+----------------------erp.queryWeightInfo
+update config_sql
+    set sql_str ='select t.*, rownum rownumber from(
+    SELECT a.*,
+           (SELECT b.appr_status FROM upload_info b WHERE b.upload_id = a.upload_id) appr_status
+      FROM weight_info a
+     WHERE 1 = 1
+       AND a.zjltype = #{zjltype} --notnull(zjltype)
+       AND a.status = #{status} --notnull(status)
+       AND a.ztransporttype = #{ztransporttype} --notnull(ztransporttype)
+       AND a.upload_id = #{uploadId} --notnull(uploadId)
+       AND a.ztjrq >= #{begin_time} --notnull(begin_time)
+       AND a.ztjrq <= #{end_time} --notnull(end_time)
+       AND a.zdpdate >= #{begin_time_zdpdate} --notnull(begin_time_zdpdate)
+       AND a.zdpdate <= #{end_time_zdpdate} --notnull(end_time_zdpdate)
+    ORDER BY a.insert_time DESC,a.zwwjlid DESC
+)t',
+
+sql_str_cnt = 'SELECT COUNT(1)
+  FROM weight_info a
+ WHERE 1 = 1
+   AND a.zjltype = #{zjltype} --notnull(zjltype)
+   AND a.status = #{status} --notnull(status)
+   AND a.ztransporttype = #{ztransporttype} --notnull(ztransporttype)
+   AND a.upload_id = #{uploadId} --notnull(uploadId)
+   AND a.ztjrq >= #{begin_time} --notnull(begin_time)
+   AND a.ztjrq <= #{end_time} --notnull(end_time)
+   AND a.zdpdate >= #{begin_time_zdpdate} --notnull(begin_time_zdpdate)
+   AND a.zdpdate <= #{end_time_zdpdate} --notnull(end_time_zdpdate)'
+  where sql_key ='erp.queryWeightInfo';
+
+
+--------------------------------------erp.queryCZHInfo
+update config_sql
+    set sql_str ='select t.*, rownum rownumber from(
+    SELECT a.*,
+           (SELECT b.appr_status FROM upload_info b WHERE b.upload_id = a.upload_id) appr_status
+      FROM czh_info a 
+     WHERE 1 = 1
+       AND a.status = #{status} --notnull(status)
+       AND a.upload_id = #{uploadId} --notnull(uploadId)
+       AND a.zesd_cyrq >= #{begin_time} --notnull(begin_time)
+       AND a.zesd_cyrq <= #{end_time} --notnull(end_time)
+  ORDER BY a.zesd_cyrq DESC,a.zwwcybm DESC
+)t',
+          sql_str_cnt ='SELECT count(1) 
+  FROM czh_info a 
+ WHERE 1 = 1
+   AND a.status = #{status} --notnull(status)
+   AND a.upload_id = #{uploadId} --notnull(uploadId)
+   AND a.zesd_cyrq >= #{begin_time} --notnull(begin_time)
+   AND a.zesd_cyrq <= #{end_time} --notnull(end_time)'
+  where sql_key ='erp.queryCZHInfo';
+
+-------------------------------------erp.queryIntfLog
+update config_sql
+    set sql_str ='select t.*, rownum rownumber from(
+    SELECT a.log_id,
+           a.service_name,
+           a.biz_id,
+           a.cost_time,
+           a.res_code,
+           a.res_msg,
+           to_char(a.log_time, ''yyyy-mm-dd hh24:mi:ss'') log_time
+      FROM intf_log a
+     WHERE 1 = 1
+       AND to_char(a.log_time, ''yyyy-mm-dd'') >= #{begin_time} --notnull(begin_time)
+       AND to_char(a.log_time, ''yyyy-mm-dd'') <= #{end_time} --notnull(end_time)
+       AND a.service_name = #{service_name} --notnull(service_name)
+     ORDER BY a.log_time DESC
+)t ',
+          sql_str_cnt ='SELECT COUNT(1)
+  FROM intf_log a
+ WHERE 1 = 1
+   AND to_char(a.log_time, ''yyyy-mm-dd'') >= #{begin_time} --notnull(begin_time)
+   AND to_char(a.log_time, ''yyyy-mm-dd'') <= #{end_time} --notnull(end_time)
+   AND a.service_name = #{service_name} --notnull(service_name)'
+  where sql_key ='erp.queryIntfLog';
