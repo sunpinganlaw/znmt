@@ -1,0 +1,21 @@
+create table PKG_EXE_LOG
+(
+  mainbranch        VARCHAR2(200),
+  childbranch       VARCHAR2(200),
+  pkg_conf          VARCHAR2(200),
+  in_param          CLOB,
+  out_param         CLOB,
+  in_param_varchar  VARCHAR2(4000),
+  out_param_varchar VARCHAR2(4000),
+  insert_dt         DATE,
+  log_id            NUMBER
+);
+
+
+insert into constant_data_config (CONST_KEY, CONST_VALUE, CONST_NAME, IS_EFFECTIVE, REMARK)
+values ('BUSINESS_CORE_PCK_LOG_1', 'N', 'BUSINESS_CORE_PCK入口记录日志开关', 'Y', '');
+
+insert into constant_data_config (CONST_KEY, CONST_VALUE, CONST_NAME, IS_EFFECTIVE, REMARK)
+values ('BUSINESS_CORE_PCK_LOG_2', 'N', 'BUSINESS_CORE_PCK末尾记录日志开关', 'Y', '');
+
+mainbranch,childbranch,pkg_conf,in_param,out_param,in_param_varchar,out_param_varchar
