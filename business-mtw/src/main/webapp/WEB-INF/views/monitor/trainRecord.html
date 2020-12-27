@@ -89,7 +89,7 @@ $(function () {
             [
                 {field: 'shipName', title: '船名称',align:'center', width:18},
                 {field: 'goodName', title: '货物名称',align:'center', width:18},
-                {field: 'goodTypeName', title: '货物类型',align:'center', width: 18},
+                {field: 'customerName', title: '收货单位',align:'center', width:25},
                 {field: 'tickQty', title: '运单重量(吨)',align:'center', width:15,formatter: function (value, row, index){
                         return row.tickQty/1000
                     }},
@@ -99,7 +99,7 @@ $(function () {
                 {field: 'leftQty', title: '剩余重量(吨)',align:'center', width:15, formatter: function (value, row, index){
                         return row.leftQty /1000;
                     }},
-                {field: 'venName', title: '客户信息',align:'center', width:35},
+                {field: 'venName', title: '客户信息',align:'center', width:25},
                 {field: 'cabinCnt', title: '剩余条码个数',align:'center', width:15},
                 {field: 'tradeName', title: '贸易类型',align:'center', width:20},
                 {field: 'billNo', title: '提货单号',align:'center', width:20},
