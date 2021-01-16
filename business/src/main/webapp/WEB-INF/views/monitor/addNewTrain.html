@@ -4,6 +4,9 @@
                     <tr>
                         <td>车号：</td>
                         <td><input class="easyui-textbox" data-options="missingMessage:'ceshi'" id="carIdQryStr" style="width: 145px;" /></td>
+                        <td>运输单位：</td>
+                        <td><input id="orgNo" name="orgNo" class="easyui-combobox" style="width:250px;"
+                                   data-options="valueField:'id',textField:'name',panelHeight:'300',url:'${base}/business/tool/getComboboxOpt/CARRIER_INFO'" /></td>
                         <td colspan="2"><input type="button" value="搜索" onclick="qry()"/>
                         <td colspan="4"><input type="button"  value="完成选择" onclick="saveNewTrainInfo()"/>
                             <span style="color: #0099FF;">&nbsp;&nbsp;&nbsp;全部选择完毕后，点击【完成选择】按钮。</span></td>
@@ -41,8 +44,14 @@
     function qry(){
         var paramO = new Object();
         var carIdQryStr = $("#carIdQryStr").textbox("getValue");
+        var orgNo= $("#orgNo").combobox("getValue");
+
+
         if (carIdQryStr != null && carIdQryStr != "" && carIdQryStr.length > 0) {
             paramO.search_carId ="%"+ carIdQryStr+"%";
+        }
+        if (orgNo != null && orgNo != "" && orgNo.length > 0) {
+            paramO.search_orgNo = orgNo;
         }
         paramO.search_validSta='1';
         $carRegDg.datagrid("load",paramO);
