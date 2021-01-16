@@ -1505,7 +1505,6 @@
 
         <if test="carId != null" >
             and a.car_id like #{carId,jdbcType=VARCHAR}
-
         </if>
 
         <if test="cardId != null" >
@@ -1522,6 +1521,10 @@
 
         <if test="protocolSta != null" >
             and a.protocol_sta = #{protocolSta,jdbcType=VARCHAR}
+        </if>
+
+        <if test="orgNo != null" >
+            and a.ORG_NO = to_number(#{orgNo,jdbcType=VARCHAR})
         </if>
         order by a.reg_dtm desc) m
 
@@ -1807,6 +1810,9 @@
 
         <if test="endDate != null" >
             and a.reg_dtm <![CDATA[     <     ]]> to_date(#{endDate,jdbcType=VARCHAR}, 'yyyy-mm-dd')+1
+        </if>
+        <if test="orgNo != null" >
+            and a.ORG_NO = to_number(#{orgNo,jdbcType=VARCHAR})
         </if>
     </select>
 
