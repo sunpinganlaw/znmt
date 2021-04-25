@@ -1,0 +1,203 @@
+    <div class="form-div">
+        <form id="shipTransRecordForm" method="post">
+                <table>
+                    <tr>
+                        <td>船名(船号)</td>
+                        <td><input id="shipId" name="shipId" class="easyui-combobox" style="width:145px;"
+                                   data-options="required:true, valueField:'id',textField:'name',panelHeight:'auto',url:'${base}/business/tool/getComboboxOpt/SHIP_INFO'" /></td>
+                        <td>航次</td>
+                        <td><input class="easyui-textbox"      data-options="required:true"  id="waybillNo" name="waybillNo" style="width:145px;"/></td>
+                    </tr>
+                    <!--<tr>-->
+                        <!--<td>收货单位</td>-->
+                        <!--<td><input id="receiverNo" name="receiverNo" style="width:145px;"/></td>-->
+                        <!--<td>货票号</td>-->
+                        <!--<td><input class="easyui-textbox"   id="waybillNo" name="waybillNo" style="width:145px;"/></td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td>状态</td>-->
+                        <!--<td><select id="status" name="status" class="easyui-combobox" data-options="required:true,panelHeight:'auto'"  style="width:145px;" >-->
+                            <!--<option value="">&nbsp;</option>-->
+                            <!--<option value="0">待装</option>-->
+                            <!--<option value="1">在装</option>-->
+                            <!--<option value="2">待出发</option>-->
+                            <!--<option value="3">重载在途</option>-->
+                            <!--<option selected value="4">到达待卸</option>-->
+                            <!--<option value="5">在卸</option>-->
+                            <!--<option value="6">卸空待回</option>-->
+                            <!--<option value="7">离港</option>-->
+                        <!--</select></td>-->
+                        <!--&lt;!&ndash;<td>水尺吨位</td>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<td><input class="easyui-numberbox" data-options="min:0, max:1000000, precision:2"  id="waterTun" name="waterTun" style="width:145px;"/></td>&ndash;&gt;-->
+                        <!--<td>船舶类型</td>-->
+                        <!--<td><select id="shipType" name="shipType" class="easyui-combobox" data-options="required:true,panelHeight:'auto'"  style="width:145px;" >-->
+                            <!--<option value="">&nbsp;</option>-->
+                            <!--<option value="0">散货船</option>-->
+                            <!--<option value="1">件散货船</option>-->
+                            <!--<option value="2">集装箱船</option>-->
+                            <!--<option value="3">游轮</option>-->
+                        <!--</select></td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td>装港用时</td>-->
+                        <!--<td><input class="easyui-numberbox" data-options="min:0, max:1000, precision:1"  id="loadHours" name="loadHours" style="width:145px;"/></td>-->
+                        <!--<td>卸港用时</td>-->
+                        <!--<td><input class="easyui-numberbox" data-options="min:0, max:1000, precision:1"  id="unloadHours" name="unloadHours" style="width:145px;"/></td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td>始发港口</td>-->
+                        <!--<td><input id="startPortNo" name="startPortNo" style="width:145px;"/></td>-->
+                        <!--<td>到达港口</td>-->
+                        <!--<td><input id="finalPortNo" name="finalPortNo" style="width:145px;"/></td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td>发港时间</td>-->
+                        <!--<td><input class="easyui-datetimebox" id="startTime" name="startTime" style="width:145px"></td>-->
+                        <!--<td>预计到港时间</td>-->
+                        <!--<td><input class="easyui-datetimebox"  id="estimateTime" name="estimateTime" style="width:145px"></td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td>实际到港时间</td>-->
+                        <!--<td><input class="easyui-datetimebox" data-options="required:true" id="factTime" name="factTime" style="width:145px"></td>-->
+                        <!--<td>接卸时间</td>-->
+                        <!--<td><input class="easyui-datetimebox" id="arrangeTime" name="arrangeTime" style="width:145px"></td>-->
+                    <!--</tr>-->
+                    <!--&lt;!&ndash;<tr>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<td>卸港完成时间</td>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<td><input class="easyui-datetimebox"  id="unloadTime" name="unloadTime" style="width:145px"></td>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<td>离港时间</td>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<td><input class="easyui-datetimebox"  id="departTime" name="departTime" style="width:145px"></td>&ndash;&gt;-->
+                    <!--&lt;!&ndash;</tr>&ndash;&gt;-->
+                    <tr>
+                        <td>泊位号</td>
+                        <td><select id="berthNo" name="berthNo" class="easyui-combobox" data-options="panelHeight:'auto'"  style="width:145px;" >
+                            <option value="1">1号</option>
+                            <option value="2">2号</option>
+                            <option value="3">3号</option>
+                            <option value="4">4号</option>
+                            <option value="5">5号</option>
+                            <option value="6">6号</option>
+                            <option value="7">7号</option>
+                            <option value="8">8号</option>
+                            <option value="9">9号</option>
+                        </select></td>
+                        <td>实际到港时间</td>
+                        <td><input class="easyui-datetimebox" data-options="required:false" id="factTime" name="factTime" style="width:145px"></td>
+                    </tr>
+                    <tr id="opTR">
+                        <td style="text-align: center" colspan="4">
+                            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save"  onclick="submitForm()">保存</a>
+                        </td>
+                    </tr>
+                </table>
+
+        </form>
+    </div>
+
+<script type="text/javascript">
+
+    $(function () {
+        var shipRecActionTag = document.getElementById("shipRecActionTag").value;
+        $('#receiverNo').combobox({
+            url:'${base}/business/tool/getDictionaryByType/GOODS_RECEIVER',
+            valueField:'id',
+            textField:'name',
+            panelHeight:'auto'
+        });
+
+        $('#startPortNo').combobox({
+            url:'${base}/business/tool/getDictionaryByType/START_PORT',
+            valueField:'id',
+            textField:'name',
+            panelHeight:'auto'
+        });
+
+        $('#finalPortNo').combobox({
+            url:'${base}/business/tool/getDictionaryByType/FINAL_PORT',
+            valueField:'id',
+            textField:'name',
+            panelHeight:'auto'
+        });
+
+        //修改时加载数据到控件
+        if (shipRecActionTag == 'MOD'){
+            var qryObj = {};
+            qryObj.search_shipRecID = document.getElementById("shipRecIdHidden").value;
+            $.post("${base}/business/monitor/qryShipTransInfo", qryObj, function (rsp) {
+                if (rsp) {
+                    if (rsp.rows.length > 0) {
+                        $('#shipTransRecordForm').form('load',rsp.rows[0]);
+                    }
+                }
+            });
+        } else if (shipRecActionTag == 'VIEW'){
+            document.getElementById("opTR").style.display = "none";
+            var qryObj = {};
+            qryObj.search_shipRecID = document.getElementById("shipRecIdHidden").value;
+            $.post("${base}/business/monitor/qryShipTransInfo", qryObj, function (rsp) {
+                if (rsp) {
+                    if (rsp.rows.length > 0) {
+                        $('#shipTransRecordForm').form('load',rsp.rows[0]);
+                        //只读
+                        $("input").attr("readonly", "readonly");//文本输入框被禁用
+
+                        $("#carrierNo").combobox("readonly", true);
+                        $("#shipId").combobox("readonly", true);
+                        $("#receiverNo").combobox("readonly", true);
+                        $("#status").combobox("readonly", true);
+                        $("#startPortNo").combobox("readonly", true);
+                        $("#finalPortNo").combobox("readonly", true);
+                        $("#berthNo").combobox("readonly", true);
+
+                        $("#startTime").datetimebox("readonly", true);
+//                        $("#departTime").datetimebox("readonly", true);
+                        $("#estimateTime").datetimebox("readonly", true);
+                        $("#factTime").datetimebox("readonly", true);
+                        $("#norTime").datetimebox("readonly", true);
+                        $("#arrangeTime").datetimebox("readonly", true);
+//                        $("#unloadTime").datetimebox("readonly", true);
+                    }
+                }
+            });
+        }
+    });
+
+
+    //提交表单
+    function submitForm(){
+        if (! $("#shipTransRecordForm").form('validate')) {
+            showMsg("提示", "有必填项未输入值!");
+            return false;
+        }
+
+        $.messager.confirm('提示', '确定保存?', function (r) {
+            if (r) {
+                //提交保存
+                save();
+            }
+        });
+    }
+
+    //保存
+    function save(){
+        var params = $("#shipTransRecordForm").serialize();
+        var actionTag = document.getElementById("shipRecActionTag").value;
+        var shipRecId = document.getElementById("shipRecIdHidden").value;
+
+        if (actionTag == "MOD") {
+            params = params + "&shipRecID=" + shipRecId;
+        }
+
+        $.post("${base}/business/monitor/editShipTransRec/"+actionTag, params, function (rsp) {
+            if (rsp.successful) {
+                showMsg("提示",rsp.msg);
+                $('#editShipRecWin').window('close');
+                $basicdg.datagrid('reload');
+            } else {
+                showMsg("提示", rsp.msg);
+            }
+        }).error(function () {
+            showMsg("提示", "新增失败!");
+        });
+    }
+</script>
