@@ -31,8 +31,10 @@
         <!--<module>business-sx</module>-->
         <!--<module>business-bb</module>-->
         <!--<module>business-mtw</module>-->
-        <module>business-nd</module>
-        <module>business-jjm</module>
+        <!--<module>business-nd</module>-->
+        <module>business-qt</module>
+
+        <!--<module>business-jjm</module>-->
 
         <!--<module>business-hpn</module>-->
         <!--<module>business-lf</module>-->
