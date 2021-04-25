@@ -155,7 +155,7 @@ namespace NHTool
             StreamReader sr=null;
             try
             {
-                sr = new StreamReader(path, Encoding.Default);
+                sr = new StreamReader(path, Encoding.UTF8);
                 List<string> fileBuf = new List<string>();
                 string line;
                 while (!sr.EndOfStream)
