@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>码头作业管理系统</title>
+    <title>码头作业管理系统</title>
+    <link rel="icon" href="/styles/images/logo/muyu.png" type="image/png">
+
+    <script type="text/javascript" src="${base}/styles/js/jquery-1.8.0.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="${base}/styles/css/reset.css">
+    <link rel="stylesheet" type="text/css" href="${base}/styles/css/easyme.css">
+    <link rel="stylesheet" type="text/css" href="${base}/styles/css/login.css">
+    <link rel="stylesheet" type="text/css" href="${base}/styles/css/tipsy.css">
+    <script type="text/javascript" src="${base}/styles/js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="${base}/styles/js/iphone.check.js"></script>
+    <script type="text/javascript" src="${base}/styles/js/jquery-jrumble.js"></script>
+    <script type="text/javascript" src="${base}/styles/js/jquery.tipsy.js"></script>
+    <script type="text/javascript" src="${base}/styles/js/login.js"></script>
+    <script>
+        if(top!=self){
+            if(top.location != self.location)
+                top.location=self.location;
+        }
+
+        jQuery(document).ready(function(){
+            $("#Kaptcha").click(function(){
+                $(this).attr("src", "${base}/captcha?" + Math.floor(Math.random() * 100)).fadeIn();
+                return false;
+            });
+        });
+    </script>
+</head>
+<#assign path="${request.getContextPath()}">
+<body>
+<div id="alertMessage"></div>
+<div id="successLogin"></div>
+<div class="text_success">
+    <img src="${base}/styles/images/login/loader_green.gif" alt="Please wait" /> <span>登陆成功!请稍后....</span>
+</div>
+<div class="easyme-loginbox">
+    <div class="easyme-topbox">
+        <!--<div class="easyme-logo"><span>国电蚌埠发电有限公司</span> <span class="easyme-sysname">燃料智能化管控系统</span></div>-->
+        <div class="easyme_newlogo"><div class="logo"></div><div class="title">青拓物流567号泊位 <span>码头作业管理平台</span></div></div>
+    </div>
+    <div id="login">
+        <div class="easyme-contectbox">
+            <div class="easyme-contectbg">&nbsp;</div>
+            <div class="easyme-contectlist">
+                <ul>
+                    <div class="inner">
+                    <div class="logo">
+                        <li class="easyme_sysnamebox"><span class="easyme_sysname">登陆系统</span></li>
+                    </div>
+                    <div class="formLogin">
+                        <form name="formLogin" action="${base}/login/load" id="formLogin" method="post">
+                            <input type="hidden" id="rememberMe" name="rememberMe" value="false"/>
+                            <div class="tip">
+                                <li><input name="username" id="username" title="用户名" iscookie="true" nullmsg="请输入用户名!" AUTOCOMPLETE="off"
+                                           type="text" value="" class="userName easyme_login_name"/></li>
+                            </div>
+                            <div class="tip">
+                                <li><input name="password" type="password" id="password" title="密码" iscookie="true" nullmsg="请输入密码!"
+                                           value="" class="password easyme_login_password"/></li>
+                            </div>
+                            <div class="tip">
+                                <li><span class="easyme_passnum_img"><img src="${path}/captcha" style="width:85px;height:50px;margin-top: 5px;" align="absmiddle" id="Kaptcha" /></span>
+                                    <input class="captcha easyme_login_passnum" name="captcha_key" type="text" id="captcha_key"  nullmsg="请输入验证码!"/>
+                                </li>
+                            </div>
+                            <li class="easyme_login_lastbox"><span class="easyme_login_btnbox"><input name="but_login"
+                                                                                                      href="javascript:void(0);"
+                                                                                                      id="but_login"
+                                                                                                      type="button"
+                                                                                                      value="点击登陆"
+                                                                                                      class="easyme_login_btn"/></span>
+                                <span class="easyme_unremenum" id="on_off" name="on_off" value="0">记住密码</span>
+                             <!--<input type="checkbox" id="rememberMe" name="rememberMe" class="easyme_remenum on_off_checkbox" value="0" TITLE="是否记住用户名?" ALT="是否记住用户名?"/>-->
+                            </li>
+                        </form>
+                    </div>
+                    </div>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="easyme-copyright"><span>版权所有| 南通安慧软件有限公司</span></div>
+</div>
+</body>
+</html>
